@@ -1,3 +1,53 @@
+
+-- Eliminar triggers existentes (si existen)
+DROP TRIGGER IF EXISTS "auditoria_insert_credenciales" ON "Credenciales";
+DROP TRIGGER IF EXISTS "auditoria_update_credenciales" ON "Credenciales";
+DROP TRIGGER IF EXISTS "auditoria_delete_credenciales" ON "Credenciales";
+
+DROP TRIGGER IF EXISTS "auditoria_insert_roles" ON "Roles";
+DROP TRIGGER IF EXISTS "auditoria_update_roles" ON "Roles";
+DROP TRIGGER IF EXISTS "auditoria_delete_roles" ON "Roles";
+
+DROP TRIGGER IF EXISTS "auditoria_insert_dueno" ON "Dueno";
+DROP TRIGGER IF EXISTS "auditoria_update_dueno" ON "Dueno";
+DROP TRIGGER IF EXISTS "auditoria_delete_dueno" ON "Dueno";
+
+DROP TRIGGER IF EXISTS "auditoria_insert_restaurante" ON "Restaurante";
+DROP TRIGGER IF EXISTS "auditoria_update_restaurante" ON "Restaurante";
+DROP TRIGGER IF EXISTS "auditoria_delete_restaurante" ON "Restaurante";
+
+DROP TRIGGER IF EXISTS "auditoria_insert_mesas" ON "Mesas";
+DROP TRIGGER IF EXISTS "auditoria_update_mesas" ON "Mesas";
+DROP TRIGGER IF EXISTS "auditoria_delete_mesas" ON "Mesas";
+
+DROP TRIGGER IF EXISTS "auditoria_insert_cliente" ON "Cliente";
+DROP TRIGGER IF EXISTS "auditoria_update_cliente" ON "Cliente";
+DROP TRIGGER IF EXISTS "auditoria_delete_cliente" ON "Cliente";
+
+DROP TRIGGER IF EXISTS "auditoria_insert_empleado" ON "Empleado";
+DROP TRIGGER IF EXISTS "auditoria_update_empleado" ON "Empleado";
+DROP TRIGGER IF EXISTS "auditoria_delete_empleado" ON "Empleado";
+
+DROP TRIGGER IF EXISTS "auditoria_insert_encabezado_factura" ON "Encabezado_Factura";
+DROP TRIGGER IF EXISTS "auditoria_update_encabezado_factura" ON "Encabezado_Factura";
+DROP TRIGGER IF EXISTS "auditoria_delete_encabezado_factura" ON "Encabezado_Factura";
+
+DROP TRIGGER IF EXISTS "auditoria_insert_detalle_factura" ON "Detalle_Factura";
+DROP TRIGGER IF EXISTS "auditoria_update_detalle_factura" ON "Detalle_Factura";
+DROP TRIGGER IF EXISTS "auditoria_delete_detalle_factura" ON "Detalle_Factura";
+
+DROP TRIGGER IF EXISTS "auditoria_insert_reserva" ON "Reserva";
+DROP TRIGGER IF EXISTS "auditoria_update_reserva" ON "Reserva";
+DROP TRIGGER IF EXISTS "auditoria_delete_reserva" ON "Reserva";
+
+-- Eliminar funciones de auditoría
+DROP FUNCTION IF EXISTS "auditoria_insert_trigger"() CASCADE;
+DROP FUNCTION IF EXISTS "auditoria_update_trigger"() CASCADE;
+DROP FUNCTION IF EXISTS "auditoria_delete_trigger"() CASCADE;
+
+-- Eliminar tabla de auditoría
+DROP TABLE IF EXISTS "Auditoria" CASCADE;
+
 DROP TABLE IF EXISTS "Auditoria" CASCADE;
 
 CREATE TABLE "Auditoria" (
@@ -97,18 +147,18 @@ AFTER DELETE ON "Roles"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
-CREATE TRIGGER "auditoria_insert_dueño"
-AFTER INSERT ON "Dueño"
+CREATE TRIGGER "auditoria_insert_dueno"
+AFTER INSERT ON "Dueno"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_insert_trigger"();    
 
-CREATE TRIGGER "auditoria_update_dueño"
-AFTER UPDATE ON "Dueño"
+CREATE TRIGGER "auditoria_update_dueno"
+AFTER UPDATE ON "Dueno"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_update_trigger"();
 
-CREATE TRIGGER "auditoria_delete_dueño"
-AFTER DELETE ON "Dueño"
+CREATE TRIGGER "auditoria_delete_dueno"
+AFTER DELETE ON "Dueno"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 

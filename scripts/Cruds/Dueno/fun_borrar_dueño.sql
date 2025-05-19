@@ -1,8 +1,8 @@
-CREATE OR REPLACE FUNCTION borrar_dueño(
-    p_id_dueño INT
+CREATE OR REPLACE FUNCTION borrar_dueno(
+    p_id_dueno INT
 ) RETURNS VOID AS $$
 BEGIN
-    DELETE FROM "Dueño"
-    WHERE id_dueño = p_id_dueño;
+    DELETE FROM "Dueno"
+    WHERE id_dueno = p_id_dueno;
 END;
 $$ LANGUAGE plpgsql;
