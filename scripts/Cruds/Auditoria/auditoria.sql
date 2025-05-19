@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS "Auditoria" CASCADE;
+
 CREATE TABLE "Auditoria" (
     "id_auditoria" SERIAL PRIMARY KEY,
     "fecha_hora" TIMESTAMP NOT NULL,
@@ -214,30 +216,3 @@ CREATE TRIGGER "auditoria_delete_reserva"
 AFTER DELETE ON "Reserva"
 FOR EACH ROW
 EXECUTE FUNCTION "auditoria_delete_trigger";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
