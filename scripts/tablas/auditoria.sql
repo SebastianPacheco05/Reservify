@@ -48,8 +48,6 @@ DROP FUNCTION IF EXISTS "auditoria_delete_trigger"() CASCADE;
 -- Eliminar tabla de auditoría
 DROP TABLE IF EXISTS "Auditoria" CASCADE;
 
-DROP TABLE IF EXISTS "Auditoria" CASCADE;
-
 CREATE TABLE "Auditoria" (
     "id_auditoria" SERIAL PRIMARY KEY,
     "fecha_hora" TIMESTAMP NOT NULL,
