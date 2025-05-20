@@ -3,6 +3,8 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from config import SessionLocal
 from Cruds import credenciales, roles, dueno, restaurante, mesas, cliente, empleado, enc_fac, det_fac, reserva
+from models import *
+
 
 app = FastAPI()
 
@@ -13,17 +15,7 @@ def get_db():
     finally:
         db.close()
 
-#Credenciales
-class CredencialBase(BaseModel):
-    email: str
-    password: str
-
-class CredencialUpdate(CredencialBase):
-    id_credencial: int
-
-class CredencialDelete(BaseModel):
-    id_credencial: int
-    
+#Credenciales    
 
 @app.post("/insertarcredencial")
 def insertar(data: CredencialBase, db: Session = Depends(get_db)):
@@ -40,17 +32,7 @@ def borrar(data: CredencialDelete, db: Session = Depends(get_db)):
     credenciales.borrar_credenciales(db, data.id_credencial)
     return {"message": "Credenciales eliminadas correctamente"}
 
-#Roles
-class RolBase(BaseModel):
-    nombre_rol: str
-    descripcion: str
-
-class RolUpdate(RolBase):
-    id_rol: int
-
-class RolDelete(BaseModel):
-    id_rol: int
-    
+#Roles 
 
 @app.post("/insertaroles")
 def insertar(data: RolBase, db: Session = Depends(get_db)):
@@ -68,19 +50,6 @@ def borrar(data: RolDelete, db: Session = Depends(get_db)):
     return {"message": "Roles eliminados correctamente"}
 
 #Dueno
-class DuenoBase(BaseModel):
-    nombre1: str
-    nombre2: str
-    apellido1: str
-    apellido2: str
-    id_rol: int
-    id_credencial: int
-
-class DuenoUpdate(DuenoBase):
-    id_dueno: int
-
-class DuenoDelete(BaseModel):
-    id_dueno: int
 
 @app.post("/insertardueno")
 def insertar(data: DuenoBase, db: Session = Depends(get_db)):
@@ -98,19 +67,6 @@ def borrar(data: DuenoDelete, db: Session = Depends(get_db)):
     return {"message": "Dueno eliminado correctamente"}
 
 #Restaurante
-class RestauranteBase(BaseModel):
-    direccion: str
-    nombre_restaurante: str
-    descripcion_restaurante: str
-    horario_apertura: str   
-    horario_cierre: str
-    id_dueno: int
-
-class RestauranteUpdate(RestauranteBase):
-    id_restaurante: int 
-
-class RestauranteDelete(BaseModel):
-    id_restaurante: int
 
 @app.post("/insertarrestaurante")
 def insertar(data: RestauranteBase, db: Session = Depends(get_db)):
@@ -128,17 +84,6 @@ def borrar(data: RestauranteDelete, db: Session = Depends(get_db)):
     return {"message": "Restaurante eliminado correctamente"}
 
 #Mesas
-class MesaBase(BaseModel):
-    estado_de_disponibilidad: bool
-    cant_personas: int
-    NIT: int
-    precio: float   
-
-class MesaUpdate(MesaBase):
-    id_mesa: int
-
-class MesaDelete(BaseModel):
-    id_mesa: int
 
 @app.post("/insertarmesas")
 def insertar(data: MesaBase, db: Session = Depends(get_db)):
@@ -155,24 +100,7 @@ def borrar(data: MesaDelete, db: Session = Depends(get_db)):
     mesas.borrar_mesas(db, data.id_mesa)
     return {"message": "Mesa eliminada correctamente"}
 
-#Cliente
-class ClienteBase(BaseModel):
-    id_credencial: int
-    nombre1: str
-    nombre2: str    
-    apellido1: str
-    apellido2: str
-    tipo_documento: str
-    documento: int
-    nacionalidad: str
-    telefono: str
-    id_rol: int 
-
-class ClienteUpdate(ClienteBase):
-    id_cliente: int
-
-class ClienteDelete(BaseModel):
-    id_cliente: int     
+#Cliente     
     
 @app.post("/insertarcliente")
 def insertar(data: ClienteBase, db: Session = Depends(get_db)):
@@ -190,24 +118,6 @@ def borrar(data: ClienteDelete, db: Session = Depends(get_db)):
     return {"message": "Cliente eliminado correctamente"}
 
 #Empleado
-class EmpleadoBase(BaseModel):
-    id_credencial: int
-    nombre1: str
-    nombre2: str
-    apellido1: str
-    apellido2: str
-    tipo_documento: str
-    documento: int
-    nacionalidad: str
-    telefono: str
-    id_rol: int
-    NIT: int
-
-class EmpleadoUpdate(EmpleadoBase):
-    id_empleado: int
-
-class EmpleadoDelete(BaseModel):
-    id_empleado: int
 
 @app.post("/insertarempleado")
 def insertar(data: EmpleadoBase, db: Session = Depends(get_db)):
@@ -224,20 +134,7 @@ def borrar(data: EmpleadoDelete, db: Session = Depends(get_db)):
     empleado.borrar_empleado(db, data.id_empleado)
     return {"message": "Empleado eliminado correctamente"}
 
-#Encabezado_factura
-class Encabezado_facturaBase(BaseModel):
-    NIT: int
-    nombre_restaurante: str
-    direccion: str
-    ciudad: str
-    fecha: str
-    id_cliente: int 
-
-class Encabezado_facturaUpdate(Encabezado_facturaBase):
-    id_encab_fact: int
-
-class Encabezado_facturaDelete(BaseModel):
-    id_encab_fact: int  
+#Encabezado_factura 
     
 @app.post("/insertar_encabezado_factura")
 def insertar(data: Encabezado_facturaBase, db: Session = Depends(get_db)):
@@ -255,19 +152,6 @@ def borrar(data: Encabezado_facturaDelete, db: Session = Depends(get_db)):
     return {"message": "Encabezado_factura eliminado correctamente"}    
 
 #Detalle_factura
-class Detalle_facturaBase(BaseModel):
-    descripcion: str
-    unidades: int
-    precio_unitario: float
-    precio_total: float
-    forma_pago: str
-    id_encab_fact: int
-
-class Detalle_facturaUpdate(Detalle_facturaBase):
-    id_det_fact: int
-
-class Detalle_facturaDelete(BaseModel):
-    id_det_fact: int
 
 @app.post("/insertar_detalle_factura")
 def insertar(data: Detalle_facturaBase, db: Session = Depends(get_db)):
@@ -285,18 +169,6 @@ def borrar(data: Detalle_facturaDelete, db: Session = Depends(get_db)):
     return {"message": "Detalle_factura eliminado correctamente"}
 
 #Reserva
-class ReservaBase(BaseModel):
-    id_mesa: int
-    id_cliente: int
-    id_encab_fact: int
-    horario: str
-    fecha: str
-
-class ReservaUpdate(ReservaBase):
-    id_reserva: int
-
-class ReservaDelete(BaseModel):
-    id_reserva: int
 
 @app.post("/insertar_reserva")
 def insertar(data: ReservaBase, db: Session = Depends(get_db)):
