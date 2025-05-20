@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS "Credenciales" CASCADE;
 CREATE TABLE "Credenciales" (
     id_credencial SERIAL NOT NULL PRIMARY KEY,
     email VARCHAR(100) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
-    password VARCHAR(255) NOT NULL CHECK (char_length(password) >= 8)
+    password VARCHAR(255) NOT NULL
 );
 
 -- Tabla de roles
@@ -39,7 +39,7 @@ CREATE TABLE "Dueno" (
 
 -- Tabla de restaurante
 CREATE TABLE "Restaurante" (
-    NIT SERIAL PRIMARY KEY NOT NULL,
+    NIT SERIAL PRIMARY KEY NOT NULL, -- Arreglar Nit para que no sea SERIAL
     direccion VARCHAR(50) NOT NULL,
     nombre_restaurante VARCHAR(50) NOT NULL,
     descripcion_restaurante VARCHAR(100) NOT NULL,
@@ -103,7 +103,7 @@ CREATE TABLE "Encabezado_Factura" (
     nombre_restaurante VARCHAR(50) NOT NULL,
     direccion VARCHAR(50) NOT NULL,
     ciudad VARCHAR(20) NOT NULL,
-    fecha DATE NOT NULL CHECK (fecha >= CURRENT_DATE),
+    fecha DATE NOT NULL CHECK (fecha = CURRENT_DATE),
     id_cliente INT NOT NULL,
     FOREIGN KEY (NIT) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE,
     FOREIGN KEY (id_cliente) REFERENCES "Cliente" (id_cliente) ON DELETE CASCADE
@@ -112,7 +112,7 @@ CREATE TABLE "Encabezado_Factura" (
 -- Tabla detalle factura
 CREATE TABLE "Detalle_Factura" (
     id_det_fact SERIAL PRIMARY KEY NOT NULL,
-    descripcion VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(100) NOT NULL, -- Arreglar descripcion para que sea un tipo de dato ARRAY
     unidades INT NOT NULL CHECK (unidades > 0),
     precio_unitario DECIMAL(10, 2) NOT NULL CHECK (precio_unitario >= 0),
     precio_total DECIMAL(10, 2) NOT NULL CHECK (precio_total >= 0),
