@@ -39,7 +39,7 @@ CREATE TABLE "Dueno" (
 
 -- Tabla de restaurante
 CREATE TABLE "Restaurante" (
-    NIT SERIAL PRIMARY KEY NOT NULL, -- Arreglar Nit para que no sea SERIAL
+    NIT DECIMAL(10, 0) PRIMARY KEY NOT NULL,
     direccion VARCHAR(50) NOT NULL,
     nombre_restaurante VARCHAR(50) NOT NULL,
     descripcion_restaurante VARCHAR(100) NOT NULL,
@@ -112,12 +112,16 @@ CREATE TABLE "Encabezado_Factura" (
 -- Tabla detalle factura
 CREATE TABLE "Detalle_Factura" (
     id_det_fact SERIAL PRIMARY KEY NOT NULL,
-    descripcion VARCHAR(100) NOT NULL, -- Arreglar descripcion para que sea un tipo de dato ARRAY
-    unidades INT NOT NULL CHECK (unidades > 0),
-    precio_unitario DECIMAL(10, 2) NOT NULL CHECK (precio_unitario >= 0),
-    precio_total DECIMAL(10, 2) NOT NULL CHECK (precio_total >= 0),
+    descripcion VARCHAR(100)[] NOT NULL,
+    unidades INT[] NOT NULL,
+    precio_unitario DECIMAL(10, 2)[] NOT NULL,   
+    precio_total DECIMAL(10, 2) NOT NULL,
     forma_pago VARCHAR(50) NOT NULL CHECK (forma_pago IN ('Efectivo', 'Tarjeta', 'Transferencia', 'Otro')),
     id_encab_fact INT NOT NULL,
+    CHECK (
+        array_length(descripcion, 1) = array_length(unidades, 1)
+        AND array_length(descripcion, 1) = array_length(precio_unitario, 1)
+        ), 
     FOREIGN KEY (id_encab_fact) REFERENCES "Encabezado_Factura" (id_encab_fact) ON DELETE CASCADE
 );
 

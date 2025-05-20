@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import List
 
 # Credenciales
 class CredencialBase(BaseModel):
@@ -49,6 +49,7 @@ class DuenoDelete(BaseModel):
 
 # Restaurante
 class RestauranteBase(BaseModel):
+    NIT: int
     direccion: str
     nombre_restaurante: str
     descripcion_restaurante: str
@@ -146,9 +147,9 @@ class Encabezado_facturaDelete(BaseModel):
 
 # Detalle_factura
 class Detalle_facturaBase(BaseModel):
-    descripcion: str
-    unidades: int
-    precio_unitario: float
+    descripcion: List[str]
+    unidades: List[int]
+    precio_unitario: List[float]
     precio_total: float
     forma_pago: str
     id_encab_fact: int

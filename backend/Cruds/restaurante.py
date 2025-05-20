@@ -4,6 +4,7 @@ from sqlalchemy import text
 
 def insertar_restaurante(
     db: Session,
+    NIT: int,
     direccion: str,
     nombre_restaurante: str,
     descripcion_restaurante: str,
@@ -13,9 +14,10 @@ def insertar_restaurante(
 ):
     db.execute(
         text(
-            "SELECT insertar_restaurante(:direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :id_dueno)"
+            "SELECT insertar_restaurante(:NIT, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :id_dueno)"
         ),
         {
+            "NIT": NIT,
             "direccion": direccion,
             "nombre_restaurante": nombre_restaurante,
             "descripcion_restaurante": descripcion_restaurante,

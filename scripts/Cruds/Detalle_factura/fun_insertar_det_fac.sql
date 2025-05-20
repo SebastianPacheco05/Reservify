@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION insertar_detalle_factura(
-    p_descripcion VARCHAR(100),
-    p_unidades INT,
-    p_precio_unitario DECIMAL(10,2),
+    p_descripcion VARCHAR(100)[],
+    p_unidades INT[],
+    p_precio_unitario DECIMAL(10,2)[],
     p_precio_total DECIMAL(10,2),
     p_forma_pago VARCHAR(50),
     p_id_encab_fact INT

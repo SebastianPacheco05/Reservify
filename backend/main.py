@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from config import SessionLocal
+from config import get_db
 from Cruds import (
     credenciales,
     roles,
@@ -17,16 +17,6 @@ from Cruds import (
 from models import *
 
 app = FastAPI()
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
 # Credenciales
 
 
@@ -114,6 +104,7 @@ def borrar(data: DuenoDelete, db: Session = Depends(get_db)):
 def insertar(data: RestauranteBase, db: Session = Depends(get_db)):
     restaurante.insertar_restaurante(
         db,
+        data.NIT,
         data.direccion,
         data.nombre_restaurante,
         data.descripcion_restaurante,
@@ -128,7 +119,7 @@ def insertar(data: RestauranteBase, db: Session = Depends(get_db)):
 def editar(data: RestauranteUpdate, db: Session = Depends(get_db)):
     restaurante.editar_restaurante(
         db,
-        data.id_restaurante,
+        data.NIT,
         data.direccion,
         data.nombre_restaurante,
         data.descripcion_restaurante,
