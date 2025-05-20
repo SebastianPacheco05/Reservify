@@ -4,7 +4,7 @@ CREATE OR REPLACE FUNCTION insertar_roles(
     p_descripcion VARCHAR(100)
 ) RETURNS VOID AS $$
 BEGIN
-    INSERT INTO "Roles" (id_rol, nombre_rol, descripcion)
-    VALUES (p_id_rol, p_nombre_rol, p_descripcion);
+    INSERT INTO "Roles" (nombre_rol, descripcion)
+    VALUES (p_nombre_rol, p_descripcion);
 END;
 $$ LANGUAGE plpgsql;

@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from config import SessionLocal
-from scripts.Cruds import credenciales, roles  
+from scripts.Cruds import credenciales 
 
 app = FastAPI()
 
@@ -40,31 +40,4 @@ def borrar(data: CredencialDelete, db: Session = Depends(get_db)):
     credenciales.borrar_credenciales(db, data.id_credencial)
     return {"message": "Credenciales eliminadas correctamente"}
 
-#Roles
-class RolBase(BaseModel):
-    id_rol: int
-    nombre_rol: str
-    descripcion: str
 
-class RolUpdate(RolBase):
-    id_rol: int
-    nombre_rol: str
-    descripcion: str
-
-class RolDelete(BaseModel):
-    id_rol: int
-
-@app.post("/insertaroles")
-def insertar(data: RolBase, db: Session = Depends(get_db)):
-    roles.insertar_roles(db, data.id_rol, data.nombre_rol, data.descripcion)
-    return {"message": "Rol insertado correctamente"}
-
-@app.post("/editaroles")
-def editar(data: RolUpdate, db: Session = Depends(get_db)):
-    roles.editar_roles(db, data.id_rol, data.nombre_rol, data.descripcion)
-    return {"message": "Rol actualizado correctamente"}
-
-@app.post("/borraroles")
-def borrar(data: RolDelete, db: Session = Depends(get_db)):
-    roles.borrar_roles(db, data.id_rol)
-    return {"message": "Rol eliminado correctamente"}
