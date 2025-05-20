@@ -26,13 +26,13 @@ def insertar(data: CredencialBase, db: Session = Depends(get_db)):
     return {"message": "Credenciales insertadas correctamente"}
 
 
-@app.post("/editarcredencial")
+@app.put("/editarcredencial")
 def editar(data: CredencialUpdate, db: Session = Depends(get_db)):
     credenciales.editar_credenciales(db, data.id_credencial, data.email, data.password)
     return {"message": "Credenciales actualizadas correctamente"}
 
 
-@app.post("/borrarcredencial")
+@app.delete("/borrarcredencial")
 def borrar(data: CredencialDelete, db: Session = Depends(get_db)):
     credenciales.borrar_credenciales(db, data.id_credencial)
     return {"message": "Credenciales eliminadas correctamente"}
@@ -47,13 +47,13 @@ def insertar(data: RolBase, db: Session = Depends(get_db)):
     return {"message": "Roles insertados correctamente"}
 
 
-@app.post("/editaroles")
+@app.put("/editaroles")
 def editar(data: RolUpdate, db: Session = Depends(get_db)):
     roles.editar_roles(db, data.id_rol, data.nombre_rol, data.descripcion)
     return {"message": "Roles actualizados correctamente"}
 
 
-@app.post("/borraroles")
+@app.delete("/borraroles")
 def borrar(data: RolDelete, db: Session = Depends(get_db)):
     roles.borrar_roles(db, data.id_rol)
     return {"message": "Roles eliminados correctamente"}
@@ -76,7 +76,7 @@ def insertar(data: DuenoBase, db: Session = Depends(get_db)):
     return {"message": "Dueno insertado correctamente"}
 
 
-@app.post("/editardueno")
+@app.put("/editardueno")
 def editar(data: DuenoUpdate, db: Session = Depends(get_db)):
     dueno.editar_dueno(
         db,
@@ -91,7 +91,7 @@ def editar(data: DuenoUpdate, db: Session = Depends(get_db)):
     return {"message": "Dueno actualizado correctamente"}
 
 
-@app.post("/borrardueno")
+@app.delete("/borrardueno")
 def borrar(data: DuenoDelete, db: Session = Depends(get_db)):
     dueno.borrar_dueno(db, data.id_dueno)
     return {"message": "Dueno eliminado correctamente"}
@@ -115,7 +115,7 @@ def insertar(data: RestauranteBase, db: Session = Depends(get_db)):
     return {"message": "Restaurante insertado correctamente"}
 
 
-@app.post("/editarrestaurante")
+@app.put("/editarrestaurante")
 def editar(data: RestauranteUpdate, db: Session = Depends(get_db)):
     restaurante.editar_restaurante(
         db,
@@ -130,7 +130,7 @@ def editar(data: RestauranteUpdate, db: Session = Depends(get_db)):
     return {"message": "Restaurante actualizado correctamente"}
 
 
-@app.post("/borrarrestaurante")
+@app.delete("/borrarrestaurante")
 def borrar(data: RestauranteDelete, db: Session = Depends(get_db)):
     restaurante.borrar_restaurante(db, data.id_restaurante)
     return {"message": "Restaurante eliminado correctamente"}
@@ -147,7 +147,7 @@ def insertar(data: MesaBase, db: Session = Depends(get_db)):
     return {"message": "Mesa insertada correctamente"}
 
 
-@app.post("/editarmesas")
+@app.put("/editarmesas")
 def editar(data: MesaUpdate, db: Session = Depends(get_db)):
     mesas.editar_mesas(
         db,
@@ -160,7 +160,7 @@ def editar(data: MesaUpdate, db: Session = Depends(get_db)):
     return {"message": "Mesa actualizada correctamente"}
 
 
-@app.post("/borrarmesas")
+@app.delete("/borrarmesas")
 def borrar(data: MesaDelete, db: Session = Depends(get_db)):
     mesas.borrar_mesas(db, data.id_mesa)
     return {"message": "Mesa eliminada correctamente"}
@@ -187,7 +187,7 @@ def insertar(data: ClienteBase, db: Session = Depends(get_db)):
     return {"message": "Cliente insertado correctamente"}
 
 
-@app.post("/editarcliente")
+@app.put("/editarcliente")
 def editar(data: ClienteUpdate, db: Session = Depends(get_db)):
     cliente.editar_clientes(
         db,
@@ -206,7 +206,7 @@ def editar(data: ClienteUpdate, db: Session = Depends(get_db)):
     return {"message": "Cliente actualizado correctamente"}
 
 
-@app.post("/borrarcliente")
+@app.delete("/borrarcliente")
 def borrar(data: ClienteDelete, db: Session = Depends(get_db)):
     cliente.borrar_clientes(db, data.id_cliente)
     return {"message": "Cliente eliminado correctamente"}
@@ -234,7 +234,7 @@ def insertar(data: EmpleadoBase, db: Session = Depends(get_db)):
     return {"message": "Empleado insertado correctamente"}
 
 
-@app.post("/editarempleado")
+@app.put("/editarempleado")
 def editar(data: EmpleadoUpdate, db: Session = Depends(get_db)):
     empleado.editar_empleado(
         db,
@@ -254,7 +254,7 @@ def editar(data: EmpleadoUpdate, db: Session = Depends(get_db)):
     return {"message": "Empleado actualizado correctamente"}
 
 
-@app.post("/borrarempleado")
+@app.delete("/borrarempleado")
 def borrar(data: EmpleadoDelete, db: Session = Depends(get_db)):
     empleado.borrar_empleado(db, data.id_empleado)
     return {"message": "Empleado eliminado correctamente"}
@@ -277,7 +277,7 @@ def insertar(data: Encabezado_facturaBase, db: Session = Depends(get_db)):
     return {"message": "Encabezado_factura insertado correctamente"}
 
 
-@app.post("/editar_encabezado_factura")
+@app.put("/editar_encabezado_factura")
 def editar(data: Encabezado_facturaUpdate, db: Session = Depends(get_db)):
     enc_fac.editar_enc_fac(
         db,
@@ -292,7 +292,7 @@ def editar(data: Encabezado_facturaUpdate, db: Session = Depends(get_db)):
     return {"message": "Encabezado_factura actualizado correctamente"}
 
 
-@app.post("/borrar_encabezado_factura")
+@app.delete("/borrar_encabezado_factura")
 def borrar(data: Encabezado_facturaDelete, db: Session = Depends(get_db)):
     enc_fac.borrar_enc_fac(db, data.id_encab_fact)
     return {"message": "Encabezado_factura eliminado correctamente"}
@@ -315,7 +315,7 @@ def insertar(data: Detalle_facturaBase, db: Session = Depends(get_db)):
     return {"message": "Detalle_factura insertado correctamente"}
 
 
-@app.post("/editar_detalle_factura")
+@app.put("/editar_detalle_factura")
 def editar(data: Detalle_facturaUpdate, db: Session = Depends(get_db)):
     det_fac.editar_det_fac(
         db,
@@ -330,7 +330,7 @@ def editar(data: Detalle_facturaUpdate, db: Session = Depends(get_db)):
     return {"message": "Detalle_factura actualizado correctamente"}
 
 
-@app.post("/borrar_detalle_factura")
+@app.delete("/borrar_detalle_factura")
 def borrar(data: Detalle_facturaDelete, db: Session = Depends(get_db)):
     det_fac.borrar_det_fac(db, data.id_det_fact)
     return {"message": "Detalle_factura eliminado correctamente"}
@@ -347,7 +347,7 @@ def insertar(data: ReservaBase, db: Session = Depends(get_db)):
     return {"message": "Reserva insertada correctamente"}
 
 
-@app.post("/editar_reserva")
+@app.put("/editar_reserva")
 def editar(data: ReservaUpdate, db: Session = Depends(get_db)):
     reserva.editar_reserva(
         db,
@@ -361,7 +361,7 @@ def editar(data: ReservaUpdate, db: Session = Depends(get_db)):
     return {"message": "Reserva actualizada correctamente"}
 
 
-@app.post("/borrar_reserva")
+@app.delete("/borrar_reserva")
 def borrar(data: ReservaDelete, db: Session = Depends(get_db)):
     reserva.borrar_reserva(db, data.id_reserva)
     return {"message": "Reserva eliminada correctamente"}
