@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List
 
+
 # Credenciales
 class CredencialBase(BaseModel):
     email: str
@@ -178,3 +179,43 @@ class ReservaUpdate(ReservaBase):
 
 class ReservaDelete(BaseModel):
     id_reserva: int
+
+
+class ListarCredenciales(BaseModel):
+    id_credencial: int
+
+
+class ListarRoles(BaseModel):
+    id_rol: int
+
+
+class ListarDuenos(BaseModel):
+    id_dueno: int
+
+
+class ListarClientes(BaseModel):
+    id_cliente: int
+
+
+class ListarEmpleados(BaseModel):
+    id_empleado: int
+
+
+class ListarRestaurantes(BaseModel):
+    id_restaurante: int
+
+
+class ListarMesas(BaseModel):
+    id_mesa: int
+
+
+class ListarReservas(BaseModel):
+    id_reserva: int
+
+
+class ListarEncabezadoFactura(BaseModel):
+    id_encab_fact: int
+
+
+class ListarDetalleFactura(BaseModel):
+    id_det_fact: int
