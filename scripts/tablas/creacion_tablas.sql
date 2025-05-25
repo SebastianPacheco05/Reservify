@@ -62,7 +62,7 @@ CREATE TABLE "Dueno" (
     apellido1 VARCHAR(50) NOT NULL,
     apellido2 VARCHAR(50),
     id_rol INT NOT NULL,
-    id_credencial INT NOT NULL,
+    id_credencial INT NOT NULL UNIQUE,  -- Aseguramos que cada cliente tenga credenciales únicas
     FOREIGN KEY (id_rol) REFERENCES "Roles" (id_rol) ON DELETE CASCADE,
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
 );
@@ -126,7 +126,7 @@ CREATE TABLE "Mesas" (
  */
 CREATE TABLE "Cliente" (
     id_cliente SERIAL PRIMARY KEY NOT NULL,
-    id_credencial INT NOT NULL,
+    id_credencial INT NOT NULL UNIQUE,  -- Aseguramos que cada cliente tenga credenciales únicas
     nombre1 VARCHAR(50) NOT NULL,
     nombre2 VARCHAR(50),
     apellido1 VARCHAR(50) NOT NULL,
@@ -157,7 +157,7 @@ CREATE TABLE "Cliente" (
  */
 CREATE TABLE "Empleado" (
     id_empleado SERIAL PRIMARY KEY NOT NULL,
-    id_credencial INT NOT NULL,
+    id_credencial INT NOT NULL UNIQUE,  -- Aseguramos que cada cliente tenga credenciales únicas
     nombre1 VARCHAR(50) NOT NULL,
     nombre2 VARCHAR(50),
     apellido1 VARCHAR(50) NOT NULL,
