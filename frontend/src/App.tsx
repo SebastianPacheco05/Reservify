@@ -1,10 +1,13 @@
+import { Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import Reserva from './pages/Reserva';
+
 function App() {
   return (
-    <>
-      <div>
-        <p className="text-red-400">HOLA</p>
-      </div>
-    </>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/Reserva" element={<Reserva />} />
+    </Routes>
   );
 }
 
