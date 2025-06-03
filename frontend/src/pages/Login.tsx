@@ -1,6 +1,6 @@
 // import React from 'react';
 
-function Reserva() {
+function Login() {
   return (
     <main>
       Luego vuelvo
@@ -8,4 +8,4 @@ function Reserva() {
   );
 }
 
-export default Reserva;
+export default Login;
