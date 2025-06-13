@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+// import Dashboard from "./pages/Dashboard";
 import { ThemeProvider } from "./components/theme-provider";
 
 function App() {
@@ -10,7 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<Login />} />
-        <Route path="/Dashboard" element={<Dashboard />} />
+        {/* <Route path="/Dashboard" element={<Dashboard />} /> */}
       </Routes>
     </ThemeProvider>
   );

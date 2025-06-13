@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from config import get_db
-from funciones import (
+from funciones.cruds import (
     credenciales,
     roles,
     dueno,
