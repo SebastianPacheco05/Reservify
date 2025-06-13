@@ -219,3 +219,20 @@ class ListarEncabezadoFactura(BaseModel):
 
 class ListarDetalleFactura(BaseModel):
     id_det_fact: int
+
+
+class ListarCategorias(BaseModel):
+    id_categoria: int
+
+
+class insertarCategorias(BaseModel):
+    nombre_categoria: str
+
+
+class editarCategorias(BaseModel):
+    id_categoria: int
+    nombre_categoria: str
+
+
+class borrarCategorias(BaseModel):
+    id_categoria: int

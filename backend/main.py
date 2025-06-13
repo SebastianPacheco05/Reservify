@@ -13,6 +13,7 @@ from funciones import (
     det_fac,
     reserva,
     list,
+    categorias,
 )
 from models import *
 
@@ -399,3 +400,27 @@ async def editar(data: ReservaUpdate, db: Session = Depends(get_db)):
 @app.delete("/borrarreserva")
 async def borrar(data: ReservaDelete, db: Session = Depends(get_db)):
     reserva.borrar_reserva(db, data.id_reserva)
+
+
+# Categorias
+
+
+@app.post("/insertarcategoria")
+async def insertar(data: insertarCategorias, db: Session = Depends(get_db)):
+    categorias.insertar_categoria(db, data.nombre_categoria)
+
+
+@app.get("/listarcategorias")
+async def listar_categorias(data: ListarCategorias, db: Session = Depends(get_db)):
+    respuesta = list.obtener_categorias(db, data.id_categoria)
+    return {"respuesta": respuesta}
+
+
+@app.put("/editarcategoria")
+async def editar(data: editarCategorias, db: Session = Depends(get_db)):
+    categorias.editar_categoria(db, data.id_categoria, data.nombre_categoria)
+
+
+@app.delete("/borrar_categoria")
+async def borrar(data: borrarCategorias, db: Session = Depends(get_db)):
+    categorias.borrar_categoria(db, data.id_categoria)

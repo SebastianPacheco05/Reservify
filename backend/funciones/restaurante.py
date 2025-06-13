@@ -13,11 +13,12 @@ def insertar_restaurante(
     horario_apertura: str,
     horario_cierre: str,
     id_dueno: int,
+    id_categoria: int,
 ):
     try:
         db.execute(
             text(
-                "SELECT insertar_restaurante(:NIT, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :id_dueno)"
+                "SELECT insertar_restaurante(:NIT, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :id_dueno, :id_categoria)"
             ),
             {
                 "NIT": NIT,
@@ -27,6 +28,7 @@ def insertar_restaurante(
                 "horario_apertura": horario_apertura,
                 "horario_cierre": horario_cierre,
                 "id_dueno": id_dueno,
+                "id_categoria": id_categoria,
             },
         )
         db.commit()
@@ -56,11 +58,12 @@ def editar_restaurante(
     horario_apertura: str,
     horario_cierre: str,
     id_dueno: int,
+    id_categoria: int,
 ):
     try:
         db.execute(
             text(
-                "SELECT editar_restaurante(:id_restaurante, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :id_dueno)"
+                "SELECT editar_restaurante(:id_restaurante, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :id_dueno, :id_categoria)"
             ),
             {
                 "id_restaurante": id_restaurante,
@@ -70,6 +73,7 @@ def editar_restaurante(
                 "horario_apertura": horario_apertura,
                 "horario_cierre": horario_cierre,
                 "id_dueno": id_dueno,
+                "id_categoria": id_categoria,
             },
         )
         db.commit()
