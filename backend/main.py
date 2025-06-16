@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from config import get_db
 from funciones.cruds import (
@@ -16,6 +16,8 @@ from funciones.cruds import (
     categorias,
 )
 from models import *
+from funciones.email_sender.email_utils import send_email
+from funciones.email_sender.timer import send2hbf, tarea_programada, enviar_correo
 
 app = FastAPI()
 # Credenciales
@@ -424,3 +426,23 @@ async def editar(data: editarCategorias, db: Session = Depends(get_db)):
 @app.delete("/borrar_categoria")
 async def borrar(data: borrarCategorias, db: Session = Depends(get_db)):
     categorias.borrar_categoria(db, data.id_categoria)
+
+
+# Contactanos
+
+
+@app.post("/contactanos")
+async def enviar_correo(data: EmailSchema):
+    enviado = send_email(data.to, data.subject, data.message)
+    if enviado:
+        return {"mensaje": "Correo enviado correctamente"}
+    else:
+        raise HTTPException(status_code=500, detail="No se pudo enviar el correo")
+
+
+# Tarea programada para enviar correos cada minuto
+@app.on_event("startup")
+async def startup_event():
+    import asyncio
+
+    asyncio.create_task(tarea_programada())

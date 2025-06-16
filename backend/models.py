@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import List
 
 
@@ -236,3 +236,9 @@ class editarCategorias(BaseModel):
 
 class borrarCategorias(BaseModel):
     id_categoria: int
+
+
+class EmailSchema(BaseModel):
+    to: EmailStr
+    subject: str
+    message: str
