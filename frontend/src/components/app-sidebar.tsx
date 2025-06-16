@@ -25,8 +25,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "./ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from ".ui/avatar";
+} from "../components/ui/sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 
 const data = {
   navMain: [

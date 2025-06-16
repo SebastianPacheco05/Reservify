@@ -65,7 +65,7 @@ export function Analytics() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              €{monthlyFlow.reduce((acc, curr) => acc + curr.revenue, 0).toLocaleString()}
+              ${monthlyFlow.reduce((acc, curr) => acc + curr.revenue, 0).toLocaleString()}
             </div>
             <p className="text-sm text-gray-600">Últimos 6 meses</p>
           </CardContent>
