@@ -23,7 +23,7 @@ export default function Home() {
       name: "La Terraza",
       description: "Cocina mediterránea con vista al mar",
       location: "Cartagena",
-      image: "https://images.unsplash.com/photo-1555992336-03a23c7b20b0?auto=format&fit=crop&w=800&q=80",
+      image: "https://imagenes.20minutos.es/files/image_640_auto/uploads/imagenes/2021/07/30/mirandoalmar.jpeg",
       rating: 4.8,
       reviews: 124,
       priceRange: "$$$",
