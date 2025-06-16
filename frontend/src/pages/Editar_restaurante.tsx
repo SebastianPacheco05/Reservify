@@ -252,6 +252,7 @@ export default function Editar_restaurante() {
                 )}
               </Button>
             </form>
+            
           </CardContent>
         </Card>
 

@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Insertar_cliente from "./pages/Insertar_cliente";
 import Insertar_restaurante from "./pages/Insertar_restaurante";
 import Editar_restaurante from "./pages/Editar_restaurante";
+import Borrar_restaurante from "./pages/Borrar_restaurante";
 
 // import Dashboard from "./pages/Dashboard";
 import { ThemeProvider } from "./components/theme-provider";
@@ -17,6 +18,7 @@ function App() {
         <Route path="/Insertar_cliente" element={<Insertar_cliente />} />
         <Route path="/Insertar_restaurante" element={<Insertar_restaurante/>}/>
         <Route path="/Editar_restaurante" element={<Editar_restaurante/>}/>
+        <Route path="/Borrar_restaurante" element={<Borrar_restaurante/>}/>
         {/* <Route path="/Dashboard" element={<Dashboard />} /> */}
       </Routes>
     </ThemeProvider>
