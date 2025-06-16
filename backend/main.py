@@ -17,7 +17,7 @@ from funciones.cruds import (
 )
 from models import *
 from funciones.email_sender.email_utils import send_email
-from funciones.email_sender.timer import send2hbf, tarea_programada, enviar_correo
+from funciones.email_sender.timer_reserv import tarea_programada
 
 app = FastAPI()
 # Credenciales
