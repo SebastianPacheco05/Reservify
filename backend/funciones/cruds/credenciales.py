@@ -2,13 +2,27 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from fastapi import HTTPException
+import bcrypt
+
+
+def hash_password(plain_password: str) -> str:
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(plain_password.encode("utf-8"), salt)
+    return hashed.decode("utf-8")
 
 
 def insertar_credenciales(db: Session, email: str, password: str):
+    hashed_password = hash_password(password)  #  Hashea la contraseña
+    email = email.lower()  # Asegura que el email esté en minúsculas
+    # Verifica que el email tenga un formato válido
+
     try:
         db.execute(
             text("SELECT insertar_credenciales(:email, :password)"),
-            {"email": email, "password": password},
+            {
+                "email": email,
+                "password": hashed_password,
+            },  # Envia la contraseña hasheada
         )
         db.commit()
         raise HTTPException(
