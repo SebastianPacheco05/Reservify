@@ -17,7 +17,7 @@ import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
 import { ModeToggle } from "../components/mode-toggle";
 
-export default function Registrar_login() {
+export default function Insertar_cliente() {
   const [showPassword, setShowPassword] = useState(false);
   const [nombre1, setNombre1] = useState("");
   const [nombre2, setNombre2] = useState("");

@@ -1,7 +1,9 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import Registrar_login from "./pages/Registrar_login";
+import Insertar_cliente from "./pages/Insertar_cliente";
+import Insertar_restaurante from "./pages/Insertar_restaurante";
+
 // import Dashboard from "./pages/Dashboard";
 import { ThemeProvider } from "./components/theme-provider";
 
@@ -11,7 +13,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<Login />} />
-        <Route path="/registrar_login" element={<Registrar_login />} />
+        <Route path="/Insertar_cliente" element={<Insertar_cliente />} />
+        <Route path="/Insertar_restaurante" element={<Insertar_restaurante/>}/>
         {/* <Route path="/Dashboard" element={<Dashboard />} /> */}
       </Routes>
     </ThemeProvider>
