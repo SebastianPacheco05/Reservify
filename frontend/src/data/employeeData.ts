@@ -1,0 +1,163 @@
+import type { Restaurant, Table, Reservation, DailyFlow, Bill } from "../types/employee"  
+
+export const restaurant: Restaurant = {
+  id: "1",
+  name: "La Bella Vista",
+  address: "Calle Principal 123, Madrid",
+  phone: "+34 91 123 4567",
+  capacity: 80,
+  openTime: "12:00",
+  closeTime: "23:00",
+  image: "/placeholder.svg?height=200&width=400",
+}
+
+export const tables: Table[] = [
+  {
+    id: "1",
+    number: 1,
+    seats: 2,
+    status: "available",
+    section: "Terraza",
+  },
+  {
+    id: "2",
+    number: 2,
+    seats: 4,
+    status: "occupied",
+    section: "Interior",
+    estimatedFreeTime: "21:30",
+  },
+  {
+    id: "3",
+    number: 3,
+    seats: 6,
+    status: "reserved",
+    section: "Interior",
+    currentReservation: {
+      id: "1",
+      customerName: "María García",
+      customerPhone: "+34 600 123 456",
+      date: "2024-01-20",
+      time: "20:00",
+      guests: 4,
+      status: "confirmed",
+      estimatedDuration: 90,
+    },
+  },
+  {
+    id: "4",
+    number: 4,
+    seats: 2,
+    status: "cleaning",
+    section: "Terraza",
+  },
+  {
+    id: "5",
+    number: 5,
+    seats: 8,
+    status: "available",
+    section: "Salón Privado",
+  },
+  {
+    id: "6",
+    number: 6,
+    seats: 4,
+    status: "occupied",
+    section: "Interior",
+    estimatedFreeTime: "20:45",
+  },
+]
+
+export const todayReservations: Reservation[] = [
+  {
+    id: "1",
+    customerName: "María García",
+    customerPhone: "+34 600 123 456",
+    date: "2024-01-20",
+    time: "20:00",
+    guests: 4,
+    status: "confirmed",
+    tableId: "3",
+    estimatedDuration: 90,
+    specialRequests: "Mesa junto a la ventana",
+  },
+  {
+    id: "2",
+    customerName: "Carlos López",
+    customerPhone: "+34 600 987 654",
+    date: "2024-01-20",
+    time: "19:30",
+    guests: 2,
+    status: "arrived",
+    tableId: "2",
+    estimatedDuration: 60,
+    arrivalTime: "19:25",
+  },
+  {
+    id: "3",
+    customerName: "Ana Martínez",
+    customerPhone: "+34 600 555 777",
+    date: "2024-01-20",
+    time: "21:00",
+    guests: 6,
+    status: "pending",
+    estimatedDuration: 120,
+    specialRequests: "Celebración de cumpleaños",
+  },
+  {
+    id: "4",
+    customerName: "Pedro Ruiz",
+    customerPhone: "+34 600 111 222",
+    date: "2024-01-20",
+    time: "18:30",
+    guests: 3,
+    status: "completed",
+    tableId: "1",
+    estimatedDuration: 75,
+  },
+]
+
+export const dailyFlow: DailyFlow[] = [
+  { hour: "12:00", customers: 8, reservations: 2, walkIns: 6 },
+  { hour: "13:00", customers: 15, reservations: 4, walkIns: 11 },
+  { hour: "14:00", customers: 22, reservations: 8, walkIns: 14 },
+  { hour: "15:00", customers: 12, reservations: 3, walkIns: 9 },
+  { hour: "16:00", customers: 5, reservations: 1, walkIns: 4 },
+  { hour: "17:00", customers: 8, reservations: 2, walkIns: 6 },
+  { hour: "18:00", customers: 18, reservations: 6, walkIns: 12 },
+  { hour: "19:00", customers: 25, reservations: 10, walkIns: 15 },
+  { hour: "20:00", customers: 32, reservations: 15, walkIns: 17 },
+  { hour: "21:00", customers: 28, reservations: 12, walkIns: 16 },
+  { hour: "22:00", customers: 15, reservations: 5, walkIns: 10 },
+]
+
+export const bills: Bill[] = [
+  {
+    id: "B001",
+    tableNumber: 2,
+    items: [
+      { name: "Paella Valenciana", quantity: 2, price: 18.5, total: 37.0 },
+      { name: "Sangría", quantity: 1, price: 12.0, total: 12.0 },
+      { name: "Flan", quantity: 2, price: 6.5, total: 13.0 },
+    ],
+    subtotal: 62.0,
+    tax: 6.2,
+    total: 68.2,
+    status: "open",
+    createdAt: "2024-01-20T19:30:00",
+  },
+  {
+    id: "B002",
+    tableNumber: 6,
+    items: [
+      { name: "Gazpacho", quantity: 2, price: 8.0, total: 16.0 },
+      { name: "Cordero Asado", quantity: 1, price: 24.0, total: 24.0 },
+      { name: "Vino Tinto", quantity: 1, price: 15.0, total: 15.0 },
+    ],
+    subtotal: 55.0,
+    tax: 5.5,
+    total: 60.5,
+    status: "pending",
+    createdAt: "2024-01-20T20:15:00",
+  },
+]

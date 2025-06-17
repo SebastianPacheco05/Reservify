@@ -23,7 +23,7 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   return (
-    <div className={cn("bg-white border-r border-gray-200 transition-all duration-300", isCollapsed ? "w-16" : "w-64")}>
+    <div className={cn("bg-white border-r border-gray-200 transition-all duration-300", isCollapsed ? "w-22" : "w-64")}>
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
           {!isCollapsed && <h2 className="text-xl font-bold text-gray-800">RestaurantAdmin</h2>}
