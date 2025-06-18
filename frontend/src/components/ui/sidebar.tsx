@@ -48,7 +48,7 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="p-6 border-b border-gray-200">
-            <h1 className="text-sm font-bold text-gray-900">RestaurantAdmin</h1>
+            <h2 className="text-xl font-bold text-gray-800">RestaurantAdmin</h2>
             <p className="text-sm text-gray-500">Panel de Control</p>
           </div>
 
