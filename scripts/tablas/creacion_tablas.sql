@@ -17,6 +17,7 @@ DROP TABLE IF EXISTS "Mesas" CASCADE;
 DROP TABLE IF EXISTS "Roles" CASCADE;
 DROP TABLE IF EXISTS "Credenciales" CASCADE;
 DROP TABLE IF EXISTS "Categorias" CASCADE;
+DROP TABLE IF EXISTS "Comentarios" CASCADE;
 
 -- Tabla Credenciales: Almacena la información de autenticación de usuarios
 CREATE TABLE "Credenciales" (
@@ -157,4 +158,13 @@ CREATE TABLE "Reserva" (
     FOREIGN KEY (id_mesa) REFERENCES "Mesas" (id_mesa) ON DELETE CASCADE,
     FOREIGN KEY (id_cliente) REFERENCES "Cliente" (id_cliente) ON DELETE CASCADE,
     FOREIGN KEY (id_encab_fact) REFERENCES "Encabezado_Factura" (id_encab_fact) ON DELETE CASCADE
+);
+
+CREATE TABLE "Comentarios" (
+    id_comentario SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
+    id_cliente INT NOT NULL,  -- Referencia al cliente
+    id_restaurante INT NOT NULL,  -- Referencia al restaurante
+    comentario TEXT NOT NULL,  -- Comentario del cliente
+    FOREIGN KEY (id_cliente) REFERENCES "Cliente" (id_cliente) ON DELETE CASCADE,
+    FOREIGN KEY (id_restaurante) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE
 );
