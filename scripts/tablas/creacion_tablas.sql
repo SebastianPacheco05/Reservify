@@ -148,11 +148,11 @@ CREATE TABLE "Reserva" (
     id_mesa INT NOT NULL,  -- Referencia a la mesa
     id_cliente INT NOT NULL,  -- Referencia al cliente
     id_encab_fact INT NOT NULL,  -- Referencia a la factura
-    horario TIME NOT NULL,  -- Horario de la reserva
     estado_reserva VARCHAR NOT NULL DEFAULT 'no presentada'
     CHECK (estado_reserva IN (
     'pendiente', 'confirmada', 'en curso', 'finalizada', 'cancelada', 'no presentada')
     ), -- Estado de la reserva con validación
+    horario TIME NOT NULL,  -- Horario de la reserva
     fecha DATE NOT NULL CHECK (fecha >= CURRENT_DATE),  -- Fecha de la reserva
     UNIQUE (id_mesa, fecha, horario),  -- Restricción de unicidad para evitar reservas duplicadas
     FOREIGN KEY (id_mesa) REFERENCES "Mesas" (id_mesa) ON DELETE CASCADE,
