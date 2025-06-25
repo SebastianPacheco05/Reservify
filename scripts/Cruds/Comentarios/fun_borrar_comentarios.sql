@@ -1,8 +1,8 @@
-CREATE OR REPLACE FUNCTION borrar_credenciales(
+CREATE OR REPLACE FUNCTION borrar_comentarios(
     p_id_credencial INT
 ) RETURNS VOID AS $$
 BEGIN
-    DELETE FROM "Credenciales"
-    WHERE id_credencial = p_id_credencial;
+    DELETE FROM "Comentarios"
+    WHERE id_comentario = p_id_comentario;
 END;
 $$ LANGUAGE plpgsql;
