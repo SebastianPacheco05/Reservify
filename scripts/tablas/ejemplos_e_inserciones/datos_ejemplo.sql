@@ -86,7 +86,7 @@
     (5555555555, 5, 2024, 15, 700000.00, 12);
 
     -- Insertar comentarios de clientes sobre restaurantes
-    INSERT INTO "Comentarios" (id_cliente, id_restaurante, comentario) VALUES
+    INSERT INTO "Comentarios" (id_cliente, nit, comentario) VALUES
     (1, 1234567890, 'Excelente comida y atención, volveré pronto.'),
     (2, 9876543210, 'El ambiente es agradable pero la comida llegó fría.'),
     (3, 5555555555, 'Me encantó el sushi, muy fresco y delicioso.'),

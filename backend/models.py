@@ -60,11 +60,11 @@ class RestauranteBase(BaseModel):
 
 
 class RestauranteUpdate(RestauranteBase):
-    id_restaurante: int
+    nit: int
 
 
 class RestauranteDelete(BaseModel):
-    id_restaurante: int
+    nit: int
 
 
 # Mesas
@@ -202,7 +202,7 @@ class ListarEmpleados(BaseModel):
 
 
 class ListarRestaurantes(BaseModel):
-    id_restaurante: int
+    nit: int
 
 
 class ListarMesas(BaseModel):
@@ -269,7 +269,7 @@ class ListarCalculoMensual(BaseModel):
 # Comentarios
 class ComentarioBase(BaseModel):
     id_cliente: int
-    id_restaurante: int
+    nit: int
     comentario: str
 
 

@@ -175,8 +175,8 @@ CREATE TABLE "Calculos_mensuales" (
 CREATE TABLE "Comentarios" (
     id_comentario SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     id_cliente INT NOT NULL,  -- Referencia al cliente
-    id_restaurante INT NOT NULL,  -- Referencia al restaurante
+    nit INT NOT NULL,  -- Referencia al restaurante
     comentario TEXT NOT NULL,  -- Comentario del cliente
     FOREIGN KEY (id_cliente) REFERENCES "Cliente" (id_cliente) ON DELETE CASCADE,
-    FOREIGN KEY (id_restaurante) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE
+    FOREIGN KEY (nit) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE
 );

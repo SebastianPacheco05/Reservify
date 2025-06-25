@@ -185,12 +185,12 @@ def obtener_empleados(db: Session):
     ]
 
 
-def obtener_restaurante(db: Session, id_restaurante: int):
+def obtener_restaurante(db: Session, nit: int):
     result = db.execute(
         text(
-            'SELECT NIT, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, id_dueno FROM "Restaurante" WHERE id_restaurante = :id_restaurante'
+            'SELECT NIT, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, id_dueno FROM "Restaurante" WHERE nit = :nit'
         ),
-        {"id_restaurante": id_restaurante},
+        {"nit": nit},
     )
     row = result.fetchone()
     if row:
@@ -209,13 +209,13 @@ def obtener_restaurante(db: Session, id_restaurante: int):
 def obtener_restaurantes(db: Session):
     result = db.execute(
         text(
-            'SELECT id_restaurante, NIT, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, id_dueno FROM "Restaurante"'
+            'SELECT nit, NIT, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, id_dueno FROM "Restaurante"'
         )
     )
     rows = result.fetchall()
     return [
         {
-            "id_restaurante": row[0],
+            "nit": row[0],
             "NIT": row[1],
             "direccion": row[2],
             "nombre_restaurante": row[3],

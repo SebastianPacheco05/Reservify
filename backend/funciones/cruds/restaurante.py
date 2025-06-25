@@ -51,7 +51,7 @@ def insertar_restaurante(
 
 def editar_restaurante(
     db: Session,
-    id_restaurante: int,
+    nit: int,
     direccion: str,
     nombre_restaurante: str,
     descripcion_restaurante: str,
@@ -63,10 +63,10 @@ def editar_restaurante(
     try:
         db.execute(
             text(
-                "SELECT editar_restaurante(:id_restaurante, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :id_dueno, :id_categoria)"
+                "SELECT editar_restaurante(:nit, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :id_dueno, :id_categoria)"
             ),
             {
-                "id_restaurante": id_restaurante,
+                "nit": nit,
                 "direccion": direccion,
                 "nombre_restaurante": nombre_restaurante,
                 "descripcion_restaurante": descripcion_restaurante,
@@ -92,11 +92,11 @@ def editar_restaurante(
         )
 
 
-def borrar_restaurante(db: Session, id_restaurante: int):
+def borrar_restaurante(db: Session, nit: int):
     try:
         db.execute(
-            text("SELECT borrar_restaurante(:id_restaurante)"),
-            {"id_restaurante": id_restaurante},
+            text("SELECT borrar_restaurante(:nit)"),
+            {"nit": nit},
         )
         db.commit()
         raise HTTPException(
