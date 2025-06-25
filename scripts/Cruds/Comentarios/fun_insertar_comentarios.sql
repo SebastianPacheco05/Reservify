@@ -1,6 +1,6 @@
 CREATE OR REPLACE FUNCTION insertar_comentario(
-    p_id_cliente VARCHAR(100),
-    p_id_restaurante VARCHAR(255),
+    p_id_cliente INT,
+    p_id_restaurante INT,
     p_comentario VARCHAR(255)
 ) RETURNS VOID AS $$
 BEGIN

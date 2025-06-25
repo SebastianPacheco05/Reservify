@@ -303,3 +303,18 @@ AFTER INSERT ON "Calculos_mensuales"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
+CREATE TRIGGER "auditoria_insert_comentario"
+AFTER INSERT ON "Comentarios"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_insert_trigger"();
+
+CREATE TRIGGER "auditoria_update_comentario"
+AFTER INSERT ON "Comentarios"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_update_trigger"();
+
+CREATE TRIGGER "auditoria_delete_comentario"
+AFTER INSERT ON "Comentarios"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_delete_trigger"();
+

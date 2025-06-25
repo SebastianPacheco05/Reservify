@@ -264,3 +264,22 @@ class CalculoMensualDelete(BaseModel):
 
 class ListarCalculoMensual(BaseModel):
     id_calculo: int
+
+
+# Comentarios
+class ComentarioBase(BaseModel):
+    id_cliente: int
+    id_restaurante: int
+    comentario: str
+
+
+class ComentarioUpdate(ComentarioBase):
+    id_comentario: int
+
+
+class ComentarioDelete(BaseModel):
+    id_comentario: int
+
+
+class ListarComentarios(BaseModel):
+    id_comentario: int

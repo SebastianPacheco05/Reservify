@@ -444,3 +444,18 @@ def obtener_calculos_mensuales(db: Session):
         }
         for row in rows
     ]
+
+
+def obtener_comentarios(db: Session):
+    result = db.execute(text('SELECT id_comentario, comentario FROM "Comentarios"'))
+    rows = result.fetchall()
+    return [{"id_comentario": row[0], "comentario": row[1]} for row in rows]
+
+
+def obtener_comentario(db: Session, id_comentario: int):
+    result = db.execute(
+        text(
+            'SELECT comentario FROM "Comentarios" WHERE id_comentario = :id_comentario'
+        ),
+        {"id_comentario": id_comentario},
+    )

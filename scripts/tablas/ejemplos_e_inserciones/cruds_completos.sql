@@ -597,3 +597,35 @@ BEGIN
     WHERE id_rol = p_id_rol;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION insertar_comentario(
+    p_id_cliente INT,
+    p_id_restaurante INT,
+    p_comentario VARCHAR(255)
+) RETURNS VOID AS $$
+BEGIN
+    INSERT INTO "Comentarios" (id_cliente, id_restaurante, comentario)
+    VALUES (p_id_cliente, p_id_restaurante, p_comentario);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION editar_comentarios(
+    p_id_comentario INT,
+	p_comentario varchar
+) RETURNS VOID AS $$
+BEGIN
+    UPDATE "Comentarios"
+    SET comentario = p_comentario
+    WHERE id_comentario = p_id_comentario;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION borrar_comentarios(
+    p_id_credencial INT
+) RETURNS VOID AS $$
+BEGIN
+    DELETE FROM "Comentarios"
+    WHERE id_comentario = p_id_comentario;
+END;
+$$ LANGUAGE plpgsql;
+

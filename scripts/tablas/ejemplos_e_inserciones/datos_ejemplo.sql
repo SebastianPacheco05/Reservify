@@ -83,4 +83,13 @@
     INSERT INTO "Calculos_mensuales" (NIT, mes, anio, total_reservas, revenue, total_clientes) VALUES
     (1234567890, 5, 2024, 30, 1500000.00, 25),
     (9876543210, 5, 2024, 20, 1000000.00, 18),
-    (5555555555, 5, 2024, 15, 700000.00, 12); 
+    (5555555555, 5, 2024, 15, 700000.00, 12);
+
+    -- Insertar comentarios de clientes sobre restaurantes
+    INSERT INTO "Comentarios" (id_cliente, id_restaurante, comentario) VALUES
+    (1, 1234567890, 'Excelente comida y atención, volveré pronto.'),
+    (2, 9876543210, 'El ambiente es agradable pero la comida llegó fría.'),
+    (3, 5555555555, 'Me encantó el sushi, muy fresco y delicioso.'),
+    (1, 5555555555, 'El servicio fue rápido y el personal muy amable.'),
+    (2, 1234567890, 'La pizza estaba deliciosa, pero el lugar estaba muy lleno.'),
+    (3, 9876543210, 'Buena relación calidad-precio, recomendado.'); 

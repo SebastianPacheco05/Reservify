@@ -15,6 +15,7 @@ from funciones.cruds import (
     list,
     categorias,
     cal_mensuales,
+    comentarios,
 )
 from models import *
 from funciones.email_sender.email_utils import send_email
@@ -561,4 +562,36 @@ async def listar_calculo_mensual(
 @app.get("/listar_calculos_mensuales")
 async def listar_calculos_mensuales(db: Session = Depends(get_db)):
     respuesta = list.obtener_calculos_mensuales(db)
+    return {"respuesta": respuesta}
+
+
+# Comentarios
+
+
+@app.post("/insertarcomentario")
+async def insertar(data: ComentarioBase, db: Session = Depends(get_db)):
+    comentarios.insertar_comentario(
+        db, data.id_cliente, data.id_restaurante, data.comentario
+    )
+
+
+@app.put("/editarcomentario")
+async def editar(data: ComentarioUpdate, db: Session = Depends(get_db)):
+    comentarios.editar_comentario(db, data.id_comentario, data.comentario)
+
+
+@app.delete("/borrarcomentario")
+async def borrar(data: ComentarioDelete, db: Session = Depends(get_db)):
+    comentarios.borrar_comentario(db, data.id_comentario)
+
+
+@app.get("/listar_comentario")
+async def listar_comentario(data: ListarComentarios, db: Session = Depends(get_db)):
+    respuesta = list.obtener_comentario(db, data.id_comentario)
+    return {"respuesta": respuesta}
+
+
+@app.get("/listar_comentarios")
+async def listar_comentarios(db: Session = Depends(get_db)):
+    respuesta = list.obtener_comentarios(db)
     return {"respuesta": respuesta}
