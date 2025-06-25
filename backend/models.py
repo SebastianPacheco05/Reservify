@@ -242,3 +242,25 @@ class EmailSchema(BaseModel):
     to: EmailStr
     subject: str
     message: str
+
+
+# Calculos Mensuales
+class CalculoMensualBase(BaseModel):
+    nit: int
+    mes: int
+    anio: int
+    total_reservas: int
+    revenue: float
+    total_clientes: int
+
+
+class CalculoMensualUpdate(CalculoMensualBase):
+    id_calculo: int
+
+
+class CalculoMensualDelete(BaseModel):
+    id_calculo: int
+
+
+class ListarCalculoMensual(BaseModel):
+    id_calculo: int

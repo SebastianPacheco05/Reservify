@@ -10,37 +10,7 @@ export const restaurants: Restaurant[] = [
     totalTables: 25,
     status: "active",
     image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: "2",
-    name: "Sakura Sushi",
-    location: "Zona Rosa",
-    cuisine: "Japonesa",
-    rating: 4.6,
-    totalTables: 18,
-    status: "active",
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: "3",
-    name: "El Asador",
-    location: "Polanco",
-    cuisine: "Argentina",
-    rating: 4.7,
-    totalTables: 30,
-    status: "active",
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: "4",
-    name: "Café Parisino",
-    location: "Roma Norte",
-    cuisine: "Francesa",
-    rating: 4.5,
-    totalTables: 15,
-    status: "inactive",
-    image: "/placeholder.svg?height=200&width=300",
-  },
+  }
 ]
 
 export const reservations: Reservation[] = [
@@ -55,41 +25,7 @@ export const reservations: Reservation[] = [
     guests: 4,
     status: "confirmed",
     tableNumber: 12,
-  },
-  {
-    id: "2",
-    restaurantId: "2",
-    restaurantName: "Sakura Sushi",
-    customerName: "Carlos Ruiz",
-    customerEmail: "carlos@email.com",
-    date: "2024-01-20",
-    time: "20:00",
-    guests: 2,
-    status: "pending",
-  },
-  {
-    id: "3",
-    restaurantId: "1",
-    restaurantName: "La Bella Vista",
-    customerName: "Ana López",
-    customerEmail: "ana@email.com",
-    date: "2024-01-21",
-    time: "18:00",
-    guests: 6,
-    status: "confirmed",
-    tableNumber: 8,
-  },
-  {
-    id: "4",
-    restaurantId: "3",
-    restaurantName: "El Asador",
-    customerName: "Pedro Martín",
-    customerEmail: "pedro@email.com",
-    date: "2024-01-21",
-    time: "21:00",
-    guests: 3,
-    status: "cancelled",
-  },
+  }
 ]
 
 export const monthlyFlow: MonthlyFlow[] = [

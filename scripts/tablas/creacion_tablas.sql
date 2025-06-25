@@ -17,6 +17,7 @@ DROP TABLE IF EXISTS "Mesas" CASCADE;
 DROP TABLE IF EXISTS "Roles" CASCADE;
 DROP TABLE IF EXISTS "Credenciales" CASCADE;
 DROP TABLE IF EXISTS "Categorias" CASCADE;
+DROP TABLE IF EXISTS "Calculos_mensuales" CASCADE;
 
 -- Tabla Credenciales: Almacena la información de autenticación de usuarios
 CREATE TABLE "Credenciales" (
@@ -71,7 +72,7 @@ CREATE TABLE "Mesas" (
     id_mesa SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     estado_de_disponibilidad BOOLEAN NOT NULL,  -- Estado de disponibilidad
     cant_personas INT CHECK (cant_personas > 0),  -- Capacidad de personas
-    NIT INT NOT NULL,  -- Referencia al restaurante
+    NIT DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
     precio DECIMAL(10, 2) NOT NULL CHECK (precio >= 0),  -- Precio de la mesa
     FOREIGN KEY (NIT) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE
 );
@@ -157,4 +158,15 @@ CREATE TABLE "Reserva" (
     FOREIGN KEY (id_mesa) REFERENCES "Mesas" (id_mesa) ON DELETE CASCADE,
     FOREIGN KEY (id_cliente) REFERENCES "Cliente" (id_cliente) ON DELETE CASCADE,
     FOREIGN KEY (id_encab_fact) REFERENCES "Encabezado_Factura" (id_encab_fact) ON DELETE CASCADE
+);
+
+CREATE TABLE "Calculos_mensuales" (
+    id_calculo SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
+    NIT INT NOT NULL,  -- Referencia al restaurante
+    mes INT NOT NULL CHECK (mes >= 1 AND mes <= 12),  -- Mes del cálculo
+    anio INT NOT NULL CHECK (anio > 0),  -- Año del cálculo
+    total_reservas INT NOT NULL DEFAULT 0,  -- Total de reservas del mes
+    revenue DECIMAL(10, 2) NOT NULL DEFAULT 0.00,  -- Total facturado del mes
+    total_clientes INT NOT NULL DEFAULT 0,  -- Total de clientes del mes
+    FOREIGN KEY (NIT) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE
 );
