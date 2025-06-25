@@ -55,28 +55,55 @@ async def send2hbf(db: Session, id_reserva: int):
     return None
 
 
-# Tarea en segundo plano cada minuto
-async def tarea_programada():
+async def tarea_programada_optimizada():
     while True:
-        print(f"[{datetime.now().strftime('%H:%M:%S')}] Ejecutando tarea_programada...")
+        ahora = datetime.now()
+        hora_actual = ahora.hour
 
-        try:
-            db: Session = SessionLocal()
-            reservas = db.execute(text('SELECT id_reserva FROM "Reserva"')).fetchall()
+        # Verificar si está en horario de trabajo (8 AM a 8 PM)
+        if 8 <= hora_actual < 20:  # 8 AM a 7:59 PM
+            print(f"[{ahora.strftime('%H:%M:%S')}] Ejecutando tarea_programada...")
 
-            for row in reservas:
-                id_reserva = row[0]
-                await send2hbf(db, id_reserva)
+            try:
+                db: Session = SessionLocal()
+                reservas = db.execute(
+                    text('SELECT id_reserva FROM "Reserva"')
+                ).fetchall()
 
-        except Exception as e:
-            print("Error en tarea programada:", e)
-        finally:
-            db.close()
+                for row in reservas:
+                    id_reserva = row[0]
+                    await send2hbf(db, id_reserva)
 
-        await asyncio.sleep(60)  # espera 1 minuto
+            except Exception as e:
+                print("Error en tarea programada:", e)
+            finally:
+                db.close()
+
+            # Esperar 1 hora (3600 segundos)
+            await asyncio.sleep(3600)
+        else:
+            # Calcular cuánto tiempo esperar hasta las 8:00 AM
+            if hora_actual >= 20:  # Después de las 8 PM
+                # Esperar hasta las 8:00 AM del día siguiente
+                siguiente_ejecucion = (ahora + timedelta(days=1)).replace(
+                    hour=8, minute=0, second=0, microsecond=0
+                )
+            else:  # Antes de las 8 AM
+                # Esperar hasta las 8:00 AM del mismo día
+                siguiente_ejecucion = ahora.replace(
+                    hour=8, minute=0, second=0, microsecond=0
+                )
+
+            tiempo_espera = (siguiente_ejecucion - ahora).total_seconds()
+            print(
+                f"[{ahora.strftime('%H:%M:%S')}] Fuera del horario de trabajo (8AM-8PM). "
+                f"Esperando {tiempo_espera/3600:.1f} horas hasta las {siguiente_ejecucion.strftime('%H:%M')}..."
+            )
+            await asyncio.sleep(tiempo_espera)
 
 
 # Iniciar la tarea cuando arranca FastAPI
 @app.on_event("startup")
 async def iniciar():
-    asyncio.create_task(tarea_programada())
+    print("Iniciando tarea programada en segundo plano...")
+    asyncio.create_task(tarea_programada_optimizada())

@@ -14,10 +14,11 @@ from funciones.cruds import (
     reserva,
     list,
     categorias,
+    cal_mensuales,
 )
 from models import *
 from funciones.email_sender.email_utils import send_email
-from funciones.email_sender.timer_reserv import tarea_programada
+from funciones.email_sender.timer_reserv import tarea_programada_optimizada
 
 app = FastAPI()
 # Credenciales
@@ -28,9 +29,15 @@ async def insertar(data: CredencialBase, db: Session = Depends(get_db)):
     credenciales.insertar_credenciales(db, data.email, data.password)
 
 
-@app.get("/listarcredenciales")
-async def listar_credenciales(data: ListarCredenciales, db: Session = Depends(get_db)):
-    respuesta = list.obtener_credenciales(db, data.id_credencial)
+@app.get("/listar_credencial")
+async def listar_credencial(data: ListarCredenciales, db: Session = Depends(get_db)):
+    respuesta = list.obtener_credencial(db, data.id_credencial)
+    return {"respuesta": respuesta}
+
+
+@app.get("/listar_credenciales")
+async def listar_credenciales(db: Session = Depends(get_db)):
+    respuesta = list.obtener_credenciales(db)
     return {"respuesta": respuesta}
 
 
@@ -52,9 +59,15 @@ async def insertar(data: RolBase, db: Session = Depends(get_db)):
     roles.insertar_roles(db, data.nombre_rol, data.descripcion)
 
 
-@app.get("/listarroles")
-async def listar_roles(data: ListarRoles, db: Session = Depends(get_db)):
-    respuesta = list.obtener_roles(db, data.id_rol)
+@app.get("/listar_rol")
+async def listar_rol(data: ListarRoles, db: Session = Depends(get_db)):
+    respuesta = list.obtener_rol(db, data.id_rol)
+    return {"respuesta": respuesta}
+
+
+@app.get("/listar_roles")
+async def listar_roles(db: Session = Depends(get_db)):
+    respuesta = list.obtener_roles(db)
     return {"respuesta": respuesta}
 
 
@@ -84,9 +97,15 @@ async def insertar(data: DuenoBase, db: Session = Depends(get_db)):
     )
 
 
-@app.get("/listarduenos")
-async def listar_duenos(data: ListarDuenos, db: Session = Depends(get_db)):
-    respuesta = list.obtener_duenos(db, data.id_dueno)
+@app.get("/listar_dueno")
+async def listar_dueno(data: ListarDuenos, db: Session = Depends(get_db)):
+    respuesta = list.obtener_dueno(db, data.id_dueno)
+    return {"respuesta": respuesta}
+
+
+@app.get("/listar_duenos")
+async def listar_duenos(db: Session = Depends(get_db)):
+    respuesta = list.obtener_duenos(db)
     return {"respuesta": respuesta}
 
 
@@ -126,9 +145,15 @@ async def insertar(data: RestauranteBase, db: Session = Depends(get_db)):
     )
 
 
-@app.get("/listarrestaurantes")
-async def listar_restaurantes(data: ListarRestaurantes, db: Session = Depends(get_db)):
-    respuesta = list.obtener_restaurantes(db, data.id_restaurante)
+@app.get("/listar_restaurante")
+async def listar_restaurante(data: ListarRestaurantes, db: Session = Depends(get_db)):
+    respuesta = list.obtener_restaurante(db, data.id_restaurante)
+    return {"respuesta": respuesta}
+
+
+@app.get("/listar_restaurantes")
+async def listar_restaurantes(db: Session = Depends(get_db)):
+    respuesta = list.obtener_restaurantes(db)
     return {"respuesta": respuesta}
 
 
@@ -161,9 +186,15 @@ async def insertar(data: MesaBase, db: Session = Depends(get_db)):
     )
 
 
-@app.get("/listarmesas")
-async def listar_mesas(data: ListarMesas, db: Session = Depends(get_db)):
-    respuesta = list.obtener_mesas(db, data.id_mesa)
+@app.get("/listar_mesa")
+async def listar_mesa(data: ListarMesas, db: Session = Depends(get_db)):
+    respuesta = list.obtener_mesa(db, data.id_mesa)
+    return {"respuesta": respuesta}
+
+
+@app.get("/listar_mesas")
+async def listar_mesas(db: Session = Depends(get_db)):
+    respuesta = list.obtener_mesas(db)
     return {"respuesta": respuesta}
 
 
@@ -204,9 +235,15 @@ async def insertar(data: ClienteBase, db: Session = Depends(get_db)):
     )
 
 
-@app.get("/listarclientes")
-async def listar_clientes(data: ListarClientes, db: Session = Depends(get_db)):
-    respuesta = list.obtener_clientes(db, data.id_cliente)
+@app.get("/listar_cliente")
+async def listar_cliente(data: ListarClientes, db: Session = Depends(get_db)):
+    respuesta = list.obtener_cliente(db, data.id_cliente)
+    return {"respuesta": respuesta}
+
+
+@app.get("/listar_clientes")
+async def listar_clientes(db: Session = Depends(get_db)):
+    respuesta = list.obtener_clientes(db)
     return {"respuesta": respuesta}
 
 
@@ -254,9 +291,15 @@ async def insertar(data: EmpleadoBase, db: Session = Depends(get_db)):
     )
 
 
-@app.get("/listarempleados")
-async def listar_empleados(data: ListarEmpleados, db: Session = Depends(get_db)):
-    respuesta = list.obtener_empleados(db, data.id_empleado)
+@app.get("/listar_empleado")
+async def listar_empleado(data: ListarEmpleados, db: Session = Depends(get_db)):
+    respuesta = list.obtener_empleado(db, data.id_empleado)
+    return {"respuesta": respuesta}
+
+
+@app.get("/listar_empleados")
+async def listar_empleados(db: Session = Depends(get_db)):
+    respuesta = list.obtener_empleados(db)
     return {"respuesta": respuesta}
 
 
@@ -300,11 +343,17 @@ async def insertar(data: Encabezado_facturaBase, db: Session = Depends(get_db)):
     )
 
 
-@app.get("/listarencabezadofactura")
+@app.get("/listar_encabezado_factura")
 async def listar_encabezado_factura(
     data: ListarEncabezadoFactura, db: Session = Depends(get_db)
 ):
     respuesta = list.obtener_encabezado_factura(db, data.id_encab_fact)
+    return {"respuesta": respuesta}
+
+
+@app.get("/listar_encabezados_factura")
+async def listar_encabezados_factura(db: Session = Depends(get_db)):
+    respuesta = list.obtener_encabezados_factura(db)
     return {"respuesta": respuesta}
 
 
@@ -343,11 +392,17 @@ async def insertar(data: Detalle_facturaBase, db: Session = Depends(get_db)):
     )
 
 
-@app.get("/listardetallefactura")
+@app.get("/listar_detalle_factura")
 async def listar_detalle_factura(
     data: ListarDetalleFactura, db: Session = Depends(get_db)
 ):
     respuesta = list.obtener_detalle_factura(db, data.id_det_fact)
+    return {"respuesta": respuesta}
+
+
+@app.get("/listar_detalles_factura")
+async def listar_detalles_factura(db: Session = Depends(get_db)):
+    respuesta = list.obtener_detalles_factura(db)
     return {"respuesta": respuesta}
 
 
@@ -380,9 +435,15 @@ async def insertar(data: ReservaBase, db: Session = Depends(get_db)):
     )
 
 
-@app.get("/listarreservas")
-async def listar_reservas(data: ListarReservas, db: Session = Depends(get_db)):
-    respuesta = list.obtener_reservas(db, data.id_reserva)
+@app.get("/listar_reserva")
+async def listar_reserva(data: ListarReservas, db: Session = Depends(get_db)):
+    respuesta = list.obtener_reserva(db, data.id_reserva)
+    return {"respuesta": respuesta}
+
+
+@app.get("/listar_reservas")
+async def listar_reservas(db: Session = Depends(get_db)):
+    respuesta = list.obtener_reservas(db)
     return {"respuesta": respuesta}
 
 
@@ -412,9 +473,15 @@ async def insertar(data: insertarCategorias, db: Session = Depends(get_db)):
     categorias.insertar_categoria(db, data.nombre_categoria)
 
 
-@app.get("/listarcategorias")
-async def listar_categorias(data: ListarCategorias, db: Session = Depends(get_db)):
-    respuesta = list.obtener_categorias(db, data.id_categoria)
+@app.get("/listar_categoria")
+async def listar_categoria(data: ListarCategorias, db: Session = Depends(get_db)):
+    respuesta = list.obtener_categoria(db, data.id_categoria)
+    return {"respuesta": respuesta}
+
+
+@app.get("/listar_categorias")
+async def listar_categorias(db: Session = Depends(get_db)):
+    respuesta = list.obtener_categorias(db)
     return {"respuesta": respuesta}
 
 
@@ -445,4 +512,53 @@ async def enviar_correo(data: EmailSchema):
 async def startup_event():
     import asyncio
 
-    asyncio.create_task(tarea_programada())
+    asyncio.create_task(tarea_programada_optimizada())
+
+
+# Calculos Mensuales
+
+
+@app.post("/insertar_calculo_mensual")
+async def insertar(data: CalculoMensualBase, db: Session = Depends(get_db)):
+    cal_mensuales.insertar_calculo_mensual(
+        db,
+        data.nit,
+        data.mes,
+        data.anio,
+        data.total_reservas,
+        data.revenue,
+        data.total_clientes,
+    )
+
+
+@app.put("/editar_calculo_mensual")
+async def editar(data: CalculoMensualUpdate, db: Session = Depends(get_db)):
+    cal_mensuales.editar_calculo_mensual(
+        db,
+        data.id_calculo,
+        data.nit,
+        data.mes,
+        data.anio,
+        data.total_reservas,
+        data.revenue,
+        data.total_clientes,
+    )
+
+
+@app.delete("/borrar_calculo_mensual")
+async def borrar(data: CalculoMensualDelete, db: Session = Depends(get_db)):
+    cal_mensuales.borrar_calculo_mensual(db, data.id_calculo)
+
+
+@app.get("/listar_calculo_mensual")
+async def listar_calculo_mensual(
+    data: ListarCalculoMensual, db: Session = Depends(get_db)
+):
+    respuesta = list.obtener_calculo_mensual(db, data.id_calculo)
+    return {"respuesta": respuesta}
+
+
+@app.get("/listar_calculos_mensuales")
+async def listar_calculos_mensuales(db: Session = Depends(get_db)):
+    respuesta = list.obtener_calculos_mensuales(db)
+    return {"respuesta": respuesta}
