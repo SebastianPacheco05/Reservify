@@ -181,8 +181,9 @@ class ReservaDelete(BaseModel):
     id_reserva: int
 
 
-class ListarCredenciales(BaseModel):
-    id_credencial: int
+class login(BaseModel):
+    email: str
+    password: str
 
 
 class ListarRoles(BaseModel):

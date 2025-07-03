@@ -48,13 +48,12 @@ DROP TRIGGER IF EXISTS "auditoria_insert_comentario" ON "Comentarios";
 DROP TRIGGER IF EXISTS "auditoria_update_comentario" ON "Comentarios";
 DROP TRIGGER IF EXISTS "auditoria_delete_comentario" ON "Comentarios";
 
--- Eliminar funciones de auditoría
-DROP FUNCTION IF EXISTS "auditoria_insert_trigger"() CASCADE;
-DROP FUNCTION IF EXISTS "auditoria_update_trigger"() CASCADE;
-DROP FUNCTION IF EXISTS "auditoria_delete_trigger"() CASCADE;
+DROP TRIGGER IF EXISTS "auditoria_insert_cal_mensual" ON "Calculos_mensuales";
+DROP TRIGGER IF EXISTS "auditoria_update_cal_mensual" ON "Calculos_mensuales";
+DROP TRIGGER IF EXISTS "auditoria_delete_cal_mensual" ON "Calculos_mensuales";
 
 -- Eliminar tabla de auditoría
-DROP TABLE IF EXISTS "Auditoria" CASCADE;
+DROP TABLE IF EXISTS "Auditoria" ;
 
 CREATE TABLE "Auditoria" (
     "id_auditoria" SERIAL PRIMARY KEY,
@@ -65,7 +64,7 @@ CREATE TABLE "Auditoria" (
     "registro" JSONB NOT NULL
 );
 
-CREATE FUNCTION "auditoria_insert_trigger"() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION "auditoria_insert_trigger"() RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO "Auditoria" (
         "fecha_hora",
@@ -84,7 +83,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE FUNCTION "auditoria_update_trigger"() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION "auditoria_update_trigger"() RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO "Auditoria" (
         "fecha_hora",
@@ -103,7 +102,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE FUNCTION "auditoria_delete_trigger"() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION "auditoria_delete_trigger"() RETURNS TRIGGER AS $$
 BEGIN   
     INSERT INTO "Auditoria" (
         "fecha_hora",
@@ -134,7 +133,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_update_trigger"();
 
 CREATE TRIGGER "auditoria_delete_credenciales"
-AFTER DELETE ON "Credenciales"
+BEFORE DELETE ON "Credenciales"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
@@ -149,7 +148,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_update_trigger"();
 
 CREATE TRIGGER "auditoria_delete_roles"
-AFTER DELETE ON "Roles"
+BEFORE DELETE ON "Roles"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
@@ -164,7 +163,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_update_trigger"();
 
 CREATE TRIGGER "auditoria_delete_dueno"
-AFTER DELETE ON "Dueno"
+BEFORE DELETE ON "Dueno"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
@@ -179,7 +178,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_update_trigger"();
 
 CREATE TRIGGER "auditoria_delete_restaurante"
-AFTER DELETE ON "Restaurante"
+BEFORE DELETE ON "Restaurante"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
@@ -194,7 +193,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_update_trigger"();
 
 CREATE TRIGGER "auditoria_delete_mesas"
-AFTER DELETE ON "Mesas"
+BEFORE DELETE ON "Mesas"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
@@ -209,7 +208,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_update_trigger"();
 
 CREATE TRIGGER "auditoria_delete_cliente"
-AFTER DELETE ON "Cliente"
+BEFORE DELETE ON "Cliente"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
@@ -224,7 +223,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_update_trigger"();
 
 CREATE TRIGGER "auditoria_delete_empleado"
-AFTER DELETE ON "Empleado"
+BEFORE DELETE ON "Empleado"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
@@ -239,7 +238,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_update_trigger"();
 
 CREATE TRIGGER "auditoria_delete_encabezado_factura"
-AFTER DELETE ON "Encabezado_Factura"
+BEFORE DELETE ON "Encabezado_Factura"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
@@ -254,7 +253,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_update_trigger"();
 
 CREATE TRIGGER "auditoria_delete_detalle_factura"
-AFTER DELETE ON "Detalle_Factura"
+BEFORE DELETE ON "Detalle_Factura"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
@@ -269,7 +268,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_update_trigger"();
 
 CREATE TRIGGER "auditoria_delete_reserva"
-AFTER DELETE ON "Reserva"
+BEFORE DELETE ON "Reserva"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
@@ -284,7 +283,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_update_trigger"();
 
 CREATE TRIGGER "auditoria_delete_categoria"
-AFTER DELETE ON "Categorias"
+BEFORE DELETE ON "Categorias"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 

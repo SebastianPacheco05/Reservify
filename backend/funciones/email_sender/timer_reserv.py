@@ -55,7 +55,7 @@ async def send2hbf(db: Session, id_reserva: int):
     return None
 
 
-async def tarea_programada_optimizada():
+async def tarea_programada():
     while True:
         ahora = datetime.now()
         hora_actual = ahora.hour
@@ -106,4 +106,4 @@ async def tarea_programada_optimizada():
 @app.on_event("startup")
 async def iniciar():
     print("Iniciando tarea programada en segundo plano...")
-    asyncio.create_task(tarea_programada_optimizada())
+    asyncio.create_task(tarea_programada())

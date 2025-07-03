@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Form, Request
 from sqlalchemy.orm import Session
 from config import get_db
 from funciones.cruds import (
@@ -18,10 +18,14 @@ from funciones.cruds import (
     comentarios,
 )
 from models import *
+
+from funciones.auth.dependencies import verificar_token
+from funciones.auth.login import login_usuario
 from funciones.email_sender.email_utils import send_email
-from funciones.email_sender.timer_reserv import tarea_programada_optimizada
+from funciones.email_sender.timer_reserv import tarea_programada
 
 app = FastAPI()
+
 # Credenciales
 
 
@@ -30,10 +34,14 @@ async def insertar(data: CredencialBase, db: Session = Depends(get_db)):
     credenciales.insertar_credenciales(db, data.email, data.password)
 
 
-@app.get("/listar_credencial")
-async def listar_credencial(data: ListarCredenciales, db: Session = Depends(get_db)):
-    respuesta = list.obtener_credencial(db, data.id_credencial)
-    return {"respuesta": respuesta}
+@app.post("/login")
+def login(input: login, request: Request, db: Session = Depends(get_db)):
+    return login_usuario(db, input.email, input.password, request)
+
+
+@app.get("/perfil")
+def perfil(usuario: dict = Depends(verificar_token)):
+    return {"usuario": usuario}
 
 
 @app.get("/listar_credenciales")
@@ -237,7 +245,10 @@ async def insertar(data: ClienteBase, db: Session = Depends(get_db)):
 
 
 @app.get("/listar_cliente")
-async def listar_cliente(data: ListarClientes, db: Session = Depends(get_db)):
+async def listar_cliente(
+    data: ListarClientes,
+    db: Session = Depends(get_db),
+):
     respuesta = list.obtener_cliente(db, data.id_cliente)
     return {"respuesta": respuesta}
 
@@ -513,7 +524,7 @@ async def enviar_correo(data: EmailSchema):
 async def startup_event():
     import asyncio
 
-    asyncio.create_task(tarea_programada_optimizada())
+    asyncio.create_task(tarea_programada())
 
 
 # Calculos Mensuales

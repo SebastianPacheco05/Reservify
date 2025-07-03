@@ -24,8 +24,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,  
-} from "./ui/sidebar";  
+  SidebarRail,
+} from "./ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const data = {
@@ -95,7 +95,7 @@ export function AppSidebar() {
                   <UtensilsCrossed className="size-4" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">RestaurantAdmin</span>
+                  <span className="font-semibold">Reservify</span>
                   <span className="text-xs text-muted-foreground">
                     Panel de Control
                   </span>

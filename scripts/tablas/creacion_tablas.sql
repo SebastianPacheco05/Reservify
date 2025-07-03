@@ -6,19 +6,20 @@
 
 -- Primero se eliminan todas las tablas existentes en orden inverso a su creación
 -- para evitar problemas de dependencias
-DROP TABLE IF EXISTS "Reserva" CASCADE;
-DROP TABLE IF EXISTS "Detalle_Factura" CASCADE;
-DROP TABLE IF EXISTS "Encabezado_Factura" CASCADE;
-DROP TABLE IF EXISTS "Empleado" CASCADE;
-DROP TABLE IF EXISTS "Cliente" CASCADE;
-DROP TABLE IF EXISTS "Restaurante" CASCADE;
-DROP TABLE IF EXISTS "Dueno" CASCADE;
-DROP TABLE IF EXISTS "Mesas" CASCADE;
-DROP TABLE IF EXISTS "Roles" CASCADE;
-DROP TABLE IF EXISTS "Credenciales" CASCADE;
-DROP TABLE IF EXISTS "Categorias" CASCADE;
-DROP TABLE IF EXISTS "Calculos_mensuales" CASCADE;
-DROP TABLE IF EXISTS "Comentarios" CASCADE;
+DROP TABLE IF EXISTS "Reserva";
+DROP TABLE IF EXISTS "Detalle_Factura";
+DROP TABLE IF EXISTS "Encabezado_Factura";
+DROP TABLE IF EXISTS "Empleado";
+DROP TABLE IF EXISTS "Comentarios";
+DROP TABLE IF EXISTS "Cliente";
+DROP TABLE IF EXISTS "Mesas";
+DROP TABLE IF EXISTS "Calculos_mensuales";
+DROP TABLE IF EXISTS "Restaurante";
+DROP TABLE IF EXISTS "Dueno";
+DROP TABLE IF EXISTS "Roles";
+DROP TABLE IF EXISTS "jwt_tokens";
+DROP TABLE IF EXISTS "Credenciales";
+DROP TABLE IF EXISTS "Categorias";
 
 -- Tabla Credenciales: Almacena la información de autenticación de usuarios
 CREATE TABLE "Credenciales" (
@@ -179,4 +180,19 @@ CREATE TABLE "Comentarios" (
     comentario TEXT NOT NULL,  -- Comentario del cliente
     FOREIGN KEY (id_cliente) REFERENCES "Cliente" (id_cliente) ON DELETE CASCADE,
     FOREIGN KEY (nit) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE
+);
+
+-- Tabla JWT_Tokens: Almacena tokens JWT (generalmente de refresco) para autenticación segura
+CREATE TABLE "jwt_tokens" (
+    id SERIAL PRIMARY KEY NOT NULL,  -- Identificador único del token
+    id_credencial INT NOT NULL,  -- Referencia a la tabla de credenciales
+    token TEXT NOT NULL,  -- Token JWT (por ejemplo, token de refresco)
+    issued_at TIMESTAMP NOT NULL DEFAULT NOW(),  -- Fecha de emisión del token
+    expires_at TIMESTAMP NOT NULL,  -- Fecha de expiración
+    revoked BOOLEAN NOT NULL DEFAULT FALSE,  -- Si el token fue revocado antes de expirar
+    user_agent TEXT,  -- (Opcional) Información del navegador o dispositivo
+    ip_address TEXT,  -- (Opcional) Dirección IP del usuario
+    created_at TIMESTAMP DEFAULT NOW(),  -- Registro de creación
+    updated_at TIMESTAMP DEFAULT NOW(),  -- Última modificación
+    FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
 );
