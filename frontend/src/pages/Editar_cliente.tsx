@@ -1,9 +1,19 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, User, IdCard, Flag, Phone, Eye, EyeOff } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import {
+  Mail,
+  Lock,
+  ArrowRight,
+  User,
+  IdCard,
+  Flag,
+  Phone,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -17,7 +27,6 @@ import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
 import { ModeToggle } from "../components/mode-toggle";
 
-
 interface Cliente {
   id_cliente: number;
   nombre1: string;
@@ -30,10 +39,9 @@ interface Cliente {
   telefono: string;
 }
 
-
-
 export default function Editar_cliente() {
   const { id_cliente } = useParams();
+  const [idCliente, setIdCliente] = useState("");
   const [nombre1, setNombre1] = useState("");
   const [nombre2, setNombre2] = useState("");
   const [apellido1, setApellido1] = useState("");
@@ -49,7 +57,7 @@ export default function Editar_cliente() {
   useEffect(() => {
     if (!id_cliente) return;
     fetch("http://localhost:8000/listar_cliente", {
-      method: "POST",
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id_cliente: Number(id_cliente) }),
     })
@@ -57,6 +65,8 @@ export default function Editar_cliente() {
       .then((data) => {
         const cliente = data.respuesta;
         if (cliente) {
+          setIdCliente(cliente.id_cliente);
+          setIdCredencial(cliente.id_credencial);
           setNombre1(cliente.nombre1);
           setNombre2(cliente.nombre2);
           setApellido1(cliente.apellido1);
@@ -65,7 +75,6 @@ export default function Editar_cliente() {
           setTipo_documento(cliente.tipo_documento);
           setNumero_documento(cliente.documento);
           setTelefono(cliente.telefono);
-          setIdCredencial(cliente.id_credencial);
           setIdRol(cliente.id_rol);
         }
       });
@@ -78,7 +87,7 @@ export default function Editar_cliente() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        id_cliente: Number(id_cliente),
+        id_cliente: Number(idCliente),
         id_credencial: Number(idCredencial),
         nombre1,
         nombre2,
@@ -124,6 +133,68 @@ export default function Editar_cliente() {
 
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Campo id_cliente para pruebas */}
+              <div className="space-y-2">
+                <Label
+                  htmlFor="id_cliente"
+                  className="text-sm font-medium text-gray-900 dark:text-gray-100"
+                >
+                  ID Cliente (prueba)
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="id_cliente"
+                    type="number"
+                    placeholder="ID del cliente"
+                    value={idCliente}
+                    onChange={(e) => setIdCliente(e.target.value)}
+                    className="h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Campo id_credencial para pruebas */}
+              <div className="space-y-2">
+                <Label
+                  htmlFor="id_credencial"
+                  className="text-sm font-medium text-gray-900 dark:text-gray-100"
+                >
+                  ID Credencial (prueba)
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="id_credencial"
+                    type="number"
+                    placeholder="ID de la credencial"
+                    value={idCredencial}
+                    onChange={(e) => setIdCredencial(e.target.value)}
+                    className="h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Campo id_rol para pruebas */}
+              <div className="space-y-2">
+                <Label
+                  htmlFor="id_rol"
+                  className="text-sm font-medium text-gray-900 dark:text-gray-100"
+                >
+                  ID Rol (prueba)
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="id_rol"
+                    type="number"
+                    placeholder="ID del rol"
+                    value={idRol}
+                    onChange={(e) => setIdRol(e.target.value)}
+                    className="h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              </div>
 
               {/* Nombre1 Field */}
               <div className="space-y-2">
@@ -134,10 +205,10 @@ export default function Editar_cliente() {
                   Primer nombre
                 </Label>
                 <div className="relative">
-                  < User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="nombre1"
-                    type="nombre1"
+                    type="text"
                     placeholder="tu primer nombre"
                     value={nombre1}
                     onChange={(e) => setNombre1(e.target.value)}
@@ -156,10 +227,10 @@ export default function Editar_cliente() {
                   Segundo nombre
                 </Label>
                 <div className="relative">
-                  < User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="nombre2"
-                    type="nombre2"
+                    type="text"
                     placeholder="tu segundo nombre"
                     value={nombre2}
                     onChange={(e) => setNombre2(e.target.value)}
@@ -178,10 +249,10 @@ export default function Editar_cliente() {
                   Primer apellido
                 </Label>
                 <div className="relative">
-                  < User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="apellido1"
-                    type="apellido1"
+                    type="text"
                     placeholder="tu primer apellido"
                     value={apellido1}
                     onChange={(e) => setApellido1(e.target.value)}
@@ -200,10 +271,10 @@ export default function Editar_cliente() {
                   Segundo apellido
                 </Label>
                 <div className="relative">
-                  < User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="apellido2"
-                    type="apellido2"
+                    type="text"
                     placeholder="tu segundo apellido"
                     value={apellido2}
                     onChange={(e) => setApellido2(e.target.value)}
@@ -212,29 +283,6 @@ export default function Editar_cliente() {
                   />
                 </div>
               </div>
-
-              {/* Nacionalidad Field */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="nacionalidad"
-                  className="text-sm font-medium text-gray-900 dark:text-gray-100"
-                >
-                  Nacionalidad
-                </Label>
-                <div className="relative">
-                  < Flag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
-                  <Input
-                    id="nacionalidad"
-                    type="nacionalidad"
-                    placeholder="tu nacionalidad"
-                    value={nacionalidad}
-                    onChange={(e) => setNacionalidad(e.target.value)}
-                    className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div>
-
 
               {/* Tipo de documento Field */}
               <div className="space-y-2">
@@ -245,10 +293,10 @@ export default function Editar_cliente() {
                   Tipo de documento
                 </Label>
                 <div className="relative">
-                  < IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="tipo_documento"
-                    type="tipo_documento"
+                    type="text"
                     placeholder="tu tipo de documento"
                     value={tipo_documento}
                     onChange={(e) => setTipo_documento(e.target.value)}
@@ -269,13 +317,35 @@ export default function Editar_cliente() {
                   Numero de documento
                 </Label>
                 <div className="relative">
-                  < IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="numero_documento"
-                    type="numero_documento"
+                    type="number"
                     placeholder="tu numero de documento"
                     value={numero_documento}
                     onChange={(e) => setNumero_documento(e.target.value)}
+                    className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Nacionalidad Field */}
+              <div className="space-y-2">
+                <Label
+                  htmlFor="nacionalidad"
+                  className="text-sm font-medium text-gray-900 dark:text-gray-100"
+                >
+                  Nacionalidad
+                </Label>
+                <div className="relative">
+                  <Flag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <Input
+                    id="nacionalidad"
+                    type="text"
+                    placeholder="tu nacionalidad"
+                    value={nacionalidad}
+                    onChange={(e) => setNacionalidad(e.target.value)}
                     className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
                     required
                   />
@@ -291,10 +361,10 @@ export default function Editar_cliente() {
                   Numero de telefono
                 </Label>
                 <div className="relative">
-                  < Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="telefono"
-                    type="telefono"
+                    type="text"
                     placeholder="tu numero de telefono"
                     value={telefono}
                     onChange={(e) => setTelefono(e.target.value)}
@@ -303,67 +373,6 @@ export default function Editar_cliente() {
                   />
                 </div>
               </div>
-
-              {/* agregar correo electronico  en la tabla cliente ya que es un campo obligatorio y necesario para el registro */}
-
-              {/* Email Field */}
-              {/* <div className="space-y-2">
-                <Label
-                  htmlFor="email"
-                  className="text-sm font-medium text-gray-900 dark:text-gray-100"
-                >
-                  Correo electrónico
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="tu@ejemplo.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div> */}
-
-
-              {/* Password Field */}
-              {/* <div className="space-y-2">
-                <Label
-                  htmlFor="password"
-                  className="text-sm font-medium text-gray-900 dark:text-gray-100"
-                >
-                  Contraseña
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-50 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors bg-transparent border-none p-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-              </div> */}
-
-
-
 
               {/* Login Button */}
               <Button
