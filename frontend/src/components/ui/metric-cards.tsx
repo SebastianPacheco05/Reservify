@@ -23,7 +23,7 @@ export function MetricCards({
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{totalRestaurants}</div>
-          <p className="text-xs text-muted-foreground">+2 desde el mes pasado</p>
+          {/* <p className="text-xs text-muted-foreground">+2 desde el mes pasado</p> */}
         </CardContent>
       </Card>
 
@@ -34,7 +34,7 @@ export function MetricCards({
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{totalReservations}</div>
-          <p className="text-xs text-muted-foreground">+12% desde la semana pasada</p>
+          {/* <p className="text-xs text-muted-foreground">+12% desde la semana pasada</p> */}
         </CardContent>
       </Card>
 
@@ -45,7 +45,7 @@ export function MetricCards({
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{monthlyVisitors.toLocaleString()}</div>
-          <p className="text-xs text-muted-foreground">+8% desde el mes pasado</p>
+          {/* <p className="text-xs text-muted-foreground">+8% desde el mes pasado</p> */}
         </CardContent>
       </Card>
 
@@ -56,7 +56,7 @@ export function MetricCards({
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">${monthlyRevenue.toLocaleString()}</div>
-          <p className="text-xs text-muted-foreground">+15% desde el mes pasado</p>
+          {/* <p className="text-xs text-muted-foreground">+15% desde el mes pasado</p> */}
         </CardContent>
       </Card>
     </div>

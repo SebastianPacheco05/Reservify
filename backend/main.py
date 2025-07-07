@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, Form, Request
 from sqlalchemy.orm import Session
+from fastapi.middleware.cors import CORSMiddleware
 from config import get_db
 from funciones.cruds import (
     credenciales,
@@ -26,6 +27,15 @@ from funciones.email_sender.timer_reserv import tarea_programada
 
 app = FastAPI()
 
+# Permitir CORS desde frontend (localhost:5173 por defecto en Vite)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Credenciales
 
 
@@ -37,6 +47,8 @@ async def insertar(data: CredencialBase, db: Session = Depends(get_db)):
 @app.post("/login")
 def login(input: login, request: Request, db: Session = Depends(get_db)):
     return login_usuario(db, input.email, input.password, request)
+
+
 
 
 @app.get("/perfil")

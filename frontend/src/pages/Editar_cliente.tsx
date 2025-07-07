@@ -1,9 +1,9 @@
 "use client";
 
 import type React from "react";
-
-import { useState } from "react";
-import { Mail,Lock , ArrowRight, User , IdCard, Flag, Phone, Eye, EyeOff } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { Mail, Lock, ArrowRight, User, IdCard, Flag, Phone, Eye, EyeOff } from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -17,7 +17,23 @@ import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
 import { ModeToggle } from "../components/mode-toggle";
 
+
+interface Cliente {
+  id_cliente: number;
+  nombre1: string;
+  nombre2: string;
+  apellido1: string;
+  apellido2: string;
+  nacionalidad: string;
+  tipo_documento: string;
+  numero_documento: string;
+  telefono: string;
+}
+
+
+
 export default function Editar_cliente() {
+  const { id_cliente } = useParams();
   const [nombre1, setNombre1] = useState("");
   const [nombre2, setNombre2] = useState("");
   const [apellido1, setApellido1] = useState("");
@@ -26,21 +42,57 @@ export default function Editar_cliente() {
   const [tipo_documento, setTipo_documento] = useState("");
   const [numero_documento, setNumero_documento] = useState("");
   const [telefono, setTelefono] = useState("");
-  const [email, setEmail] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState("");
-  // const [rememberMe] = useState(false);
+  const [idCredencial, setIdCredencial] = useState("");
+  const [idRol, setIdRol] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!id_cliente) return;
+    fetch("http://localhost:8000/listar_cliente", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id_cliente: Number(id_cliente) }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const cliente = data.respuesta;
+        if (cliente) {
+          setNombre1(cliente.nombre1);
+          setNombre2(cliente.nombre2);
+          setApellido1(cliente.apellido1);
+          setApellido2(cliente.apellido2);
+          setNacionalidad(cliente.nacionalidad);
+          setTipo_documento(cliente.tipo_documento);
+          setNumero_documento(cliente.documento);
+          setTelefono(cliente.telefono);
+          setIdCredencial(cliente.id_credencial);
+          setIdRol(cliente.id_rol);
+        }
+      });
+  }, [id_cliente]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
-    // Simular llamada a API
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    console.log("Login attempt:", { nombre1, nombre2, apellido1, apellido2, nacionalidad, tipo_documento, numero_documento, telefono, email});
+    await fetch("http://localhost:8000/editarcliente", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id_cliente: Number(id_cliente),
+        id_credencial: Number(idCredencial),
+        nombre1,
+        nombre2,
+        apellido1,
+        apellido2,
+        tipo_documento,
+        documento: Number(numero_documento),
+        nacionalidad,
+        telefono,
+        id_rol: Number(idRol),
+      }),
+    });
     setIsLoading(false);
+    // Aquí puedes mostrar un mensaje de éxito o redirigir
   };
 
   return (
@@ -82,7 +134,7 @@ export default function Editar_cliente() {
                   Primer nombre
                 </Label>
                 <div className="relative">
-                  < User  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  < User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="nombre1"
                     type="nombre1"
@@ -104,7 +156,7 @@ export default function Editar_cliente() {
                   Segundo nombre
                 </Label>
                 <div className="relative">
-                < User  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  < User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="nombre2"
                     type="nombre2"
@@ -126,7 +178,7 @@ export default function Editar_cliente() {
                   Primer apellido
                 </Label>
                 <div className="relative">
-                < User  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  < User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="apellido1"
                     type="apellido1"
@@ -148,7 +200,7 @@ export default function Editar_cliente() {
                   Segundo apellido
                 </Label>
                 <div className="relative">
-                < User  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  < User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="apellido2"
                     type="apellido2"
@@ -170,7 +222,7 @@ export default function Editar_cliente() {
                   Nacionalidad
                 </Label>
                 <div className="relative">
-                < Flag  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  < Flag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="nacionalidad"
                     type="nacionalidad"
@@ -193,7 +245,7 @@ export default function Editar_cliente() {
                   Tipo de documento
                 </Label>
                 <div className="relative">
-                < IdCard  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  < IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="tipo_documento"
                     type="tipo_documento"
@@ -206,7 +258,7 @@ export default function Editar_cliente() {
                 </div>
               </div>
 
-{/* poner como primary key el numero de documento  ya que es un campo obligatorio y necesario para el registro o la actualizacion de datos y la eliminacion de el mismo cliente*/}
+              {/* poner como primary key el numero de documento  ya que es un campo obligatorio y necesario para el registro o la actualizacion de datos y la eliminacion de el mismo cliente*/}
 
               {/* numero de documento Field */}
               <div className="space-y-2">
@@ -217,7 +269,7 @@ export default function Editar_cliente() {
                   Numero de documento
                 </Label>
                 <div className="relative">
-                < IdCard  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  < IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="numero_documento"
                     type="numero_documento"
@@ -239,7 +291,7 @@ export default function Editar_cliente() {
                   Numero de telefono
                 </Label>
                 <div className="relative">
-                < Phone  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  < Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="telefono"
                     type="telefono"
@@ -252,10 +304,10 @@ export default function Editar_cliente() {
                 </div>
               </div>
 
-{/* agregar correo electronico  en la tabla cliente ya que es un campo obligatorio y necesario para el registro */}
+              {/* agregar correo electronico  en la tabla cliente ya que es un campo obligatorio y necesario para el registro */}
 
               {/* Email Field */}
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label
                   htmlFor="email"
                   className="text-sm font-medium text-gray-900 dark:text-gray-100"
@@ -274,11 +326,11 @@ export default function Editar_cliente() {
                     required
                   />
                 </div>
-              </div>
+              </div> */}
 
-              
+
               {/* Password Field */}
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label
                   htmlFor="password"
                   className="text-sm font-medium text-gray-900 dark:text-gray-100"
@@ -308,7 +360,7 @@ export default function Editar_cliente() {
                     )}
                   </button>
                 </div>
-              </div>
+              </div> */}
 
 
 

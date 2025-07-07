@@ -1,8 +1,7 @@
 "use client";
 
-import type React from "react";
+import React, { useEffect, useState } from 'react';
 
-import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
@@ -28,12 +27,38 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simular llamada a API
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    console.log("Login attempt:", { email, password, rememberMe });
-    setIsLoading(false);
+    try {
+      const response = await fetch("http://localhost:8000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.detail || "Error en el login");
+      }
+  
+      console.log("Login exitoso:", data);
+  
+      // Guardar token
+      localStorage.setItem("token", data.access_token);
+  
+      // Redireccionar si quieres
+      // navigate("/dashboard");
+    } catch (err: any) {
+      console.error("Error:", err.message);
+      alert("Error de inicio de sesión: " + err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
+  
+
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
