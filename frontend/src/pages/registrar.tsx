@@ -3,7 +3,17 @@
 import type React from "react";
 
 import { useState } from "react";
-import { Eye, EyeOff, Mail, Lock, ArrowRight, User , IdCard, Flag, Phone } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  ArrowRight,
+  User,
+  IdCard,
+  Flag,
+  Phone,
+} from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -17,7 +27,7 @@ import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
 import { ModeToggle } from "../components/mode-toggle";
 
-export default function Insertar_cliente() {
+export default function Registrar() {
   const [showPassword, setShowPassword] = useState(false);
   const [nombre1, setNombre1] = useState("");
   const [nombre2, setNombre2] = useState("");
@@ -72,7 +82,6 @@ export default function Insertar_cliente() {
 
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
-
               {/* Nombre1 Field */}
               <div className="space-y-2">
                 <Label
@@ -82,7 +91,7 @@ export default function Insertar_cliente() {
                   Primer nombre
                 </Label>
                 <div className="relative">
-                  < User  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="nombre1"
                     type="nombre1"
@@ -104,7 +113,7 @@ export default function Insertar_cliente() {
                   Segundo nombre
                 </Label>
                 <div className="relative">
-                < User  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="nombre2"
                     type="nombre2"
@@ -126,7 +135,7 @@ export default function Insertar_cliente() {
                   Primer apellido
                 </Label>
                 <div className="relative">
-                < User  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="apellido1"
                     type="apellido1"
@@ -148,7 +157,7 @@ export default function Insertar_cliente() {
                   Segundo apellido
                 </Label>
                 <div className="relative">
-                < User  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="apellido2"
                     type="apellido2"
@@ -170,7 +179,7 @@ export default function Insertar_cliente() {
                   Nacionalidad
                 </Label>
                 <div className="relative">
-                < Flag  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <Flag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="nacionalidad"
                     type="nacionalidad"
@@ -183,7 +192,6 @@ export default function Insertar_cliente() {
                 </div>
               </div>
 
-
               {/* Tipo de documento Field */}
               <div className="space-y-2">
                 <Label
@@ -193,7 +201,7 @@ export default function Insertar_cliente() {
                   Tipo de documento
                 </Label>
                 <div className="relative">
-                < IdCard  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="tipo_documento"
                     type="tipo_documento"
@@ -215,7 +223,7 @@ export default function Insertar_cliente() {
                   Numero de documento
                 </Label>
                 <div className="relative">
-                < IdCard  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="numero_documento"
                     type="numero_documento"
@@ -237,7 +245,7 @@ export default function Insertar_cliente() {
                   Numero de telefono
                 </Label>
                 <div className="relative">
-                < Phone  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="telefono"
                     type="telefono"
@@ -249,7 +257,6 @@ export default function Insertar_cliente() {
                   />
                 </div>
               </div>
-
 
               {/* Email Field */}
               <div className="space-y-2">
@@ -293,7 +300,6 @@ export default function Insertar_cliente() {
                     required
                   />
 
-                
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
