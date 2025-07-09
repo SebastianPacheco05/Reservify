@@ -1,10 +1,8 @@
 CREATE OR REPLACE FUNCTION editar_empleado(
     p_id_empleado INT,
     p_id_credencial INT,
-    p_nombre1 VARCHAR(20),
-    p_nombre2 VARCHAR(20),
-    p_apellido1 VARCHAR(20),
-    p_apellido2 VARCHAR(20),
+    p_nombre VARCHAR(20),
+    p_apellido VARCHAR(20),
     p_tipo_documento VARCHAR(15),
     p_documento BIGINT,
     p_nacionalidad VARCHAR(20),
@@ -15,10 +13,8 @@ CREATE OR REPLACE FUNCTION editar_empleado(
 BEGIN
     UPDATE "Empleado"
     SET id_credencial = p_id_credencial,
-        nombre1 = p_nombre1,
-        nombre2 = p_nombre2,
-        apellido1 = p_apellido1,
-        apellido2 = p_apellido2,
+        nombre = p_nombre,
+        apellido = p_apellido,
         tipo_documento = p_tipo_documento,
         documento = p_documento,
         nacionalidad = p_nacionalidad,

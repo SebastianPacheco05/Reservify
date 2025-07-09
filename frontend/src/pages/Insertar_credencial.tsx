@@ -15,7 +15,7 @@ import {
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
-import { ModeToggle } from "../components/mode-toggle";
+// import { ModeToggle } from "../components/mode-toggle";
 
 export default function Registrar_credencial() {
   const [showPassword, setShowPassword] = useState(false);
@@ -39,7 +39,7 @@ export default function Registrar_credencial() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <ModeToggle />
+        {/* <ModeToggle /> */}
         {/* Logo/Brand */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
@@ -65,8 +65,6 @@ export default function Registrar_credencial() {
 
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
-
-              
               {/* Email Field */}
               <div className="space-y-2">
                 <Label
@@ -143,8 +141,6 @@ export default function Registrar_credencial() {
                   />
                 </div>
               </div>
-
-
 
               {/* Login Button */}
               <Button

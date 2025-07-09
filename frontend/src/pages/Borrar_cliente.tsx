@@ -3,7 +3,17 @@
 import type React from "react";
 
 import { useState } from "react";
-import { Mail,Lock , ArrowRight, User , IdCard, Flag, Phone, Eye, EyeOff } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  ArrowRight,
+  User,
+  IdCard,
+  Flag,
+  Phone,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -15,7 +25,7 @@ import {
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
-import { ModeToggle } from "../components/mode-toggle";
+// import { ModeToggle } from "../components/mode-toggle";
 
 export default function Borrar_cliente() {
   const [showPassword, setShowPassword] = useState(false);
@@ -24,7 +34,7 @@ export default function Borrar_cliente() {
   const [telefono, setTelefono] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-    // const [rememberMe] = useState(false);
+  // const [rememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,8 +44,14 @@ export default function Borrar_cliente() {
     // Simular llamada a API
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    console.log("Login attempt:", { tipo_documento, numero_documento, telefono, email, password }); 
-    // aqui se debe agregar la logica para borrar el cliente  
+    console.log("Login attempt:", {
+      tipo_documento,
+      numero_documento,
+      telefono,
+      email,
+      password,
+    });
+    // aqui se debe agregar la logica para borrar el cliente
 
     setIsLoading(false);
   };
@@ -43,7 +59,7 @@ export default function Borrar_cliente() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <ModeToggle />
+        {/* <ModeToggle /> */}
         {/* Logo/Brand */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
@@ -69,7 +85,6 @@ export default function Borrar_cliente() {
 
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
-
               {/* Tipo de documento Field */}
               <div className="space-y-2">
                 <Label
@@ -79,7 +94,7 @@ export default function Borrar_cliente() {
                   Tipo de documento
                 </Label>
                 <div className="relative">
-                < IdCard  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="tipo_documento"
                     type="tipo_documento"
@@ -92,7 +107,7 @@ export default function Borrar_cliente() {
                 </div>
               </div>
 
-{/* poner como primary key el numero de documento  ya que es un campo obligatorio y necesario para el registro o la actualizacion de datos y la eliminacion de el mismo cliente*/}
+              {/* poner como primary key el numero de documento  ya que es un campo obligatorio y necesario para el registro o la actualizacion de datos y la eliminacion de el mismo cliente*/}
 
               {/* numero de documento Field */}
               <div className="space-y-2">
@@ -103,7 +118,7 @@ export default function Borrar_cliente() {
                   Numero de documento
                 </Label>
                 <div className="relative">
-                < IdCard  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="numero_documento"
                     type="numero_documento"
@@ -125,7 +140,7 @@ export default function Borrar_cliente() {
                   Numero de telefono
                 </Label>
                 <div className="relative">
-                < Phone  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="telefono"
                     type="telefono"
@@ -138,7 +153,7 @@ export default function Borrar_cliente() {
                 </div>
               </div>
 
-{/* agregar correo electronico  en la tabla cliente ya que es un campo obligatorio y necesario para el registro */}
+              {/* agregar correo electronico  en la tabla cliente ya que es un campo obligatorio y necesario para el registro */}
 
               {/* Email Field */}
               <div className="space-y-2">
@@ -161,7 +176,6 @@ export default function Borrar_cliente() {
                   />
                 </div>
               </div>
-
 
               {/* Password Field */}
               <div className="space-y-2">
@@ -195,7 +209,6 @@ export default function Borrar_cliente() {
                   </button>
                 </div>
               </div>
-
 
               {/* Login Button */}
               <Button

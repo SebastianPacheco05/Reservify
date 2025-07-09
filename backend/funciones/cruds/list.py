@@ -46,19 +46,17 @@ def obtener_roles(db: Session):
 def obtener_dueno(db: Session, id_dueno: int):
     result = db.execute(
         text(
-            'SELECT nombre1, nombre2, apellido1, apellido2, id_rol, id_credencial FROM "Dueno" WHERE id_dueno = :id_dueno'
+            'SELECT nombre, apellido, id_rol, id_credencial FROM "Dueno" WHERE id_dueno = :id_dueno'
         ),
         {"id_dueno": id_dueno},
     )
     row = result.fetchone()
     if row:
         return {
-            "nombre1": row[0],
-            "nombre2": row[1],
-            "apellido1": row[2],
-            "apellido2": row[3],
-            "id_rol": row[4],
-            "id_credencial": row[5],
+            "nombre": row[0],
+            "apellido": row[1],
+            "id_rol": row[3],
+            "id_credencial": row[4],
         }
     return None
 
@@ -66,19 +64,17 @@ def obtener_dueno(db: Session, id_dueno: int):
 def obtener_duenos(db: Session):
     result = db.execute(
         text(
-            'SELECT id_dueno, nombre1, nombre2, apellido1, apellido2, id_rol, id_credencial FROM "Dueno"'
+            'SELECT id_dueno, nombre, apellido, id_rol, id_credencial FROM "Dueno"'
         )
     )
     rows = result.fetchall()
     return [
         {
             "id_dueno": row[0],
-            "nombre1": row[1],
-            "nombre2": row[2],
-            "apellido1": row[3],
-            "apellido2": row[4],
-            "id_rol": row[5],
-            "id_credencial": row[6],
+            "nombre": row[1],
+            "apellido": row[2],
+            "id_rol": row[4],
+            "id_credencial": row[5],
         }
         for row in rows
     ]
@@ -87,7 +83,7 @@ def obtener_duenos(db: Session):
 def obtener_cliente(db: Session, id_cliente: int):
     result = db.execute(
         text(
-            'SELECT id_credencial, nombre1, nombre2, apellido1, apellido2, tipo_documento, documento, nacionalidad, telefono, id_rol FROM "Cliente" WHERE id_cliente = :id_cliente'
+            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol FROM "Cliente" WHERE id_cliente = :id_cliente'
         ),
         {"id_cliente": id_cliente},
     )
@@ -95,15 +91,13 @@ def obtener_cliente(db: Session, id_cliente: int):
     if row:
         return {
             "id_credencial": row[0],
-            "nombre1": row[1],
-            "nombre2": row[2],
-            "apellido1": row[3],
-            "apellido2": row[4],
-            "tipo_documento": row[5],
-            "documento": row[6],
-            "nacionalidad": row[7],
-            "telefono": row[8],
-            "id_rol": row[9],
+            "nombre": row[1],
+            "apellido": row[2],
+            "tipo_documento": row[4],
+            "documento": row[5],
+            "nacionalidad": row[6],
+            "telefono": row[7],
+            "id_rol": row[8],
         }
     return None
 
@@ -111,7 +105,7 @@ def obtener_cliente(db: Session, id_cliente: int):
 def obtener_clientes(db: Session):
     result = db.execute(
         text(
-            'SELECT id_cliente, id_credencial, nombre1, nombre2, apellido1, apellido2, tipo_documento, documento, nacionalidad, telefono, id_rol FROM "Cliente"'
+            'SELECT id_cliente, id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol FROM "Cliente"'
         )
     )
     rows = result.fetchall()
@@ -119,15 +113,13 @@ def obtener_clientes(db: Session):
         {
             "id_cliente": row[0],
             "id_credencial": row[1],
-            "nombre1": row[2],
-            "nombre2": row[3],
-            "apellido1": row[4],
-            "apellido2": row[5],
-            "tipo_documento": row[6],
-            "documento": row[7],
-            "nacionalidad": row[8],
-            "telefono": row[9],
-            "id_rol": row[10],
+            "nombre": row[2],
+            "apellido": row[3],
+            "tipo_documento": row[5],
+            "documento": row[6],
+            "nacionalidad": row[7],
+            "telefono": row[8],
+            "id_rol": row[9],
         }
         for row in rows
     ]
@@ -136,7 +128,7 @@ def obtener_clientes(db: Session):
 def obtener_empleado(db: Session, id_empleado: int):
     result = db.execute(
         text(
-            'SELECT id_credencial, nombre1, nombre2, apellido1, apellido2, tipo_documento, documento, nacionalidad, telefono, id_rol, NIT FROM "Empleado" WHERE id_empleado = :id_empleado'
+            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, NIT FROM "Empleado" WHERE id_empleado = :id_empleado'
         ),
         {"id_empleado": id_empleado},
     )
@@ -144,16 +136,14 @@ def obtener_empleado(db: Session, id_empleado: int):
     if row:
         return {
             "id_credencial": row[0],
-            "nombre1": row[1],
-            "nombre2": row[2],
-            "apellido1": row[3],
-            "apellido2": row[4],
-            "tipo_documento": row[5],
-            "documento": row[6],
-            "nacionalidad": row[7],
-            "telefono": row[8],
-            "id_rol": row[9],
-            "NIT": row[10],
+            "nombre": row[1],
+            "apellido": row[2],
+            "tipo_documento": row[4],
+            "documento": row[5],
+            "nacionalidad": row[6],
+            "telefono": row[7],
+            "id_rol": row[8],
+            "NIT": row[9],
         }
     return None
 
@@ -161,7 +151,7 @@ def obtener_empleado(db: Session, id_empleado: int):
 def obtener_empleados(db: Session):
     result = db.execute(
         text(
-            'SELECT id_empleado, id_credencial, nombre1, nombre2, apellido1, apellido2, tipo_documento, documento, nacionalidad, telefono, id_rol, NIT FROM "Empleado"'
+            'SELECT id_empleado, id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, NIT FROM "Empleado"'
         )
     )
     rows = result.fetchall()
@@ -169,16 +159,14 @@ def obtener_empleados(db: Session):
         {
             "id_empleado": row[0],
             "id_credencial": row[1],
-            "nombre1": row[2],
-            "nombre2": row[3],
-            "apellido1": row[4],
-            "apellido2": row[5],
-            "tipo_documento": row[6],
-            "documento": row[7],
-            "nacionalidad": row[8],
-            "telefono": row[9],
-            "id_rol": row[10],
-            "NIT": row[11],
+            "nombre": row[2],
+            "apellido": row[3],
+            "tipo_documento": row[5],
+            "documento": row[6],
+            "nacionalidad": row[7],
+            "telefono": row[8],
+            "id_rol": row[9],
+            "NIT": row[10],
         }
         for row in rows
     ]

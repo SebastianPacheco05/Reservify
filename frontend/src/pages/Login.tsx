@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { Button } from "../components/ui/button";
@@ -35,18 +35,18 @@ export default function Login() {
         },
         body: JSON.stringify({ email, password }),
       });
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         throw new Error(data.detail || "Error en el login");
       }
-  
+
       console.log("Login exitoso:", data);
-  
+
       // Guardar token
       localStorage.setItem("token", data.access_token);
-  
+
       // Redireccionar si quieres
       // navigate("/dashboard");
     } catch (err: any) {
@@ -56,14 +56,10 @@ export default function Login() {
       setIsLoading(false);
     }
   };
-  
-
-  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <ModeToggle />
         {/* Logo/Brand */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">

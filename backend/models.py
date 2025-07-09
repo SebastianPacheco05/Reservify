@@ -32,10 +32,8 @@ class RolDelete(BaseModel):
 
 # Dueno
 class DuenoBase(BaseModel):
-    nombre1: str
-    nombre2: str
-    apellido1: str
-    apellido2: str
+    nombre: str
+    apellido: str
     id_rol: int
     id_credencial: int
 
@@ -86,10 +84,8 @@ class MesaDelete(BaseModel):
 # Cliente
 class ClienteBase(BaseModel):
     id_credencial: int
-    nombre1: str
-    nombre2: str
-    apellido1: str
-    apellido2: str
+    nombre: str
+    apellido: str
     tipo_documento: str
     documento: int
     nacionalidad: str
@@ -108,10 +104,8 @@ class ClienteDelete(BaseModel):
 # Empleado
 class EmpleadoBase(BaseModel):
     id_credencial: int
-    nombre1: str
-    nombre2: str
-    apellido1: str
-    apellido2: str
+    nombre: str
+    apellido: str
     tipo_documento: str
     documento: int
     nacionalidad: str

@@ -7,10 +7,8 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 def insertar_empleado(
     db: Session,
     id_credencial: int,
-    nombre1: str,
-    nombre2: str,
-    apellido1: str,
-    apellido2: str,
+    nombre: str,
+    apellido: str,
     tipo_documento: str,
     documento: int,
     nacionalidad: str,
@@ -21,14 +19,12 @@ def insertar_empleado(
     try:
         db.execute(
             text(
-                "SELECT insertar_empleado(:id_credencial, :nombre1, :nombre2, :apellido1, :apellido2, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol, :NIT)"
+                "SELECT insertar_empleado(:id_credencial, :nombre, :apellido, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol, :NIT)"
             ),
             {
                 "id_credencial": id_credencial,
-                "nombre1": nombre1,
-                "nombre2": nombre2,
-                "apellido1": apellido1,
-                "apellido2": apellido2,
+                "nombre": nombre,
+                "apellido": apellido,
                 "tipo_documento": tipo_documento,
                 "documento": documento,
                 "nacionalidad": nacionalidad,
@@ -57,10 +53,8 @@ def editar_empleado(
     db: Session,
     id_empleado: int,
     id_credencial: int,
-    nombre1: str,
-    nombre2: str,
-    apellido1: str,
-    apellido2: str,
+    nombre: str,
+    apellido: str,
     tipo_documento: str,
     documento: int,
     nacionalidad: str,
@@ -71,15 +65,13 @@ def editar_empleado(
     try:
         db.execute(
             text(
-                "SELECT editar_empleado(:id_empleado, :id_credencial, :nombre1, :nombre2, :apellido1, :apellido2, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol, :NIT)"
+                "SELECT editar_empleado(:id_empleado, :id_credencial, :nombre, :apellido, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol, :NIT)"
             ),
             {
                 "id_empleado": id_empleado,
                 "id_credencial": id_credencial,
-                "nombre1": nombre1,
-                "nombre2": nombre2,
-                "apellido1": apellido1,
-                "apellido2": apellido2,
+                "nombre": nombre,
+                "apellido": apellido,
                 "tipo_documento": tipo_documento,
                 "documento": documento,
                 "nacionalidad": nacionalidad,

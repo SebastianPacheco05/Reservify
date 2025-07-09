@@ -7,10 +7,8 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 def insertar_clientes(
     db: Session,
     id_credencial: int,
-    nombre1: str,
-    nombre2: str,
-    apellido1: str,
-    apellido2: str,
+    nombre: str,
+    apellido: str,
     tipo_documento: str,
     documento: int,
     nacionalidad: str,
@@ -20,14 +18,12 @@ def insertar_clientes(
     try:
         db.execute(
             text(
-                "SELECT insertar_clientes(:id_credencial, :nombre1, :nombre2, :apellido1, :apellido2, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol)"
+                "SELECT insertar_clientes(:id_credencial, :nombre, :apellido, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol)"
             ),
             {
                 "id_credencial": id_credencial,
-                "nombre1": nombre1,
-                "nombre2": nombre2,
-                "apellido1": apellido1,
-                "apellido2": apellido2,
+                "nombre": nombre,
+                "apellido": apellido,
                 "tipo_documento": tipo_documento,
                 "documento": documento,
                 "nacionalidad": nacionalidad,
@@ -53,10 +49,8 @@ def editar_clientes(
     db: Session,
     id_cliente: int,
     id_credencial: int,
-    nombre1: str,
-    nombre2: str,
-    apellido1: str,
-    apellido2: str,
+    nombre: str,
+    apellido: str,
     tipo_documento: str,
     documento: int,
     nacionalidad: str,
@@ -66,15 +60,13 @@ def editar_clientes(
     try:
         db.execute(
             text(
-                "SELECT editar_clientes(:id_cliente, :id_credencial, :nombre1, :nombre2, :apellido1, :apellido2, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol)"
+                "SELECT editar_clientes(:id_cliente, :id_credencial, :nombre, :apellido, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol)"
             ),
             {
                 "id_cliente": id_cliente,
                 "id_credencial": id_credencial,
-                "nombre1": nombre1,
-                "nombre2": nombre2,
-                "apellido1": apellido1,
-                "apellido2": apellido2,
+                "nombre": nombre,
+                "apellido": apellido,
                 "tipo_documento": tipo_documento,
                 "documento": documento,
                 "nacionalidad": nacionalidad,

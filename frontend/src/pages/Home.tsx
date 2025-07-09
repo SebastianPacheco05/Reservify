@@ -182,7 +182,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="pt-24 pb-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-blue-800 to-blue-600 bg-clip-text text-transparent leading-tight">
+          <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-blue-800 to-blue-600 bg-clip-text text-transparent leading-tight">
             Reserva en tu restaurante favorito
           </h2>
           <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">

@@ -38,10 +38,8 @@ CREATE TABLE "Roles" (
 -- Tabla Dueno: Almacena información de los dueños de restaurantes
 CREATE TABLE "Dueno" (
     id_dueno SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
-    nombre1 VARCHAR(50) NOT NULL,  -- Primer nombre
-    nombre2 VARCHAR(50),  -- Segundo nombre (opcional)
-    apellido1 VARCHAR(50) NOT NULL,  -- Primer apellido
-    apellido2 VARCHAR(50),  -- Segundo apellido (opcional)
+    nombre VARCHAR(50) NOT NULL,  -- Primer nombre
+    apellido VARCHAR(50) NOT NULL,  -- Primer apellido
     id_rol INT NOT NULL,  -- Referencia al rol
     id_credencial INT NOT NULL UNIQUE,  -- Referencia a credenciales únicas
     FOREIGN KEY (id_rol) REFERENCES "Roles" (id_rol) ON DELETE CASCADE,
@@ -83,10 +81,8 @@ CREATE TABLE "Mesas" (
 CREATE TABLE "Cliente" (
     id_cliente SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     id_credencial INT NOT NULL UNIQUE,  -- Referencia a credenciales únicas
-    nombre1 VARCHAR(50) NOT NULL,  -- Primer nombre
-    nombre2 VARCHAR(50),  -- Segundo nombre (opcional)
-    apellido1 VARCHAR(50) NOT NULL,  -- Primer apellido
-    apellido2 VARCHAR(50),  -- Segundo apellido (opcional)
+    nombre VARCHAR(50) NOT NULL,  -- Primer nombre
+    apellido VARCHAR(50) NOT NULL,  -- Primer apellido
     tipo_documento VARCHAR(15) NOT NULL CHECK (tipo_documento IN ('CC', 'CE', 'TI', 'Pasaporte')),  -- Tipo de documento con validación
     documento BIGINT NOT NULL UNIQUE CHECK (documento > 0),  -- Número de documento único
     nacionalidad VARCHAR(20) NOT NULL,  -- Nacionalidad
@@ -100,10 +96,8 @@ CREATE TABLE "Cliente" (
 CREATE TABLE "Empleado" (
     id_empleado SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     id_credencial INT NOT NULL UNIQUE,  -- Referencia a credenciales únicas
-    nombre1 VARCHAR(50) NOT NULL,  -- Primer nombre
-    nombre2 VARCHAR(50),  -- Segundo nombre (opcional)
-    apellido1 VARCHAR(50) NOT NULL,  -- Primer apellido
-    apellido2 VARCHAR(50),  -- Segundo apellido (opcional)
+    nombre VARCHAR(50) NOT NULL,  -- Primer nombre
+    apellido VARCHAR(50) NOT NULL,  -- Primer apellido
     tipo_documento VARCHAR(15) NOT NULL CHECK (tipo_documento IN ('CC', 'CE', 'TI', 'Pasaporte')),  -- Tipo de documento con validación
     documento BIGINT UNIQUE NOT NULL CHECK (documento > 0),  -- Número de documento único
     nacionalidad VARCHAR(20) NOT NULL,  -- Nacionalidad
@@ -178,6 +172,8 @@ CREATE TABLE "Comentarios" (
     id_cliente INT NOT NULL,  -- Referencia al cliente
     nit INT NOT NULL,  -- Referencia al restaurante
     comentario TEXT NOT NULL,  -- Comentario del cliente
+    fecha TIMESTAMP NOT NULL DEFAULT NOW(),  -- Fecha del comentario
+    calificacion INT CHECK (calificacion >= 1 AND calificacion <= 5),  -- Calificación del 1 al 5
     FOREIGN KEY (id_cliente) REFERENCES "Cliente" (id_cliente) ON DELETE CASCADE,
     FOREIGN KEY (nit) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE
 );

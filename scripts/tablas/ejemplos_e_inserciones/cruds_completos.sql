@@ -87,9 +87,7 @@ CREATE OR REPLACE FUNCTION editar_clientes(
     p_id_cliente INT,
     p_id_credencial INT,
     p_nombre1 VARCHAR(20),
-    p_nombre2 VARCHAR(20),
     p_apellido1 VARCHAR(20),
-    p_apellido2 VARCHAR(20),
     p_tipo_documento VARCHAR(15),
     p_documento BIGINT,
     p_nacionalidad VARCHAR(20),
@@ -100,9 +98,7 @@ BEGIN
     UPDATE "Cliente"
     SET id_credencial = p_id_credencial,
         nombre1 = p_nombre1,
-        nombre2 = p_nombre2,
         apellido1 = p_apellido1,
-        apellido2 = p_apellido2,
         tipo_documento = p_tipo_documento,
         documento = p_documento,
         nacionalidad = p_nacionalidad,
@@ -115,9 +111,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION insertar_clientes(
     p_id_credencial INT,
     p_nombre1 VARCHAR(20),
-    p_nombre2 VARCHAR(20),
     p_apellido1 VARCHAR(20),
-    p_apellido2 VARCHAR(20),
     p_tipo_documento VARCHAR(15),
     p_documento BIGINT,
     p_nacionalidad VARCHAR(20),
@@ -125,8 +119,8 @@ CREATE OR REPLACE FUNCTION insertar_clientes(
     p_id_rol INT
 ) RETURNS VOID AS $$
 BEGIN
-    INSERT INTO "Cliente" (id_credencial, nombre1, nombre2, apellido1, apellido2, tipo_documento, documento, nacionalidad, telefono, id_rol)
-    VALUES (p_id_credencial, p_nombre1, p_nombre2, p_apellido1, p_apellido2, p_tipo_documento, p_documento, p_nacionalidad, p_telefono, p_id_rol);
+    INSERT INTO "Cliente" (id_credencial, nombre1, apellido1, tipo_documento, documento, nacionalidad, telefono, id_rol)
+    VALUES (p_id_credencial, p_nombre1, p_apellido1, p_tipo_documento, p_documento, p_nacionalidad, p_telefono, p_id_rol);
     -- Exepciones en la base de datos
     IF NOT p_id_credencial THEN
         RAISE EXCEPTION 'No se pudo insertar el cliente con id_credencial: %', p_id_credencial;
@@ -247,18 +241,14 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION editar_dueno(
     p_id_dueno INT,
     p_nombre1 VARCHAR(20),
-    p_nombre2 VARCHAR(20),
     p_apellido1 VARCHAR(20),
-    p_apellido2 VARCHAR(20),
     p_id_rol INT,
     p_id_credencial INT
 ) RETURNS VOID AS $$
 BEGIN
     UPDATE "Dueno"
     SET nombre1 = p_nombre1,
-        nombre2 = p_nombre2,
         apellido1 = p_apellido1,
-        apellido2 = p_apellido2,
         id_rol = p_id_rol,
         id_credencial = p_id_credencial
     WHERE id_dueno = p_id_dueno;
@@ -267,15 +257,13 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION insertar_dueno(
     p_nombre1 VARCHAR(20),
-    p_nombre2 VARCHAR(20),
     p_apellido1 VARCHAR(20),
-    p_apellido2 VARCHAR(20),
     p_id_rol INT,
     p_id_credencial INT
 ) RETURNS VOID AS $$
 BEGIN
-    INSERT INTO "Dueno" ( nombre1, nombre2, apellido1, apellido2, id_rol, id_credencial)
-    VALUES (p_nombre1, p_nombre2, p_apellido1, p_apellido2, p_id_rol, p_id_credencial);
+    INSERT INTO "Dueno" ( nombre1, apellido1, id_rol, id_credencial)
+    VALUES (p_nombre1, p_apellido1, p_id_rol, p_id_credencial);
 END;
 $$ LANGUAGE plpgsql;
 
@@ -291,9 +279,7 @@ CREATE OR REPLACE FUNCTION editar_empleado(
     p_id_empleado INT,
     p_id_credencial INT,
     p_nombre1 VARCHAR(20),
-    p_nombre2 VARCHAR(20),
     p_apellido1 VARCHAR(20),
-    p_apellido2 VARCHAR(20),
     p_tipo_documento VARCHAR(15),
     p_documento BIGINT,
     p_nacionalidad VARCHAR(20),
@@ -305,9 +291,7 @@ BEGIN
     UPDATE "Empleado"
     SET id_credencial = p_id_credencial,
         nombre1 = p_nombre1,
-        nombre2 = p_nombre2,
         apellido1 = p_apellido1,
-        apellido2 = p_apellido2,
         tipo_documento = p_tipo_documento,
         documento = p_documento,
         nacionalidad = p_nacionalidad,
@@ -321,9 +305,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION insertar_empleado(
     p_id_credencial INT,
     p_nombre1 VARCHAR(20),
-    p_nombre2 VARCHAR(20),
     p_apellido1 VARCHAR(20),
-    p_apellido2 VARCHAR(20),
     p_tipo_documento VARCHAR(15),
     p_documento BIGINT,
     p_nacionalidad VARCHAR(20),
@@ -332,8 +314,8 @@ CREATE OR REPLACE FUNCTION insertar_empleado(
     p_NIT INT
 ) RETURNS VOID AS $$
 BEGIN
-    INSERT INTO "Empleado" (id_credencial, nombre1, nombre2, apellido1, apellido2, tipo_documento, documento, nacionalidad, telefono, id_rol, NIT)
-    VALUES (p_id_credencial, p_nombre1, p_nombre2, p_apellido1, p_apellido2, p_tipo_documento, p_documento, p_nacionalidad, p_telefono, p_id_rol, p_NIT);
+    INSERT INTO "Empleado" (id_credencial, nombre1, apellido1, tipo_documento, documento, nacionalidad, telefono, id_rol, NIT)
+    VALUES (p_id_credencial, p_nombre1, p_apellido1, p_tipo_documento, p_documento, p_nacionalidad, p_telefono, p_id_rol, p_NIT);
 END;
 $$ LANGUAGE plpgsql;
 
