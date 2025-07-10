@@ -101,12 +101,15 @@ export default function Home() {
       <header className="backdrop-blur-md fixed top-0 w-full z-50 shadow-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center px-4 h-16">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-700 to-blue-900 rounded-lg flex items-center justify-center">
+            <Link to="/"> 
+              <img src= "../../../public/Reservify-logo.svg" className="w-[14rem] rounded-[3rem]"/>
+            </Link>
+            {/* <div className="w-8 h-8 bg-gradient-to-r from-blue-700 to-blue-900 rounded-lg flex items-center justify-center">
               <Utensils className="w-5 h-5 text-white" />
             </div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-900 bg-clip-text text-transparent">
               Reservify
-            </h1>
+            </h1> */}
           </div>
 
           {/* Desktop Navigation */}
