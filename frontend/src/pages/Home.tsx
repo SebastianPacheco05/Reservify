@@ -19,6 +19,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
+import { useRef } from "react";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -45,6 +46,12 @@ export default function Home() {
       color: "bg-green-50 text-green-600 border-green-200",
     },
   ];
+
+  const restDescRef = useRef<HTMLDivElement>(null);
+
+  const scrollToRestaurants = () => {
+    restDescRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const restaurants = [
     {
@@ -91,13 +98,13 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Header */}
-      <header className="bg-white-/95 backdrop-blur-md fixed top-0 w-full z-50 shadow-sm">
+      <header className="backdrop-blur-md fixed top-0 w-full z-50 shadow-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center px-4 h-16">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-400 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-700 to-blue-900 rounded-lg flex items-center justify-center">
               <Utensils className="w-5 h-5 text-white" />
             </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-900 bg-clip-text text-transparent">
               Reservify
             </h1>
           </div>
@@ -105,20 +112,21 @@ export default function Home() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <a
-              href="#"
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+              href="#rest_desc"
+              className="text-neutral-700 hover:text-blue-600 transition-colors font-medium"
+              onClick={scrollToRestaurants}
             >
               Restaurantes
             </a>
-            <a
+            {/* <a
               href="#"
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+              className="text-neutral-700 hover:text-blue-600 transition-colors font-medium"
             >
               Ofertas
-            </a>
+            </a> */}
             <Link to="/Login">
               <Button
-                className="text-white hover:bg-neutral-700 transition-colors duration-300"
+                className="text-white/80 bg-gray-800 hover:text-blue-600 transition-colors duration-300"
                 size="sm"
               >
                 Iniciar Sesión
@@ -127,7 +135,7 @@ export default function Home() {
 
             <Link to="/Registrar">
               <Button
-                className="text-white hover:bg-neutral-700 transition-colors duration-300"
+                className="text-white/80 bg-gray-800  hover:text-blue-600 transition-colors duration-300"
                 size="sm"
               >
                 Registrarse
@@ -154,17 +162,17 @@ export default function Home() {
         {isMenuOpen && (
           <div className="md:hidden bg-white border-t px-4 py-4 space-y-4">
             <a
-              href="#"
+              href="#rest_desc"
               className="block text-gray-700 hover:text-blue-600 transition-colors font-medium"
             >
               Restaurantes
             </a>
-            <a
+            {/* <a
               href="#"
               className="block text-gray-700 hover:text-blue-600 transition-colors font-medium"
             >
               Ofertas
-            </a>
+            </a> */}
             <div className="flex space-x-2 pt-2">
               <Link to="/Login">
                 <Button variant="outline" size="sm" className="flex-1">
@@ -182,10 +190,10 @@ export default function Home() {
       {/* Hero Section */}
       <section className="pt-24 pb-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-blue-800 to-blue-600 bg-clip-text text-transparent leading-tight">
+          <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-blue-800 bg-clip-text text-transparent leading-tight">
             Reserva en tu restaurante favorito
           </h2>
-          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+          <p id="bus_ubi" className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
             Desde comida gourmet hasta cocina casera, encuentra el lugar ideal
             para cada ocasión
           </p>
@@ -213,7 +221,7 @@ export default function Home() {
       </section>
 
       {/* Categories */}
-      <section className="max-w-7xl mx-auto px-4 py-16">
+      <section id="tip_coc" className="max-w-7xl mx-auto px-4 py-16">
         <h3 className="text-3xl font-bold mb-12 text-center text-gray-900">
           Tipos de Cocina
         </h3>
@@ -236,7 +244,7 @@ export default function Home() {
       </section>
 
       {/* Featured Restaurants */}
-      <section className="bg-white py-20 px-4">
+      <section id="rest_desc" className="bg-white py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h3 className="text-3xl font-bold text-gray-900 mb-4">
@@ -302,10 +310,13 @@ export default function Home() {
                     </div>
                     <Badge variant="outline">{restaurant.cuisine}</Badge>
                   </div>
-
-                  <Button className="w-full mt-4 group-hover:bg-blue-700 transition-colors">
+                  <Link to="/Restaurant">
+                  <Button 
+                  className="w-full h-12 bg-gradient-to-r bg-black/80 hover:bg-blue-700 text-white font-medium transition-all duration-200 transform hover:scale-[1.02]"
+                  >
                     Ver disponibilidad
                   </Button>
+                  </Link>
                 </CardContent>
               </Card>
             ))}
@@ -382,7 +393,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 px-4">
+      <footer className="bg-gray-700 text-white py-12 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
@@ -401,12 +412,12 @@ export default function Home() {
               <h5 className="font-semibold mb-4">Restaurantes</h5>
               <ul className="space-y-2 text-gray-400">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#bus_ubi" className="hover:text-white transition-colors">
                     Buscar
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#tip_coc"  className="hover:text-white transition-colors">
                     Cocinas
                   </a>
                 </li>

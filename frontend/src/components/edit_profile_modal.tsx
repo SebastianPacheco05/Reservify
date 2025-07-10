@@ -26,10 +26,8 @@ import { useToast } from "../hooks/useToast";
 
 interface Cliente {
   id_cliente: number;
-  nombre1: string;
-  nombre2: string;
-  apellido1: string;
-  apellido2: string;
+  nombre: string;
+  apellido: string;
   nacionalidad: string;
   tipo_documento: string;
   numero_documento: string;
@@ -53,10 +51,8 @@ export function EditProfileModal({
 
   // Estados del formulario (adaptados de tu código original)
   const [idCliente, setIdCliente] = useState("");
-  const [nombre1, setNombre1] = useState("");
-  const [nombre2, setNombre2] = useState("");
-  const [apellido1, setApellido1] = useState("");
-  const [apellido2, setApellido2] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
   const [nacionalidad, setNacionalidad] = useState("");
   const [tipo_documento, setTipo_documento] = useState("");
   const [numero_documento, setNumero_documento] = useState("");
@@ -69,10 +65,8 @@ export function EditProfileModal({
   useEffect(() => {
     if (isOpen && cliente) {
       setIdCliente(cliente.id_cliente.toString());
-      setNombre1(cliente.nombre1);
-      setNombre2(cliente.nombre2);
-      setApellido1(cliente.apellido1);
-      setApellido2(cliente.apellido2);
+      setNombre(cliente.nombre);
+      setApellido(cliente.apellido);
       setNacionalidad(cliente.nacionalidad);
       setTipo_documento(cliente.tipo_documento);
       setNumero_documento(cliente.numero_documento);
@@ -110,10 +104,8 @@ export function EditProfileModal({
         body: JSON.stringify({
           id_cliente: Number(idCliente),
           id_credencial: Number(idCredencial),
-          nombre1,
-          nombre2,
-          apellido1,
-          apellido2,
+          nombre,
+          apellido,
           tipo_documento,
           documento: Number(numero_documento),
           nacionalidad,
@@ -126,10 +118,8 @@ export function EditProfileModal({
         // Actualizar el cliente en el componente padre
         const updatedCliente: Cliente = {
           id_cliente: Number(idCliente),
-          nombre1,
-          nombre2,
-          apellido1,
-          apellido2,
+          nombre,
+          apellido,
           nacionalidad,
           tipo_documento,
           numero_documento,
@@ -176,46 +166,30 @@ export function EditProfileModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="nombre1">Primer Nombre *</Label>
+              <Label htmlFor="nombre">Primer Nombre *</Label>
               <Input
-                id="nombre1"
-                value={nombre1}
-                onChange={(e) => setNombre1(e.target.value)}
+                id="nombre"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
                 required
                 disabled={isLoading}
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="nombre2">Segundo Nombre</Label>
-              <Input
-                id="nombre2"
-                value={nombre2}
-                onChange={(e) => setNombre2(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
+
 
             <div className="space-y-2">
-              <Label htmlFor="apellido1">Primer Apellido *</Label>
+              <Label htmlFor="apellido">Primer Apellido *</Label>
               <Input
-                id="apellido1"
-                value={apellido1}
-                onChange={(e) => setApellido1(e.target.value)}
+                id="apellido"
+                value={apellido}
+                onChange={(e) => setApellido(e.target.value)}
                 required
                 disabled={isLoading}
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="apellido2">Segundo Apellido</Label>
-              <Input
-                id="apellido2"
-                value={apellido2}
-                onChange={(e) => setApellido2(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
+
 
             <div className="space-y-2">
               <Label htmlFor="tipo_documento">Tipo de Documento *</Label>

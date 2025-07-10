@@ -29,10 +29,8 @@ import { ModeToggle } from "../components/mode-toggle";
 
 export default function Registrar() {
   const [showPassword, setShowPassword] = useState(false);
-  const [nombre1, setNombre1] = useState("");
-  const [nombre2, setNombre2] = useState("");
-  const [apellido1, setApellido1] = useState("");
-  const [apellido2, setApellido2] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
   const [nacionalidad, setNacionalidad] = useState("");
   const [tipo_documento, setTipo_documento] = useState("");
   const [numero_documento, setNumero_documento] = useState("");
@@ -56,10 +54,10 @@ export default function Registrar() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <ModeToggle />
+        {/* <ModeToggle /> */}
         {/* Logo/Brand */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-gray-500 rounded-2xl mx-auto mb-4 flex items-center justify-center">
             <Lock className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -82,93 +80,50 @@ export default function Registrar() {
 
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Nombre1 Field */}
+              {/* Nombre Field */}
               <div className="space-y-2">
                 <Label
-                  htmlFor="nombre1"
+                  htmlFor="nombre"
                   className="text-sm font-medium text-gray-900 dark:text-gray-100"
                 >
-                  Primer nombre
+                  Nombre
                 </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
-                    id="nombre1"
-                    type="nombre1"
-                    placeholder="tu primer nombre"
-                    value={nombre1}
-                    onChange={(e) => setNombre1(e.target.value)}
+                    id="nombre"
+                    type="nombre"
+                    placeholder="tus nombre"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
                     className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
                     required
                   />
                 </div>
               </div>
 
-              {/* Nombre2 Field */}
+              {/* Apellido Field */}
               <div className="space-y-2">
                 <Label
-                  htmlFor="nombre2"
+                  htmlFor="apellido"
                   className="text-sm font-medium text-gray-900 dark:text-gray-100"
                 >
-                  Segundo nombre
+                  Apellido
                 </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
-                    id="nombre2"
-                    type="nombre2"
-                    placeholder="tu segundo nombre"
-                    value={nombre2}
-                    onChange={(e) => setNombre2(e.target.value)}
+                    id="apellido"
+                    type="apellido"
+                    placeholder="tus apellido"
+                    value={apellido}
+                    onChange={(e) => setApellido(e.target.value)}
                     className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
                     required
                   />
                 </div>
               </div>
 
-              {/* Apellido1 Field */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="apellido1"
-                  className="text-sm font-medium text-gray-900 dark:text-gray-100"
-                >
-                  Primer apellido
-                </Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
-                  <Input
-                    id="apellido1"
-                    type="apellido1"
-                    placeholder="tu primer apellido"
-                    value={apellido1}
-                    onChange={(e) => setApellido1(e.target.value)}
-                    className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Apellido2 Field */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="apellido2"
-                  className="text-sm font-medium text-gray-900 dark:text-gray-100"
-                >
-                  Segundo apellido
-                </Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
-                  <Input
-                    id="apellido2"
-                    type="apellido2"
-                    placeholder="tu segundo apellido"
-                    value={apellido2}
-                    onChange={(e) => setApellido2(e.target.value)}
-                    className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div>
 
               {/* Nacionalidad Field */}
               <div className="space-y-2">
@@ -328,7 +283,7 @@ export default function Registrar() {
               {/* Login Button */}
               <Button
                 type="submit"
-                className="w-full h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium transition-all duration-200 transform hover:scale-[1.02]"
+                className="w-full h-11 bg-gradient-to-r from-blue-600 to-gray-500 hover:from-blue-700 hover:to-gray-600 text-white font-medium transition-all duration-200 transform hover:scale-[1.02]"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -356,13 +311,13 @@ export default function Registrar() {
             </div>
 
             {/* Social Login Buttons */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-2 sm:gap-3">
               <Button
                 variant="outline"
-                className="h-11 border-gray-50 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-blue-500"
+                className="w-full h-9 sm:h-10 md:h-11 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                 type="button"
               >
-                <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -380,23 +335,7 @@ export default function Registrar() {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                <span className="text-gray-50 dark:text-gray-500">Google</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="h-11 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-blue-500"
-                type="button"
-              >
-                <svg
-                  className="w-5 h-5 mr-2 text-blue-600"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                </svg>
-                <span className="text-gray-50 dark:text-gray-500">
-                  Facebook
-                </span>
+                <span className="text-gray-700 dark:text-gray-200">Continuar con Google</span>
               </Button>
             </div>
 

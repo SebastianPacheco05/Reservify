@@ -29,10 +29,8 @@ import { ModeToggle } from "../components/mode-toggle";
 
 interface Cliente {
   id_cliente: number;
-  nombre1: string;
-  nombre2: string;
-  apellido1: string;
-  apellido2: string;
+  nombre: string;
+  apellido: string;
   nacionalidad: string;
   tipo_documento: string;
   numero_documento: string;
@@ -42,10 +40,8 @@ interface Cliente {
 export default function Editar_cliente() {
   const { id_cliente } = useParams();
   const [idCliente, setIdCliente] = useState("");
-  const [nombre1, setNombre1] = useState("");
-  const [nombre2, setNombre2] = useState("");
-  const [apellido1, setApellido1] = useState("");
-  const [apellido2, setApellido2] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
   const [nacionalidad, setNacionalidad] = useState("");
   const [tipo_documento, setTipo_documento] = useState("");
   const [numero_documento, setNumero_documento] = useState("");
@@ -67,10 +63,8 @@ export default function Editar_cliente() {
         if (cliente) {
           setIdCliente(cliente.id_cliente);
           setIdCredencial(cliente.id_credencial);
-          setNombre1(cliente.nombre1);
-          setNombre2(cliente.nombre2);
-          setApellido1(cliente.apellido1);
-          setApellido2(cliente.apellido2);
+          setNombre(cliente.nombre);
+          setApellido(cliente.apellido);
           setNacionalidad(cliente.nacionalidad);
           setTipo_documento(cliente.tipo_documento);
           setNumero_documento(cliente.documento);
@@ -89,10 +83,8 @@ export default function Editar_cliente() {
       body: JSON.stringify({
         id_cliente: Number(idCliente),
         id_credencial: Number(idCredencial),
-        nombre1,
-        nombre2,
-        apellido1,
-        apellido2,
+        nombre,
+        apellido,
         tipo_documento,
         documento: Number(numero_documento),
         nacionalidad,
@@ -133,73 +125,11 @@ export default function Editar_cliente() {
 
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Campo id_cliente para pruebas */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="id_cliente"
-                  className="text-sm font-medium text-gray-900 dark:text-gray-100"
-                >
-                  ID Cliente (prueba)
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="id_cliente"
-                    type="number"
-                    placeholder="ID del cliente"
-                    value={idCliente}
-                    onChange={(e) => setIdCliente(e.target.value)}
-                    className="h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div>
 
-              {/* Campo id_credencial para pruebas */}
+              {/* Nombre Field */}
               <div className="space-y-2">
                 <Label
-                  htmlFor="id_credencial"
-                  className="text-sm font-medium text-gray-900 dark:text-gray-100"
-                >
-                  ID Credencial (prueba)
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="id_credencial"
-                    type="number"
-                    placeholder="ID de la credencial"
-                    value={idCredencial}
-                    onChange={(e) => setIdCredencial(e.target.value)}
-                    className="h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Campo id_rol para pruebas */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="id_rol"
-                  className="text-sm font-medium text-gray-900 dark:text-gray-100"
-                >
-                  ID Rol (prueba)
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="id_rol"
-                    type="number"
-                    placeholder="ID del rol"
-                    value={idRol}
-                    onChange={(e) => setIdRol(e.target.value)}
-                    className="h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Nombre1 Field */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="nombre1"
+                  htmlFor="nombre"
                   className="text-sm font-medium text-gray-900 dark:text-gray-100"
                 >
                   Primer nombre
@@ -207,65 +137,44 @@ export default function Editar_cliente() {
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
-                    id="nombre1"
+                    id="nombre"
                     type="text"
-                    placeholder="tu primer nombre"
-                    value={nombre1}
-                    onChange={(e) => setNombre1(e.target.value)}
+                    placeholder="tus nombre"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
                     className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
                     required
                   />
                 </div>
               </div>
 
-              {/* Nombre2 Field */}
+
+              {/* Apellido Field */}
               <div className="space-y-2">
                 <Label
-                  htmlFor="nombre2"
+                  htmlFor="apellido"
                   className="text-sm font-medium text-gray-900 dark:text-gray-100"
                 >
-                  Segundo nombre
+                  Apellido
                 </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
-                    id="nombre2"
+                    id="apellido"
                     type="text"
-                    placeholder="tu segundo nombre"
-                    value={nombre2}
-                    onChange={(e) => setNombre2(e.target.value)}
+                    placeholder="tus apellido"
+                    value={apellido}
+                    onChange={(e) => setApellido(e.target.value)}
                     className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
                     required
                   />
                 </div>
               </div>
 
-              {/* Apellido1 Field */}
+              {/* Apellido Field */}
               <div className="space-y-2">
                 <Label
-                  htmlFor="apellido1"
-                  className="text-sm font-medium text-gray-900 dark:text-gray-100"
-                >
-                  Primer apellido
-                </Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
-                  <Input
-                    id="apellido1"
-                    type="text"
-                    placeholder="tu primer apellido"
-                    value={apellido1}
-                    onChange={(e) => setApellido1(e.target.value)}
-                    className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Apellido2 Field */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="apellido2"
+                  htmlFor="apellido"
                   className="text-sm font-medium text-gray-900 dark:text-gray-100"
                 >
                   Segundo apellido
@@ -273,11 +182,11 @@ export default function Editar_cliente() {
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
-                    id="apellido2"
+                    id="apellido"
                     type="text"
                     placeholder="tu segundo apellido"
-                    value={apellido2}
-                    onChange={(e) => setApellido2(e.target.value)}
+                    value={apellido}
+                    onChange={(e) => setApellido(e.target.value)}
                     className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
                     required
                   />

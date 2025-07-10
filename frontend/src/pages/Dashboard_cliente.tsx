@@ -16,10 +16,8 @@ import { User, Phone, FileText, Globe } from "lucide-react";
 
 interface Cliente {
   id_cliente: number;
-  nombre1: string;
-  nombre2: string;
-  apellido1: string;
-  apellido2: string;
+  nombre: string;
+  apellido: string;
   nacionalidad: string;
   tipo_documento: string;
   numero_documento: string;
@@ -47,10 +45,8 @@ export default function ClientDashboard() {
         if (clienteData) {
           setCliente({
             id_cliente: clienteData.id_cliente,
-            nombre1: clienteData.nombre1,
-            nombre2: clienteData.nombre2,
-            apellido1: clienteData.apellido1,
-            apellido2: clienteData.apellido2,
+            nombre: clienteData.nombre,
+            apellido: clienteData.apellido,
             nacionalidad: clienteData.nacionalidad,
             tipo_documento: clienteData.tipo_documento,
             numero_documento: clienteData.documento,
@@ -92,10 +88,8 @@ export default function ClientDashboard() {
     );
   }
 
-  const fullName = `${cliente.nombre1} ${cliente.nombre2 || ""} ${
-    cliente.apellido1
-  } ${cliente.apellido2 || ""}`.trim();
-  const initials = `${cliente.nombre1[0]}${cliente.apellido1[0]}`.toUpperCase();
+  const fullName = `${cliente.nombre} ${cliente.apellido || ""}`.trim();
+  const initials = `${cliente.nombre[0]}${cliente.apellido[0]}`.toUpperCase();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -112,7 +106,7 @@ export default function ClientDashboard() {
               </Avatar>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                <p className="text-gray-600">Bienvenido, {cliente.nombre1}</p>
+                <p className="text-gray-600">Bienvenido, {cliente.nombre}</p>
               </div>
             </div>
             <Button

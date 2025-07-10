@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { RestaurantDataService } from "../services/RestaurantDataService"
+import { RestaurantDataService } from "../services/RestaurantDataService1"
 import type {
   RestaurantImage,
   RestaurantInfo,
