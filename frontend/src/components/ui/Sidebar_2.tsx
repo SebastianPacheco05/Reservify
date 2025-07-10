@@ -1,7 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { Home, Calendar, BarChart3, Receipt, Grid3X3, Settings, Menu, Clock } from "lucide-react"
+import { Home, 
+  Calendar, 
+  BarChart3, 
+  Receipt, 
+  Grid3X3, 
+  Settings, 
+  Menu, 
+  Clock,
+  X
+ } from "lucide-react"
 import { Button } from "../ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet"
 
@@ -16,7 +25,6 @@ const menuItems = [
   { id: "reservations", label: "Reservas", icon: Calendar },
   { id: "flow", label: "Flujo Diario", icon: BarChart3 },
   { id: "bills", label: "Cuentas", icon: Receipt },
-  { id: "settings", label: "Configuración", icon: Settings },
 ]
 
 function SidebarContent({ activeTab, onTabChange, onClose }: SidebarProps & { onClose?: () => void }) {
@@ -69,7 +77,7 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
       <div className="lg:hidden">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="fixed top-4 left-4 z-50">
+            <Button variant="outline" size="icon" className="fixed top-4 left-2 z-50">
               <Menu className="h-4 w-4" />
             </Button>
           </SheetTrigger>

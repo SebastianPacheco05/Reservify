@@ -85,16 +85,16 @@ const data = {
 
 export function AppSidebar() {
   return (
-    <Sidebar>
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
+    <Sidebar >
+      <SidebarHeader >
+        <SidebarMenu >
+          <SidebarMenuItem >
+            <SidebarMenuButton size="lg" asChild >
               <a href="#" className="flex items-center gap-2">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <UtensilsCrossed className="size-4" />
                 </div>
-                <div className="flex flex-col gap-0.5 leading-none">
+                <div className="flex flex-col gap-0.5  leading-none">
                   <span className="font-semibold">Reservify</span>
                   <span className="text-xs text-muted-foreground">
                     Panel de Control

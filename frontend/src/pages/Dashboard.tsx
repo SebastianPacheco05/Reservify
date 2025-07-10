@@ -90,7 +90,7 @@ export default function Dashboard() {
     <div className="flex h-screen bg-gray-50">
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto bg-gray-100">
         <div className="p-6 md:p-8 md:ml-0">
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-gray-900">Dashboard de Administración</h1>
