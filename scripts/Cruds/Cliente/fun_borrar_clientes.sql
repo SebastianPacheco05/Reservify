@@ -1,8 +1,8 @@
 CREATE OR REPLACE FUNCTION borrar_clientes(
-    p_id_cliente INT
+    p_documento INT
 ) RETURNS VOID AS $$
 BEGIN
     DELETE FROM "Cliente"
-    WHERE id_cliente = p_id_cliente;
+    WHERE documento = p_documento;
 END;
 $$ LANGUAGE plpgsql;

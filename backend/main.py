@@ -118,7 +118,7 @@ async def insertar(data: DuenoBase, db: Session = Depends(get_db)):
 
 @app.get("/listar_dueno")
 async def listar_dueno(data: ListarDuenos, db: Session = Depends(get_db)):
-    respuesta = list.obtener_dueno(db, data.id_dueno)
+    respuesta = list.obtener_dueno(db, data.documento)
     return {"respuesta": respuesta}
 
 
@@ -132,7 +132,7 @@ async def listar_duenos(db: Session = Depends(get_db)):
 async def editar(data: DuenoUpdate, db: Session = Depends(get_db)):
     dueno.editar_dueno(
         db,
-        data.id_dueno,
+        data.documento,
         data.nombre,
         data.apellido,
         data.id_rol,
@@ -142,7 +142,7 @@ async def editar(data: DuenoUpdate, db: Session = Depends(get_db)):
 
 @app.delete("/borrardueno")
 async def borrar(data: DuenoDelete, db: Session = Depends(get_db)):
-    dueno.borrar_dueno(db, data.id_dueno)
+    dueno.borrar_dueno(db, data.documento)
 
 
 # Restaurante
@@ -158,7 +158,7 @@ async def insertar(data: RestauranteBase, db: Session = Depends(get_db)):
         data.descripcion_restaurante,
         data.horario_apertura,
         data.horario_cierre,
-        data.id_dueno,
+        data.documento,
     )
 
 
@@ -184,7 +184,7 @@ async def editar(data: RestauranteUpdate, db: Session = Depends(get_db)):
         data.descripcion_restaurante,
         data.horario_apertura,
         data.horario_cierre,
-        data.id_dueno,
+        data.documento,
     )
 
 
@@ -256,7 +256,7 @@ async def listar_cliente(
     data: ListarClientes,
     db: Session = Depends(get_db),
 ):
-    respuesta = list.obtener_cliente(db, data.id_cliente)
+    respuesta = list.obtener_cliente(db, data.documento)
     return {"respuesta": respuesta}
 
 
@@ -270,7 +270,6 @@ async def listar_clientes(db: Session = Depends(get_db)):
 async def editar(data: ClienteUpdate, db: Session = Depends(get_db)):
     cliente.editar_clientes(
         db,
-        data.id_cliente,
         data.id_credencial,
         data.nombre,
         data.apellido,
@@ -284,7 +283,7 @@ async def editar(data: ClienteUpdate, db: Session = Depends(get_db)):
 
 @app.delete("/borrarcliente")
 async def borrar(data: ClienteDelete, db: Session = Depends(get_db)):
-    cliente.borrar_clientes(db, data.id_cliente)
+    cliente.borrar_clientes(db, data.documento)
 
 
 # Empleado
@@ -308,7 +307,7 @@ async def insertar(data: EmpleadoBase, db: Session = Depends(get_db)):
 
 @app.get("/listar_empleado")
 async def listar_empleado(data: ListarEmpleados, db: Session = Depends(get_db)):
-    respuesta = list.obtener_empleado(db, data.id_empleado)
+    respuesta = list.obtener_empleado(db, data.documento)
     return {"respuesta": respuesta}
 
 
@@ -322,7 +321,6 @@ async def listar_empleados(db: Session = Depends(get_db)):
 async def editar(data: EmpleadoUpdate, db: Session = Depends(get_db)):
     empleado.editar_empleado(
         db,
-        data.id_empleado,
         data.id_credencial,
         data.nombre,
         data.apellido,
@@ -337,7 +335,7 @@ async def editar(data: EmpleadoUpdate, db: Session = Depends(get_db)):
 
 @app.delete("/borrarempleado")
 async def borrar(data: EmpleadoDelete, db: Session = Depends(get_db)):
-    empleado.borrar_empleado(db, data.id_empleado)
+    empleado.borrar_empleado(db, data.documento)
 
 
 # Encabezado_factura
@@ -352,7 +350,7 @@ async def insertar(data: Encabezado_facturaBase, db: Session = Depends(get_db)):
         data.direccion,
         data.ciudad,
         data.fecha,
-        data.id_cliente,
+        data.documento,
     )
 
 
@@ -380,7 +378,7 @@ async def editar(data: Encabezado_facturaUpdate, db: Session = Depends(get_db)):
         data.direccion,
         data.ciudad,
         data.fecha,
-        data.id_cliente,
+        data.documento,
     )
 
 
@@ -444,7 +442,7 @@ async def borrar(data: Detalle_facturaDelete, db: Session = Depends(get_db)):
 @app.post("/insertarreserva")
 async def insertar(data: ReservaBase, db: Session = Depends(get_db)):
     reserva.insertar_reserva(
-        db, data.id_mesa, data.id_cliente, data.id_encab_fact, data.horario, data.fecha
+        db, data.id_mesa, data.documento, data.id_encab_fact, data.horario, data.fecha
     )
 
 
@@ -466,7 +464,7 @@ async def editar(data: ReservaUpdate, db: Session = Depends(get_db)):
         db,
         data.id_reserva,
         data.id_mesa,
-        data.id_cliente,
+        data.documento,
         data.id_encab_fact,
         data.horario,
         data.fecha,
@@ -582,7 +580,7 @@ async def listar_calculos_mensuales(db: Session = Depends(get_db)):
 
 @app.post("/insertarcomentario")
 async def insertar(data: ComentarioBase, db: Session = Depends(get_db)):
-    comentarios.insertar_comentario(db, data.id_cliente, data.nit, data.comentario)
+    comentarios.insertar_comentario(db, data.documento, data.nit, data.comentario)
 
 
 @app.put("/editarcomentario")

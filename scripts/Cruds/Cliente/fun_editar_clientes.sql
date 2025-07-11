@@ -1,5 +1,4 @@
 CREATE OR REPLACE FUNCTION editar_clientes(
-    p_id_cliente INT,
     p_id_credencial INT,
     p_nombre VARCHAR(20),
     p_apellido VARCHAR(20),
@@ -12,13 +11,13 @@ CREATE OR REPLACE FUNCTION editar_clientes(
 BEGIN
     UPDATE "Cliente"
     SET id_credencial = p_id_credencial,
+        documento = p_documento,
         nombre = p_nombre,
         apellido = p_apellido,
         tipo_documento = p_tipo_documento,
-        documento = p_documento,
         nacionalidad = p_nacionalidad,
         telefono = p_telefono,
         id_rol = p_id_rol
-    WHERE id_cliente = p_id_cliente;
+    WHERE documento = p_documento;
 END;
 $$ LANGUAGE plpgsql;

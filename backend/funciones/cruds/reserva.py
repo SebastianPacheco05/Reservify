@@ -7,7 +7,6 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 def insertar_reserva(
     db: Session,
     id_mesa: int,
-    id_cliente: int,
     id_encab_fact: int,
     horario: str,
     fecha: str,
@@ -15,11 +14,10 @@ def insertar_reserva(
     try:
         db.execute(
             text(
-                "SELECT insertar_reserva(:id_mesa, :id_cliente, :id_encab_fact, :horario, :fecha)"
+                "SELECT insertar_reserva(:id_mesa, :id_encab_fact, :horario, :fecha)"
             ),
             {
                 "id_mesa": id_mesa,
-                "id_cliente": id_cliente,
                 "id_encab_fact": id_encab_fact,
                 "horario": horario,
                 "fecha": fecha,
@@ -45,7 +43,6 @@ def editar_reserva(
     db: Session,
     id_reserva: int,
     id_mesa: int,
-    id_cliente: int,
     id_encab_fact: int,
     horario: str,
     fecha: str,
@@ -53,12 +50,11 @@ def editar_reserva(
     try:
         db.execute(
             text(
-                "SELECT editar_reserva(:id_reserva, :id_mesa, :id_cliente, :id_encab_fact, :horario, :fecha)"
+                "SELECT editar_reserva(:id_reserva, :id_mesa, :id_encab_fact, :horario, :fecha)"
             ),
             {
                 "id_reserva": id_reserva,
                 "id_mesa": id_mesa,
-                "id_cliente": id_cliente,
                 "id_encab_fact": id_encab_fact,
                 "horario": horario,
                 "fecha": fecha,

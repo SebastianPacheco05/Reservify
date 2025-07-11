@@ -4,10 +4,10 @@ CREATE OR REPLACE FUNCTION insertar_enc_fac(
     p_direccion VARCHAR(50),
     p_ciudad VARCHAR(20),
     p_fecha DATE,
-    p_id_cliente INT
+    p_documento INT
 ) RETURNS VOID AS $$
 BEGIN
-    INSERT INTO "Encabezado_Factura" (NIT, nombre_restaurante, direccion, ciudad, fecha, id_cliente)
-    VALUES (p_NIT, p_nombre_restaurante, p_direccion, p_ciudad, p_fecha, p_id_cliente);
+    INSERT INTO "Encabezado_Factura" (NIT, nombre_restaurante, direccion, ciudad, fecha, documento)
+    VALUES (p_NIT, p_nombre_restaurante, p_direccion, p_ciudad, p_fecha, p_documento);
 END;
 $$ LANGUAGE plpgsql;

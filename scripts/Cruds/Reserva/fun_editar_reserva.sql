@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION editar_reserva(
     p_id_reserva INT,
     p_id_mesa INT,
-    p_id_cliente INT,
+    p_documento INT,
     p_id_encab_fact INT,
     p_horario TIME,
     p_fecha DATE, 
@@ -27,7 +27,7 @@ BEGIN
     UPDATE "Reserva"
     SET 
         id_mesa = p_id_mesa,
-        id_cliente = p_id_cliente,
+        documento = p_documento,
         id_encab_fact = p_id_encab_fact,
         horario = p_horario,
         fecha = p_fecha,

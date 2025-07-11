@@ -27,7 +27,7 @@ async def send2hbf(db: Session, id_reserva: int):
 
     result = db.execute(
         text(
-            'SELECT id_mesa, id_cliente, horario, fecha FROM "Reserva" WHERE id_reserva = :id_reserva'
+            'SELECT id_mesa, horario, fecha FROM "Reserva" WHERE id_reserva = :id_reserva'
         ),
         {"id_reserva": id_reserva},
     )

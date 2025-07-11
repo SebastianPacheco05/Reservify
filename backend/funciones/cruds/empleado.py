@@ -51,7 +51,6 @@ def insertar_empleado(
 
 def editar_empleado(
     db: Session,
-    id_empleado: int,
     id_credencial: int,
     nombre: str,
     apellido: str,
@@ -65,10 +64,9 @@ def editar_empleado(
     try:
         db.execute(
             text(
-                "SELECT editar_empleado(:id_empleado, :id_credencial, :nombre, :apellido, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol, :NIT)"
+                "SELECT editar_empleado(:id_credencial, :nombre, :apellido, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol, :NIT)"
             ),
             {
-                "id_empleado": id_empleado,
                 "id_credencial": id_credencial,
                 "nombre": nombre,
                 "apellido": apellido,
@@ -96,13 +94,13 @@ def editar_empleado(
         )
 
 
-def borrar_empleado(db: Session, id_empleado: int):
+def borrar_empleado(db: Session, documento: int):
     try:
         db.execute(
-            text("SELECT borrar_empleado(:id_empleado)"), {"id_empleado": id_empleado}
+            text("SELECT borrar_empleado(:documento)"), {"documento": documento}
         )
         db.commit()
-        raise HTTPException(status_code=200, detail="Empleado eliminado correctamente")
+        raise HTTPException(status_code=200, detail=f"Empleado con documento {documento} eliminado correctamente")
     except IntegrityError as e:
         db.rollback()
         raise HTTPException(

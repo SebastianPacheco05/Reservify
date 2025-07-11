@@ -4,12 +4,12 @@ from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 
-def insertar_comentario(db: Session, id_cliente: int, nit: int, comentario: str):
+def insertar_comentario(db: Session, documento: int, nit: int, comentario: str):
     try:
         db.execute(
-            text("SELECT insertar_comentario(:id_cliente, :nit, :comentario)"),
+            text("SELECT insertar_comentario(:documento, :nit, :comentario)"),
             {
-                "id_cliente": id_cliente,
+                "documento": documento,
                 "nit": nit,
                 "comentario": comentario,
             },

@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION editar_dueno(
-    p_id_dueno INT,
+    p_documento INT,
     p_nombre VARCHAR(20),
     p_apellido VARCHAR(20),
     p_id_rol INT,
@@ -11,6 +11,6 @@ BEGIN
         apellido = p_apellido,
         id_rol = p_id_rol,
         id_credencial = p_id_credencial
-    WHERE id_dueno = p_id_dueno;
+    WHERE documento = p_documento;
 END;
 $$ LANGUAGE plpgsql;

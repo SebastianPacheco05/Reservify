@@ -37,7 +37,8 @@ CREATE TABLE "Roles" (
 
 -- Tabla Dueno: Almacena información de los dueños de restaurantes
 CREATE TABLE "Dueno" (
-    id_dueno SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
+    documento DECIMAL(10, 0) PRIMARY KEY NOT NULL,  -- Documento de identidad único
+    tipo_documento VARCHAR(15) NOT NULL CHECK (tipo_documento IN ('CC', 'CE', 'TI', 'Pasaporte')),  -- Tipo de documento con validación
     nombre VARCHAR(50) NOT NULL,  -- Primer nombre
     apellido VARCHAR(50) NOT NULL,  -- Primer apellido
     id_rol INT NOT NULL,  -- Referencia al rol
@@ -60,10 +61,10 @@ CREATE TABLE "Restaurante" (
     descripcion_restaurante VARCHAR(100) NOT NULL,  -- Descripción del restaurante
     horario_apertura TIME NOT NULL,  -- Hora de apertura
     horario_cierre TIME NOT NULL,  -- Hora de cierre
-    id_dueno INT NOT NULL,  -- Referencia al dueño
+    documento INT NOT NULL,  -- Referencia al dueño
     id_categoria INT not null,  -- Referencia a la categoría
     foreign key (id_categoria) references "Categorias" (id_categoria)on delete cascade,
-    FOREIGN KEY (id_dueno) REFERENCES "Dueno" (id_dueno) ON DELETE CASCADE,
+    FOREIGN KEY (documento) REFERENCES "Dueno" (documento) ON DELETE CASCADE,
     CHECK (horario_apertura < horario_cierre)  -- Validación de horarios
 );
 
@@ -79,12 +80,11 @@ CREATE TABLE "Mesas" (
 
 -- Tabla Cliente: Almacena información de los clientes
 CREATE TABLE "Cliente" (
-    id_cliente SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     id_credencial INT NOT NULL UNIQUE,  -- Referencia a credenciales únicas
     nombre VARCHAR(50) NOT NULL,  -- Primer nombre
     apellido VARCHAR(50) NOT NULL,  -- Primer apellido
     tipo_documento VARCHAR(15) NOT NULL CHECK (tipo_documento IN ('CC', 'CE', 'TI', 'Pasaporte')),  -- Tipo de documento con validación
-    documento BIGINT NOT NULL UNIQUE CHECK (documento > 0),  -- Número de documento único
+    documento DECIMAL(10, 0) PRIMARY KEY NOT NULL CHECK (documento > 0),  -- Número de documento único
     nacionalidad VARCHAR(20) NOT NULL,  -- Nacionalidad
     telefono VARCHAR(10) NOT NULL CHECK (telefono ~ '^[0-9]{10}$'),  -- Teléfono con validación de formato
     id_rol INT NOT NULL,  -- Referencia al rol
@@ -94,12 +94,11 @@ CREATE TABLE "Cliente" (
 
 -- Tabla Empleado: Almacena información de los empleados
 CREATE TABLE "Empleado" (
-    id_empleado SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     id_credencial INT NOT NULL UNIQUE,  -- Referencia a credenciales únicas
     nombre VARCHAR(50) NOT NULL,  -- Primer nombre
     apellido VARCHAR(50) NOT NULL,  -- Primer apellido
     tipo_documento VARCHAR(15) NOT NULL CHECK (tipo_documento IN ('CC', 'CE', 'TI', 'Pasaporte')),  -- Tipo de documento con validación
-    documento BIGINT UNIQUE NOT NULL CHECK (documento > 0),  -- Número de documento único
+    documento DECIMAL(10, 0) PRIMARY KEY NOT NULL CHECK (documento > 0),  -- Número de documento único
     nacionalidad VARCHAR(20) NOT NULL,  -- Nacionalidad
     telefono VARCHAR(10) NOT NULL CHECK (telefono ~ '^[0-9]{10}$'),  -- Teléfono con validación de formato
     id_rol INT NOT NULL,  -- Referencia al rol
@@ -117,9 +116,9 @@ CREATE TABLE "Encabezado_Factura" (
     direccion VARCHAR(50) NOT NULL,  -- Dirección del restaurante
     ciudad VARCHAR(20) NOT NULL,  -- Ciudad
     fecha DATE NOT NULL CHECK (fecha = CURRENT_DATE),  -- Fecha de la factura
-    id_cliente INT NOT NULL,  -- Referencia al cliente
+    documento INT NOT NULL,  -- Referencia al cliente
     FOREIGN KEY (NIT) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE,
-    FOREIGN KEY (id_cliente) REFERENCES "Cliente" (id_cliente) ON DELETE CASCADE
+    FOREIGN KEY (documento) REFERENCES "Cliente" (documento) ON DELETE CASCADE
 );
 
 -- Tabla Detalle_Factura: Almacena los detalles de cada factura
@@ -142,7 +141,7 @@ CREATE TABLE "Detalle_Factura" (
 CREATE TABLE "Reserva" (
     id_reserva SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     id_mesa INT NOT NULL,  -- Referencia a la mesa
-    id_cliente INT NOT NULL,  -- Referencia al cliente
+    documento INT NOT NULL,  -- Referencia al cliente
     id_encab_fact INT NOT NULL,  -- Referencia a la factura
     estado_reserva VARCHAR NOT NULL DEFAULT 'no presentada'
     CHECK (estado_reserva IN (
@@ -152,7 +151,7 @@ CREATE TABLE "Reserva" (
     fecha DATE NOT NULL CHECK (fecha >= CURRENT_DATE),  -- Fecha de la reserva
     UNIQUE (id_mesa, fecha, horario),  -- Restricción de unicidad para evitar reservas duplicadas
     FOREIGN KEY (id_mesa) REFERENCES "Mesas" (id_mesa) ON DELETE CASCADE,
-    FOREIGN KEY (id_cliente) REFERENCES "Cliente" (id_cliente) ON DELETE CASCADE,
+    FOREIGN KEY (documento) REFERENCES "Cliente" (documento) ON DELETE CASCADE,
     FOREIGN KEY (id_encab_fact) REFERENCES "Encabezado_Factura" (id_encab_fact) ON DELETE CASCADE
 );
 
@@ -169,12 +168,12 @@ CREATE TABLE "Calculos_mensuales" (
 
 CREATE TABLE "Comentarios" (
     id_comentario SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
-    id_cliente INT NOT NULL,  -- Referencia al cliente
+    documento INT NOT NULL,  -- Referencia al cliente
     nit INT NOT NULL,  -- Referencia al restaurante
     comentario TEXT NOT NULL,  -- Comentario del cliente
     fecha TIMESTAMP NOT NULL DEFAULT NOW(),  -- Fecha del comentario
     calificacion INT CHECK (calificacion >= 1 AND calificacion <= 5),  -- Calificación del 1 al 5
-    FOREIGN KEY (id_cliente) REFERENCES "Cliente" (id_cliente) ON DELETE CASCADE,
+    FOREIGN KEY (documento) REFERENCES "Cliente" (documento) ON DELETE CASCADE,
     FOREIGN KEY (nit) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE
 );
 

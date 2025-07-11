@@ -5,7 +5,7 @@ CREATE OR REPLACE FUNCTION editar_restaurante(
     p_descripcion_restaurante VARCHAR(100),
     p_horario_apertura TIME,
     p_horario_cierre TIME,
-    p_id_dueno INT,
+    p_documento INT,
     p_id_categoria INT
 ) RETURNS VOID AS $$
 BEGIN
@@ -15,7 +15,7 @@ BEGIN
         descripcion_restaurante = p_descripcion_restaurante,
         horario_apertura = p_horario_apertura,
         horario_cierre = p_horario_cierre,
-        id_dueno = p_id_dueno,
+        documento = p_documento,
         id_categoria = p_id_categoria
     WHERE NIT = p_NIT;
 END;

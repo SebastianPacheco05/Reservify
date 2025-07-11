@@ -39,11 +39,11 @@ class DuenoBase(BaseModel):
 
 
 class DuenoUpdate(DuenoBase):
-    id_dueno: int
+    documento: int
 
 
 class DuenoDelete(BaseModel):
-    id_dueno: int
+    documento: int
 
 
 # Restaurante
@@ -54,7 +54,6 @@ class RestauranteBase(BaseModel):
     descripcion_restaurante: str
     horario_apertura: str
     horario_cierre: str
-    id_dueno: int
 
 
 class RestauranteUpdate(RestauranteBase):
@@ -98,7 +97,7 @@ class ClienteUpdate(ClienteBase):
 
 
 class ClienteDelete(BaseModel):
-    id_cliente: int
+    documento: int
 
 
 # Empleado
@@ -115,11 +114,11 @@ class EmpleadoBase(BaseModel):
 
 
 class EmpleadoUpdate(EmpleadoBase):
-    id_empleado: int
+    documento: int
 
 
 class EmpleadoDelete(BaseModel):
-    id_empleado: int
+    documento: int
 
 
 # Encabezado_factura
@@ -129,7 +128,6 @@ class Encabezado_facturaBase(BaseModel):
     direccion: str
     ciudad: str
     fecha: str
-    id_cliente: int
 
 
 class Encabezado_facturaUpdate(Encabezado_facturaBase):
@@ -161,7 +159,6 @@ class Detalle_facturaDelete(BaseModel):
 # Reserva
 class ReservaBase(BaseModel):
     id_mesa: int
-    id_cliente: int
     id_encab_fact: int
     horario: str
     fecha: str
@@ -185,7 +182,7 @@ class ListarRoles(BaseModel):
 
 
 class ListarDuenos(BaseModel):
-    id_dueno: int
+    documento: int
 
 
 class ListarClientes(BaseModel):
@@ -193,7 +190,7 @@ class ListarClientes(BaseModel):
 
 
 class ListarEmpleados(BaseModel):
-    id_empleado: int
+    documento: int
 
 
 class ListarRestaurantes(BaseModel):

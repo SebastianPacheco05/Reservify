@@ -41,7 +41,7 @@ def insertar_dueno(
 
 def editar_dueno(
     db: Session,
-    id_dueno: int,
+    documento: int,
     nombre: str,
     apellido: str,
     id_rol: int,
@@ -50,10 +50,10 @@ def editar_dueno(
     try:
         db.execute(
             text(
-                "SELECT editar_dueno(:id_dueno, :nombre, :apellido, :id_rol, :id_credencial)"
+                "SELECT editar_dueno(:documento, :nombre, :apellido, :id_rol, :id_credencial)"
             ),
             {
-                "id_dueno": id_dueno,
+                "documento": documento,
                 "nombre": nombre,
                 "apellido": apellido,
                 "id_rol": id_rol,
@@ -76,11 +76,11 @@ def editar_dueno(
         )
 
 
-def borrar_dueno(db: Session, id_dueno: int):
+def borrar_dueno(db: Session, documento: int):
     try:
-        db.execute(text("SELECT borrar_dueno(:id_dueno)"), {"id_dueno": id_dueno})
+        db.execute(text("SELECT borrar_dueno(:documento)"), {"documento": documento})
         db.commit()
-        raise HTTPException(status_code=200, detail="Dueño eliminado correctamente")
+        raise HTTPException(status_code=200, detail=f"Dueño con documento {documento} eliminado correctamente")
     except IntegrityError as e:
         db.rollback()
         raise HTTPException(

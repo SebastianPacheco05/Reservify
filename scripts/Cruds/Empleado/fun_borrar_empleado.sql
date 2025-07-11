@@ -1,8 +1,8 @@
 CREATE OR REPLACE FUNCTION borrar_empleado(
-    p_id_empleado INT
+    p_documento INT
 ) RETURNS VOID AS $$
 BEGIN
     DELETE FROM "Empleado"
-    WHERE id_empleado = p_id_empleado;
+    WHERE documento = p_documento;
 END;
 $$ LANGUAGE plpgsql;

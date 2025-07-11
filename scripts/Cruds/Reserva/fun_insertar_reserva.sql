@@ -1,6 +1,6 @@
 CREATE OR REPLACE FUNCTION insertar_reserva(
     p_id_mesa INT,
-    p_id_cliente INT,
+    p_documento INT,
     p_id_encab_fact INT,
     p_horario TIME,
     p_fecha DATE,
@@ -22,14 +22,14 @@ BEGIN
 
     INSERT INTO "Reserva" (
         id_mesa,
-        id_cliente,
+        documento,
         id_encab_fact,
         horario,
         fecha,
         estado_reserva
     ) VALUES (
         p_id_mesa,
-        p_id_cliente,
+        p_documento,
         p_id_encab_fact,
         p_horario,
         p_fecha,

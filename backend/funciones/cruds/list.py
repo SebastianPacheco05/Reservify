@@ -43,12 +43,12 @@ def obtener_roles(db: Session):
     ]
 
 
-def obtener_dueno(db: Session, id_dueno: int):
+def obtener_dueno(db: Session, documento: str):
     result = db.execute(
         text(
-            'SELECT nombre, apellido, id_rol, id_credencial FROM "Dueno" WHERE id_dueno = :id_dueno'
+            'SELECT nombre, apellido, id_rol, id_credencial FROM "Dueno" WHERE documento = :documento'
         ),
-        {"id_dueno": id_dueno},
+        {"documento": documento},
     )
     row = result.fetchone()
     if row:
@@ -64,13 +64,13 @@ def obtener_dueno(db: Session, id_dueno: int):
 def obtener_duenos(db: Session):
     result = db.execute(
         text(
-            'SELECT id_dueno, nombre, apellido, id_rol, id_credencial FROM "Dueno"'
+            'SELECT documento, nombre, apellido, id_rol, id_credencial FROM "Dueno"'
         )
     )
     rows = result.fetchall()
     return [
         {
-            "id_dueno": row[0],
+            "documento": row[0],
             "nombre": row[1],
             "apellido": row[2],
             "id_rol": row[4],
@@ -80,12 +80,12 @@ def obtener_duenos(db: Session):
     ]
 
 
-def obtener_cliente(db: Session, id_cliente: int):
+def obtener_cliente(db: Session, documento: str):
     result = db.execute(
         text(
-            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol FROM "Cliente" WHERE id_cliente = :id_cliente'
+            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol FROM "Cliente" WHERE documento = :documento'
         ),
-        {"id_cliente": id_cliente},
+        {"documento": documento},
     )
     row = result.fetchone()
     if row:
@@ -105,32 +105,31 @@ def obtener_cliente(db: Session, id_cliente: int):
 def obtener_clientes(db: Session):
     result = db.execute(
         text(
-            'SELECT id_cliente, id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol FROM "Cliente"'
+            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol FROM "Cliente"'
         )
     )
     rows = result.fetchall()
     return [
         {
-            "id_cliente": row[0],
-            "id_credencial": row[1],
-            "nombre": row[2],
-            "apellido": row[3],
-            "tipo_documento": row[5],
-            "documento": row[6],
-            "nacionalidad": row[7],
-            "telefono": row[8],
-            "id_rol": row[9],
+            "id_credencial": row[0],
+            "nombre": row[1],
+            "apellido": row[2],
+            "tipo_documento": row[3],
+            "documento": row[5],
+            "nacionalidad": row[6],
+            "telefono": row[7],
+            "id_rol": row[8],
         }
         for row in rows
     ]
 
 
-def obtener_empleado(db: Session, id_empleado: int):
+def obtener_empleado(db: Session, documento: str):
     result = db.execute(
         text(
-            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, NIT FROM "Empleado" WHERE id_empleado = :id_empleado'
+            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, NIT FROM "Empleado" WHERE documento = :documento'
         ),
-        {"id_empleado": id_empleado},
+        {"documento": documento},
     )
     row = result.fetchone()
     if row:
@@ -151,22 +150,21 @@ def obtener_empleado(db: Session, id_empleado: int):
 def obtener_empleados(db: Session):
     result = db.execute(
         text(
-            'SELECT id_empleado, id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, NIT FROM "Empleado"'
+            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, NIT FROM "Empleado"'
         )
     )
     rows = result.fetchall()
     return [
         {
-            "id_empleado": row[0],
-            "id_credencial": row[1],
-            "nombre": row[2],
-            "apellido": row[3],
-            "tipo_documento": row[5],
-            "documento": row[6],
-            "nacionalidad": row[7],
-            "telefono": row[8],
-            "id_rol": row[9],
-            "NIT": row[10],
+            "id_credencial": row[0],
+            "nombre": row[1],
+            "apellido": row[2],
+            "tipo_documento": row[4],
+            "documento": row[5],
+            "nacionalidad": row[6],
+            "telefono": row[7],
+            "id_rol": row[8],
+            "NIT": row[9],
         }
         for row in rows
     ]
@@ -175,7 +173,7 @@ def obtener_empleados(db: Session):
 def obtener_restaurante(db: Session, nit: int):
     result = db.execute(
         text(
-            'SELECT NIT, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, id_dueno FROM "Restaurante" WHERE nit = :nit'
+            'SELECT NIT, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, documento FROM "Restaurante" WHERE nit = :nit'
         ),
         {"nit": nit},
     )
@@ -188,7 +186,7 @@ def obtener_restaurante(db: Session, nit: int):
             "descripcion_restaurante": row[3],
             "horario_apertura": row[4],
             "horario_cierre": row[5],
-            "id_dueno": row[6],
+            "documento": row[6],
         }
     return None
 
@@ -196,7 +194,7 @@ def obtener_restaurante(db: Session, nit: int):
 def obtener_restaurantes(db: Session):
     result = db.execute(
         text(
-            'SELECT nit, NIT, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, id_dueno FROM "Restaurante"'
+            'SELECT nit, NIT, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, documento FROM "Restaurante"'
         )
     )
     rows = result.fetchall()
@@ -209,7 +207,7 @@ def obtener_restaurantes(db: Session):
             "descripcion_restaurante": row[4],
             "horario_apertura": row[5],
             "horario_cierre": row[6],
-            "id_dueno": row[7],
+            "documento": row[7],
         }
         for row in rows
     ]
@@ -255,7 +253,7 @@ def obtener_mesas(db: Session):
 def obtener_encabezado_factura(db: Session, id_encab_fact: int):
     result = db.execute(
         text(
-            'SELECT NIT, nombre_restaurante, direccion, ciudad, fecha, id_cliente FROM "Encabezado_factura" WHERE id_encab_fact = :id_encab_fact'
+            'SELECT NIT, nombre_restaurante, direccion, ciudad, fecha FROM "Encabezado_factura" WHERE id_encab_fact = :id_encab_fact'
         ),
         {"id_encab_fact": id_encab_fact},
     )
@@ -267,7 +265,6 @@ def obtener_encabezado_factura(db: Session, id_encab_fact: int):
             "direccion": row[2],
             "ciudad": row[3],
             "fecha": row[4],
-            "id_cliente": row[5],
         }
     return None
 
@@ -275,7 +272,7 @@ def obtener_encabezado_factura(db: Session, id_encab_fact: int):
 def obtener_encabezados_factura(db: Session):
     result = db.execute(
         text(
-            'SELECT id_encab_fact, NIT, nombre_restaurante, direccion, ciudad, fecha, id_cliente FROM "Encabezado_factura"'
+            'SELECT id_encab_fact, NIT, nombre_restaurante, direccion, ciudad, fecha FROM "Encabezado_factura"'
         )
     )
     rows = result.fetchall()
@@ -287,7 +284,6 @@ def obtener_encabezados_factura(db: Session):
             "direccion": row[3],
             "ciudad": row[4],
             "fecha": row[5],
-            "id_cliente": row[6],
         }
         for row in rows
     ]
@@ -337,7 +333,7 @@ def obtener_detalles_factura(db: Session):
 def obtener_reserva(db: Session, id_reserva: int):
     result = db.execute(
         text(
-            'SELECT id_mesa, id_cliente, id_encab_fact, horario, fecha FROM "Reserva" WHERE id_reserva = :id_reserva'
+            'SELECT id_mesa, id_encab_fact, horario, fecha FROM "Reserva" WHERE id_reserva = :id_reserva'
         ),
         {"id_reserva": id_reserva},
     )
@@ -345,10 +341,9 @@ def obtener_reserva(db: Session, id_reserva: int):
     if row:
         return {
             "id_mesa": row[0],
-            "id_cliente": row[1],
-            "id_encab_fact": row[2],
-            "horario": row[3],
-            "fecha": row[4],
+            "id_encab_fact": row[1],
+            "horario": row[2],
+            "fecha": row[3],
         }
     return None
 
@@ -356,7 +351,7 @@ def obtener_reserva(db: Session, id_reserva: int):
 def obtener_reservas(db: Session):
     result = db.execute(
         text(
-            'SELECT id_reserva, id_mesa, id_cliente, id_encab_fact, horario, fecha FROM "Reserva"'
+            'SELECT id_reserva, id_mesa, id_encab_fact, horario, fecha FROM "Reserva"'
         )
     )
     rows = result.fetchall()
@@ -364,10 +359,9 @@ def obtener_reservas(db: Session):
         {
             "id_reserva": row[0],
             "id_mesa": row[1],
-            "id_cliente": row[2],
-            "id_encab_fact": row[3],
-            "horario": row[4],
-            "fecha": row[5],
+            "id_encab_fact": row[2],
+            "horario": row[3],
+            "fecha": row[4],
         }
         for row in rows
     ]

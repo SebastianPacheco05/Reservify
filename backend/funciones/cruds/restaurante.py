@@ -12,13 +12,13 @@ def insertar_restaurante(
     descripcion_restaurante: str,
     horario_apertura: str,
     horario_cierre: str,
-    id_dueno: int,
+    documento: int,
     id_categoria: int,
 ):
     try:
         db.execute(
             text(
-                "SELECT insertar_restaurante(:NIT, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :id_dueno, :id_categoria)"
+                "SELECT insertar_restaurante(:NIT, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :documento, :id_categoria)"
             ),
             {
                 "NIT": NIT,
@@ -27,7 +27,7 @@ def insertar_restaurante(
                 "descripcion_restaurante": descripcion_restaurante,
                 "horario_apertura": horario_apertura,
                 "horario_cierre": horario_cierre,
-                "id_dueno": id_dueno,
+                "documento": documento,
                 "id_categoria": id_categoria,
             },
         )
@@ -57,13 +57,13 @@ def editar_restaurante(
     descripcion_restaurante: str,
     horario_apertura: str,
     horario_cierre: str,
-    id_dueno: int,
+    documento: int,
     id_categoria: int,
 ):
     try:
         db.execute(
             text(
-                "SELECT editar_restaurante(:nit, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :id_dueno, :id_categoria)"
+                "SELECT editar_restaurante(:nit, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :documento, :id_categoria)"
             ),
             {
                 "nit": nit,
@@ -72,7 +72,7 @@ def editar_restaurante(
                 "descripcion_restaurante": descripcion_restaurante,
                 "horario_apertura": horario_apertura,
                 "horario_cierre": horario_cierre,
-                "id_dueno": id_dueno,
+                "documento": documento,
                 "id_categoria": id_categoria,
             },
         )

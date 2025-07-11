@@ -11,12 +11,12 @@ def insertar_enc_fac(
     direccion: str,
     ciudad: str,
     fecha: str,
-    id_cliente: int,
+    documento: str,
 ):
     try:
         db.execute(
             text(
-                "SELECT insertar_enc_fac(:NIT, :nombre_restaurante, :direccion, :ciudad, :fecha, :id_cliente)"
+                "SELECT insertar_enc_fac(:NIT, :nombre_restaurante, :direccion, :ciudad, :fecha, :documento)"
             ),
             {
                 "NIT": NIT,
@@ -24,7 +24,7 @@ def insertar_enc_fac(
                 "direccion": direccion,
                 "ciudad": ciudad,
                 "fecha": fecha,
-                "id_cliente": id_cliente,
+                "documento": documento,
             },
         )
         db.commit()
@@ -53,12 +53,12 @@ def editar_enc_fac(
     direccion: str,
     ciudad: str,
     fecha: str,
-    id_cliente: int,
+    documento: str,
 ):
     try:
         db.execute(
             text(
-                "SELECT editar_enc_fac(:id_encab_fact, :NIT, :nombre_restaurante, :direccion, :ciudad, :fecha, :id_cliente)"
+                "SELECT editar_enc_fac(:id_encab_fact, :NIT, :nombre_restaurante, :direccion, :ciudad, :fecha, :documento)"
             ),
             {
                 "id_encab_fact": id_encab_fact,
@@ -67,7 +67,7 @@ def editar_enc_fac(
                 "direccion": direccion,
                 "ciudad": ciudad,
                 "fecha": fecha,
-                "id_cliente": id_cliente,
+                "documento": documento,
             },
         )
         db.commit()

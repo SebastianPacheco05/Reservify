@@ -47,7 +47,6 @@ def insertar_clientes(
 
 def editar_clientes(
     db: Session,
-    id_cliente: int,
     id_credencial: int,
     nombre: str,
     apellido: str,
@@ -60,10 +59,9 @@ def editar_clientes(
     try:
         db.execute(
             text(
-                "SELECT editar_clientes(:id_cliente, :id_credencial, :nombre, :apellido, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol)"
+                "SELECT editar_clientes(:id_credencial, :nombre, :apellido, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol)"
             ),
             {
-                "id_cliente": id_cliente,
                 "id_credencial": id_credencial,
                 "nombre": nombre,
                 "apellido": apellido,
@@ -89,13 +87,13 @@ def editar_clientes(
         )
 
 
-def borrar_clientes(db: Session, id_cliente: int):
+def borrar_clientes(db: Session, documento: int):
     try:
         db.execute(
-            text("SELECT borrar_clientes(:id_cliente)"), {"id_cliente": id_cliente}
+            text("SELECT borrar_clientes(:documento)"), {"documento": documento}
         )
         db.commit()
-        raise HTTPException(status_code=200, detail="Cliente eliminado correctamente")
+        raise HTTPException(status_code=200, detail=f"Cliente con documento {documento} eliminado correctamente")
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(
