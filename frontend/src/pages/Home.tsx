@@ -1,7 +1,8 @@
 "use client";
 
 import { Link } from "react-router-dom";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import {
   Search,
   MapPin,
@@ -19,10 +20,16 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
+// import { ModeToggle } from "../components/mode-toggle";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // ← nuevo estado
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
   const categories = [
     {
       name: "Italiana",
@@ -116,23 +123,27 @@ export default function Home() {
             >
               Ofertas
             </a>
-            <Link to="/Login">
-              <Button
-                className="text-white hover:bg-neutral-700 transition-colors duration-300"
-                size="sm"
-              >
-                Iniciar Sesión
-              </Button>
-            </Link>
 
-            <Link to="/Registrar">
-              <Button
-                className="text-white hover:bg-neutral-700 transition-colors duration-300"
-                size="sm"
-              >
-                Registrarse
-              </Button>
-            </Link>
+            {!isLoggedIn && (
+              <>
+                <Link to="/Login">
+                  <Button
+                    className="text-white bg-neutral-700 hover:bg-neutral-400"
+                    size="sm"
+                  >
+                    Iniciar Sesión
+                  </Button>
+                </Link>
+                <Link to="/Registrar">
+                  <Button
+                    className="text-white bg-neutral-700 hover:bg-neutral-400"
+                    size="sm"
+                  >
+                    Registrarse
+                  </Button>
+                </Link>
+              </>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -155,26 +166,31 @@ export default function Home() {
           <div className="md:hidden bg-white border-t px-4 py-4 space-y-4">
             <a
               href="#"
-              className="block text-gray-700 hover:text-blue-600 transition-colors font-medium"
+              className="block text-gray-700 hover:text-blue-600 font-medium"
             >
               Restaurantes
             </a>
             <a
               href="#"
-              className="block text-gray-700 hover:text-blue-600 transition-colors font-medium"
+              className="block text-gray-700 hover:text-blue-600 font-medium"
             >
               Ofertas
             </a>
-            <div className="flex space-x-2 pt-2">
-              <Link to="/Login">
-                <Button variant="outline" size="sm" className="flex-1">
-                  Iniciar Sesión
-                </Button>
-              </Link>
-              <Button size="sm" className="flex-1">
-                Registrarse
-              </Button>
-            </div>
+
+            {!isLoggedIn && (
+              <div className="flex space-x-2 pt-2">
+                <Link to="/Login">
+                  <Button variant="outline" size="sm" className="flex-1">
+                    Iniciar Sesión
+                  </Button>
+                </Link>
+                <Link to="/Registrar">
+                  <Button size="sm" className="flex-1">
+                    Registrarse
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         )}
       </header>
@@ -247,7 +263,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {restaurants.map((restaurant) => (
               <Card
                 key={restaurant.id}
@@ -273,7 +289,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <CardContent className="p-6">
+                <CardContent className="p-4">
                   <div className="flex justify-between items-start mb-2">
                     <h4 className="text-xl font-bold text-gray-900">
                       {restaurant.name}

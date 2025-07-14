@@ -14,30 +14,29 @@ import EmployeeDashboard from "./pages/employee-dashboard";
 import ClientDashboard from "./pages/Dashboard_cliente";
 import Restaurant from "./pages/Restaurant";
 
-import { ThemeProvider } from "./components/theme-provider";
+// import { ThemeProvider } from "./components/theme-provider";
+import Datos_personales from "./pages/datos_personales";
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/Login" element={<Login />} />
-        <Route path="/Registrar" element={<Registrar />} />
-        <Route
-          path="/Insertar_restaurante"
-          element={<Insertar_restaurante />}
-        />
-        <Route path="/Insertar_credencial" element={<Insertar_credencial />} />
-        <Route path="/Editar_restaurante" element={<Editar_restaurante />} />
-        <Route path="/Editar_cliente" element={<Editar_cliente />} />
-        <Route path="/Borrar_restaurante" element={<Borrar_restaurante />} />
-        <Route path="/Borrar_cliente" element={<Borrar_cliente />} />
-        <Route path="/Dashboard" element={<Dashboard />} />
-        <Route path="/EmployeeDashboard" element={<EmployeeDashboard />} />
-        <Route path="/ClientDashboard" element={<ClientDashboard />} />
-        <Route path="/Restaurant" element={<Restaurant />} />
-      </Routes>
-    </ThemeProvider>
+    // <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/Login" element={<Login />} />
+      <Route path="/Registrar" element={<Registrar />} />
+      <Route path="/Insertar_restaurante" element={<Insertar_restaurante />} />
+      <Route path="/Insertar_credencial" element={<Insertar_credencial />} />
+      <Route path="/Editar_restaurante" element={<Editar_restaurante />} />
+      <Route path="/Editar_cliente" element={<Editar_cliente />} />
+      <Route path="/Borrar_restaurante" element={<Borrar_restaurante />} />
+      <Route path="/Borrar_cliente" element={<Borrar_cliente />} />
+      <Route path="/Dashboard" element={<Dashboard />} />
+      <Route path="/EmployeeDashboard" element={<EmployeeDashboard />} />
+      <Route path="/ClientDashboard" element={<ClientDashboard />} />
+      <Route path="/Restaurant" element={<Restaurant />} />
+      <Route path="/Datos_personales" element={<Datos_personales />} />
+    </Routes>
+    // </ThemeProvider>
   );
 }
 

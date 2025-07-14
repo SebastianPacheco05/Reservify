@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useState } from "react";
-import { Utensils, ArrowRight, } from "lucide-react";
+import { Utensils, ArrowRight } from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -14,7 +14,6 @@ import {
 } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { ModeToggle } from "../components/mode-toggle";
 
 export default function Borrar_restaurante() {
   const [NIT, setNIT] = useState("");
@@ -27,15 +26,13 @@ export default function Borrar_restaurante() {
     // Simular llamada a API
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    console.log("Login attempt:", { NIT,isLoading });
+    console.log("Login attempt:", { NIT, isLoading });
     setIsLoading(false);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <ModeToggle />
-
         <Card className="shadow-xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
           <CardHeader className="space-y-1 pb-6">
             <CardTitle className="text-xl text-center text-gray-900 dark:text-white">
@@ -48,17 +45,16 @@ export default function Borrar_restaurante() {
 
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
-
               {/* NIT Field */}
               <div className="space-y-2">
                 <Label
-                  htmlFor=" NIT"     
+                  htmlFor=" NIT"
                   className="text-sm font-medium text-gray-900 dark:text-gray-100"
                 >
                   Numero de NIT
                 </Label>
                 <div className="relative">
-                  < Utensils  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                  <Utensils className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <Input
                     id="NIT"
                     type="NIT"
@@ -70,7 +66,6 @@ export default function Borrar_restaurante() {
                   />
                 </div>
               </div>
-
 
               {/* Login Button */}
               <Button
@@ -91,7 +86,6 @@ export default function Borrar_restaurante() {
                 )}
               </Button>
             </form>
-            
           </CardContent>
         </Card>
 

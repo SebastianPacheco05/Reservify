@@ -1,6 +1,7 @@
 # Importacion del FastAPI
-from fastapi import FastAPI
-from fastapi import HTTPException
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
 
 
 # Importacion de los routers
@@ -26,6 +27,15 @@ from funciones.email_sender.timer_reserv import tarea_programada
 from funciones.email_sender.email_utils import send_email
 
 app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Cambia al dominio de tu frontend
+    allow_credentials=True,
+    allow_methods=["*"],  # O especifica ["POST"]
+    allow_headers=["*"],
+)
 
 # Routers
 app.include_router(credenciales_router, prefix="/credenciales")
