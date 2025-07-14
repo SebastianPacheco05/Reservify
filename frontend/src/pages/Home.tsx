@@ -101,29 +101,18 @@ export default function Home() {
       <header className="bg-white-/95 backdrop-blur-md fixed top-0 w-full z-50 shadow-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center px-4 h-16">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-400 rounded-lg flex items-center justify-center">
-              <Utensils className="w-5 h-5 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
-              Reservify
-            </h1>
+          <img src="../../../public/Reservify-logo.svg" 
+             className="w-full h-15 rounded-4xl"/>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <a
-              href="#"
+              href="#restaurantes"
               className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
             >
               Restaurantes
             </a>
-            <a
-              href="#"
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
-            >
-              Ofertas
-            </a>
-
             {!isLoggedIn && (
               <>
                 <Link to="/Login">
@@ -252,9 +241,9 @@ export default function Home() {
       </section>
 
       {/* Featured Restaurants */}
-      <section className="bg-white py-20 px-4">
+      <section id="restaurantes" className="bg-white py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div  className="text-center mb-16">
             <h3 className="text-3xl font-bold text-gray-900 mb-4">
               Restaurantes Destacados
             </h3>
