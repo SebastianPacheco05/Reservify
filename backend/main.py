@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, Form, Request
+from fastapi import FastAPI, Depends, HTTPException, Request, APIRouter
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from config import get_db
@@ -26,6 +26,14 @@ from funciones.email_sender.email_utils import send_email
 from funciones.email_sender.timer_reserv import tarea_programada
 
 app = FastAPI()
+
+protected_router = APIRouter(
+    # prefix="/admin",  # opcional
+    dependencies=[Depends(verificar_token)]
+)
+
+app.include_router(protected_router)
+
 
 # Permitir CORS desde frontend (localhost:5173 por defecto en Vite)
 app.add_middleware(
@@ -56,7 +64,7 @@ def perfil(usuario: dict = Depends(verificar_token)):
     return {"usuario": usuario}
 
 
-@app.get("/listar_credenciales")
+@protected_router.get("/listar_credenciales")
 async def listar_credenciales(db: Session = Depends(get_db)):
     respuesta = list.obtener_credenciales(db)
     return {"respuesta": respuesta}
@@ -75,7 +83,7 @@ async def borrar(data: CredencialDelete, db: Session = Depends(get_db)):
 # Roles
 
 
-@app.post("/insertaroles")
+@protected_router.post("/insertaroles")
 async def insertar(data: RolBase, db: Session = Depends(get_db)):
     roles.insertar_roles(db, data.nombre_rol, data.descripcion)
 
@@ -86,7 +94,7 @@ async def listar_rol(data: ListarRoles, db: Session = Depends(get_db)):
     return {"respuesta": respuesta}
 
 
-@app.get("/listar_roles")
+@protected_router.get("/listar_roles")
 async def listar_roles(db: Session = Depends(get_db)):
     respuesta = list.obtener_roles(db)
     return {"respuesta": respuesta}

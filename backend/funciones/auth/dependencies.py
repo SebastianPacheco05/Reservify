@@ -7,7 +7,7 @@ from sqlalchemy import text
 from config import SessionLocal
 from .jwt_config import SECRET_KEY, ALGORITHM
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
 def get_db():
