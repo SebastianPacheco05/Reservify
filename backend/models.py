@@ -32,6 +32,8 @@ class RolDelete(BaseModel):
 
 # Dueno
 class DuenoBase(BaseModel):
+    documento: int
+    tipo_documento: str
     nombre: str
     apellido: str
     id_rol: int

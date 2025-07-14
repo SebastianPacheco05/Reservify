@@ -6,6 +6,8 @@ from fastapi import HTTPException
 
 def insertar_dueno(
     db: Session,
+    documento: int,
+    tipo_documento: str,
     nombre: str,
     apellido: str,
     id_rol: int,
@@ -14,9 +16,11 @@ def insertar_dueno(
     try:
         db.execute(
             text(
-                "SELECT insertar_dueno(:nombre, :apellido, :id_rol, :id_credencial)"
+                "SELECT insertar_dueno(:documento, :tipo_documento, :nombre, :apellido, :id_rol, :id_credencial)"
             ),
             {
+                "documento": documento,
+                "tipo_documento": tipo_documento,
                 "nombre": nombre,
                 "apellido": apellido,
                 "id_rol": id_rol,

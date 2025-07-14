@@ -31,12 +31,12 @@ def verificar_token(token: str = Depends(oauth2_scheme), db: Session = Depends(g
             {"token": token},
         ).fetchone()
 
-        if not result or result["revoked"]:
-            raise HTTPException(
-                status_code=401, detail="Token revocado o no registrado"
-            )
+        if not result or result[0]:  # ← SOLUCIÓN AQUÍ
+            raise HTTPException(status_code=401, detail="Token revocado o no registrado")
 
         return payload
 
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Token inválido")
+    except JWTError as e:
+        raise HTTPException(status_code=401, detail=f"Token inválido: {str(e)}")
+
+
