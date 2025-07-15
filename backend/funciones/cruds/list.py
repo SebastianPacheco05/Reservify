@@ -1,28 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
-# import bcrypt
-
-
-# def verificar_password(plain_password: str, hashed_password: str) -> bool:
-#     return bcrypt.checkpw(
-#         plain_password.encode("utf-8"), hashed_password.encode("utf-8")
-#     )
-
-
-# def login(db: Session, email: str, password: str):
-#     result = db.execute(
-#         text(
-#             'SELECT id_credencial, email, password FROM "Credenciales" WHERE email = :email'
-#         ),
-#         {"email": email},
-#     )
-#     row = result.fetchone()
-#     if row and verificar_password(password, row[2]):
-#         return {"id_credencial": row[0]}
-#     else:
-#         return {"La contraseña ingresada es incorrecta"}
-
 
 def obtener_rol(db: Session, id_rol: int):
     result = db.execute(
