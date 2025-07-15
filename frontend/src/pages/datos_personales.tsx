@@ -15,8 +15,6 @@ import {
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 
-import { ModeToggle } from "../components/mode-toggle";
-
 export default function Registrar() {
   const [nombre, setNombre] = useState("");
   const [apellidos, setApellidos] = useState("");
@@ -51,7 +49,7 @@ export default function Registrar() {
       <div className="w-full max-w-md sm:max-w-2xl md:max-w-3xl">
         {/* Logo/Brand */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+          <div className="w-16 h-16 bg-gradient-to-r from-blue-700 to-gray-700 rounded-2xl mx-auto mb-4 flex items-center justify-center">
             <Lock className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 ">
@@ -222,7 +220,7 @@ export default function Registrar() {
                   {/* Login Button */}
                   <Button
                     type="submit"
-                    className="w-full h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium transition-all duration-200 transform hover:scale-[1.02]"
+                    className="w-full h-11 bg-gradient-to-r from-blue-600 to-gray-600 hover:from-blue-700 hover:to-gray-700 text-white font-medium transition-all duration-200 transform hover:scale-[1.02]"
                     disabled={isLoading}
                   >
                     {isLoading ? (
