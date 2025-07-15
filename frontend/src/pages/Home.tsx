@@ -117,7 +117,7 @@ export default function Home() {
               <>
                 <Link to="/Login">
                   <Button
-                    className="text-white bg-neutral-700 hover:bg-neutral-400"
+                    className="text-white bg-neutral-700 hover:bg-blue-800"
                     size="sm"
                   >
                     Iniciar Sesión
@@ -125,7 +125,7 @@ export default function Home() {
                 </Link>
                 <Link to="/Registrar">
                   <Button
-                    className="text-white bg-neutral-700 hover:bg-neutral-400"
+                    className="text-white bg-neutral-700 hover:bg-blue-800"
                     size="sm"
                   >
                     Registrarse
@@ -308,9 +308,11 @@ export default function Home() {
                     <Badge variant="outline">{restaurant.cuisine}</Badge>
                   </div>
 
-                  <Button className="w-full mt-4 group-hover:bg-blue-700 transition-colors">
+                  <Link to="/Restaurant">
+                  <Button className="w-full mt-4 text-white bg-neutral-700 hover:bg-blue-800 ">
                     Ver disponibilidad
                   </Button>
+                  </Link>
                 </CardContent>
               </Card>
             ))}

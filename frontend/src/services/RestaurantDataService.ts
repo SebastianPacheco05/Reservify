@@ -32,23 +32,23 @@ import type {
           resolve([
             {
               id: "1",
-              url: "/placeholder.svg?height=400&width=800",
+              url: "../../../public/terraza-1.webp",
               alt: "Vista principal del restaurante",
               isPrimary: true,
             },
             {
               id: "2",
-              url: "/placeholder.svg?height=400&width=800",
+              url: "../../../public/terraza-2.jpg",
               alt: "Interior elegante del restaurante",
             },
             {
               id: "3",
-              url: "/placeholder.svg?height=400&width=800",
+              url: "../../../public/terraza-3.jpg",
               alt: "Terraza con vista panorámica",
             },
             {
               id: "4",
-              url: "/placeholder.svg?height=400&width=800",
+              url: "../../../public/terraza-4.jpg",
               alt: "Cocina abierta y moderna",
             },
           ])
@@ -62,9 +62,9 @@ import type {
         setTimeout(() => {
           resolve({
             id: this.restaurantId,
-            name: "Restaurante La Bella Vista",
+            name: "Restaurante La Terraza",
             description:
-              "Disfruta de una experiencia gastronómica única en nuestro acogedor restaurante. Ofrecemos una fusión perfecta entre la cocina mediterránea tradicional y toques modernos, utilizando ingredientes frescos y de la más alta calidad. Nuestro ambiente elegante y servicio excepcional hacen de cada visita una ocasión especial.",
+              "Disfruta de una experiencia gastronómica única en nuestro acogedor restaurante. Ofrecemos una fusión perfecta entre la cocina de mar tradicional y toques modernos, utilizando ingredientes frescos y de la más alta calidad. Nuestro ambiente elegante y servicio excepcional hacen de cada visita una ocasión especial.",
             rating: 4.8,
             totalReviews: 324,
             phone: "+34 912 345 678",

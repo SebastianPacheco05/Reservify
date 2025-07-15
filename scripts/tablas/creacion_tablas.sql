@@ -146,7 +146,8 @@ CREATE TABLE "Reserva" (
     estado_reserva VARCHAR NOT NULL DEFAULT 'no presentada'
     CHECK (estado_reserva IN (
     'pendiente', 'confirmada', 'en curso', 'finalizada', 'cancelada', 'no presentada')
-    ), -- Estado de la reserva con validación
+    ),-- Estado de la reserva con validación
+    num_comensales INT NOT NULL DEFAULT 1,  -- numero de personas
     horario TIME NOT NULL,  -- Horario de la reserva
     fecha DATE NOT NULL CHECK (fecha >= CURRENT_DATE),  -- Fecha de la reserva
     UNIQUE (id_mesa, fecha, horario),  -- Restricción de unicidad para evitar reservas duplicadas
