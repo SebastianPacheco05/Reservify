@@ -33,8 +33,8 @@ def obtener_dueno(db: Session, documento: str):
         return {
             "nombre": row[0],
             "apellido": row[1],
-            "id_rol": row[3],
-            "id_credencial": row[4],
+            "id_rol": row[2],
+            "id_credencial": row[3],
         }
     return None
 
@@ -71,11 +71,11 @@ def obtener_cliente(db: Session, documento: str):
             "id_credencial": row[0],
             "nombre": row[1],
             "apellido": row[2],
-            "tipo_documento": row[4],
-            "documento": row[5],
-            "nacionalidad": row[6],
-            "telefono": row[7],
-            "id_rol": row[8],
+            "tipo_documento": row[3],
+            "documento": row[4],
+            "nacionalidad": row[5],
+            "telefono": row[6],
+            "id_rol": row[7],
         }
     return None
 
@@ -86,20 +86,21 @@ def obtener_clientes(db: Session):
             'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol FROM "Cliente"'
         )
     )
-    rows = result.fetchall()
+    rows = result.mappings().all()
     return [
         {
-            "id_credencial": row[0],
-            "nombre": row[1],
-            "apellido": row[2],
-            "tipo_documento": row[3],
-            "documento": row[5],
-            "nacionalidad": row[6],
-            "telefono": row[7],
-            "id_rol": row[8],
+            "id_credencial": row["id_credencial"],
+            "nombre": row["nombre"],
+            "apellido": row["apellido"],
+            "tipo_documento": row["tipo_documento"],
+            "documento": row["documento"],
+            "nacionalidad": row["nacionalidad"],
+            "telefono": row["telefono"],
+            "id_rol": row["id_rol"],
         }
         for row in rows
     ]
+
 
 
 def obtener_empleado(db: Session, documento: str):
@@ -115,12 +116,12 @@ def obtener_empleado(db: Session, documento: str):
             "id_credencial": row[0],
             "nombre": row[1],
             "apellido": row[2],
-            "tipo_documento": row[4],
-            "documento": row[5],
-            "nacionalidad": row[6],
-            "telefono": row[7],
-            "id_rol": row[8],
-            "NIT": row[9],
+            "tipo_documento": row[3],
+            "documento": row[4],
+            "nacionalidad": row[5],
+            "telefono": row[6],
+            "id_rol": row[7],
+            "NIT": row[8],
         }
     return None
 
@@ -137,10 +138,10 @@ def obtener_empleados(db: Session):
             "id_credencial": row[0],
             "nombre": row[1],
             "apellido": row[2],
-            "tipo_documento": row[4],
-            "documento": row[5],
-            "nacionalidad": row[6],
-            "telefono": row[7],
+            "tipo_documento": row[3],
+            "documento": row[4],
+            "nacionalidad": row[5],
+            "telefono": row[6],
             "id_rol": row[8],
             "NIT": row[9],
         }

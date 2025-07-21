@@ -226,10 +226,8 @@
               "raw": "{\n  \"NIT\": \"123456789\",\n  \"direccion\": \"Calle 123\",\n  \"nombre_restaurante\": \"Mi Restaurante\",\n  \"descripcion_restaurante\": \"Comida deliciosa\",\n  \"horario_apertura\": \"08:00\",\n  \"horario_cierre\": \"22:00\",\n  \"documento\": \"987654321\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/insertarrestaurante",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/insertarrestaurante",
+              "host": ["{{base_url}}"],
               "path": ["insertarrestaurante"]
             }
           }
@@ -240,10 +238,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8000/listar_restaurantes",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_restaurantes",
+              "host": ["{{base_url}}"],
               "path": ["listar_restaurantes"]
             }
           }
@@ -263,10 +259,8 @@
               "raw": "{\n  \"numero_mesa\": 1,\n  \"capacidad\": 4,\n  \"estado\": \"disponible\",\n  \"id_restaurante\": 1\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/insertarmesas",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/insertarmesas",
+              "host": ["{{base_url}}"],
               "path": ["insertarmesas"]
             }
           }
@@ -278,10 +272,8 @@
             "header": [],
             "body": { "mode": "raw", "raw": "{\n  \"id_restaurante\": 1\n}" },
             "url": {
-              "raw": "http://localhost:8000/listar_mesas_restaurante",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_mesas_restaurante",
+              "host": ["{{base_url}}"],
               "path": ["listar_mesas_restaurante"]
             }
           }
@@ -292,10 +284,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8000/listar_mesas",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_mesas",
+              "host": ["{{base_url}}"],
               "path": ["listar_mesas"]
             }
           }
@@ -310,10 +300,8 @@
               "raw": "{\n  \"id_mesa\": 1,\n  \"numero_mesa\": 2,\n  \"capacidad\": 6,\n  \"estado\": \"ocupada\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/editarmesas",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/editarmesas",
+              "host": ["{{base_url}}"],
               "path": ["editarmesas"]
             }
           }
@@ -325,10 +313,8 @@
             "header": [],
             "body": { "mode": "raw", "raw": "{\n  \"id_mesa\": 1\n}" },
             "url": {
-              "raw": "http://localhost:8000/borrarmesas",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/borrarmesas",
+              "host": ["{{base_url}}"],
               "path": ["borrarmesas"]
             }
           }
@@ -348,10 +334,8 @@
               "raw": "{\n  \"nombre\": \"Pedro\",\n  \"apellido\": \"González\",\n  \"documento\": \"123456789\",\n  \"telefono\": \"1234567890\",\n  \"email\": \"pedro@ejemplo.com\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/insertarcliente",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/insertarcliente",
+              "host": ["{{base_url}}"],
               "path": ["insertarcliente"]
             }
           }
@@ -366,10 +350,8 @@
               "raw": "{\n  \"documento\": \"123456789\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/listar_cliente",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_cliente",
+              "host": ["{{base_url}}"],
               "path": ["listar_cliente"]
             }
           }
@@ -380,10 +362,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8000/listar_clientes",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_clientes",
+              "host": ["{{base_url}}"],
               "path": ["listar_clientes"]
             }
           }
@@ -398,10 +378,8 @@
               "raw": "{\n  \"documento\": \"123456789\",\n  \"nombre\": \"Pedro\",\n  \"apellido\": \"González\",\n  \"telefono\": \"1234567890\",\n  \"email\": \"pedro@ejemplo.com\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/editarcliente",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/editarcliente",
+              "host": ["{{base_url}}"],
               "path": ["editarcliente"]
             }
           }
@@ -416,10 +394,8 @@
               "raw": "{\n  \"documento\": \"123456789\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/borrarcliente",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/borrarcliente",
+              "host": ["{{base_url}}"],
               "path": ["borrarcliente"]
             }
           }
@@ -439,10 +415,8 @@
               "raw": "{\n  \"nombre\": \"María\",\n  \"apellido\": \"López\",\n  \"documento\": \"987654321\",\n  \"telefono\": \"9876543210\",\n  \"email\": \"maria@ejemplo.com\",\n  \"id_rol\": 2,\n  \"id_credencial\": 2\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/insertarempleado",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/insertarempleado",
+              "host": ["{{base_url}}"],
               "path": ["insertarempleado"]
             }
           }
@@ -457,10 +431,8 @@
               "raw": "{\n  \"documento\": \"987654321\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/listar_empleado",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_empleado",
+              "host": ["{{base_url}}"],
               "path": ["listar_empleado"]
             }
           }
@@ -471,10 +443,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8000/listar_empleados",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_empleados",
+              "host": ["{{base_url}}"],
               "path": ["listar_empleados"]
             }
           }
@@ -489,10 +459,8 @@
               "raw": "{\n  \"documento\": \"987654321\",\n  \"nombre\": \"María\",\n  \"apellido\": \"López\",\n  \"telefono\": \"9876543210\",\n  \"email\": \"maria@ejemplo.com\",\n  \"id_rol\": 2,\n  \"id_credencial\": 2\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/editarempleado",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/editarempleado",
+              "host": ["{{base_url}}"],
               "path": ["editarempleado"]
             }
           }
@@ -507,10 +475,8 @@
               "raw": "{\n  \"documento\": \"987654321\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/borrarempleado",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/borrarempleado",
+              "host": ["{{base_url}}"],
               "path": ["borrarempleado"]
             }
           }
@@ -530,10 +496,8 @@
               "raw": "{\n  \"id_reserva\": 1,\n  \"id_cliente\": 1,\n  \"id_restaurante\": 1,\n  \"fecha_emision\": \"2023-10-27T10:00:00\",\n  \"total_factura\": 150.00,\n  \"estado\": \"pendiente\",\n  \"id_empleado\": 1\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/insertarfactura",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/insertarfactura",
+              "host": ["{{base_url}}"],
               "path": ["insertarfactura"]
             }
           }
@@ -545,10 +509,8 @@
             "header": [],
             "body": { "mode": "raw", "raw": "{\n  \"id_factura\": 1\n}" },
             "url": {
-              "raw": "http://localhost:8000/listar_factura",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_factura",
+              "host": ["{{base_url}}"],
               "path": ["listar_factura"]
             }
           }
@@ -559,10 +521,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8000/listar_facturas",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_facturas",
+              "host": ["{{base_url}}"],
               "path": ["listar_facturas"]
             }
           }
@@ -577,10 +537,8 @@
               "raw": "{\n  \"id_factura\": 1,\n  \"total_factura\": 200.00,\n  \"estado\": \"pagado\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/editarfactura",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/editarfactura",
+              "host": ["{{base_url}}"],
               "path": ["editarfactura"]
             }
           }
@@ -592,10 +550,8 @@
             "header": [],
             "body": { "mode": "raw", "raw": "{\n  \"id_factura\": 1\n}" },
             "url": {
-              "raw": "http://localhost:8000/borrarfactura",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/borrarfactura",
+              "host": ["{{base_url}}"],
               "path": ["borrarfactura"]
             }
           }
@@ -615,10 +571,8 @@
               "raw": "{\n  \"id_factura\": 1,\n  \"id_producto\": 1,\n  \"cantidad\": 2,\n  \"precio_unitario\": 50.00,\n  \"subtotal\": 100.00\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/insertardetallefactura",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/insertardetallefactura",
+              "host": ["{{base_url}}"],
               "path": ["insertardetallefactura"]
             }
           }
@@ -633,10 +587,8 @@
               "raw": "{\n  \"id_detalle_factura\": 1\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/listar_detalle_factura",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_detalle_factura",
+              "host": ["{{base_url}}"],
               "path": ["listar_detalle_factura"]
             }
           }
@@ -647,10 +599,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8000/listar_detalles_facturas",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_detalles_facturas",
+              "host": ["{{base_url}}"],
               "path": ["listar_detalles_facturas"]
             }
           }
@@ -665,10 +615,8 @@
               "raw": "{\n  \"id_detalle_factura\": 1,\n  \"cantidad\": 3,\n  \"precio_unitario\": 60.00\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/editardetallefactura",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/editardetallefactura",
+              "host": ["{{base_url}}"],
               "path": ["editardetallefactura"]
             }
           }
@@ -683,10 +631,8 @@
               "raw": "{\n  \"id_detalle_factura\": 1\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/borrardetallefactura",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/borrardetallefactura",
+              "host": ["{{base_url}}"],
               "path": ["borrardetallefactura"]
             }
           }
@@ -706,10 +652,8 @@
               "raw": "{\n  \"id_cliente\": 1,\n  \"id_mesa\": 1,\n  \"fecha_hora\": \"2023-10-27T11:00:00\",\n  \"estado\": \"confirmada\",\n  \"id_empleado\": 1\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/insertarreserva",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/insertarreserva",
+              "host": ["{{base_url}}"],
               "path": ["insertarreserva"]
             }
           }
@@ -721,10 +665,8 @@
             "header": [],
             "body": { "mode": "raw", "raw": "{\n  \"id_reserva\": 1\n}" },
             "url": {
-              "raw": "http://localhost:8000/listar_reserva",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_reserva",
+              "host": ["{{base_url}}"],
               "path": ["listar_reserva"]
             }
           }
@@ -735,10 +677,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8000/listar_reservas",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_reservas",
+              "host": ["{{base_url}}"],
               "path": ["listar_reservas"]
             }
           }
@@ -753,10 +693,8 @@
               "raw": "{\n  \"id_reserva\": 1,\n  \"estado\": \"cancelada\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/editarreserva",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/editarreserva",
+              "host": ["{{base_url}}"],
               "path": ["editarreserva"]
             }
           }
@@ -768,10 +706,8 @@
             "header": [],
             "body": { "mode": "raw", "raw": "{\n  \"id_reserva\": 1\n}" },
             "url": {
-              "raw": "http://localhost:8000/borrarreserva",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/borrarreserva",
+              "host": ["{{base_url}}"],
               "path": ["borrarreserva"]
             }
           }
@@ -791,10 +727,8 @@
               "raw": "{\n  \"nombre_categoria\": \"Comida\",\n  \"descripcion\": \"Productos alimenticios\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/insertarcategoria",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/insertarcategoria",
+              "host": ["{{base_url}}"],
               "path": ["insertarcategoria"]
             }
           }
@@ -806,10 +740,8 @@
             "header": [],
             "body": { "mode": "raw", "raw": "{\n  \"id_categoria\": 1\n}" },
             "url": {
-              "raw": "http://localhost:8000/listar_categoria",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_categoria",
+              "host": ["{{base_url}}"],
               "path": ["listar_categoria"]
             }
           }
@@ -820,10 +752,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8000/listar_categorias",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_categorias",
+              "host": ["{{base_url}}"],
               "path": ["listar_categorias"]
             }
           }
@@ -838,10 +768,8 @@
               "raw": "{\n  \"id_categoria\": 1,\n  \"nombre_categoria\": \"Comida\",\n  \"descripcion\": \"Productos alimenticios\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/editarcategoria",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/editarcategoria",
+              "host": ["{{base_url}}"],
               "path": ["editarcategoria"]
             }
           }
@@ -853,10 +781,8 @@
             "header": [],
             "body": { "mode": "raw", "raw": "{\n  \"id_categoria\": 1\n}" },
             "url": {
-              "raw": "http://localhost:8000/borrarcategoria",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/borrarcategoria",
+              "host": ["{{base_url}}"],
               "path": ["borrarcategoria"]
             }
           }
@@ -876,10 +802,8 @@
               "raw": "{\n  \"id_restaurante\": 1,\n  \"nombre\": \"Soporte\",\n  \"email\": \"soporte@ejemplo.com\",\n  \"telefono\": \"1234567890\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/insertarcontacto",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/insertarcontacto",
+              "host": ["{{base_url}}"],
               "path": ["insertarcontacto"]
             }
           }
@@ -891,10 +815,8 @@
             "header": [],
             "body": { "mode": "raw", "raw": "{\n  \"id_contacto\": 1\n}" },
             "url": {
-              "raw": "http://localhost:8000/listar_contacto",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_contacto",
+              "host": ["{{base_url}}"],
               "path": ["listar_contacto"]
             }
           }
@@ -905,10 +827,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8000/listar_contactos",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_contactos",
+              "host": ["{{base_url}}"],
               "path": ["listar_contactos"]
             }
           }
@@ -923,10 +843,8 @@
               "raw": "{\n  \"id_contacto\": 1,\n  \"nombre\": \"Soporte\",\n  \"email\": \"soporte@ejemplo.com\",\n  \"telefono\": \"1234567890\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/editarcontacto",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/editarcontacto",
+              "host": ["{{base_url}}"],
               "path": ["editarcontacto"]
             }
           }
@@ -938,10 +856,8 @@
             "header": [],
             "body": { "mode": "raw", "raw": "{\n  \"id_contacto\": 1\n}" },
             "url": {
-              "raw": "http://localhost:8000/borrarcontacto",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/borrarcontacto",
+              "host": ["{{base_url}}"],
               "path": ["borrarcontacto"]
             }
           }
@@ -961,10 +877,8 @@
               "raw": "{\n  \"id_restaurante\": 1,\n  \"mes\": \"2023-10\",\n  \"ventas_totales\": 10000.00,\n  \"ganancias_totales\": 2000.00,\n  \"reservas_totales\": 50,\n  \"clientes_totales\": 100\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/insertarcalculomensual",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/insertarcalculomensual",
+              "host": ["{{base_url}}"],
               "path": ["insertarcalculomensual"]
             }
           }
@@ -979,10 +893,8 @@
               "raw": "{\n  \"id_calculo_mensual\": 1\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/listar_calculo_mensual",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_calculo_mensual",
+              "host": ["{{base_url}}"],
               "path": ["listar_calculo_mensual"]
             }
           }
@@ -993,10 +905,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8000/listar_calculos_mensuales",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_calculos_mensuales",
+              "host": ["{{base_url}}"],
               "path": ["listar_calculos_mensuales"]
             }
           }
@@ -1011,10 +921,8 @@
               "raw": "{\n  \"id_calculo_mensual\": 1,\n  \"ventas_totales\": 12000.00,\n  \"ganancias_totales\": 2500.00\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/editarcalculomensual",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/editarcalculomensual",
+              "host": ["{{base_url}}"],
               "path": ["editarcalculomensual"]
             }
           }
@@ -1029,10 +937,8 @@
               "raw": "{\n  \"id_calculo_mensual\": 1\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/borrarcalculomensual",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/borrarcalculomensual",
+              "host": ["{{base_url}}"],
               "path": ["borrarcalculomensual"]
             }
           }
@@ -1052,10 +958,8 @@
               "raw": "{\n  \"id_reserva\": 1,\n  \"id_cliente\": 1,\n  \"comentario\": \"Excelente servicio!\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/insertarcomentario",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/insertarcomentario",
+              "host": ["{{base_url}}"],
               "path": ["insertarcomentario"]
             }
           }
@@ -1067,10 +971,8 @@
             "header": [],
             "body": { "mode": "raw", "raw": "{\n  \"id_comentario\": 1\n}" },
             "url": {
-              "raw": "http://localhost:8000/listar_comentario",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_comentario",
+              "host": ["{{base_url}}"],
               "path": ["listar_comentario"]
             }
           }
@@ -1081,10 +983,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8000/listar_comentarios",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/listar_comentarios",
+              "host": ["{{base_url}}"],
               "path": ["listar_comentarios"]
             }
           }
@@ -1099,10 +999,8 @@
               "raw": "{\n  \"id_comentario\": 1,\n  \"comentario\": \"Excelente servicio!\"\n}"
             },
             "url": {
-              "raw": "http://localhost:8000/editarcomentario",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/editarcomentario",
+              "host": ["{{base_url}}"],
               "path": ["editarcomentario"]
             }
           }
@@ -1114,10 +1012,8 @@
             "header": [],
             "body": { "mode": "raw", "raw": "{\n  \"id_comentario\": 1\n}" },
             "url": {
-              "raw": "http://localhost:8000/borrarcomentario",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8000",
+              "raw": "{{base_url}}/borrarcomentario",
+              "host": ["{{base_url}}"],
               "path": ["borrarcomentario"]
             }
           }

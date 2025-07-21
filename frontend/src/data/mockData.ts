@@ -1,4 +1,9 @@
-import type { Restaurant, Reservation, MonthlyFlow, Invoice } from "../types/dashboard"
+import type {
+  Restaurant,
+  Reservation,
+  MonthlyFlow,
+  Invoice,
+} from "../types/dashboard";
 
 export const restaurants: Restaurant[] = [
   {
@@ -10,8 +15,8 @@ export const restaurants: Restaurant[] = [
     totalTables: 25,
     status: "active",
     image: "/placeholder.svg?height=200&width=300",
-  }
-]
+  },
+];
 
 export const reservations: Reservation[] = [
   {
@@ -25,11 +30,11 @@ export const reservations: Reservation[] = [
     guests: 4,
     status: "confirmed",
     tableNumber: 12,
-  }
-]
+  },
+];
 
 export const monthlyFlow: MonthlyFlow[] = [
-  { month: "Ene", visitors: 1200, reservations: 180, revenue: 45000 },
+  { month: "Ene", visitors: 400, reservations: 180, revenue: 2000 },
   { month: "Feb", visitors: 1350, reservations: 210, revenue: 52500 },
   { month: "Mar", visitors: 1180, reservations: 165, revenue: 41250 },
   { month: "Abr", visitors: 1420, reservations: 225, revenue: 56250 },
@@ -41,7 +46,7 @@ export const monthlyFlow: MonthlyFlow[] = [
   { month: "Oct", visitors: 1600, reservations: 250, revenue: 62500 },
   { month: "Nov", visitors: 1400, reservations: 220, revenue: 55000 },
   { month: "Dec", visitors: 1800, reservations: 300, revenue: 75000 },
-]
+];
 
 export const invoices: Invoice[] = [
   {
@@ -74,4 +79,4 @@ export const invoices: Invoice[] = [
     dueDate: "2024-01-20",
     invoiceNumber: "INV-2024-003",
   },
-]
+];
