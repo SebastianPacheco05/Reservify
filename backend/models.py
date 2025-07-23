@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import List
+from datetime import time, date
 
 
 # Credenciales
@@ -277,3 +278,11 @@ class ComentarioDelete(BaseModel):
 
 class ListarComentarios(BaseModel):
     id_comentario: int
+
+class ReservaAlexaSchema(BaseModel):
+    documento: int
+    id_mesa: int
+    id_encab_fact: int
+    horario: time
+    fecha: date
+    num_comensales: int

@@ -1,0 +1,15 @@
+{
+"name": "CreateBooking",
+"slots": {
+    "restaurante": {
+    "name": "restaurante",
+        "type": "AMAZON.LITERAL" 
+    }
+},
+"samples": [
+    "resérvame en {restaurante}",
+    "quiero reservar en {restaurante}",
+    "haz una reserva en {restaurante}"
+]
+}
+  
