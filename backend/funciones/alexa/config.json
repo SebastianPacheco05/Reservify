@@ -1,14 +1,100 @@
 {
-  "name": "CreateBooking",
-  "slots": {
-    "restaurante": {
-      "name": "restaurante",
-      "type": "AMAZON.LITERAL" 
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "reservify",
+      "intents": [
+        {
+          "name": "ReservarIntent",
+          "slots": [
+            {
+              "name": "restaurante",
+              "type": "AMAZON.SearchQuery"
+            },
+            {
+              "name": "fecha",
+              "type": "AMAZON.DATE"
+            },
+            {
+              "name": "hora",
+              "type": "AMAZON.TIME"
+            },
+            {
+              "name": "personas",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "resérvame en {restaurante}",
+            "quiero reservar en {restaurante}",
+            "haz una reserva en {restaurante}",
+            "necesito una mesa en {restaurante}",
+            "puedes reservarme en {restaurante}",
+            "me gustaría reservar en {restaurante}",
+            "busca una mesa en {restaurante}",
+            "reserva una mesa en {restaurante}",
+            "quiero ir a {restaurante}",
+            "necesito reservar en {restaurante}",
+            "ayúdame a reservar en {restaurante}",
+            "busca disponibilidad en {restaurante}",
+            "resérvame una mesa en {restaurante}",
+            "quiero hacer una reserva en {restaurante}",
+            "necesito una reservación en {restaurante}",
+            "puedes conseguirme mesa en {restaurante}",
+            "busca una reserva para {restaurante}",
+            "me gustaría ir a {restaurante}",
+            "reserva para mí en {restaurante}",
+            "quiero reservar mesa en {restaurante}",
+            "necesito reservar una mesa en {restaurante}",
+            "ayúdame a conseguir mesa en {restaurante}",
+            "busca disponibilidad para {restaurante}",
+            "resérvame una cena en {restaurante}",
+            "quiero reservar para comer en {restaurante}",
+            "necesito una reservación para {restaurante}",
+            "puedes reservarme una mesa en {restaurante}",
+            "busca una reserva disponible en {restaurante}",
+            "me gustaría reservar en {restaurante}",
+            "reserva una cita en {restaurante}",
+            "quiero hacer reserva en {restaurante}",
+            "necesito mesa disponible en {restaurante}",
+            "ayúdame a reservar mesa en {restaurante}",
+            "busca una mesa libre en {restaurante}",
+            "resérvame para {restaurante}",
+            "quiero reservar cena en {restaurante}",
+            "necesito reservar almuerzo en {restaurante}",
+            "puedes conseguirme reserva en {restaurante}",
+            "busca disponibilidad de mesa en {restaurante}",
+            "me gustaría reservar mesa en {restaurante}",
+            "reserva para nosotros en {restaurante}",
+            "quiero reservar para dos en {restaurante}",
+            "necesito una mesa para dos en {restaurante}",
+            "ayúdame a reservar en {restaurante}",
+            "busca mesa disponible en {restaurante}",
+            "resérvame una mesa para hoy en {restaurante}",
+            "quiero reservar para mañana en {restaurante}",
+            "necesito reservar para esta noche en {restaurante}",
+            "puedes reservarme para el fin de semana en {restaurante}",
+            "busca una reserva para el sábado en {restaurante}",
+            "me gustaría reservar para el domingo en {restaurante}",
+            "reserva una mesa para el viernes en {restaurante}",
+            "quiero hacer reserva para el jueves en {restaurante}",
+            "necesito reservar para el miércoles en {restaurante}",
+            "ayúdame a reservar para el martes en {restaurante}",
+            "busca disponibilidad para el lunes en {restaurante}",
+            "resérvame una mesa para el próximo fin de semana en {restaurante}",
+            "quiero reservar para la próxima semana en {restaurante}",
+            "necesito reservar para el próximo mes en {restaurante}",
+            "puedes reservarme para el próximo sábado en {restaurante}",
+            "busca una reserva para el próximo domingo en {restaurante}",
+            "me gustaría reservar para el próximo viernes en {restaurante}",
+            "reserva una mesa para el próximo jueves en {restaurante}",
+            "quiero hacer reserva para el próximo miércoles en {restaurante}",
+            "necesito reservar para el próximo martes en {restaurante}",
+            "ayúdame a reservar para el próximo lunes en {restaurante}",
+            "busca disponibilidad para el próximo lunes en {restaurante}"
+          ]
+        }
+      ],
+      "types": []
     }
-  },
-  "samples": [
-    "resérvame en {restaurante}",
-    "quiero reservar en {restaurante}",
-    "haz una reserva en {restaurante}"
-  ]
+  }
 }

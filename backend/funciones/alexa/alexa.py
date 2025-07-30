@@ -25,30 +25,24 @@ def get_db():
 async def reservar(request: Request, db: Session = Depends(get_db)):
     body = await request.json()
 
-    restaurante = body.get("request", {}).get("intent", {}).get("slots", {}).get("restaurante", {}).get("value", None)
+    restaurante = body.get("request", {}).get("intent", {}).get("slots", {}).get("restaurante", {}).get("value")
 
     if restaurante:
         db.execute(text("INSERT INTO restaurante (nombre) VALUES (:nombre)"), {"nombre": restaurante})
         db.commit()
-
-        return JSONResponse({
-            "version": "1.0",
-            "response": {
-                "outputSpeech": {
-                    "type": "PlainText",
-                    "text": f"Tu reserva en {restaurante} ha sido registrada correctamente."
-                },
-                "shouldEndSession": True
-            }
-        })
+        speech_text = f"Tu reserva en {restaurante} ha sido registrada correctamente."
+        end_session = True
     else:
-        return JSONResponse({
+        speech_text = "No entendí el nombre del restaurante. Por favor intenta de nuevo."
+        end_session = False
+
+    return JSONResponse(
+        content={
             "version": "1.0",
             "response": {
-                "outputSpeech": {
-                    "type": "PlainText",
-                    "text": "No entendí el nombre del restaurante. Por favor intenta de nuevo."
-                },
-                "shouldEndSession": False
+                "outputSpeech": {"type": "PlainText", "text": speech_text},
+                "shouldEndSession": end_session
             }
-        })
+        },
+        media_type="application/json"
+    )

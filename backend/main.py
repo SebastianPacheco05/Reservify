@@ -1,7 +1,7 @@
 # Importacion del FastAPI
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException , Request
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.responses import JSONResponse
 
 
 # Importacion de los routers
@@ -18,6 +18,7 @@ from routes.reserva import router as reserva_router
 from routes.categorias import router as categorias_router
 from routes.comentarios import router as comentarios_router
 from routes.cal_mensuales import router as cal_mensuales_router
+from funciones.alexa.alexa import app as alexa_app
 
 # Importacion de los esquemas
 from models import *
@@ -31,7 +32,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Cambia al dominio de tu frontend
+    allow_origins=["*"],  # Cambia al dominio de tu frontend
     allow_credentials=True,
     allow_methods=["*"],  # O especifica ["POST"]
     allow_headers=["*"],
@@ -51,6 +52,50 @@ app.include_router(reserva_router)
 app.include_router(categorias_router)
 app.include_router(comentarios_router)
 app.include_router(cal_mensuales_router)
+
+# Alexa
+@app.post("/alexa")
+async def alexa_webhook(request: Request):
+    body = await request.json()
+
+    intent_name = body.get("request", {}).get("intent", {}).get("name")
+    slots = body.get("request", {}).get("intent", {}).get("slots", {})
+
+    if intent_name == "ReservarIntent":
+        restaurante = slots.get("restaurante", {}).get("value", None)
+        if restaurante:
+            return JSONResponse({
+                "version": "1.0",
+                "response": {
+                    "outputSpeech": {
+                        "type": "PlainText",
+                        "text": f"Tu reserva en {restaurante} ha sido registrada correctamente."
+                    },
+                    "shouldEndSession": True
+                }
+            })
+        else:
+            return JSONResponse({
+                "version": "1.0",
+                "response": {
+                    "outputSpeech": {
+                        "type": "PlainText",
+                        "text": "No entendí el nombre del restaurante. Intenta de nuevo."
+                    },
+                    "shouldEndSession": False
+                }
+            })
+
+    return JSONResponse({
+        "version": "1.0",
+        "response": {
+            "outputSpeech": {
+                "type": "PlainText",
+                "text": "Lo siento, no entendí tu petición."
+            },
+            "shouldEndSession": True
+        }
+    })
 
 # Contactanos
 @app.post("/contactanos")
