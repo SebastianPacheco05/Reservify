@@ -1,7 +1,7 @@
 # Importacion del FastAPI
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException , Request
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.responses import JSONResponse
 
 
 # Importacion de los routers
@@ -31,7 +31,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Cambia al dominio de tu frontend
+    allow_origins=["*"],  # Cambia al dominio de tu frontend
     allow_credentials=True,
     allow_methods=["*"],  # O especifica ["POST"]
     allow_headers=["*"],

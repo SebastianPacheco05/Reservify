@@ -63,7 +63,7 @@ CREATE TABLE "Restaurante" (
     horario_cierre TIME NOT NULL,  -- Hora de cierre
     documento INT NOT NULL,  -- Referencia al dueño
     id_categoria INT not null,  -- Referencia a la categoría
-    foreign key (id_categoria) references "Categorias" (id_categoria)on delete cascade,
+    foreign key (id_categoria) references "Categorias" (id_categoria) ON DELETE CASCADE,
     FOREIGN KEY (documento) REFERENCES "Dueno" (documento) ON DELETE CASCADE,
     CHECK (horario_apertura < horario_cierre)  -- Validación de horarios
 );

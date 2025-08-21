@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import List
+from datetime import time, date
 
 
 # Credenciales
@@ -95,7 +96,7 @@ class ClienteBase(BaseModel):
 
 
 class ClienteUpdate(ClienteBase):
-    id_cliente: int
+    documento: int
 
 
 class ClienteDelete(BaseModel):
@@ -188,7 +189,7 @@ class ListarDuenos(BaseModel):
 
 
 class ListarClientes(BaseModel):
-    id_cliente: int
+    documento: int
 
 
 class ListarEmpleados(BaseModel):
@@ -262,7 +263,7 @@ class ListarCalculoMensual(BaseModel):
 
 # Comentarios
 class ComentarioBase(BaseModel):
-    id_cliente: int
+    documento: int
     nit: int
     comentario: str
 
