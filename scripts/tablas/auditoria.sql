@@ -44,13 +44,13 @@ DROP TRIGGER IF EXISTS "auditoria_insert_categoria" ON "Categorias";
 DROP TRIGGER IF EXISTS "auditoria_update_categoria" ON "Categorias";
 DROP TRIGGER IF EXISTS "auditoria_delete_categoria" ON "Categorias";
 
-DROP TRIGGER IF EXISTS "auditoria_insert_comentario" ON "Comentarios";
-DROP TRIGGER IF EXISTS "auditoria_update_comentario" ON "Comentarios";
-DROP TRIGGER IF EXISTS "auditoria_delete_comentario" ON "Comentarios";
+-- DROP TRIGGER IF EXISTS "auditoria_insert_comentario" ON "Comentarios";
+-- DROP TRIGGER IF EXISTS "auditoria_update_comentario" ON "Comentarios";
+-- DROP TRIGGER IF EXISTS "auditoria_delete_comentario" ON "Comentarios";
 
-DROP TRIGGER IF EXISTS "auditoria_insert_cal_mensual" ON "Calculos_mensuales";
-DROP TRIGGER IF EXISTS "auditoria_update_cal_mensual" ON "Calculos_mensuales";
-DROP TRIGGER IF EXISTS "auditoria_delete_cal_mensual" ON "Calculos_mensuales";
+-- DROP TRIGGER IF EXISTS "auditoria_insert_cal_mensual" ON "Calculos_mensuales";
+-- DROP TRIGGER IF EXISTS "auditoria_update_cal_mensual" ON "Calculos_mensuales";
+-- DROP TRIGGER IF EXISTS "auditoria_delete_cal_mensual" ON "Calculos_mensuales";
 
 -- Eliminar tabla de auditoría
 DROP TABLE IF EXISTS "Auditoria" ;
@@ -287,33 +287,33 @@ BEFORE DELETE ON "Categorias"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
-CREATE TRIGGER "auditoria_insert_cal_mensual"
-AFTER INSERT ON "Calculos_mensuales"
-FOR EACH ROW
-EXECUTE PROCEDURE "auditoria_insert_trigger"();
+-- CREATE TRIGGER "auditoria_insert_cal_mensual"
+-- AFTER INSERT ON "Calculos_mensuales"
+-- FOR EACH ROW
+-- EXECUTE PROCEDURE "auditoria_insert_trigger"();
 
-CREATE TRIGGER "auditoria_update_cal_mensual"
-AFTER INSERT ON "Calculos_mensuales"
-FOR EACH ROW
-EXECUTE PROCEDURE "auditoria_update_trigger"();
+-- CREATE TRIGGER "auditoria_update_cal_mensual"
+-- AFTER INSERT ON "Calculos_mensuales"
+-- FOR EACH ROW
+-- EXECUTE PROCEDURE "auditoria_update_trigger"();
 
-CREATE TRIGGER "auditoria_delete_cal_mensual"
-AFTER INSERT ON "Calculos_mensuales"
-FOR EACH ROW
-EXECUTE PROCEDURE "auditoria_delete_trigger"();
+-- CREATE TRIGGER "auditoria_delete_cal_mensual"
+-- AFTER INSERT ON "Calculos_mensuales"
+-- FOR EACH ROW
+-- EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
-CREATE TRIGGER "auditoria_insert_comentario"
-AFTER INSERT ON "Comentarios"
-FOR EACH ROW
-EXECUTE PROCEDURE "auditoria_insert_trigger"();
+-- CREATE TRIGGER "auditoria_insert_comentario"
+-- AFTER INSERT ON "Comentarios"
+-- FOR EACH ROW
+-- EXECUTE PROCEDURE "auditoria_insert_trigger"();
 
-CREATE TRIGGER "auditoria_update_comentario"
-AFTER INSERT ON "Comentarios"
-FOR EACH ROW
-EXECUTE PROCEDURE "auditoria_update_trigger"();
+-- CREATE TRIGGER "auditoria_update_comentario"
+-- AFTER INSERT ON "Comentarios"
+-- FOR EACH ROW
+-- EXECUTE PROCEDURE "auditoria_update_trigger"();
 
-CREATE TRIGGER "auditoria_delete_comentario"
-AFTER INSERT ON "Comentarios"
-FOR EACH ROW
-EXECUTE PROCEDURE "auditoria_delete_trigger"();
+-- CREATE TRIGGER "auditoria_delete_comentario"
+-- AFTER INSERT ON "Comentarios"
+-- FOR EACH ROW
+-- EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
