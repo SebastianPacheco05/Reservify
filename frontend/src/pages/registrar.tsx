@@ -3,7 +3,17 @@
 import type React from "react";
 
 import { useState } from "react";
-import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  ArrowRight,
+  IdCard,
+  Phone,
+  User,
+  Flag,
+} from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -15,7 +25,7 @@ import {
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Registrar() {
   const [showPassword, setShowPassword] = useState(false);
@@ -25,23 +35,35 @@ export default function Registrar() {
   const [confirmPassword, setConfirmPassword] = useState("");
   // const [rememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [tipo_documento, setTipo_documento] = useState("");
+  const [numero_documento, setNumero_documento] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [apellidos, setApellidos] = useState("");
+  const [nacionalidad, setNacionalidad] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       alert("Las contraseñas no coinciden.");
-      return;
+    } else {
+      try {
+        const res = await fetch(
+          "http://localhost:8000/credenciales/insertarcredencial",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          }
+        );
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail ?? "Error en el registro");
+      } catch (err: any) {
+        alert("Error en el registro: " + err.message);
+      } finally {
+        setIsLoading(false);
+      }
     }
-
-    setIsLoading(true);
-
-    // Simular llamada a API
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    console.log("Registro:", { email, password });
-    setIsLoading(false);
-
-    navigate("/datos_personales");
   };
 
   return (
@@ -57,6 +79,188 @@ export default function Registrar() {
           </h1>
           <p className="text-gray-600 mt-2">Registra tu cuenta de Reservify</p>
         </div>
+        <div className="hidden justify-center items-center h-full">
+          <Card className="shadow-xl w-full border-0 bg-white/80 backdrop-blur-sm">
+            <CardHeader className="space-y-1 pb-6">
+              <CardTitle className="text-xl text-center text-gray-900">
+                Ingresa tus datos personales
+              </CardTitle>
+              <CardDescription className="text-center text-gray-600">
+                Ingresa tus datos para crear tu cuenta
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent className="space-y-6">
+              <form
+                onSubmit={handleSubmit}
+                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              >
+                {/* Columna Izquierda */}
+                <div className="space-y-4">
+                  {/* Tipo de documento Field */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="tipo_documento"
+                      className="text-sm font-medium text-gray-900"
+                    >
+                      Tipo de documento
+                    </Label>
+                    <div className="relative">
+                      <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <Input
+                        id="tipo_documento"
+                        type="tipo_documento"
+                        placeholder="tu tipo de documento"
+                        value={tipo_documento}
+                        onChange={(e) => setTipo_documento(e.target.value)}
+                        className="pl-10 h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* numero de documento Field */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="numero_documento"
+                      className="text-sm font-medium text-gray-900"
+                    >
+                      Numero de documento
+                    </Label>
+                    <div className="relative">
+                      <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <Input
+                        id="numero_documento"
+                        type="numero_documento"
+                        placeholder="tu numero de documento"
+                        value={numero_documento}
+                        onChange={(e) => setNumero_documento(e.target.value)}
+                        className="pl-10 h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Telefono Field */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="telefono"
+                      className="text-sm font-medium text-gray-900"
+                    >
+                      Numero de telefono
+                    </Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                      <Input
+                        id="telefono"
+                        type="telefono"
+                        placeholder="tu numero de telefono"
+                        value={telefono}
+                        onChange={(e) => setTelefono(e.target.value)}
+                        className="pl-10 h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* Columna Derecha */}
+                <div className="space-y-4">
+                  {/* Nombre Field */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="nombre1"
+                      className="text-sm font-medium text-gray-900"
+                    >
+                      Nombre
+                    </Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <Input
+                        id="nombre"
+                        type="nombre"
+                        placeholder="Tu nombre"
+                        value={nombre}
+                        onChange={(e) => setNombre(e.target.value)}
+                        className="pl-10 h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Apellido Field */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="apellido1"
+                      className="text-sm font-medium text-gray-900"
+                    >
+                      Apellido
+                    </Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <Input
+                        id="apellidos"
+                        type="apellidos"
+                        placeholder="Tu apellido"
+                        value={apellidos}
+                        onChange={(e) => setApellidos(e.target.value)}
+                        className="pl-10 h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Nacionalidad Field */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="nacionalidad"
+                      className="text-sm font-medium text-gray-900"
+                    >
+                      Nacionalidad
+                    </Label>
+                    <div className="relative">
+                      <Flag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <Input
+                        id="nacionalidad"
+                        type="nacionalidad"
+                        placeholder="tu nacionalidad"
+                        value={nacionalidad}
+                        onChange={(e) => setNacionalidad(e.target.value)}
+                        className="pl-10 h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* Botón y resto del formulario */}
+                <div className="col-span-1 md:col-span-2 space-y-4">
+                  {/* Remember Me & Forgot Password */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2"></div>
+                  </div>
+                  {/* Login Button */}
+                  <Button
+                    type="submit"
+                    className="w-full h-11 bg-gradient-to-r from-blue-600 to-gray-600 hover:from-blue-700 hover:to-gray-700 text-white font-medium transition-all duration-200 transform hover:scale-[1.02]"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Cargando...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-2">
+                        <span>Continuar</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+
         <div className="flex justify-center items-center space-x-4 h-full grid-cols-2">
           <Card className="shadow-xl w-[23rem] border-0 bg-white/80 backdrop-blur-sm">
             <CardHeader className="space-y-0.5 pb-3">
@@ -173,7 +377,7 @@ export default function Registrar() {
                   ) : (
                     <div className="flex items-center space-x-2">
                       {/* <Link to="/datos_personales"> */}
-                        <span>Crear cuenta</span>
+                      <span>Crear cuenta</span>
                       {/* </Link> */}
                       <ArrowRight className="w-4 h-4" />
                     </div>
@@ -216,7 +420,9 @@ export default function Registrar() {
                       d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                     />
                   </svg>
-                  <span className="h-6 bg-white-600 hover:to-gray-100 text-gray-700 font-medium transition-all duration-200 transform hover:scale-[1.02]">Google</span>
+                  <span className="h-6 bg-white-600 hover:to-gray-100 text-gray-700 font-medium transition-all duration-200 transform hover:scale-[1.02]">
+                    Google
+                  </span>
                 </Button>
               </div>
             </CardContent>
