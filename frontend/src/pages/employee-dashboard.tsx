@@ -1,32 +1,32 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Sidebar } from "../components/ui/sidebar_2"  
-import { Overview } from "../components/ui/Overview_2"
-import { Tables } from "../components/ui/Tables"  
-import { Reservations } from "../components/ui/Reservations_2"    
-import { DailyFlow } from "../components/ui/DailyFlow"
-import { Bills } from "../components/ui/Bills" 
+import { useState } from "react";
+import { Sidebar } from "../components/ui/Sidebar_2";
+import { Overview } from "../components/ui/Overview_2";
+import { Tables } from "../components/ui/Tables";
+import { Reservations } from "../components/ui/Reservations_2";
+import { DailyFlow } from "../components/ui/DailyFlow";
+import { Bills } from "../components/ui/Bills";
 
 export default function EmployeeDashboard() {
-  const [activeTab, setActiveTab] = useState("overview")
+  const [activeTab, setActiveTab] = useState("overview");
 
   const renderContent = () => {
     switch (activeTab) {
       case "overview":
-        return <Overview />
+        return <Overview />;
       case "tables":
-        return <Tables />
+        return <Tables />;
       case "reservations":
-        return <Reservations />
+        return <Reservations />;
       case "flow":
-        return <DailyFlow />
+        return <DailyFlow />;
       case "bills":
-        return <Bills />
+        return <Bills />;
       default:
-        return <Overview />
+        return <Overview />;
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -36,5 +36,5 @@ export default function EmployeeDashboard() {
         <div className="p-4 lg:p-6 pt-16 lg:pt-6">{renderContent()}</div>
       </main>
     </div>
-  )
+  );
 }

@@ -278,3 +278,14 @@ class ComentarioDelete(BaseModel):
 
 class ListarComentarios(BaseModel):
     id_comentario: int
+
+class RegistrarCliente(BaseModel):
+    email: str
+    password: str
+    nombre: str
+    apellido: str
+    tipo_documento: str
+    documento: int
+    nacionalidad: str
+    telefono: str
+    id_rol: int

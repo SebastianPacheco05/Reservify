@@ -35,8 +35,8 @@ async def send2hbf(db: Session, id_reserva: int):
     if row is None:
         return None
 
-    horario = row[2]
-    fecha = row[3]
+    horario = row[1]
+    fecha = row[2]
 
     if horario and fecha:
         reserva_datetime = datetime.combine(fecha, horario)

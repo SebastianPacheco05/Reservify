@@ -101,8 +101,7 @@ export default function Home() {
       <header className="bg-white-/95 backdrop-blur-md fixed top-0 w-full z-50 shadow-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center px-4 h-16">
           <div className="flex items-center space-x-2">
-          <img src="../../../public/reservify.png" 
-             className="w-full h-15"/>
+            <img src="../../../public/reservify.png" className="w-full h-15" />
           </div>
 
           {/* Desktop Navigation */}
@@ -190,7 +189,10 @@ export default function Home() {
           <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r bg-blue-800 bg-clip-text text-transparent leading-tight">
             Reserva en tu restaurante favorito
           </h2>
-          <p id="buscar" className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+          <p
+            id="buscar"
+            className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto"
+          >
             Desde comida gourmet hasta cocina casera, encuentra el lugar ideal
             para cada ocasión
           </p>
@@ -219,7 +221,7 @@ export default function Home() {
 
       {/* Categories */}
       <section id="cocinas" className="max-w-7xl mx-auto px-4 py-16">
-        <h3  className="text-3xl font-bold mb-12 text-center text-gray-900">
+        <h3 className="text-3xl font-bold mb-12 text-center text-gray-900">
           Tipos de Cocina
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -243,7 +245,7 @@ export default function Home() {
       {/* Featured Restaurants */}
       <section id="restaurantes" className="bg-white py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div  className="text-center mb-16">
+          <div className="text-center mb-16">
             <h3 className="text-3xl font-bold text-gray-900 mb-4">
               Restaurantes Destacados
             </h3>
@@ -309,9 +311,9 @@ export default function Home() {
                   </div>
 
                   <Link to="/Restaurant">
-                  <Button className="w-full mt-4 text-white bg-neutral-700 hover:bg-blue-800 ">
-                    Ver disponibilidad
-                  </Button>
+                    <Button className="w-full mt-4 text-white bg-neutral-700 hover:bg-blue-800 ">
+                      Ver disponibilidad
+                    </Button>
                   </Link>
                 </CardContent>
               </Card>
@@ -321,7 +323,10 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="acerca_de" className="py-20 px-4 bg-gradient-to-r from-blue-50 to-indigo-50">
+      <section
+        id="acerca_de"
+        className="py-20 px-4 bg-gradient-to-r from-blue-50 to-indigo-50"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h3 className="text-3xl font-bold text-gray-900 mb-4">
@@ -408,12 +413,18 @@ export default function Home() {
               <h5 className="font-semibold mb-4">Restaurantes</h5>
               <ul className="space-y-2 text-gray-400">
                 <li>
-                  <a href="#buscar" className="hover:text-white transition-colors">
+                  <a
+                    href="#buscar"
+                    className="hover:text-white transition-colors"
+                  >
                     Buscar
                   </a>
                 </li>
                 <li>
-                  <a href="#cocinas" className="hover:text-white transition-colors">
+                  <a
+                    href="#cocinas"
+                    className="hover:text-white transition-colors"
+                  >
                     Cocinas
                   </a>
                 </li>
@@ -429,7 +440,10 @@ export default function Home() {
               <h5 className="font-semibold mb-4">Empresa</h5>
               <ul className="space-y-2 text-gray-400">
                 <li>
-                  <a href="#acerca_de" className="hover:text-white transition-colors">
+                  <a
+                    href="#acerca_de"
+                    className="hover:text-white transition-colors"
+                  >
                     Acerca de
                   </a>
                 </li>

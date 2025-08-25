@@ -11,20 +11,6 @@ router = APIRouter(
     dependencies=[Depends(verificar_token)]
 )
 
-@router.post("/insertarcliente")
-async def insertar(data: ClienteBase, db: Session = Depends(get_db)):
-    cliente.insertar_clientes(
-        db,
-        data.id_credencial,
-        data.nombre,
-        data.apellido,
-        data.tipo_documento,
-        data.documento,
-        data.nacionalidad,
-        data.telefono,
-        data.id_rol,
-    )
-
 @router.get("/listar_cliente")
 async def listar_cliente(
     data: ListarClientes,

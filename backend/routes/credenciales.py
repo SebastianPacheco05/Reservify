@@ -7,9 +7,6 @@ from models import CredencialBase, CredencialUpdate, CredencialDelete, login
 
 router = APIRouter()
 
-@router.post("/insertarcredencial")
-async def insertarcredencial(data: CredencialBase, db: Session = Depends(get_db)):
-    credenciales.insertar_credenciales(db, data.email, data.password)
 
 @router.post("/login")
 def login_user(input: login, request: Request, db: Session = Depends(get_db)):
