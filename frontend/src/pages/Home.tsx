@@ -87,7 +87,7 @@ export default function Home() {
       <header className="bg-white/95 backdrop-blur-md fixed top-0 w-full z-50 shadow-lg border-b border-orange-100">
         <div className="max-w-7xl mx-auto flex justify-between items-center px-4 h-16">
           <div className="flex items-center space-x-2">
-            <img src="../../../public/reservify.png" className="w-full h-15" />
+            <img src="../../../public/logoreservify.png" className="w-full h-15" />
           </div>
 
           {/* Desktop Navigation */}
