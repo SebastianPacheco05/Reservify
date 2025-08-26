@@ -1,4 +1,5 @@
 "use client"
+import { Link } from "react-router-dom"
 
 import type React from "react"
 import { useState } from "react"
@@ -218,9 +219,11 @@ export default function Login() {
               <div className="text-center pt-4">
                 <p className="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300">
                   ¿No tienes una cuenta?{" "}
+                  <Link to="/Registrar">
                   <button className="text-orange-600 dark:text-orange-400 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded">
                     Regístrate aquí
                   </button>
+                  </Link>
                 </p>
               </div>
             </CardContent>

@@ -8,7 +8,7 @@ import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Card, CardContent } from "../components/ui/card"
 import { Badge } from "../components/ui/badge"
-// import { ModeToggle } from "../components/mode-toggle";
+import { ThemeToggle } from "../components/theme-toggle"
 
 // Estilos CSS personalizados para la animación de color y brillos
 const colorAnimationStyles = `
@@ -165,10 +165,18 @@ export default function Home() {
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [filteredCuisines, setFilteredCuisines] = useState<string[]>([])
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [isDarkMode, setIsDarkMode] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem("token")
     setIsLoggedIn(!!token)
+    
+    // Verificar si hay un tema guardado en localStorage
+    const savedTheme = localStorage.getItem("theme")
+    if (savedTheme === "dark") {
+      setIsDarkMode(true)
+      document.documentElement.classList.add("dark")
+    }
   }, [])
 
   // Lista completa de tipos de cocina disponibles
@@ -236,6 +244,19 @@ export default function Home() {
 
   const goToSlide = (index: number) => {
     setCurrentSlide(index)
+  }
+
+  const toggleDarkMode = () => {
+    const newDarkMode = !isDarkMode
+    setIsDarkMode(newDarkMode)
+    
+    if (newDarkMode) {
+      document.documentElement.classList.add("dark")
+      localStorage.setItem("theme", "dark")
+    } else {
+      document.documentElement.classList.remove("dark")
+      localStorage.setItem("theme", "light")
+    }
   }
 
   const categories = [
@@ -469,23 +490,27 @@ export default function Home() {
   ]
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
+    <main className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
       <style dangerouslySetInnerHTML={{ __html: colorAnimationStyles }} />
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-md fixed top-0 w-full z-50 shadow-lg border-b border-orange-100 animate-in slide-in-from-top duration-700">
+      <header className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md fixed top-0 w-full z-50 shadow-lg border-b border-orange-100 dark:border-gray-700 transition-colors duration-300">
         <div className="max-w-7xl mx-auto flex justify-between items-center px-4 h-16">
-          <div className="flex items-center space-x-2 animate-in fade-in duration-1000">
-            <img src="../../../public/logoreservify.png" className="w-full h-15" />
+          <div className="flex items-center space-x-2 animate-in fade-in duration-1000 dark:flex items-center space-x-2 animate-in fade-in duration-1000">
+            <img src="../../../public/logoreservify.png" className="w-full h-15 dark:w-full h-15" />
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8 animate-in slide-in-from-right duration-700 delay-300">
             <a
               href="#restaurantes"
-              className="text-black hover:text-orange-600 transition-all duration-300 hover:scale-105 font-medium"
+              className="text-black dark:text-white hover:text-orange-600 dark:hover:text-orange-400 transition-all duration-300 hover:scale-105 font-medium"
             >
               Restaurantes
             </a>
+            
+            {/* Botón de cambio de tema */}
+            <ThemeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
+            
             {!isLoggedIn && (
               <>
                 <Link to="/Login">
@@ -512,22 +537,28 @@ export default function Home() {
           <Button
             variant="ghost"
             size="sm"
-            className="md:hidden hover:bg-orange-100 transition-all duration-300 hover:scale-110"
+            className="md:hidden hover:bg-orange-100 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-110"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            {isMenuOpen ? <X className="w-5 h-5 text-black" /> : <Menu className="w-5 h-5 text-black" />}
+            {isMenuOpen ? <X className="w-5 h-5 text-black dark:text-white" /> : <Menu className="w-5 h-5 text-black dark:text-white" />}
           </Button>
         </div>
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white border-t border-orange-100 px-4 py-4 space-y-4 animate-in slide-in-from-top duration-300">
-            <a href="#" className="block text-black hover:text-orange-600 font-medium transition-colors duration-300">
+          <div className="md:hidden bg-white dark:bg-gray-900 border-t border-orange-100 dark:border-gray-700 px-4 py-4 space-y-4 animate-in slide-in-from-top duration-300">
+            <a href="#" className="block text-black dark:text-white hover:text-orange-600 dark:hover:text-orange-400 font-medium transition-colors duration-300">
               Restaurantes
             </a>
-            <a href="#" className="block text-black hover:text-orange-600 font-medium transition-colors duration-300">
+            <a href="#" className="block text-black dark:text-white hover:text-orange-600 dark:hover:text-orange-400 font-medium transition-colors duration-300">
               Ofertas
             </a>
+
+            {/* Botón de cambio de tema en móvil */}
+            <div className="flex items-center justify-between py-2 border-t border-orange-100 dark:border-gray-700">
+              <span className="text-black dark:text-white font-medium">Tema</span>
+              <ThemeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
+            </div>
 
             {!isLoggedIn && (
               <div className="flex space-x-2 pt-2">
@@ -535,7 +566,7 @@ export default function Home() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 border-black text-black hover:bg-orange-50 bg-transparent transition-all duration-300"
+                    className="flex-1 border-black dark:border-white text-black dark:text-white hover:bg-orange-50 dark:hover:bg-gray-800 bg-transparent transition-all duration-300"
                   >
                     Iniciar Sesión
                   </Button>
@@ -556,7 +587,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="relative">
             <h2 className="text-5xl md:text-6xl font-bold mb-6 leading-tight animate-in fade-in slide-in-from-bottom duration-1000">
-              <span className="text-orange-500">
+              <span className="text-orange-500 dark:text-orange-400">
                 Reserva en tu restaurante favorito
               </span>
             </h2>
@@ -606,7 +637,7 @@ export default function Home() {
           </div>
           <p
             id="buscar"
-            className="text-xl text-black mb-12 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom duration-1000 delay-300"
+            className="text-xl text-black dark:text-gray-200 mb-12 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom duration-1000 delay-300"
           >
             Desde comida gourmet hasta cocina casera, encuentra el lugar ideal para cada ocasión
           </p>
@@ -624,7 +655,7 @@ export default function Home() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="¿Qué tipo de cocina te apetece hoy?"
-                  className="pl-16 pr-20 py-8 text-xl rounded-3xl border-3 border-orange-200 focus:border-orange-500 bg-white/90 backdrop-blur-sm shadow-2xl transition-all duration-500 hover:shadow-orange-200/50 focus:shadow-orange-300/50 focus:scale-105 group-hover:border-orange-300"
+                  className="pl-16 pr-20 py-8 text-xl rounded-3xl border-3 border-orange-200 dark:border-orange-600 focus:border-orange-500 dark:focus:border-orange-400 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-2xl transition-all duration-500 hover:shadow-orange-200/50 focus:shadow-orange-300/50 focus:scale-105 group-hover:border-orange-300 dark:text-white dark:placeholder-gray-400"
                 />
                 
                 {/* Botón de búsqueda mejorado */}
@@ -638,30 +669,26 @@ export default function Home() {
 
               {/* Sugerencias de búsqueda */}
               {showSuggestions && filteredCuisines.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-orange-200 max-h-64 overflow-y-auto z-50 animate-in fade-in slide-in-from-top duration-300">
-                  <div className="p-4">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                      <ChefHat className="w-4 h-4 mr-2 text-orange-500" />
-                      Tipos de cocina disponibles
-                    </h4>
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-orange-200 dark:border-orange-600 max-h-64 overflow-y-auto z-50 animate-in fade-in slide-in-from-top duration-300">
+                  <div className="p-4"> 
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                       {filteredCuisines.slice(0, 12).map((cuisine, index) => (
                         <button
                           key={index}
                           type="button"
                           onClick={() => handleSearch(cuisine)}
-                          className="text-left p-3 rounded-xl hover:bg-orange-50 hover:text-orange-700 transition-all duration-200 hover:scale-105 group"
+                          className="text-left p-3 rounded-xl hover:bg-orange-50 dark:hover:bg-orange-900/30 hover:text-orange-700 dark:hover:text-orange-400 transition-all duration-200 hover:scale-105 group"
                         >
                           <div className="flex items-center">
                             <div className="w-2 h-2 bg-orange-400 rounded-full mr-3 group-hover:bg-orange-600 transition-colors duration-200"></div>
-                            <span className="font-medium text-sm">{cuisine}</span>
+                            <span className="font-medium text-sm dark:text-gray-200">{cuisine}</span>
                           </div>
                         </button>
                       ))}
                     </div>
                     {filteredCuisines.length > 12 && (
-                      <div className="mt-3 pt-3 border-t border-orange-100">
-                        <p className="text-xs text-gray-500 text-center">
+                      <div className="mt-3 pt-3 border-t border-orange-100 dark:border-orange-800">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
                           Y {filteredCuisines.length - 12} más...
                         </p>
                       </div>
@@ -678,7 +705,7 @@ export default function Home() {
                       key={index}
                       type="button"
                       onClick={() => handleSearch(cuisine)}
-                      className="px-4 py-2 bg-orange-100 hover:bg-orange-200 text-orange-700 rounded-full text-sm font-medium transition-all duration-300 hover:scale-110 hover:shadow-lg border border-orange-200 hover:border-orange-300"
+                      className="px-4 py-2 bg-orange-100 dark:bg-orange-900/30 hover:bg-orange-200 dark:hover:bg-orange-800/50 text-orange-700 dark:text-orange-300 rounded-full text-sm font-medium transition-all duration-300 hover:scale-110 hover:shadow-lg border border-orange-200 dark:border-orange-700 hover:border-orange-300 dark:hover:border-orange-600"
                     >
                       {cuisine}
                     </button>
@@ -688,7 +715,7 @@ export default function Home() {
             </form>
           </div>
 
-            <div className="flex items-center justify-center text-gray-600 hover:text-orange-600 cursor-pointer transition-all duration-300 hover:scale-105 animate-in fade-in duration-100 delay-400 mt-30">
+            <div className="flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 cursor-pointer transition-all duration-300 hover:scale-105 animate-in fade-in duration-100 delay-400 mt-30">
               <MapPin className="w-4 h-4 mr-2" />
               <span>Usar mi ubicación actual</span>
             </div>
@@ -697,7 +724,7 @@ export default function Home() {
 
              {/* Categories Carrusel */}
        <section id="cocinas" className="max-w-7xl mx-auto px-4 py-16">
-         <h3 className="text-3xl font-bold mb-12 text-center text-black animate-in fade-in slide-in-from-bottom duration-800">
+         <h3 className="text-3xl font-bold mb-12 text-center text-black dark:text-white animate-in fade-in slide-in-from-bottom duration-800">
            Tipos de Cocina
          </h3>
          
@@ -736,7 +763,7 @@ export default function Home() {
                        return (
                          <div key={actualIndex} className="p-2">
                            <Card
-                             className={`${category.color} border-4 hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105 group animate-in fade-in slide-in-from-bottom duration-800`}
+                             className={`${category.color} border-4 hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105 group animate-in fade-in slide-in-from-bottom duration-800 dark:bg-gray-400/20 transition-all duration-200 hover:scale-105 group animate-in fade-in slide-in-from-bottom duration-800`}
                              style={{ animationDelay: `${actualIndex * 150}ms` }}
                            >
                              <CardContent className="p-6 text-center">
@@ -773,13 +800,13 @@ export default function Home() {
        </section>
 
       {/* Featured Restaurants */}
-      <section id="restaurantes" className="bg-white py-20 px-4">
+      <section id="restaurantes" className="bg-white dark:bg-gray-900 py-20 px-4 transition-colors duration-300">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h3 className="text-3xl font-bold text-black mb-4">
+            <h3 className="text-3xl font-bold text-black dark:text-white mb-4">
               Restaurantes Destacados
             </h3>
-            <p className="text-gray-700 text-lg">
+            <p className="text-gray-700 dark:text-gray-300 text-lg">
               Los favoritos de nuestra comunidad
             </p>
           </div>
@@ -788,7 +815,7 @@ export default function Home() {
             {restaurants.map((restaurant, index) => (
               <Card
                 key={restaurant.id}
-                className="overflow-hidden hover:shadow-2xl transition-all duration-500 group cursor-pointer border-2 hover:border-orange-200"
+                className="overflow-hidden hover:shadow-2xl transition-all duration-500 group cursor-pointer border-2 hover:border-orange-200 dark:bg-gray-800 dark:border-gray-700 dark:hover:border-orange-600"
               >
                 <div className="relative">
                   <img
@@ -808,34 +835,34 @@ export default function Home() {
 
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start mb-2">
-                    <h4 className="text-xl font-bold text-black group-hover:text-orange-600 transition-colors duration-300">
+                    <h4 className="text-xl font-bold text-black dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors duration-300">
                       {restaurant.name}
                     </h4>
-                    <span className="text-sm font-medium text-gray-600 group-hover:text-orange-500 transition-colors duration-300">
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors duration-300">
                       {restaurant.priceRange}
                     </span>
                   </div>
 
-                  <p className="text-gray-600 mb-3 group-hover:text-gray-800 transition-colors duration-300">
+                  <p className="text-gray-600 dark:text-gray-300 mb-3 group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors duration-300">
                     {restaurant.description}
                   </p>
 
                   <div className="flex items-center mb-3">
                     <Star className="w-4 h-4 text-orange-500 fill-current group-hover:scale-110 transition-transform duration-300" />
-                    <span className="ml-1 font-medium group-hover:text-orange-600 transition-colors duration-300">
+                    <span className="ml-1 font-medium group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors duration-300">
                       {restaurant.rating}
                     </span>
-                    <span className="ml-1 text-gray-500">({restaurant.reviews} reseñas)</span>
+                    <span className="ml-1 text-gray-500 dark:text-gray-400">({restaurant.reviews} reseñas)</span>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center text-gray-500 group-hover:text-gray-700 transition-colors duration-300">
+                    <div className="flex items-center text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">
                       <MapPin className="w-4 h-4 mr-1" />
                       <span className="text-sm">{restaurant.location}</span>
                     </div>
                     <Badge
                       variant="outline"
-                      className="border-orange-300 text-orange-700 group-hover:border-orange-500 group-hover:text-orange-800 transition-all duration-300"
+                      className="border-orange-300 dark:border-orange-600 text-orange-700 dark:text-orange-400 group-hover:border-orange-500 dark:group-hover:border-orange-400 group-hover:text-orange-800 dark:group-hover:text-orange-300 transition-all duration-300"
                     >
                       {restaurant.cuisine}
                     </Badge>
@@ -854,13 +881,13 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="acerca_de" className="py-20 px-4 bg-gradient-to-r from-orange-50 to-red-50">
+      <section id="acerca_de" className="py-20 px-4 bg-gradient-to-r from-orange-50 to-red-50 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h3 className="text-3xl font-bold text-black mb-4">
+            <h3 className="text-3xl font-bold text-black dark:text-white mb-4">
               ¿Por qué elegir Reservify?
             </h3>
-            <p className="text-gray-700 text-lg">
+            <p className="text-gray-700 dark:text-gray-300 text-lg">
               La forma más fácil de reservar mesa
             </p>
           </div>
@@ -902,10 +929,10 @@ export default function Home() {
                       className={`w-8 h-8 ${feature.iconColor} group-hover:scale-110 transition-transform duration-300`}
                     />
                   </div>
-                  <h4 className="text-xl font-semibold mb-2 text-black group-hover:text-orange-600 transition-colors duration-300">
+                  <h4 className="text-xl font-semibold mb-2 text-black dark:text-white group-hover:text-orange-600 transition-colors duration-300">
                     {feature.title}
                   </h4>
-                  <p className="text-gray-700 group-hover:text-gray-900 transition-colors duration-300">
+                  <p className="text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors duration-300">
                     {feature.description}
                   </p>
                 </div>
