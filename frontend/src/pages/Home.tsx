@@ -358,20 +358,128 @@ export default function Home() {
       availableToday: false,
       cuisine: "Mexicana",
     },
+    {
+      id: 4,
+      name: "Trattoria Bella Vista",
+      description: "Auténtica cocina italiana con pasta artesanal",
+      location: "Cali",
+      image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80",
+      rating: 4.6,
+      reviews: 203,
+      priceRange: "$$$",
+      availableToday: true,
+      cuisine: "Italiana",
+    },
+    {
+      id: 5,
+      name: "Garden Greens",
+      description: "Cocina vegetariana gourmet con ingredientes orgánicos",
+      location: "Bogotá",
+      image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80",
+      rating: 4.5,
+      reviews: 178,
+      priceRange: "$$",
+      availableToday: true,
+      cuisine: "Vegetariana",
+    },
+    {
+      id: 6,
+      name: "Dragon Palace",
+      description: "Especialidades chinas auténticas y dim sum",
+      location: "Medellín",
+      image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80",
+      rating: 4.4,
+      reviews: 145,
+      priceRange: "$$",
+      availableToday: false,
+      cuisine: "China",
+    },
+    {
+      id: 7,
+      name: "Le Petit Bistrot",
+      description: "Cocina francesa clásica en ambiente romántico",
+      location: "Cartagena",
+      image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
+      rating: 4.8,
+      reviews: 92,
+      priceRange: "$$$$",
+      availableToday: true,
+      cuisine: "Francesa",
+    },
+    {
+      id: 8,
+      name: "Spice Garden",
+      description: "Sabores auténticos de la India con tandoor",
+      location: "Cali",
+      image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80",
+      rating: 4.3,
+      reviews: 167,
+      priceRange: "$$",
+      availableToday: true,
+      cuisine: "India",
+    },
+    {
+      id: 9,
+      name: "Thai Delight",
+      description: "Cocina tailandesa picante y aromática",
+      location: "Bogotá",
+      image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
+      rating: 4.7,
+      reviews: 134,
+      priceRange: "$$",
+      availableToday: false,
+      cuisine: "Tailandesa",
+    },
+    {
+      id: 10,
+      name: "El Asador Argentino",
+      description: "Carnes premium y parrilla tradicional",
+      location: "Medellín",
+      image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80",
+      rating: 4.6,
+      reviews: 189,
+      priceRange: "$$$",
+      availableToday: true,
+      cuisine: "Argentina",
+    },
+    {
+      id: 11,
+      name: "Seoul Kitchen",
+      description: "BBQ coreano y platos tradicionales",
+      location: "Cali",
+      image: "https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=800&q=80",
+      rating: 4.4,
+      reviews: 112,
+      priceRange: "$$",
+      availableToday: true,
+      cuisine: "Coreana",
+    },
+    {
+      id: 12,
+      name: "Cevichería del Pacífico",
+      description: "Ceviches frescos y mariscos del Pacífico",
+      location: "Cartagena",
+      image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80",
+      rating: 4.5,
+      reviews: 156,
+      priceRange: "$$$",
+      availableToday: false,
+      cuisine: "Peruana",
+    },
   ]
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
       <style dangerouslySetInnerHTML={{ __html: colorAnimationStyles }} />
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-md fixed top-0 w-full z-50 shadow-lg border-b border-orange-100 animate-in slide-in-from-top duration-700">
+      <header className="bg-white/95 backdrop-blur-md fixed top-0 w-full z-50 shadow-lg border-b border-orange-100">
         <div className="max-w-7xl mx-auto flex justify-between items-center px-4 h-16">
-          <div className="flex items-center space-x-2 animate-in fade-in duration-1000">
+          <div className="flex items-center space-x-2">
             <img src="../../../public/logoreservify.png" className="w-full h-15" />
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8 animate-in slide-in-from-right duration-700 delay-300">
+          <nav className="hidden md:flex items-center space-x-8">
             <a
               href="#restaurantes"
               className="text-black hover:text-orange-600 transition-all duration-300 hover:scale-105 font-medium"
@@ -413,7 +521,7 @@ export default function Home() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white border-t border-orange-100 px-4 py-4 space-y-4 animate-in slide-in-from-top duration-300">
+          <div className="md:hidden bg-white border-t border-orange-100 px-4 py-4 space-y-4">
             <a href="#" className="block text-black hover:text-orange-600 font-medium transition-colors duration-300">
               Restaurantes
             </a>
@@ -447,8 +555,8 @@ export default function Home() {
       <section className="pt-24 pb-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <div className="relative">
-            <h2 className="text-5xl md:text-6xl font-bold mb-6 leading-tight animate-in fade-in slide-in-from-bottom duration-1000">
-              <span className="animate-color-shift">
+            <h2 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+              <span className="text-orange-500">
                 Reserva en tu restaurante favorito
               </span>
             </h2>
@@ -498,13 +606,13 @@ export default function Home() {
           </div>
           <p
             id="buscar"
-            className="text-xl text-black mb-12 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom duration-1000 delay-300"
+            className="text-xl text-black mb-12 max-w-2xl mx-auto"
           >
             Desde comida gourmet hasta cocina casera, encuentra el lugar ideal para cada ocasión
           </p>
 
           {/* Search Bar Mejorada */}
-          <div className="search-container relative max-w-3xl mx-auto mb-8 animate-in fade-in slide-in-from-bottom duration-1000 delay-500">
+          <div className="search-container relative max-w-3xl mx-auto mb-8">
             <form onSubmit={handleSearchSubmit} className="relative">
               <div className="relative group">
                 {/* Icono de búsqueda con animación */}
@@ -530,7 +638,7 @@ export default function Home() {
 
               {/* Sugerencias de búsqueda */}
               {showSuggestions && filteredCuisines.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-orange-200 max-h-64 overflow-y-auto z-50 animate-in fade-in slide-in-from-top duration-300">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-orange-200 max-h-64 overflow-y-auto z-50">
                   <div className="p-4">
                     <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
                       <ChefHat className="w-4 h-4 mr-2 text-orange-500" />
@@ -564,7 +672,7 @@ export default function Home() {
 
               {/* Sugerencias rápidas cuando no hay búsqueda */}
               {!showSuggestions && searchQuery === "" && (
-                <div className="absolute top-full left-0 right-0 mt-4 flex flex-wrap justify-center gap-3 animate-in fade-in slide-in-from-top duration-500 delay-300">
+                <div className="absolute top-full left-0 right-0 mt-4 flex flex-wrap justify-center gap-3">
                   {["Italiana", "Japonesa", "Mexicana", "Mediterránea"].map((cuisine, index) => (
                     <button
                       key={index}
@@ -580,7 +688,7 @@ export default function Home() {
             </form>
           </div>
 
-                                           <div className="flex items-center justify-center text-gray-600 hover:text-orange-600 cursor-pointer transition-all duration-300 hover:scale-105 animate-in fade-in duration-1000 delay-700 mt-16">
+                                           <div className="flex items-center justify-center text-gray-600 hover:text-orange-600 cursor-pointer transition-all duration-300 hover:scale-105 mt-16">
               <MapPin className="w-4 h-4 mr-2" />
               <span>Usar mi ubicación actual</span>
             </div>
@@ -588,10 +696,10 @@ export default function Home() {
       </section>
 
              {/* Categories Carrusel */}
-       <section id="cocinas" className="max-w-7xl mx-auto px-4 py-16">
-         <h3 className="text-3xl font-bold mb-12 text-center text-black animate-in fade-in slide-in-from-bottom duration-800">
-           Tipos de Cocina
-         </h3>
+               <section id="cocinas" className="max-w-7xl mx-auto px-4 py-16">
+          <h3 className="text-3xl font-bold mb-12 text-center text-black">
+            Tipos de Cocina
+          </h3>
          
          <div className="relative">
            {/* Botones de navegación */}
@@ -627,10 +735,9 @@ export default function Home() {
                        const actualIndex = slideIndex * 4 + index
                        return (
                          <div key={actualIndex} className="p-2">
-                           <Card
-                             className={`${category.color} border-4 hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105 group animate-in fade-in slide-in-from-bottom duration-800`}
-                             style={{ animationDelay: `${actualIndex * 150}ms` }}
-                           >
+                                                       <Card
+                              className={`${category.color} border-4 hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105 group`}
+                            >
                              <CardContent className="p-6 text-center">
                                <IconComponent className="w-8 h-8 mx-auto mb-3 group-hover:scale-110 transition-transform duration-300" />
                                <h4 className="font-semibold text-lg group-hover:scale-105 transition-transform duration-300">
@@ -668,10 +775,10 @@ export default function Home() {
       <section id="restaurantes" className="bg-white py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h3 className="text-3xl font-bold text-black mb-4 animate-in fade-in slide-in-from-bottom duration-800">
+            <h3 className="text-3xl font-bold text-black mb-4">
               Restaurantes Destacados
             </h3>
-            <p className="text-gray-700 text-lg animate-in fade-in slide-in-from-bottom duration-800 delay-200">
+            <p className="text-gray-700 text-lg">
               Los favoritos de nuestra comunidad
             </p>
           </div>
@@ -680,8 +787,7 @@ export default function Home() {
             {restaurants.map((restaurant, index) => (
               <Card
                 key={restaurant.id}
-                className="overflow-hidden hover:shadow-2xl transition-all duration-500 group cursor-pointer border-2 hover:border-orange-200 animate-in fade-in slide-in-from-bottom duration-800"
-                style={{ animationDelay: `${index * 200}ms` }}
+                className="overflow-hidden hover:shadow-2xl transition-all duration-500 group cursor-pointer border-2 hover:border-orange-200"
               >
                 <div className="relative">
                   <img
@@ -750,10 +856,10 @@ export default function Home() {
       <section id="acerca_de" className="py-20 px-4 bg-gradient-to-r from-orange-50 to-red-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h3 className="text-3xl font-bold text-black mb-4 animate-in fade-in slide-in-from-bottom duration-800">
+            <h3 className="text-3xl font-bold text-black mb-4">
               ¿Por qué elegir Reservify?
             </h3>
-            <p className="text-gray-700 text-lg animate-in fade-in slide-in-from-bottom duration-800 delay-200">
+            <p className="text-gray-700 text-lg">
               La forma más fácil de reservar mesa
             </p>
           </div>
@@ -786,8 +892,7 @@ export default function Home() {
               return (
                 <div
                   key={index}
-                  className="text-center group animate-in fade-in slide-in-from-bottom duration-800"
-                  style={{ animationDelay: `${index * 200}ms` }}
+                  className="text-center group"
                 >
                   <div
                     className={`w-16 h-16 ${feature.bgColor} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-all duration-300 group-hover:shadow-lg`}
@@ -812,13 +917,13 @@ export default function Home() {
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-orange-600 to-red-600 text-white py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h3 className="text-4xl font-bold mb-6 animate-in fade-in slide-in-from-bottom duration-800">
+          <h3 className="text-4xl font-bold mb-6">
             ¿Listo para tu próxima experiencia culinaria?
           </h3>
-          <p className="text-xl mb-8 text-orange-100 animate-in fade-in slide-in-from-bottom duration-800 delay-300">
+          <p className="text-xl mb-8 text-orange-100">
             Miles de mesas disponibles en los mejores restaurantes de tu ciudad
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-in fade-in slide-in-from-bottom duration-800 delay-500">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
               className="border-white bg-white text-black hover:bg-orange-100 hover:text-orange-700 transition-all duration-300 hover:scale-105 transform"
@@ -830,7 +935,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black text-white py-12 px-4 animate-in fade-in duration-1000">
+      <footer className="bg-black text-white py-12 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
