@@ -47,14 +47,14 @@ export default function Login() {
 
   return (
     <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 dark:from-gray-900 dark:via-black dark:to-gray-800 flex items-center justify-center p-4 transition-colors duration-300">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-black dark:to-gray-800 flex items-center justify-center p-4 transition-colors duration-300">
         <div className="w-full max-w-md">
           <div className="flex justify-between items-center mb-6">
             <Button
               onClick={handleBackToHome}
               variant="outline"
               size="sm"
-              className="border-orange-200 hover:bg-orange-50 dark:border-gray-600 dark:hover:bg-gray-700 text-orange-600 dark:text-orange-400 transition-all duration-200 bg-transparent"
+              className="border-blue-200 hover:bg-blue-50 dark:border-gray-600 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-all duration-200 bg-transparent"
             >
               <Home className="w-4 h-4 mr-2" />
               Volver al inicio
@@ -63,7 +63,7 @@ export default function Login() {
               onClick={() => setIsDarkMode(!isDarkMode)}
               variant="outline"
               size="sm"
-              className="border-orange-200 hover:bg-orange-50 dark:border-gray-600 dark:hover:bg-gray-700 text-orange-600 dark:text-orange-400 transition-all duration-200"
+              className="border-blue-200 hover:bg-blue-50 dark:border-gray-600 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-all duration-200"
             >
               {isDarkMode ? "☀️" : "🌙"}
             </Button>
@@ -71,7 +71,7 @@ export default function Login() {
 
           {/* Logo/Brand */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
               <Lock className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
@@ -110,7 +110,7 @@ export default function Login() {
                       placeholder="tu@ejemplo.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-orange-500 focus:ring-orange-500 transition-colors duration-300"
+                      className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500 transition-colors duration-300"
                       required
                     />
                   </div>
@@ -132,13 +132,13 @@ export default function Login() {
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-orange-500 focus:ring-orange-500 transition-colors duration-300"
+                      className="pl-10 pr-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500 transition-colors duration-300"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-0.5 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors bg-transparent border-none p-0 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded"
+                      className="absolute right-0.5 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors bg-transparent border-none p-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -150,7 +150,7 @@ export default function Login() {
                   <div className="flex items-center space-x-2"></div>
                   <button
                     type="button"
-                    className="text-sm text-orange-600 dark:text-orange-400 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded"
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-green-600 dark:hover:text-green-400 font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
                   >
                     ¿Olvidaste tu contraseña?
                   </button>
@@ -159,7 +159,7 @@ export default function Login() {
                 {/* Login Button */}
                 <Button
                   type="submit"
-                  className="w-full h-11 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
+                  className="w-full h-11 bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -190,7 +190,7 @@ export default function Login() {
               <div className="grid grid-cols-1 gap-3">
                 <Button
                   variant="outline"
-                  className="h-11 w-full border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-orange-500"
+                  className="h-11 w-full border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500"
                   type="button"
                 >
                   <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -220,9 +220,9 @@ export default function Login() {
                 <p className="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300">
                   ¿No tienes una cuenta?{" "}
                   <Link to="/Registrar">
-                  <button className="text-orange-600 dark:text-orange-400 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded">
-                    Regístrate aquí
-                  </button>
+                    <button className="text-blue-600 dark:text-blue-400 hover:text-green-600 dark:hover:text-green-400 font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded">
+                      Regístrate aquí
+                    </button>
                   </Link>
                 </p>
               </div>
