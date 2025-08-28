@@ -65,13 +65,13 @@ export default function Registrar() {
 
   return (
     <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-black flex items-center justify-center p-4 transition-colors duration-300">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-black flex items-center justify-center p-4 transition-colors duration-300">
         <div className="w-full max-w-max">
           <div className="flex justify-between items-center mb-6">
             <Button
               onClick={() => (window.location.href = "/")}
               variant="outline"
-              className="flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 border-orange-200 dark:border-gray-600 hover:bg-orange-50 dark:hover:bg-gray-700 text-orange-600 dark:text-orange-400 transition-all duration-200"
+              className="flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 border-blue-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-all duration-200"
             >
               <Home className="w-4 h-4" />
               Volver al inicio
@@ -81,7 +81,7 @@ export default function Registrar() {
               onClick={() => setIsDarkMode(!isDarkMode)}
               variant="outline"
               size="icon"
-              className="bg-white/80 dark:bg-gray-800/80 border-orange-200 dark:border-gray-600 hover:bg-orange-50 dark:hover:bg-gray-700 text-orange-600 dark:text-orange-400 transition-all duration-200"
+              className="bg-white/80 dark:bg-gray-800/80 border-blue-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-all duration-200"
             >
               {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </Button>
@@ -89,7 +89,7 @@ export default function Registrar() {
 
           {/* Logo/Brand */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
               <Lock className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
@@ -134,7 +134,7 @@ export default function Registrar() {
                         placeholder="tu@ejemplo.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-orange-500 focus:ring-orange-500 transition-all duration-200"
+                        className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
                         required
                       />
                     </div>
@@ -156,7 +156,7 @@ export default function Registrar() {
                         placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-orange-500 focus:ring-orange-500 transition-all duration-200"
+                        className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
                         required
                       />
                       <button
@@ -189,7 +189,7 @@ export default function Registrar() {
                         placeholder="••••••••"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-orange-500 focus:ring-orange-500 transition-all duration-200"
+                        className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
                         required
                       />
                       <button
@@ -211,7 +211,7 @@ export default function Registrar() {
                     <div className="flex items-center space-x-2"></div>
                     <button
                       type="button"
-                      className="text-sm text-orange-600 dark:text-orange-400 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded"
+                      className="text-sm text-blue-600 dark:text-blue-400 hover:text-green-600 dark:hover:text-green-400 font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
                     >
                       ¿Olvidaste tu contraseña?
                     </button>
@@ -220,7 +220,7 @@ export default function Registrar() {
                   <Button
                     type="button"
                     onClick={() => setShowCard(false)}
-                    className="w-full h-11 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
+                    className="w-full h-11 bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
                   >
                     <span>Continuar</span>
                     <ArrowRight className="w-4 h-4" />
@@ -241,10 +241,9 @@ export default function Registrar() {
                 <div className="grid grid-cols-1 gap-3">
                   <Button
                     variant="outline"
-                    className="h-11 w-full border-gray-200 dark:border-gray-600 hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-orange-500"
+                    className="h-11 w-full border-gray-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500"
                     type="button"
                   >
-                    {/* ... existing Google SVG ... */}
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                       <path
                         fill="#4285F4"
@@ -307,7 +306,7 @@ export default function Registrar() {
                           placeholder="tu tipo de documento"
                           value={tipo_documento}
                           onChange={(e) => setTipo_documento(e.target.value)}
-                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-orange-500 focus:ring-orange-500 transition-all duration-200"
+                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
                           required
                         />
                       </div>
@@ -328,7 +327,7 @@ export default function Registrar() {
                           placeholder="tu numero de documento"
                           value={documento}
                           onChange={(e) => setDocumento(e.target.value)}
-                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-orange-500 focus:ring-orange-500 transition-all duration-200"
+                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
                           required
                         />
                       </div>
@@ -349,7 +348,7 @@ export default function Registrar() {
                           placeholder="tu numero de telefono"
                           value={telefono}
                           onChange={(e) => setTelefono(e.target.value)}
-                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-orange-500 focus:ring-orange-500 transition-all duration-200"
+                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
                           required
                         />
                       </div>
@@ -373,7 +372,7 @@ export default function Registrar() {
                           placeholder="Tu nombre"
                           value={nombre}
                           onChange={(e) => setNombre(e.target.value)}
-                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-orange-500 focus:ring-orange-500 transition-all duration-200"
+                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
                           required
                         />
                       </div>
@@ -394,7 +393,7 @@ export default function Registrar() {
                           placeholder="Tu apellido"
                           value={apellido}
                           onChange={(e) => setApellido(e.target.value)}
-                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-orange-500 focus:ring-orange-500 transition-all duration-200"
+                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
                           required
                         />
                       </div>
@@ -415,7 +414,7 @@ export default function Registrar() {
                           placeholder="tu nacionalidad"
                           value={nacionalidad}
                           onChange={(e) => setNacionalidad(e.target.value)}
-                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-orange-500 focus:ring-orange-500 transition-all duration-200"
+                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
                           required
                         />
                       </div>
@@ -430,7 +429,7 @@ export default function Registrar() {
 
                     <Button
                       type="submit"
-                      className="w-full h-11 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
+                      className="w-full h-11 bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
                       disabled={isLoading}
                     >
                       {isLoading ? (
@@ -455,11 +454,11 @@ export default function Registrar() {
           <div className="text-center mt-8 text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300">
             <p>Al registrarte, aceptas nuestros</p>
             <div className="space-x-4 mt-1">
-              <button className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-orange-400 rounded">
+              <button className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-blue-400 rounded">
                 Términos de Servicio
               </button>
               <span>•</span>
-              <button className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-orange-400 rounded">
+              <button className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-blue-400 rounded">
                 Política de Privacidad
               </button>
             </div>
