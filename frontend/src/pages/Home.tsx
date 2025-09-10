@@ -62,6 +62,115 @@ const colorAnimationStyles = `
   .animate-color-shift {
     animation: colorShift 4s ease-in-out infinite;
   }
+
+  /* Animaciones para los sparkles */
+  @keyframes sparkleFloat {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+      opacity: 0.8;
+    }
+    25% {
+      transform: translateY(-10px) rotate(90deg);
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(-5px) rotate(180deg);
+      opacity: 0.6;
+    }
+    75% {
+      transform: translateY(-15px) rotate(270deg);
+      opacity: 1;
+    }
+  }
+
+  @keyframes sparklePulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.7;
+    }
+    50% {
+      transform: scale(1.3);
+      opacity: 1;
+    }
+  }
+
+  @keyframes sparkleGlow {
+    0%, 100% {
+      box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.6);
+    }
+  }
+
+  @keyframes sparkleTwinkle {
+    0%, 100% {
+      opacity: 0.3;
+      transform: scale(0.8);
+    }
+    25% {
+      opacity: 0.8;
+      transform: scale(1.1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+    75% {
+      opacity: 0.6;
+      transform: scale(0.9);
+    }
+  }
+
+  @keyframes sparkleOrbit {
+    0% {
+      transform: rotate(0deg) translateX(20px) rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg) translateX(20px) rotate(-360deg);
+    }
+  }
+
+  /* Clases de animación para cada sparkle */
+  .sparkle-1 {
+    animation: sparkleFloat 3s ease-in-out infinite, sparkleGlow 2s ease-in-out infinite;
+    animation-delay: 0s;
+  }
+
+  .sparkle-2 {
+    animation: sparklePulse 2.5s ease-in-out infinite, sparkleTwinkle 1.8s ease-in-out infinite;
+    animation-delay: 0.3s;
+  }
+
+  .sparkle-3 {
+    animation: sparkleFloat 3.2s ease-in-out infinite, sparkleGlow 2.2s ease-in-out infinite;
+    animation-delay: 0.6s;
+  }
+
+  .sparkle-4 {
+    animation: sparklePulse 2.8s ease-in-out infinite, sparkleTwinkle 2s ease-in-out infinite;
+    animation-delay: 0.9s;
+  }
+
+  .sparkle-5 {
+    animation: sparkleFloat 3.5s ease-in-out infinite, sparkleGlow 1.8s ease-in-out infinite;
+    animation-delay: 1.2s;
+  }
+
+  .sparkle-6 {
+    animation: sparklePulse 2.3s ease-in-out infinite, sparkleTwinkle 1.6s ease-in-out infinite;
+    animation-delay: 1.5s;
+  }
+
+  .sparkle-7 {
+    animation: sparkleFloat 3.8s ease-in-out infinite, sparkleGlow 2.5s ease-in-out infinite;
+    animation-delay: 1.8s;
+  }
+
+  .sparkle-8 {
+    animation: sparklePulse 2.7s ease-in-out infinite, sparkleTwinkle 1.9s ease-in-out infinite;
+    animation-delay: 2.1s;
+  }
 `;
 
 export default function Home() {
@@ -485,7 +594,7 @@ export default function Home() {
                 </Link>
                 <Link to="/Registrar">
                   <Button
-                    className="text-white bg-red-600 hover:bg-blue-600 transition-all duration-300 hover:scale-105 transform"
+                    className="text-white bg-green-600 hover:bg-blue-600 transition-all duration-300 hover:scale-105 transform"
                     size="sm"
                   >
                     Registrarse
@@ -572,7 +681,7 @@ export default function Home() {
             {/* Brillos alrededor del título */}
             <div className="absolute inset-0 pointer-events-none">
               {/* Brillo superior izquierdo */}
-              <div className="sparkle-1 absolute -top-4 -left-8 w-4 h-4">
+              <div className="sparkle-2 absolute -top-4 -left-8 w-4 h-4">
                 <div className="w-full h-full bg-gradient-to-br from-yellow-300 to-blue-500 rounded-full shadow-lg shadow-blue-300/50"></div>
               </div>
 
@@ -582,27 +691,27 @@ export default function Home() {
               </div>
 
               {/* Brillo inferior izquierdo */}
-              <div className="sparkle-3 absolute -bottom-2 -left-4 w-2 h-2">
-                <div className="w-full h-full bg-gradient-to-br from-yellow-400 to-blue-600 rounded-full shadow-lg shadow-blue-400/50"></div>
+              <div className="sparkle-2 absolute -bottom-2 -left-4 w-2 h-2">
+                <div className="w-full h-full bg-gradient-to-br from-yellow-400 to-blue-600 rounded-full shadow-lg shadow-blue-300/50"></div>
               </div>
 
               {/* Brillo inferior derecho */}
-              <div className="sparkle-4 absolute -bottom-4 -right-6 w-3 h-3">
+              <div className="sparkle-2 absolute -bottom-4 -right-6 w-3 h-3">
                 <div className="w-full h-full bg-gradient-to-br from-blue-300 to-green-400 rounded-full shadow-lg shadow-blue-300/50"></div>
               </div>
 
               {/* Brillo medio izquierdo */}
-              <div className="sparkle-5 absolute top-1/2 -left-2 w-2 h-2">
+              <div className="sparkle-2 absolute top-1/2 -left-2 w-2 h-2">
                 <div className="w-full h-full bg-gradient-to-br from-yellow-500 to-blue-700 rounded-full shadow-lg shadow-yellow-400/50"></div>
               </div>
 
               {/* Brillo medio derecho */}
-              <div className="sparkle-6 absolute top-1/3 -right-4 w-2 h-2">
+              <div className="sparkle-2 absolute top-1/3 -right-4 w-2 h-2">
                 <div className="w-full h-full bg-gradient-to-br from-blue-500 to-green-600 rounded-full shadow-lg shadow-blue-500/50"></div>
               </div>
 
               {/* Brillo superior central */}
-              <div className="sparkle-7 absolute -top-2 left-1/2 transform -translate-x-1/2 w-2 h-2">
+              <div className="sparkle-2 absolute -top-2 left-1/2 transform -translate-x-1/2 w-2 h-2">
                 <div className="w-full h-full bg-gradient-to-br from-yellow-300 to-blue-400 rounded-full shadow-lg shadow-yellow-300/50"></div>
               </div>
 
