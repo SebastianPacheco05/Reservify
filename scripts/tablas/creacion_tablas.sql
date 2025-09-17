@@ -59,10 +59,14 @@ CREATE TABLE "Restaurante" (
     direccion VARCHAR(50) NOT NULL,  -- Dirección del restaurante
     nombre_restaurante VARCHAR(50) NOT NULL,  -- Nombre del restaurante
     descripcion_restaurante VARCHAR(100) NOT NULL,  -- Descripción del restaurante
+    rating DECIMAL(2, 1) NOT NULL,  -- Rating del restaurante
+    reviews INT NOT NULL,  -- Reviews del restaurante
+    availableToday BOOLEAN NOT NULL,  -- Disponibilidad del restaurante
     horario_apertura TIME NOT NULL,  -- Hora de apertura
     horario_cierre TIME NOT NULL,  -- Hora de cierre
-    documento INT NOT NULL,  -- Referencia al dueño
+    documento DECIMAL(10, 0) NOT NULL,  -- Referencia al dueño
     id_categoria INT not null,  -- Referencia a la categoría
+    url_image VARCHAR NOT NULL,  -- URL de la imagen del restaurante
     foreign key (id_categoria) references "Categorias" (id_categoria) ON DELETE CASCADE,
     FOREIGN KEY (documento) REFERENCES "Dueno" (documento) ON DELETE CASCADE,
     CHECK (horario_apertura < horario_cierre)  -- Validación de horarios
@@ -102,7 +106,7 @@ CREATE TABLE "Empleado" (
     nacionalidad VARCHAR(20) NOT NULL,  -- Nacionalidad
     telefono VARCHAR(10) NOT NULL CHECK (telefono ~ '^[0-9]{10}$'),  -- Teléfono con validación de formato
     id_rol INT NOT NULL,  -- Referencia al rol
-    NIT INT NOT NULL,  -- Referencia al restaurante
+    NIT DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
     FOREIGN KEY (NIT) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE,
     FOREIGN KEY (id_rol) REFERENCES "Roles" (id_rol) ON DELETE CASCADE,
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
@@ -111,12 +115,12 @@ CREATE TABLE "Empleado" (
 -- Tabla Encabezado_Factura: Almacena la información principal de las facturas
 CREATE TABLE "Encabezado_Factura" (
     id_encab_fact SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
-    NIT INT NOT NULL,  -- Referencia al restaurante
+    NIT DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
     nombre_restaurante VARCHAR(50) NOT NULL,  -- Nombre del restaurante
     direccion VARCHAR(50) NOT NULL,  -- Dirección del restaurante
     ciudad VARCHAR(20) NOT NULL,  -- Ciudad
     fecha DATE NOT NULL CHECK (fecha = CURRENT_DATE),  -- Fecha de la factura
-    documento INT NOT NULL,  -- Referencia al cliente
+    documento DECIMAL(10, 0) NOT NULL,  -- Referencia al cliente
     FOREIGN KEY (NIT) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE,
     FOREIGN KEY (documento) REFERENCES "Cliente" (documento) ON DELETE CASCADE
 );
@@ -141,7 +145,7 @@ CREATE TABLE "Detalle_Factura" (
 CREATE TABLE "Reserva" (
     id_reserva SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     id_mesa INT NOT NULL,  -- Referencia a la mesa
-    documento INT NOT NULL,  -- Referencia al cliente
+    documento DECIMAL(10, 0) NOT NULL,  -- Referencia al cliente
     id_encab_fact INT NOT NULL,  -- Referencia a la factura
     estado_reserva VARCHAR NOT NULL DEFAULT 'no presentada'
     CHECK (estado_reserva IN (
@@ -158,7 +162,7 @@ CREATE TABLE "Reserva" (
 
 CREATE TABLE "Calculos_mensuales" (
     id_calculo SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
-    NIT INT NOT NULL,  -- Referencia al restaurante
+    NIT DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
     mes INT NOT NULL CHECK (mes >= 1 AND mes <= 12),  -- Mes del cálculo
     anio INT NOT NULL CHECK (anio > 0),  -- Año del cálculo
     total_reservas INT NOT NULL DEFAULT 0,  -- Total de reservas del mes
@@ -169,13 +173,13 @@ CREATE TABLE "Calculos_mensuales" (
 
 CREATE TABLE "Comentarios" (
     id_comentario SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
-    documento INT NOT NULL,  -- Referencia al cliente
-    nit INT NOT NULL,  -- Referencia al restaurante
+    documento DECIMAL(10, 0) NOT NULL,  -- Referencia al cliente
+    NIT DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
     comentario TEXT NOT NULL,  -- Comentario del cliente
     fecha TIMESTAMP NOT NULL DEFAULT NOW(),  -- Fecha del comentario
     calificacion INT CHECK (calificacion >= 1 AND calificacion <= 5),  -- Calificación del 1 al 5
     FOREIGN KEY (documento) REFERENCES "Cliente" (documento) ON DELETE CASCADE,
-    FOREIGN KEY (nit) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE
+    FOREIGN KEY (NIT) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE
 );
 
 -- Tabla JWT_Tokens: Almacena tokens JWT (generalmente de refresco) para autenticación segura

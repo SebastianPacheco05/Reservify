@@ -18,6 +18,7 @@ from routes.categorias import router as categorias_router
 from routes.comentarios import router as comentarios_router
 from routes.cal_mensuales import router as cal_mensuales_router
 from routes.register import router as register_router
+from routes.top15 import app as top15_router
 
 # Importacion de los esquemas
 from models import *
@@ -52,6 +53,7 @@ app.include_router(register_router)
 app.include_router(categorias_router)
 app.include_router(comentarios_router)
 app.include_router(cal_mensuales_router)
+app.include_router(top15_router)
 
 # Contactanos
 @app.post("/contactanos")
