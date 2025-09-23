@@ -289,3 +289,8 @@ class RegistrarCliente(BaseModel):
     nacionalidad: str
     telefono: str
     id_rol: int
+    
+    
+# Search Box
+class BuscarRestaurante(BaseModel):
+    nombre_restaurante: str

@@ -4,28 +4,14 @@ import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
+import type { Restaurante } from "../types/restaurant.types";
 
-interface Restaurante {
-  nit: number;
-  direccion: string;
-  nombre_restaurante: string;
-  rating: number;
-  reviews: number;
-  availabletoday: boolean;
-  horario_apertura: string;
-  horario_cierre: string;
-  documento: string;
-  url_image: string;
-  nombre_categoria: string;
-  priceRange?: string; // opcional si no siempre lo tienes
-  descripcion_restaurante?: string; // opcional
-}
 
 export default function RestaurantGrid() {
   const [restaurantes, setRestaurantes] = useState<Restaurante[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:8000/top15")
+    fetch("http://localhost:8000/top")
       .then((res) => res.json())
       .then((data: Restaurante[]) => setRestaurantes(data))
       .catch((err) => console.error(err));
@@ -64,8 +50,8 @@ export default function RestaurantGrid() {
                       restaurant.availabletoday ? "default" : "secondary"
                     }
                     className={`${restaurant.availabletoday
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-800"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-800"
                       } transition-all duration-300 group-hover:scale-105`}
                   >
                     {restaurant.availabletoday

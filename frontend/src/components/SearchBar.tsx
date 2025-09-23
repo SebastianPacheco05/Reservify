@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -9,7 +9,6 @@ interface SearchBarProps {
   setSearchQuery: (query: string) => void;
   showSuggestions: boolean;
   setShowSuggestions: (show: boolean) => void;
-  filteredCuisines: string[];
   onSearch: (cuisine: string) => void;
   onSearchSubmit: (e: React.FormEvent) => void;
 }
@@ -19,10 +18,12 @@ export default function SearchBar({
   setSearchQuery,
   showSuggestions,
   setShowSuggestions,
-  filteredCuisines,
   onSearch,
   onSearchSubmit,
 }: SearchBarProps) {
+  // Estado local para las sugerencias filtradas
+  const [filteredCuisines, setFilteredCuisines] = useState<string[]>([]);
+
   // Cerrar sugerencias cuando se hace clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -37,6 +38,42 @@ export default function SearchBar({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [setShowSuggestions]);
+
+  // Efecto para buscar restaurantes cuando cambia la query
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredCuisines([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      fetch("http://localhost:8000/buscar_restaurante", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre_restaurante: searchQuery }),
+        signal: controller.signal,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          const results = (data.respuesta ?? []).map(
+            (r: { nombre_restaurante: string }) => r.nombre_restaurante
+          );
+          setFilteredCuisines(results);
+          setShowSuggestions(results.length > 0);
+        })
+        .catch((err) => {
+          if (err.name !== "AbortError") console.error(err);
+        });
+    }, 250); // debounce 250ms
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+      console.log("Abortado");
+    };
+  }, [searchQuery, setShowSuggestions]);
 
   return (
     <div className="search-container relative max-w-3xl mx-auto mb-8 animate-in fade-in slide-in-from-bottom duration-1000 delay-500">
