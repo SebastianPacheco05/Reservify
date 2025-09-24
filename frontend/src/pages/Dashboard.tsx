@@ -8,6 +8,7 @@ import { ReservationsTable } from "../components/ui/reservations-table"
 import { MonthlyChart } from "../components/ui/monthly-chart"
 import { InvoicesTable } from "../components/ui/invoices-table"
 import { restaurants, reservations, monthlyFlow, invoices } from "../data/mockData"
+import { Button } from "../components/ui/button"
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview")
@@ -36,8 +37,10 @@ export default function Dashboard() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Mis Restaurantes</h2>
               <span className="text-muted-foreground">{restaurants.length} restaurantes administrados</span>
+              <Button size="sm" variant="add">Agregar Restaurante</Button>
             </div>
             <RestaurantsGrid restaurants={restaurants} />
+
           </div>
         )
 

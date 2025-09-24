@@ -1,49 +1,63 @@
-"use client"
-import { Link } from "react-router-dom"
+"use client";
+import { Link } from "react-router-dom";
 
-import type React from "react"
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import type React from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { Eye, EyeOff, Mail, Lock, ArrowRight, Home } from "lucide-react"
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
-import { Input } from "../components/ui/input"
-import { Label } from "../components/ui/label"
-import { Separator } from "../components/ui/separator"
+import { Eye, EyeOff, Mail, Lock, ArrowRight, Home } from "lucide-react";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Separator } from "../components/ui/separator";
 
 export default function Login() {
-  const navigate = useNavigate()
-  const [showPassword, setShowPassword] = useState(false)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(false)
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
     try {
       const res = await fetch("http://localhost:8000/credenciales/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.detail ?? "Error en el login")
-      localStorage.setItem("token", data.access_token)
-      localStorage.setItem("token_type", data.token_type ?? "bearer")
-      navigate("/")
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail ?? "Error en el login");
+
+      // Guardar token
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("token_type", data.token_type ?? "bearer");
+
+      // 🔑 Redirigir a la ruta que mande el backend
+      if (data.redirect_to) {
+        navigate(data.redirect_to);
+      } else {
+        navigate("/"); // fallback por si no devuelve nada
+      }
     } catch (err: any) {
-      alert("Error de inicio de sesión: " + err.message)
+      alert("Error de inicio de sesión: " + err.message);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleBackToHome = () => {
-    navigate("/")
-  }
+    navigate("/");
+  };
 
   return (
     <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
@@ -140,7 +154,11 @@ export default function Login() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-0.5 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors bg-transparent border-none p-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
                     >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -245,5 +263,5 @@ export default function Login() {
         </div>
       </div>
     </div>
-  )
+  );
 }

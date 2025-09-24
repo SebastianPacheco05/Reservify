@@ -39,7 +39,7 @@ def login_usuario(db: Session, email: str, password: str, request: Request):
         token, expires_at = crear_token(token_data, timedelta(minutes=30))
         issued_at = datetime.utcnow()
 
-        # Insertar el token con todos los campos relevantes
+        # Insertar token en BD
         db.execute(
             text(
                 """
@@ -76,9 +76,23 @@ def login_usuario(db: Session, email: str, password: str, request: Request):
             },
         )
 
+        # Obtener la ruta del dashboard según el rol/usuario
+        dashboard_route = db.execute(
+            text("SELECT get_dashboard_route(:id_credencial)"),
+            {"id_credencial": id_credencial},
+        ).scalar()
+
         db.commit()
 
-        return {"access_token": token, "token_type": "bearer"}
+        if not dashboard_route:
+            raise HTTPException(status_code=404, detail="No se encontró ruta para este usuario")
+
+        # 🔑 Devolver token + ruta a donde redirigir
+        return {
+            "access_token": token,
+            "token_type": "bearer",
+            "redirect_to": dashboard_route
+        }
 
     except Exception as e:
         db.rollback()

@@ -57,6 +57,7 @@ app.include_router(cal_mensuales_router)
 app.include_router(top_router)
 app.include_router(searchBox_router)
 
+
 # Contactanos
 @app.post("/contactanos")
 async def enviar_correo(data: EmailSchema):
