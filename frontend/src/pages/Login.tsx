@@ -45,6 +45,7 @@ export default function Login() {
       // 🔑 Redirigir a la ruta que mande el backend
       if (data.redirect_to) {
         navigate(data.redirect_to);
+        return console.log(data.redirect_to)
       } else {
         navigate("/"); // fallback por si no devuelve nada
       }
