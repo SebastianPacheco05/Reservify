@@ -39,7 +39,7 @@ export default function Registrar() {
           documento,
           nacionalidad,
           telefono,
-          id_rol: 2,
+          id_rol: 3,
         }
 
         const res = await fetch("http://localhost:8000/register/register", {
