@@ -1,33 +1,59 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { Eye, EyeOff, Mail, Lock, ArrowRight, Award as IdCard, Phone, User, Flag, Home, Sun, Moon } from "lucide-react"
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
-import { Input } from "../components/ui/input"
-import { Label } from "../components/ui/label"
-import { Separator } from "../components/ui/separator"
+import type React from "react";
+import { useState } from "react";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  ArrowRight,
+  Award as IdCard,
+  Phone,
+  User,
+  Flag,
+  Home,
+  Sun,
+  Moon,
+} from "lucide-react";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Separator } from "../components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 
 export default function Registrar() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [tipo_documento, setTipo_documento] = useState("")
-  const [documento, setDocumento] = useState("")
-  const [telefono, setTelefono] = useState("")
-  const [nombre, setNombre] = useState("")
-  const [apellido, setApellido] = useState("")
-  const [nacionalidad, setNacionalidad] = useState("")
-  const [showCard, setShowCard] = useState(true)
-  const [isDarkMode, setIsDarkMode] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [tipo_documento, setTipo_documento] = useState("");
+  const [documento, setDocumento] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
+  const [nacionalidad, setNacionalidad] = useState("");
+  const [showCard, setShowCard] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (password !== confirmPassword) {
-      alert("Las contraseñas no coinciden.")
+      alert("Las contraseñas no coinciden.");
     } else {
       try {
         const data2send = {
@@ -40,28 +66,28 @@ export default function Registrar() {
           nacionalidad,
           telefono,
           id_rol: 3,
-        }
+        };
 
         const res = await fetch("http://localhost:8000/register/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data2send),
-        })
+        });
 
-        const data = await res.json()
+        const data = await res.json();
 
         if (!res.ok) {
-          throw new Error(data.detail ?? "Error en el registro")
+          throw new Error(data.detail ?? "Error en el registro");
         }
 
-        alert(data.message ?? "Registro exitoso")
+        alert(data.message ?? "Registro exitoso");
       } catch (err: any) {
-        alert("Error en el registro: " + err.message)
+        alert("Error en el registro: " + err.message);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     }
-  }
+  };
 
   return (
     <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
@@ -83,7 +109,11 @@ export default function Registrar() {
               size="icon"
               className="bg-white/80 dark:bg-gray-800/80 border-blue-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-all duration-200"
             >
-              {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {isDarkMode ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
             </Button>
           </div>
 
@@ -103,8 +133,9 @@ export default function Registrar() {
           {/* Registro */}
           <div className="flex justify-center items-center space-x-4 h-full grid-cols-2">
             <Card
-              className={`${showCard ? "block" : "hidden"
-                } shadow-xl w-[23rem] border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-300`}
+              className={`${
+                showCard ? "block" : "hidden"
+              } shadow-xl w-[23rem] border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-300`}
             >
               <CardHeader className="space-y-0.5 pb-3">
                 <CardTitle className="text-xl text-center text-gray-900 dark:text-white transition-colors duration-300">
@@ -273,10 +304,14 @@ export default function Registrar() {
           {/* Datos personales */}
           <div className="justify-center items-center h-full">
             <Card
-              className={`${showCard ? "hidden" : "block"
-                } shadow-xl w-full border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-300`}
+              className={`${
+                showCard ? "hidden" : "block"
+              } shadow-xl w-full border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-300`}
             >
-              <CardHeader className="space-y-1 pb-6 cursor-pointer" onClick={() => setShowCard(true)}>
+              <CardHeader
+                className="space-y-1 pb-6 cursor-pointer"
+                onClick={() => setShowCard(true)}
+              >
                 <CardTitle className="text-xl text-center text-gray-900 dark:text-white transition-colors duration-300">
                   Ingresa tus datos personales
                 </CardTitle>
@@ -286,7 +321,11 @@ export default function Registrar() {
               </CardHeader>
 
               <CardContent className="space-y-6">
-                <form onSubmit={handleSubmit} action="/" className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form
+                  onSubmit={handleSubmit}
+                  action="/"
+                  className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                >
                   {/* Columna Izquierda */}
                   <div className="space-y-4">
                     <div className="space-y-2">
@@ -296,17 +335,40 @@ export default function Registrar() {
                       >
                         Tipo de documento
                       </Label>
-                      <div className="relative">
-                        <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
-                        <Input
-                          id="tipo_documento"
-                          type="text"
-                          placeholder="tu tipo de documento"
+                      <div className=" relative">
+                        <Select
                           value={tipo_documento}
-                          onChange={(e) => setTipo_documento(e.target.value)}
-                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
+                          onValueChange={setTipo_documento}
                           required
-                        />
+                        >
+
+                          <SelectTrigger style={{border: "1px solid #e5e7eb", height: "44px", width: "100%", fontSize: "14px", fontWeight: "400", color: "#667085"}}>
+                          {/* <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" /> */}
+
+                            <SelectValue
+                            placeholder="Selecciona el tipo de documento" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="CC"
+                            style={{fontSize: "14px", fontWeight: "400", color: "#667085"}}
+                            >
+                              Cédula de Ciudadanía
+                            </SelectItem>
+                            <SelectItem value="CE"
+                            style={{fontSize: "14px", fontWeight: "400", color: "#667085"}}
+                            >
+                              Cédula de Extranjería
+                            </SelectItem>
+                            <SelectItem value="PP"
+                            style={{fontSize: "14px", fontWeight: "400", color: "#667085"}}
+                            >Pasaporte</SelectItem>
+                            <SelectItem value="TI"
+                            style={{fontSize: "14px", fontWeight: "400", color: "#667085"}}
+                            >
+                              Tarjeta de Identidad
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
 
@@ -464,5 +526,5 @@ export default function Registrar() {
         </div>
       </div>
     </div>
-  )
+  );
 }
