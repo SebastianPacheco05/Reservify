@@ -294,3 +294,4 @@ class RegistrarCliente(BaseModel):
 # Search Box
 class BuscarRestaurante(BaseModel):
     nombre_restaurante: str
+

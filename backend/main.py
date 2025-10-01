@@ -20,6 +20,7 @@ from routes.cal_mensuales import router as cal_mensuales_router
 from routes.register import router as register_router
 from routes.top import app as top_router
 from routes.searchBox import app as searchBox_router
+from routes.data_owner import router as data_owner_router
 
 # Importacion de los esquemas
 from models import *
@@ -56,6 +57,7 @@ app.include_router(comentarios_router)
 app.include_router(cal_mensuales_router)
 app.include_router(top_router)
 app.include_router(searchBox_router)
+app.include_router(data_owner_router, prefix="/data-owner")
 
 
 # Contactanos
