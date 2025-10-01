@@ -1,30 +1,29 @@
 CREATE OR REPLACE FUNCTION get_dashboard_route(p_id_credencial INT)
 RETURNS TEXT AS $$
 DECLARE
-    v_id_rol INT;
-    v_nombre_rol VARCHAR(50);
     v_ruta TEXT;
 BEGIN
-    -- Buscar rol según credencial (puede estar en Dueno, Cliente o Empleado)
-    SELECT r.id_rol, r.nombre_rol
-    INTO v_id_rol, v_nombre_rol
-    FROM "Roles" r
-    JOIN "Dueno" d ON d.id_rol = r.id_rol AND d.id_credencial = p_id_credencial
-    UNION
-    SELECT r.id_rol, r.nombre_rol
-    FROM "Roles" r
-    JOIN "Cliente" c ON c.id_rol = r.id_rol AND c.id_credencial = p_id_credencial
-    UNION
-    SELECT r.id_rol, r.nombre_rol
-    FROM "Roles" r
-    JOIN "Empleado" e ON e.id_rol = r.id_rol AND e.id_credencial = p_id_credencial
-    LIMIT 1;
-
-    -- Asignar ruta en base al rol
-    IF v_nombre_rol = 'Dueno' THEN
+    -- 1. Verificar si es Dueño
+    IF EXISTS (
+        SELECT 1 FROM "Dueno" d WHERE d.id_credencial = p_id_credencial
+    ) THEN
         v_ruta := '/DuenoDashboard';
+
+    -- 2. Verificar si es Empleado
+    ELSIF EXISTS (
+        SELECT 1 FROM "Empleado" e WHERE e.id_credencial = p_id_credencial
+    ) THEN
+        v_ruta := '/EmpleadoDashboard';
+
+    -- 3. Verificar si es Cliente
+    ELSIF EXISTS (
+        SELECT 1 FROM "Cliente" c WHERE c.id_credencial = p_id_credencial
+    ) THEN
+        v_ruta := '/';
+
+    -- 4. Fallback en caso de que no esté en ninguna tabla
     ELSE
-        v_ruta := '/'; -- fallback
+        v_ruta := '/';
     END IF;
 
     RETURN v_ruta;

@@ -1,5 +1,6 @@
 "use client";
 
+
 import type React from "react";
 import { useState } from "react";
 import {
@@ -34,6 +35,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import { useTheme } from "../components/theme-provider";
+import { useNavigate } from "react-router-dom";
 
 export default function Registrar() {
   const [showPassword, setShowPassword] = useState(false);
@@ -47,50 +50,73 @@ export default function Registrar() {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [nacionalidad, setNacionalidad] = useState("");
+  const { theme, setTheme } = useTheme();
+
   const [showCard, setShowCard] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (password !== confirmPassword) {
       alert("Las contraseñas no coinciden.");
-    } else {
-      try {
-        const data2send = {
-          email,
-          password,
-          nombre,
-          apellido,
-          tipo_documento,
-          documento,
-          nacionalidad,
-          telefono,
-          id_rol: 3,
-        };
+      return;
+    }
 
-        const res = await fetch("http://localhost:8000/register/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data2send),
-        });
+    setIsLoading(true);
 
-        const data = await res.json();
+    const data2send = {
+      email,
+      password,
+      tipo_documento,
+      documento,
+      telefono,
+      nombre,
+      apellido,
+      nacionalidad,
+      id_rol: 3,
+    };
 
-        if (!res.ok) {
-          throw new Error(data.detail ?? "Error en el registro");
-        }
+    try {
+      const res = await fetch("http://localhost:8000/register/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data2send),
+      });
 
-        alert(data.message ?? "Registro exitoso");
-      } catch (err: any) {
-        alert("Error en el registro: " + err.message);
-      } finally {
-        setIsLoading(false);
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.detail ?? "Error en el registro");
       }
+
+      alert(data.message ?? "Registro exitoso");
+
+      navigate("/");
+    } catch (err: any) {
+      alert("Error en el registro: " + err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const handleContinue = () => {
+    if (email == "") {
+      alert("Por favor, ingresa un correo electrónico.");
+      return;
+    } else if (password !== confirmPassword) {
+      alert("Las contraseñas no coinciden.");
+      return;
+    } else if (password == "" && confirmPassword == "") {
+      alert("Por favor, ingresa una contraseña.");
+      return;
+    }
+    setShowCard(false); // 👈 solo avanza si las contraseñas coinciden
+  };
+
   return (
-    <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
+    <div className={`min-h-screen`}>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-black flex items-center justify-center p-4 transition-colors duration-300">
         <div className="w-full max-w-max">
           <div className="flex justify-between items-center mb-6">
@@ -104,12 +130,12 @@ export default function Registrar() {
             </Button>
 
             <Button
-              onClick={() => setIsDarkMode(!isDarkMode)}
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               variant="outline"
               size="icon"
               className="bg-white/80 dark:bg-gray-800/80 border-blue-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-all duration-200"
             >
-              {isDarkMode ? (
+              {theme === "dark" ? (
                 <Sun className="w-4 h-4" />
               ) : (
                 <Moon className="w-4 h-4" />
@@ -249,7 +275,7 @@ export default function Registrar() {
 
                   <Button
                     type="button"
-                    onClick={() => setShowCard(false)}
+                    onClick={handleContinue} // 👈 en lugar de setShowCard(false)
                     className="w-full h-11 bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
                   >
                     <span>Continuar</span>
@@ -341,29 +367,59 @@ export default function Registrar() {
                           onValueChange={setTipo_documento}
                           required
                         >
+                          <SelectTrigger
+                            style={{
+                              border: "1px solid",
+                              height: "44px",
+                              width: "100%",
+                              fontSize: "14px",
+                              fontWeight: "400",
+                              color: "#667085",
+                            }}
+                            className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
+                          >
+                            {/* <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" /> */}
 
-                          <SelectTrigger style={{border: "1px solid #e5e7eb", height: "44px", width: "100%", fontSize: "14px", fontWeight: "400", color: "#667085"}}>
-                          {/* <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" /> */}
-
-                            <SelectValue
-                            placeholder="Selecciona el tipo de documento" />
+                            <SelectValue placeholder="Selecciona el tipo de documento" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="CC"
-                            style={{fontSize: "14px", fontWeight: "400", color: "#667085"}}
+                            <SelectItem
+                              value="CC"
+                              style={{
+                                fontSize: "14px",
+                                fontWeight: "400",
+                                color: "#667085",
+                              }}
                             >
                               Cédula de Ciudadanía
                             </SelectItem>
-                            <SelectItem value="CE"
-                            style={{fontSize: "14px", fontWeight: "400", color: "#667085"}}
+                            <SelectItem
+                              value="CE"
+                              style={{
+                                fontSize: "14px",
+                                fontWeight: "400",
+                                color: "#667085",
+                              }}
                             >
                               Cédula de Extranjería
                             </SelectItem>
-                            <SelectItem value="PP"
-                            style={{fontSize: "14px", fontWeight: "400", color: "#667085"}}
-                            >Pasaporte</SelectItem>
-                            <SelectItem value="TI"
-                            style={{fontSize: "14px", fontWeight: "400", color: "#667085"}}
+                            <SelectItem
+                              value="PP"
+                              style={{
+                                fontSize: "14px",
+                                fontWeight: "400",
+                                color: "#667085",
+                              }}
+                            >
+                              Pasaporte
+                            </SelectItem>
+                            <SelectItem
+                              value="TI"
+                              style={{
+                                fontSize: "14px",
+                                fontWeight: "400",
+                                color: "#667085",
+                              }}
                             >
                               Tarjeta de Identidad
                             </SelectItem>
@@ -499,7 +555,7 @@ export default function Registrar() {
                         </div>
                       ) : (
                         <div className="flex items-center space-x-2">
-                          <span>Registrate</span>
+                         <span>Registrate</span>
                           <ArrowRight className="w-4 h-4" />
                         </div>
                       )}
