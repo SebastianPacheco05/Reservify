@@ -18,7 +18,6 @@ from routes.register import router as register_router
 from routes.top import app as top_router
 from routes.searchBox import app as searchBox_router
 from routes.data_owner import router as data_owner_router
-from routes.mercado_pago import router as mercado_pago_router
 
 from models import EmailSchema
 from funciones.email_sender.timer_reserv import tarea_programada
@@ -52,7 +51,6 @@ app.include_router(cal_mensuales_router)
 app.include_router(top_router)
 app.include_router(searchBox_router)
 app.include_router(data_owner_router, prefix="/data-owner")
-app.include_router(mercado_pago_router)
 
 @app.post("/contactanos")
 async def enviar_correo(data: EmailSchema):

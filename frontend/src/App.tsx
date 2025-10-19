@@ -8,6 +8,7 @@ import ClientDashboard from "./pages/Dashboard_cliente";
 import Restaurant from "./pages/Restaurant";
 
 import Datos_personales from "./pages/datos_personales";
+import Pasarela_pagos from "./pages/Pasarela_pagos";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
       <Route path="/ClienteDashboard" element={<ClientDashboard />} />
       <Route path="/Restaurant" element={<Restaurant />} />
       <Route path="/Datos_personales" element={<Datos_personales />} />
+      <Route path="/Pasarela_pagos" element={<Pasarela_pagos />} />
     </Routes>
     // </ThemeProvider>
   );
