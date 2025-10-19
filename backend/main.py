@@ -1,9 +1,6 @@
-# Importacion del FastAPI
-from fastapi import FastAPI, HTTPException , Request
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-
-# Importacion de los routers
 from routes.credenciales import router as credenciales_router
 from routes.roles import protected_router as roles_router
 from routes.dueno import router as dueno_router
@@ -21,22 +18,19 @@ from routes.register import router as register_router
 from routes.top import app as top_router
 from routes.searchBox import app as searchBox_router
 from routes.data_owner import router as data_owner_router
+from routes.mercado_pago import router as mercado_pago_router
 
-# Importacion de los esquemas
-from models import *
-
-# Importacion de las funciones de envio de correos
+from models import EmailSchema
 from funciones.email_sender.timer_reserv import tarea_programada
 from funciones.email_sender.email_utils import send_email
 
 app = FastAPI()
 
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Cambia al dominio de tu frontend
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # O especifica ["POST"]
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -58,9 +52,8 @@ app.include_router(cal_mensuales_router)
 app.include_router(top_router)
 app.include_router(searchBox_router)
 app.include_router(data_owner_router, prefix="/data-owner")
+app.include_router(mercado_pago_router)
 
-
-# Contactanos
 @app.post("/contactanos")
 async def enviar_correo(data: EmailSchema):
     enviado = send_email(data.to, data.subject, data.message)
@@ -69,7 +62,6 @@ async def enviar_correo(data: EmailSchema):
     else:
         raise HTTPException(status_code=500, detail="No se pudo enviar el correo")
 
-# Tarea programada para enviar correos cada minuto
 @app.on_event("startup")
 async def startup_event():
     import asyncio

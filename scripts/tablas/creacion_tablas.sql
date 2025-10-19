@@ -20,6 +20,8 @@ DROP TABLE IF EXISTS "Roles";
 DROP TABLE IF EXISTS "jwt_tokens";
 DROP TABLE IF EXISTS "Credenciales";
 DROP TABLE IF EXISTS "Categorias";
+DROP TABLE IF EXISTS "Pagos";
+DROP TABLE IF EXISTS "Pagos_MercadoPago";
 
 -- Tabla Credenciales: Almacena la información de autenticación de usuarios
 CREATE TABLE "Credenciales" (
@@ -195,4 +197,37 @@ CREATE TABLE "jwt_tokens" (
     created_at TIMESTAMP DEFAULT NOW(),  -- Registro de creación
     updated_at TIMESTAMP DEFAULT NOW(),  -- Última modificación
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
+);
+
+CREATE TABLE "Pagos_MercadoPago" (
+    id_pago SERIAL PRIMARY KEY,
+    id_reserva INT REFERENCES "Reserva"(id_reserva),
+    id_factura INT REFERENCES "Encabezado_Factura"(id_encab_fact),
+    estado_pago VARCHAR(50),
+    id_mercadopago VARCHAR(100),
+    external_reference VARCHAR(100),
+    monto NUMERIC(10,2),
+    fecha_pago TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE "Pagos" (
+    id_pago SERIAL PRIMARY KEY NOT NULL,               -- Identificador interno del pago
+    id_encab_fact INT NOT NULL,                        -- Relación con la factura generada
+    documento DECIMAL(10, 0) NOT NULL,                 -- Cliente que realiza el pago
+    NIT DECIMAL(10, 0) NOT NULL,                       -- Restaurante donde se realiza el pago
+    id_reserva INT,                                    -- (Opcional) Referencia a la reserva
+    id_transaccion_mp VARCHAR(50) UNIQUE,              -- ID de transacción generado por Mercado Pago
+    estado_pago VARCHAR(30) NOT NULL CHECK (
+        estado_pago IN ('pendiente', 'aprobado', 'rechazado', 'cancelado', 'reembolsado')
+    ),                                                 -- Estado del pago según Mercado Pago
+    monto_total DECIMAL(10, 2) NOT NULL CHECK (monto_total >= 0),  -- Monto pagado
+    metodo_pago VARCHAR(50),                           -- Ej: "credit_card", "debit_card", "pix", "transferencia", etc.
+    tipo_transaccion VARCHAR(30) DEFAULT 'online',     -- Puede ser 'online' (Mercado Pago) o 'manual' (efectivo)
+    fecha_pago TIMESTAMP NOT NULL DEFAULT NOW(),       -- Fecha y hora del pago
+    detalle JSONB,                                     -- Detalles adicionales (recibo, tasas, etc.)
+    FOREIGN KEY (id_encab_fact) REFERENCES "Encabezado_Factura" (id_encab_fact) ON DELETE CASCADE,
+    FOREIGN KEY (documento) REFERENCES "Cliente" (documento) ON DELETE CASCADE,
+    FOREIGN KEY (NIT) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE,
+    FOREIGN KEY (id_reserva) REFERENCES "Reserva" (id_reserva) ON DELETE SET NULL
 );

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import List
+from typing import List, Optional
 from datetime import time, date
 
 
@@ -295,3 +295,32 @@ class RegistrarCliente(BaseModel):
 class BuscarRestaurante(BaseModel):
     nombre_restaurante: str
 
+
+# Mercado Pago - Item de la preferencia
+class Item(BaseModel):
+    title: str
+    quantity: int
+    unit_price: float
+
+# Request para crear la preferencia
+class CreatePreferenceRequest(BaseModel):
+    id_encab_fact: int
+    id_reserva: int
+    cliente_documento: int
+    NIT: int
+    items: List[Item]
+
+# Response de la preferencia creada
+class PreferenceResponse(BaseModel):
+    id: str
+    init_point: str
+    sandbox_init_point: Optional[str] = None
+
+# Pago de Mercado Pago para guardar en DB
+class PagoMP(BaseModel):
+    id: Optional[int] = None
+    external_reference: str
+    preference_id: str
+    status: str = "pending"
+    amount: float
+    payer_email: Optional[str] = None
