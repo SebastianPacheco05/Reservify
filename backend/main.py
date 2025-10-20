@@ -13,7 +13,7 @@ from routes.cliente import router as cliente_router
 from routes.empleado import router as empleado_router
 from routes.enc_fac import router as enc_fac_router
 from routes.det_fac import router as det_fac_router
-from routes.reserva import router as reserva_router
+from routes.reserva import router as reserva_router, public_router as reserva_public_router
 from routes.categorias import router as categorias_router
 from routes.comentarios import router as comentarios_router
 from routes.cal_mensuales import router as cal_mensuales_router
@@ -63,6 +63,7 @@ app.include_router(mesas_router)
 app.include_router(register_router)
 app.include_router(top_router)
 app.include_router(searchBox_router)
+app.include_router(reserva_public_router)
 
 # Contactanos
 @app.post("/contactanos")

@@ -13,7 +13,7 @@ def insertar_reserva(
     documento: int,
 ):
     try:
-        db.execute(
+        result = db.execute(
             text(
                 "SELECT insertar_reserva(:id_mesa, :documento, :id_encab_fact, :horario, :fecha, :estado_reserva)"
             ),
@@ -25,9 +25,12 @@ def insertar_reserva(
                 "fecha": fecha,
                 "estado_reserva": "pendiente",
             },
-        )
+        ).scalar()
+        
         db.commit()
-        raise HTTPException(status_code=201, detail="Reserva insertada correctamente")
+        
+        # Devolver el ID de la reserva creada
+        return {"message": "Reserva insertada correctamente", "id_reserva": result, "status_code": 201}
     except IntegrityError as e:
         db.rollback()
         raise HTTPException(

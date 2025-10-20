@@ -12,16 +12,23 @@ router = APIRouter(
 )
 
 @router.post("/insertarencabezadofactura")
-async def insertar(data: Encabezado_facturaBase, db: Session = Depends(get_db)):
-    enc_fac.insertar_enc_fac(
+async def insertar(data: Encabezado_facturaBase, db: Session = Depends(get_db), current_user: dict = Depends(verificar_token)):
+    from funciones.cruds.cliente_utils import obtener_documento_por_email
+    
+    # Obtener el documento del usuario autenticado usando su email
+    documento_cliente = obtener_documento_por_email(db, current_user["email"])
+    
+    resultado = enc_fac.insertar_enc_fac(
         db,
         data.nit,
         data.nombre_restaurante,
         data.direccion,
         data.ciudad,
         data.fecha,
-        data.documento,
+        documento_cliente,
     )
+    
+    return resultado
 
 @router.get("/listar_encabezado_factura")
 async def listar_encabezado_factura(

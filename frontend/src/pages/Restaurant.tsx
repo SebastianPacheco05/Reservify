@@ -63,11 +63,98 @@ export default function RestaurantPage() {
     }
   };
 
-  const handlePaymentReservation = () => {
-    // Aquí puedes redirigir a la pasarela de pagos con los datos
-    console.log("Procesar pago con:", reservationData);
-    // Redirigir a /Pasarela_pagos con los datos necesarios
-    setIsModalOpen(false);
+  const handlePaymentReservation = async () => {
+    try {
+      // Validar que todos los campos estén completos
+      if (!reservationData.date || !reservationData.time || !reservationData.guests || !reservationData.mesaId) {
+        alert("Por favor completa todos los campos de la reserva");
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Debes iniciar sesión para hacer una reserva");
+        return;
+      }
+
+      // Obtener el precio de la mesa seleccionada
+      const mesaSeleccionada = mesas.find(m => m.id_mesa.toString() === reservationData.mesaId);
+      if (!mesaSeleccionada) {
+        alert("Mesa no encontrada");
+        return;
+      }
+
+      // 1. Crear encabezado de factura (el backend obtiene el documento usando el email del JWT)
+      const fechaActual = new Date().toISOString().split('T')[0];
+      const encabezadoResponse = await fetch("http://localhost:8000/encabezado_factura/insertarencabezadofactura", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          nit: restaurantNIT,
+          nombre_restaurante: restaurantInfo?.nombre_restaurante || "",
+          direccion: restaurantInfo?.direccion || "",
+          ciudad: "Bogotá",
+          fecha: fechaActual
+        })
+      });
+
+      if (!encabezadoResponse.ok) {
+        const errorData = await encabezadoResponse.json();
+        throw new Error(errorData.detail || "Error al crear encabezado de factura");
+      }
+
+      const encabezadoData = await encabezadoResponse.json();
+      const idEncabFact = encabezadoData.id_encab_fact;
+
+      if (!idEncabFact) {
+        throw new Error("No se pudo obtener el ID del encabezado de factura");
+      }
+
+      // 2. Crear reserva con estado "pendiente" usando el email del usuario autenticado
+      const reservaResponse = await fetch("http://localhost:8000/reserva/insertarreserva", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          id_mesa: parseInt(reservationData.mesaId),
+          id_encab_fact: idEncabFact,
+          horario: reservationData.time,
+          fecha: reservationData.date
+        })
+      });
+
+      if (!reservaResponse.ok) {
+        const errorData = await reservaResponse.json();
+        throw new Error(errorData.detail || "Error al crear la reserva");
+      }
+
+      const reservaData = await reservaResponse.json();
+      
+      // 3. Guardar solo el ID de reserva y datos mínimos para la pasarela
+      const paymentData = {
+        id_reserva: reservaData.id_reserva || null,
+        restaurant: restaurantInfo,
+        mesa: mesaSeleccionada,
+        guests: parseInt(reservationData.guests),
+        fecha: reservationData.date,
+        horario: reservationData.time
+      };
+
+      sessionStorage.setItem("pendingReservation", JSON.stringify(paymentData));
+      
+      // Redirigir a la pasarela de pagos
+      window.location.href = "/Pasarela_pagos";
+      setIsModalOpen(false);
+      
+    } catch (error) {
+      console.error("Error al procesar la reserva:", error);
+      alert(error.message || "Error al procesar la reserva. Inténtalo de nuevo.");
+    }
   };
 
   const renderStars = (rating: number) => {
@@ -368,9 +455,15 @@ export default function RestaurantPage() {
                       </h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
+                          <span className="text-gray-600">Restaurante:</span>
+                          <span className="font-medium">
+                            {restaurantInfo?.nombre_restaurante || "No disponible"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
                           <span className="text-gray-600">Fecha:</span>
                           <span className="font-medium">
-                            {reservationData.date || "No seleccionada"}
+                            {reservationData.date ? new Date(reservationData.date).toLocaleDateString('es-ES') : "No seleccionada"}
                           </span>
                         </div>
                         <div className="flex justify-between">
@@ -388,7 +481,7 @@ export default function RestaurantPage() {
                         <div className="flex justify-between">
                           <span className="text-gray-600">Mesa:</span>
                           <span className="font-medium">
-                            #{reservationData.mesaId || "No seleccionada"}
+                            Mesa #{reservationData.mesaId || "No seleccionada"} - {mesas.find(m => m.id_mesa.toString() === reservationData.mesaId)?.cant_personas || 0} personas
                           </span>
                         </div>
                       </div>
@@ -406,6 +499,9 @@ export default function RestaurantPage() {
                               ?.precio.toFixed(2) || "0.00"}
                           </span>
                         </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          * El pago se procesará en la siguiente pantalla
+                        </p>
                       </div>
                     </div>
 

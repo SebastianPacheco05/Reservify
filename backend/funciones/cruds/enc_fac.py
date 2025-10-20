@@ -11,10 +11,10 @@ def insertar_enc_fac(
     direccion: str,
     ciudad: str,
     fecha: str,
-    documento: str,
+    documento: int,
 ):
     try:
-        db.execute(
+        result = db.execute(
             text(
                 "SELECT insertar_enc_fac(:nit, :nombre_restaurante, :direccion, :ciudad, :fecha, :documento)"
             ),
@@ -26,11 +26,12 @@ def insertar_enc_fac(
                 "fecha": fecha,
                 "documento": documento,
             },
-        )
+        ).scalar()
+        
         db.commit()
-        raise HTTPException(
-            status_code=201, detail="Encabezado de factura insertado correctamente"
-        )
+        
+        # Devolver el ID del encabezado de factura creado
+        return {"message": "Encabezado de factura insertado correctamente", "id_encab_fact": result, "status_code": 201}
     except IntegrityError as e:
         db.rollback()
         raise HTTPException(
