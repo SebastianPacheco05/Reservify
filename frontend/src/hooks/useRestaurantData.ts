@@ -9,9 +9,8 @@ import type {
 } from "../types/restaurant.types";
 
 export const useRestaurantData = (restaurantNIT?: number) => {
-  const [service] = useState(() =>
-    RestaurantDataService.getInstance(restaurantNIT)
-  );
+  // Crear una nueva instancia del servicio cada vez que cambie el NIT
+  const service = new RestaurantDataService(restaurantNIT);
 
   // Estados para diferentes tipos de datos
   const [restaurantInfo, setRestaurantInfo] =
@@ -28,6 +27,14 @@ export const useRestaurantData = (restaurantNIT?: number) => {
 
   // Función para cargar todos los datos
   const loadAllData = async () => {
+    if (!restaurantNIT) return;
+    
+    setLoading({
+      info: true,
+      mesas: true,
+      comentarios: true,
+    });
+
     try {
       const [infoData, mesasData, comentariosData] = await Promise.all([
         service.getRestaurantInfo(),
@@ -46,6 +53,11 @@ export const useRestaurantData = (restaurantNIT?: number) => {
       });
     } catch (error) {
       console.error("Error loading restaurant data:", error);
+      setLoading({
+        info: false,
+        mesas: false,
+        comentarios: false,
+      });
     }
   };
 
@@ -61,7 +73,7 @@ export const useRestaurantData = (restaurantNIT?: number) => {
 
   useEffect(() => {
     loadAllData();
-  }, []);
+  }, [restaurantNIT]);
 
   return {
     // Datos

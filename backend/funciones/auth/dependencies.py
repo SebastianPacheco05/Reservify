@@ -22,7 +22,9 @@ def verificar_token(token: str = Depends(oauth2_scheme), db: Session = Depends(g
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         id_credencial = payload.get("id")
-        if id_credencial is None:
+        email = payload.get("sub")
+        
+        if id_credencial is None or email is None:
             raise HTTPException(status_code=401, detail="Token inválido")
 
         # Verifica que no esté revocado
@@ -34,7 +36,12 @@ def verificar_token(token: str = Depends(oauth2_scheme), db: Session = Depends(g
         if not result or result[0]:  # ← SOLUCIÓN AQUÍ
             raise HTTPException(status_code=401, detail="Token revocado o no registrado")
 
-        return payload
+        # Devolver payload con email incluido
+        return {
+            "id": id_credencial,
+            "email": email,
+            "sub": email
+        }
 
     except JWTError as e:
         raise HTTPException(status_code=401, detail=f"Token inválido: {str(e)}")

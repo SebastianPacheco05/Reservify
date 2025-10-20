@@ -33,6 +33,8 @@ export default function Home() {
     }
   }, []);
 
+
+  
   // Lista completa de tipos de cocina disponibles
   const allCuisines = [
     "Italiana",

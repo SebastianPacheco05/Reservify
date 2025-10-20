@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -40,8 +41,8 @@ import {
 import { useRestaurantData } from "../hooks/useRestaurantData";
 
 export default function RestaurantPage() {
-  // Aquí puedes pasar el NIT del restaurante desde props o params
-  const restaurantNIT = 900100001; // Ejemplo, deberías obtenerlo de la URL o props
+  const [searchParams] = useSearchParams();
+  const restaurantNIT = Number(searchParams.get("nit") || 0);
   const { restaurantInfo, mesas, comentarios, loading, getAvailableSlots } =
     useRestaurantData(restaurantNIT);
 

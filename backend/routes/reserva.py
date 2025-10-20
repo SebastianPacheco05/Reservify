@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from config import get_db
 from funciones.auth.dependencies import verificar_token
 from funciones.cruds import reserva, list as reserva_queries
+from funciones.cruds.cliente_utils import obtener_documento_por_email
 from models import ReservaBase, ReservaUpdate, ReservaDelete, ListarReservas
 
 router = APIRouter(
@@ -12,9 +13,12 @@ router = APIRouter(
 )
 
 @router.post("/insertarreserva")
-async def insertar(data: ReservaBase, db: Session = Depends(get_db)):
+async def insertar(data: ReservaBase, db: Session = Depends(get_db), current_user: dict = Depends(verificar_token)):
+    # Obtener el documento del usuario autenticado usando su email
+    documento_cliente = obtener_documento_por_email(db, current_user["email"])
+    
     reserva.insertar_reserva(
-        db, data.id_mesa, data.documento, data.id_encab_fact, data.horario, data.fecha
+        db, data.id_mesa, data.id_encab_fact, data.horario, data.fecha, documento_cliente
     )
 
 @router.get("/listar_reserva")
@@ -28,15 +32,18 @@ async def listar_reservas(db: Session = Depends(get_db)):
     return {"respuesta": respuesta}
 
 @router.put("/editarreserva")
-async def editar(data: ReservaUpdate, db: Session = Depends(get_db)):
+async def editar(data: ReservaUpdate, db: Session = Depends(get_db), current_user: dict = Depends(verificar_token)):
+    # Obtener el documento del usuario autenticado usando su email
+    documento_cliente = obtener_documento_por_email(db, current_user["email"])
+    
     reserva.editar_reserva(
         db,
         data.id_reserva,
         data.id_mesa,
-        data.documento,
         data.id_encab_fact,
         data.horario,
         data.fecha,
+        documento_cliente,
     )
 
 @router.delete("/borrarreserva")

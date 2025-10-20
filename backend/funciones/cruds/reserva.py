@@ -10,17 +10,20 @@ def insertar_reserva(
     id_encab_fact: int,
     horario: str,
     fecha: str,
+    documento: int,
 ):
     try:
         db.execute(
             text(
-                "SELECT insertar_reserva(:id_mesa, :id_encab_fact, :horario, :fecha)"
+                "SELECT insertar_reserva(:id_mesa, :documento, :id_encab_fact, :horario, :fecha, :estado_reserva)"
             ),
             {
                 "id_mesa": id_mesa,
+                "documento": documento,
                 "id_encab_fact": id_encab_fact,
                 "horario": horario,
                 "fecha": fecha,
+                "estado_reserva": "pendiente",
             },
         )
         db.commit()
@@ -46,18 +49,21 @@ def editar_reserva(
     id_encab_fact: int,
     horario: str,
     fecha: str,
+    documento: int,
 ):
     try:
         db.execute(
             text(
-                "SELECT editar_reserva(:id_reserva, :id_mesa, :id_encab_fact, :horario, :fecha)"
+                "SELECT editar_reserva(:id_reserva, :id_mesa, :documento, :id_encab_fact, :horario, :fecha, :estado_reserva)"
             ),
             {
                 "id_reserva": id_reserva,
                 "id_mesa": id_mesa,
+                "documento": documento,
                 "id_encab_fact": id_encab_fact,
                 "horario": horario,
                 "fecha": fecha,
+                "estado_reserva": "pendiente",
             },
         )
         db.commit()

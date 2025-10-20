@@ -104,7 +104,7 @@ export default function RestaurantGrid() {
                   </Badge>
                 </div>
 
-                <Link to="/Restaurant">
+                <Link to={`/Restaurant?nit=${restaurant.nit}`}>
                   <Button className="w-full mt-4 text-white bg-blue-600 hover:bg-green-600 transition-all duration-300 hover:scale-105 transform">
                     Ver disponibilidad
                   </Button>
