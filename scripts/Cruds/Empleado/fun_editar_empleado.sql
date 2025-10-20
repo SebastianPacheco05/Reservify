@@ -7,7 +7,7 @@ CREATE OR REPLACE FUNCTION editar_empleado(
     p_nacionalidad VARCHAR(20),
     p_telefono VARCHAR(10),
     p_id_rol INT,
-    p_NIT INT
+    p_nit INT
 ) RETURNS VOID AS $$
 BEGIN
     UPDATE "Empleado"
@@ -19,7 +19,7 @@ BEGIN
         nacionalidad = p_nacionalidad,
         telefono = p_telefono,
         id_rol = p_id_rol,
-        NIT = p_NIT
+        nit = p_nit
     WHERE documento = p_documento;
 END;
 $$ LANGUAGE plpgsql;

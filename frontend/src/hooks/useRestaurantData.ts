@@ -1,119 +1,79 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { RestaurantDataService } from "../services/RestaurantDataService"
+import { useState, useEffect } from "react";
+import { RestaurantDataService } from "../services/RestaurantDataService";
 import type {
-  RestaurantImage,
-  RestaurantInfo,
-  Review,
-  MenuHighlight,
-  RestaurantService,
-  ContactInfo,
-} from "../types/restaurant.types"
+  RestaurantDetailFromDB,
+  MesaFromDB,
+  ComentarioFromDB,
+} from "../types/restaurant.types";
 
-export const useRestaurantData = (restaurantId?: string) => {
-  const [service] = useState(() => RestaurantDataService.getInstance(restaurantId))
+export const useRestaurantData = (restaurantNIT?: number) => {
+  const [service] = useState(() =>
+    RestaurantDataService.getInstance(restaurantNIT)
+  );
 
   // Estados para diferentes tipos de datos
-  const [images, setImages] = useState<RestaurantImage[]>([])
-  const [restaurantInfo, setRestaurantInfo] = useState<RestaurantInfo | null>(null)
-  const [reviews, setReviews] = useState<Review[]>([])
-  const [menuHighlights, setMenuHighlights] = useState<MenuHighlight[]>([])
-  const [services, setServices] = useState<RestaurantService[]>([])
-  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null)
+  const [restaurantInfo, setRestaurantInfo] =
+    useState<RestaurantDetailFromDB | null>(null);
+  const [mesas, setMesas] = useState<MesaFromDB[]>([]);
+  const [comentarios, setComentarios] = useState<ComentarioFromDB[]>([]);
 
   // Estados de carga
   const [loading, setLoading] = useState({
-    images: true,
     info: true,
-    reviews: true,
-    menu: true,
-    services: true,
-    contact: true,
-  })
+    mesas: true,
+    comentarios: true,
+  });
 
   // Función para cargar todos los datos
   const loadAllData = async () => {
     try {
-      const [imagesData, infoData, reviewsData, menuData, servicesData, contactData] = await Promise.all([
-        service.getRestaurantImages(),
+      const [infoData, mesasData, comentariosData] = await Promise.all([
         service.getRestaurantInfo(),
-        service.getCustomerReviews(3),
-        service.getMenuHighlights(),
-        service.getRestaurantServices(),
-        service.getContactInfo(),
-      ])
+        service.getMesas(),
+        service.getComentarios(),
+      ]);
 
-      setImages(imagesData)
-      setRestaurantInfo(infoData)
-      setReviews(reviewsData)
-      setMenuHighlights(menuData)
-      setServices(servicesData)
-      setContactInfo(contactData)
+      setRestaurantInfo(infoData);
+      setMesas(mesasData);
+      setComentarios(comentariosData);
 
       setLoading({
-        images: false,
         info: false,
-        reviews: false,
-        menu: false,
-        services: false,
-        contact: false,
-      })
+        mesas: false,
+        comentarios: false,
+      });
     } catch (error) {
-      console.error("Error loading restaurant data:", error)
+      console.error("Error loading restaurant data:", error);
     }
-  }
-
-  // Función para cargar más reseñas
-  const loadMoreReviews = async (limit = 10) => {
-    try {
-      const moreReviews = await service.getCustomerReviews(limit)
-      setReviews(moreReviews)
-    } catch (error) {
-      console.error("Error loading more reviews:", error)
-    }
-  }
+  };
 
   // Función para obtener horarios disponibles
   const getAvailableSlots = async (date: string) => {
     try {
-      return await service.getAvailableTimeSlots(date)
+      return await service.getAvailableTimeSlots(date);
     } catch (error) {
-      console.error("Error getting available slots:", error)
-      return []
+      console.error("Error getting available slots:", error);
+      return [];
     }
-  }
-
-  // Función para enviar reservación
-  const submitReservation = async (reservationData: any) => {
-    try {
-      return await service.submitReservation(reservationData)
-    } catch (error) {
-      console.error("Error submitting reservation:", error)
-      return { success: false, message: "Error al enviar la reservación" }
-    }
-  }
+  };
 
   useEffect(() => {
-    loadAllData()
-  }, [])
+    loadAllData();
+  }, []);
 
   return {
     // Datos
-    images,
     restaurantInfo,
-    reviews,
-    menuHighlights,
-    services,
-    contactInfo,
+    mesas,
+    comentarios,
 
     // Estados de carga
     loading,
 
     // Funciones
-    loadMoreReviews,
     getAvailableSlots,
-    submitReservation,
     refreshData: loadAllData,
-  }
-}
+  };
+};

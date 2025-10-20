@@ -106,7 +106,7 @@ def obtener_clientes(db: Session):
 def obtener_empleado(db: Session, documento: str):
     result = db.execute(
         text(
-            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, NIT FROM "Empleado" WHERE documento = :documento'
+            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit FROM "Empleado" WHERE documento = :documento'
         ),
         {"documento": documento},
     )
@@ -121,7 +121,7 @@ def obtener_empleado(db: Session, documento: str):
             "nacionalidad": row[5],
             "telefono": row[6],
             "id_rol": row[7],
-            "NIT": row[8],
+            "nit": row[8],
         }
     return None
 
@@ -129,7 +129,7 @@ def obtener_empleado(db: Session, documento: str):
 def obtener_empleados(db: Session):
     result = db.execute(
         text(
-            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, NIT FROM "Empleado"'
+            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit FROM "Empleado"'
         )
     )
     rows = result.fetchall()
@@ -143,7 +143,7 @@ def obtener_empleados(db: Session):
             "nacionalidad": row[5],
             "telefono": row[6],
             "id_rol": row[8],
-            "NIT": row[9],
+            "nit": row[9],
         }
         for row in rows
     ]
@@ -152,14 +152,14 @@ def obtener_empleados(db: Session):
 def obtener_restaurante(db: Session, nit: int):
     result = db.execute(
         text(
-            'SELECT NIT, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, documento FROM "Restaurante" WHERE nit = :nit'
+            'SELECT nit, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, documento FROM "Restaurante" WHERE nit = :nit'
         ),
         {"nit": nit},
     )
     row = result.fetchone()
     if row:
         return {
-            "NIT": row[0],
+            "nit": row[0],
             "direccion": row[1],
             "nombre_restaurante": row[2],
             "descripcion_restaurante": row[3],
@@ -173,14 +173,14 @@ def obtener_restaurante(db: Session, nit: int):
 def obtener_restaurantes(db: Session):
     result = db.execute(
         text(
-            'SELECT nit, NIT, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, documento FROM "Restaurante"'
+            'SELECT nit, nit, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, documento FROM "Restaurante"'
         )
     )
     rows = result.fetchall()
     return [
         {
             "nit": row[0],
-            "NIT": row[1],
+            "nit": row[1],
             "direccion": row[2],
             "nombre_restaurante": row[3],
             "descripcion_restaurante": row[4],
@@ -195,7 +195,7 @@ def obtener_restaurantes(db: Session):
 def obtener_mesa(db: Session, id_mesa: int):
     result = db.execute(
         text(
-            'SELECT estado_de_disponibilidad, cant_personas, NIT, precio FROM "Mesas" WHERE id_mesa = :id_mesa'
+            'SELECT estado_de_disponibilidad, cant_personas, nit, precio FROM "Mesas" WHERE id_mesa = :id_mesa'
         ),
         {"id_mesa": id_mesa},
     )
@@ -204,7 +204,7 @@ def obtener_mesa(db: Session, id_mesa: int):
         return {
             "estado_de_disponibilidad": row[0],
             "cant_personas": row[1],
-            "NIT": row[2],
+            "nit": row[2],
             "precio": row[3],
         }
     return None
@@ -213,7 +213,7 @@ def obtener_mesa(db: Session, id_mesa: int):
 def obtener_mesas(db: Session):
     result = db.execute(
         text(
-            'SELECT id_mesa, estado_de_disponibilidad, cant_personas, NIT, precio FROM "Mesas"'
+            'SELECT id_mesa, estado_de_disponibilidad, cant_personas, nit, precio FROM "Mesas"'
         )
     )
     rows = result.fetchall()
@@ -222,7 +222,7 @@ def obtener_mesas(db: Session):
             "id_mesa": row[0],
             "estado_de_disponibilidad": row[1],
             "cant_personas": row[2],
-            "NIT": row[3],
+            "nit": row[3],
             "precio": row[4],
         }
         for row in rows
@@ -232,14 +232,14 @@ def obtener_mesas(db: Session):
 def obtener_encabezado_factura(db: Session, id_encab_fact: int):
     result = db.execute(
         text(
-            'SELECT NIT, nombre_restaurante, direccion, ciudad, fecha FROM "Encabezado_factura" WHERE id_encab_fact = :id_encab_fact'
+            'SELECT nit, nombre_restaurante, direccion, ciudad, fecha FROM "Encabezado_factura" WHERE id_encab_fact = :id_encab_fact'
         ),
         {"id_encab_fact": id_encab_fact},
     )
     row = result.fetchone()
     if row:
         return {
-            "NIT": row[0],
+            "nit": row[0],
             "nombre_restaurante": row[1],
             "direccion": row[2],
             "ciudad": row[3],
@@ -251,14 +251,14 @@ def obtener_encabezado_factura(db: Session, id_encab_fact: int):
 def obtener_encabezados_factura(db: Session):
     result = db.execute(
         text(
-            'SELECT id_encab_fact, NIT, nombre_restaurante, direccion, ciudad, fecha FROM "Encabezado_factura"'
+            'SELECT id_encab_fact, nit, nombre_restaurante, direccion, ciudad, fecha FROM "Encabezado_factura"'
         )
     )
     rows = result.fetchall()
     return [
         {
             "id_encab_fact": row[0],
-            "NIT": row[1],
+            "nit": row[1],
             "nombre_restaurante": row[2],
             "direccion": row[3],
             "ciudad": row[4],

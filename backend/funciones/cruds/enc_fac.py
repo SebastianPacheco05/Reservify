@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 def insertar_enc_fac(
     db: Session,
-    NIT: int,
+    nit: int,
     nombre_restaurante: str,
     direccion: str,
     ciudad: str,
@@ -16,10 +16,10 @@ def insertar_enc_fac(
     try:
         db.execute(
             text(
-                "SELECT insertar_enc_fac(:NIT, :nombre_restaurante, :direccion, :ciudad, :fecha, :documento)"
+                "SELECT insertar_enc_fac(:nit, :nombre_restaurante, :direccion, :ciudad, :fecha, :documento)"
             ),
             {
-                "NIT": NIT,
+                "nit": nit,
                 "nombre_restaurante": nombre_restaurante,
                 "direccion": direccion,
                 "ciudad": ciudad,
@@ -48,7 +48,7 @@ def insertar_enc_fac(
 def editar_enc_fac(
     db: Session,
     id_encab_fact: int,
-    NIT: int,
+    nit: int,
     nombre_restaurante: str,
     direccion: str,
     ciudad: str,
@@ -58,11 +58,11 @@ def editar_enc_fac(
     try:
         db.execute(
             text(
-                "SELECT editar_enc_fac(:id_encab_fact, :NIT, :nombre_restaurante, :direccion, :ciudad, :fecha, :documento)"
+                "SELECT editar_enc_fac(:id_encab_fact, :nit, :nombre_restaurante, :direccion, :ciudad, :fecha, :documento)"
             ),
             {
                 "id_encab_fact": id_encab_fact,
-                "NIT": NIT,
+                "nit": nit,
                 "nombre_restaurante": nombre_restaurante,
                 "direccion": direccion,
                 "ciudad": ciudad,

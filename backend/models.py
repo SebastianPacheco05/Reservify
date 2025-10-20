@@ -51,7 +51,7 @@ class DuenoDelete(BaseModel):
 
 # Restaurante
 class RestauranteBase(BaseModel):
-    NIT: int
+    nit: int
     direccion: str
     nombre_restaurante: str
     descripcion_restaurante: str
@@ -71,7 +71,7 @@ class RestauranteDelete(BaseModel):
 class MesaBase(BaseModel):
     estado_de_disponibilidad: bool
     cant_personas: int
-    NIT: int
+    nit: int
     precio: float
 
 
@@ -113,7 +113,7 @@ class EmpleadoBase(BaseModel):
     nacionalidad: str
     telefono: str
     id_rol: int
-    NIT: int
+    nit: int
 
 
 class EmpleadoUpdate(EmpleadoBase):
@@ -126,7 +126,7 @@ class EmpleadoDelete(BaseModel):
 
 # Encabezado_factura
 class Encabezado_facturaBase(BaseModel):
-    NIT: int
+    nit: int
     nombre_restaurante: str
     direccion: str
     ciudad: str

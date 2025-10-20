@@ -19,7 +19,7 @@ BEGIN
     INTO reservas_activas
     FROM "Reserva" r
     JOIN "Mesas" m ON r.id_mesa = m.id_mesa
-    JOIN "Restaurante" rest ON m."NIT" = rest."NIT"
+    JOIN "Restaurante" rest ON m."nit" = rest."nit"
     WHERE rest.documento = p_documento_dueno
       AND r.estado_reserva IN ('pendiente', 'confirmada', 'en curso');
 
@@ -28,7 +28,7 @@ BEGIN
     INTO visitantes_mes
     FROM "Reserva" r
     JOIN "Mesas" m ON r.id_mesa = m.id_mesa
-    JOIN "Restaurante" rest ON m."NIT" = rest."NIT"
+    JOIN "Restaurante" rest ON m."nit" = rest."nit"
     WHERE rest.documento = p_documento_dueno
       AND DATE_TRUNC('month', r.fecha) = DATE_TRUNC('month', CURRENT_DATE);
 
@@ -39,7 +39,7 @@ BEGIN
         COALESCE(SUM(c.total_clientes), 0)
     INTO total_reservas_mes, revenue_mes, total_clientes_mes
     FROM "Calculos_mensuales" c
-    JOIN "Restaurante" rest ON c."NIT" = rest."NIT"
+    JOIN "Restaurante" rest ON c."nit" = rest."nit"
     WHERE rest.documento = p_documento_dueno
       AND c.mes = EXTRACT(MONTH FROM CURRENT_DATE)
       AND c.anio = EXTRACT(YEAR FROM CURRENT_DATE);

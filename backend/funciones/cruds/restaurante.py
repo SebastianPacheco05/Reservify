@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 def insertar_restaurante(
     db: Session,
-    NIT: int,
+    nit: int,
     direccion: str,
     nombre_restaurante: str,
     descripcion_restaurante: str,
@@ -18,10 +18,10 @@ def insertar_restaurante(
     try:
         db.execute(
             text(
-                "SELECT insertar_restaurante(:NIT, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :documento, :id_categoria)"
+                "SELECT insertar_restaurante(:nit, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :documento, :id_categoria)"
             ),
             {
-                "NIT": NIT,
+                "nit": nit,
                 "direccion": direccion,
                 "nombre_restaurante": nombre_restaurante,
                 "descripcion_restaurante": descripcion_restaurante,

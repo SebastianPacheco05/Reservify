@@ -8,7 +8,7 @@ RETURNS TABLE (
 )
 LANGUAGE sql
 AS $$
-SELECT NIT, nombre_restaurante, direccion, ciudad, fecha
+SELECT nit, nombre_restaurante, direccion, ciudad, fecha
 FROM "Encabezado_Factura"
 WHERE id_encab_fact = p_id_encab_fact;
 $$;
@@ -24,6 +24,6 @@ RETURNS TABLE (
 )
 LANGUAGE sql
 AS $$
-SELECT id_encab_fact, NIT, nombre_restaurante, direccion, ciudad, fecha
+SELECT id_encab_fact, nit, nombre_restaurante, direccion, ciudad, fecha
 FROM "Encabezado_Factura";
 $$;

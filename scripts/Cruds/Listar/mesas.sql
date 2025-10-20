@@ -6,7 +6,7 @@ RETURNS TABLE (
     nit NUMERIC,
     precio NUMERIC
 ) LANGUAGE sql AS $$
-SELECT id_mesa, estado_de_disponibilidad, cant_personas, NIT, precio
+SELECT id_mesa, estado_de_disponibilidad, cant_personas, nit, precio
 FROM "Mesas";
 $$;
 
@@ -17,7 +17,7 @@ RETURNS TABLE (
     nit NUMERIC,
     precio NUMERIC
 ) LANGUAGE sql AS $$
-SELECT estado_de_disponibilidad, cant_personas, NIT, precio
+SELECT estado_de_disponibilidad, cant_personas, nit, precio
 FROM "Mesas"
 WHERE id_mesa = p_id_mesa;
 $$;

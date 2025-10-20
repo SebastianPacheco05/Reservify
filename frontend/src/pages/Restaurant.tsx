@@ -1,6 +1,5 @@
 "use client";
 
-import type React from "react";
 import { useState } from "react";
 import {
   Card,
@@ -13,7 +12,6 @@ import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { Textarea } from "../components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -21,63 +19,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Separator } from "../components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
 import { Skeleton } from "../components/ui/skeleton";
 import {
-  Phone,
   MapPin,
   Clock,
   Star,
   Calendar,
   Users,
-  ChevronLeft,
-  ChevronRight,
-  Heart,
-  Share2,
-  Award,
-  Utensils,
-  Wifi,
-  Car,
+  CreditCard,
 } from "lucide-react";
 
 import { useRestaurantData } from "../hooks/useRestaurantData";
-import type { ReservationData } from "../types/restaurant.types";
 
 export default function RestaurantPage() {
-  const {
-    images,
-    restaurantInfo,
-    reviews,
-    menuHighlights,
-    services,
-    contactInfo,
-    loading,
-    loadMoreReviews,
-    getAvailableSlots,
-    submitReservation,
-  } = useRestaurantData();
+  // Aquí puedes pasar el NIT del restaurante desde props o params
+  const restaurantNIT = 900100001; // Ejemplo, deberías obtenerlo de la URL o props
+  const { restaurantInfo, mesas, comentarios, loading, getAvailableSlots } =
+    useRestaurantData(restaurantNIT);
 
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
-  const [reservationData, setReservationData] = useState<ReservationData>({
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [reservationData, setReservationData] = useState({
     date: "",
     time: "",
     guests: "",
-    name: "",
-    phone: "",
-    email: "",
-    specialRequests: "",
+    mesaId: "",
   });
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
 
   const handleDateChange = async (date: string) => {
     setReservationData({ ...reservationData, date });
@@ -87,50 +62,24 @@ export default function RestaurantPage() {
     }
   };
 
-  const handleReservation = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const result = await submitReservation(reservationData);
-
-    if (result.success) {
-      alert(`${result.message}\nID de Reservación: ${result.reservationId}`);
-      // Resetear formulario
-      setReservationData({
-        date: "",
-        time: "",
-        guests: "",
-        name: "",
-        phone: "",
-        email: "",
-        specialRequests: "",
-      });
-    } else {
-      alert(result.message);
-    }
+  const handlePaymentReservation = () => {
+    // Aquí puedes redirigir a la pasarela de pagos con los datos
+    console.log("Procesar pago con:", reservationData);
+    // Redirigir a /Pasarela_pagos con los datos necesarios
+    setIsModalOpen(false);
   };
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
         key={i}
-        className={`h-4 w-4 ${
-          i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-        }`}
+        className={`h-4 w-4 ${i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+          }`}
       />
     ));
   };
 
-  const getIconComponent = (iconName: string) => {
-    const icons: { [key: string]: React.ComponentType<any> } = {
-      Wifi,
-      Car,
-      Users,
-      Heart,
-    };
-    const IconComponent = icons[iconName] || Heart;
-    return IconComponent;
-  };
-
-  if (loading.info || loading.images) {
+  if (loading.info) {
     return (
       <div className="max-w-7xl mx-auto p-4 space-y-8">
         <Skeleton className="h-96 w-full rounded-xl" />
@@ -150,62 +99,16 @@ export default function RestaurantPage() {
 
   return (
     <div className="max-w-7xl mx-auto p-4 space-y-8">
-      {/* Carrusel de Imágenes */}
+      {/* Imagen del Restaurante */}
       <div className="relative h-96 rounded-xl overflow-hidden group">
-        {images.length > 0 && (
+        {restaurantInfo && (
           <img
-            src={images[currentImageIndex]?.url || "/placeholder.svg"}
-            alt={images[currentImageIndex]?.alt || "Restaurante"}
+            src={restaurantInfo.url_image || "/placeholder.svg"}
+            alt={restaurantInfo.nombre_restaurante}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         )}
         <div className="absolute inset-0 bg-black/20" />
-
-        {/* Controles del carrusel */}
-        {images.length > 1 && (
-          <>
-            <button
-              onClick={prevImage}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 transition-all duration-200"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button
-              onClick={nextImage}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 transition-all duration-200"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-
-            {/* Indicadores */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
-              {images.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                    index === currentImageIndex ? "bg-white" : "bg-white/50"
-                  }`}
-                />
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* Botones de acción */}
-        <div className="absolute top-4 right-4 flex space-x-2">
-          <button
-            onClick={() => setIsLiked(!isLiked)}
-            className={`p-2 rounded-full transition-all duration-200 ${
-              isLiked ? "bg-red-500 text-white" : "bg-white/80 hover:bg-white"
-            }`}
-          >
-            <Heart className={`h-5 w-5 ${isLiked ? "fill-current" : ""}`} />
-          </button>
-          <button className="p-2 bg-white/80 hover:bg-white rounded-full transition-all duration-200">
-            <Share2 className="h-5 w-5" />
-          </button>
-        </div>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
@@ -217,226 +120,136 @@ export default function RestaurantPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <h1 className="text-4xl font-bold text-gray-900">
-                    {restaurantInfo.name}
+                    {restaurantInfo.nombre_restaurante}
                   </h1>
                   <div className="flex items-center space-x-2 mt-2">
                     <div className="flex items-center">
                       {renderStars(Math.floor(restaurantInfo.rating))}
                       <span className="ml-2 text-sm text-gray-600">
-                        {restaurantInfo.rating} ({restaurantInfo.totalReviews}{" "}
+                        {restaurantInfo.rating} ({restaurantInfo.reviews}{" "}
                         reseñas)
                       </span>
                     </div>
-                    {restaurantInfo.certifications.map((cert, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="flex items-center space-x-1"
-                      >
-                        <Award className="h-3 w-3" />
-                        <span>{cert}</span>
-                      </Badge>
-                    ))}
+                    <Badge variant="secondary">
+                      {restaurantInfo.nombre_categoria}
+                    </Badge>
                   </div>
                 </div>
               </div>
 
               <p className="text-lg text-gray-600 leading-relaxed">
-                {restaurantInfo.description}
+                {restaurantInfo.descripcion_restaurante}
               </p>
 
-              <div className="flex flex-wrap gap-2">
-                {restaurantInfo.badges.map((badge, index) => (
-                  <Badge key={index} variant="outline">
-                    {badge}
-                  </Badge>
-                ))}
+              <div className="flex items-center space-x-4">
+                <Badge variant={restaurantInfo.availabletoday ? "default" : "secondary"}>
+                  {restaurantInfo.availabletoday ? "Disponible Hoy" : "No Disponible"}
+                </Badge>
               </div>
             </div>
           )}
 
           {/* Información de Contacto */}
-          {contactInfo && (
+          {restaurantInfo && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <MapPin className="h-5 w-5" />
-                  <span>Información de Contacto</span>
+                  <span>Información del Restaurante</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="flex items-center space-x-3">
-                    <Phone className="h-5 w-5 text-blue-600" />
-                    <div>
-                      <p className="font-medium">Teléfono</p>
-                      <p className="text-gray-600">{contactInfo.phone}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
                     <MapPin className="h-5 w-5 text-red-600" />
                     <div>
                       <p className="font-medium">Dirección</p>
-                      <p className="text-gray-600">{contactInfo.address}</p>
+                      <p className="text-gray-600">{restaurantInfo.direccion}</p>
                     </div>
                   </div>
-                  {restaurantInfo && (
-                    <>
-                      <div className="flex items-center space-x-3">
-                        <Clock className="h-5 w-5 text-green-600" />
-                        <div>
-                          <p className="font-medium">Horarios</p>
-                          <p className="text-gray-600">
-                            {restaurantInfo.schedule}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Utensils className="h-5 w-5 text-purple-600" />
-                        <div>
-                          <p className="font-medium">Tipo de Cocina</p>
-                          <p className="text-gray-600">
-                            {restaurantInfo.cuisine.join(", ")}
-                          </p>
-                        </div>
-                      </div>
-                    </>
-                  )}
+                  <div className="flex items-center space-x-3">
+                    <Clock className="h-5 w-5 text-green-600" />
+                    <div>
+                      <p className="font-medium">Horarios</p>
+                      <p className="text-gray-600">
+                        {restaurantInfo.horario_apertura} - {restaurantInfo.horario_cierre}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           )}
 
-          {/* Servicios y Comodidades */}
-          {!loading.services && services.length > 0 && (
+          {/* Mesas Disponibles */}
+          {!loading.mesas && mesas.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>Servicios y Comodidades</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {services
-                    .filter((service) => service.available)
-                    .map((service) => {
-                      const IconComponent = getIconComponent(service.icon);
-                      return (
-                        <div
-                          key={service.id}
-                          className="flex items-center space-x-2"
-                        >
-                          <IconComponent
-                            className={`h-4 w-4 text-${service.color}`}
-                          />
-                          <span className="text-sm">{service.name}</span>
-                        </div>
-                      );
-                    })}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Platos Destacados */}
-          {!loading.menu && menuHighlights.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Platos Destacados</CardTitle>
+                <CardTitle>Mesas Disponibles</CardTitle>
                 <CardDescription>
-                  Nuestras especialidades más populares
+                  Seleccione una mesa para su reserva
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-3 gap-4">
-                  {menuHighlights.map((dish) => (
-                    <div
-                      key={dish.id}
-                      className="border rounded-lg p-4 hover:shadow-md transition-shadow"
-                    >
-                      <img
-                        src={dish.image || "/placeholder.svg"}
-                        alt={dish.name}
-                        className="w-full h-24 object-cover rounded-md mb-3"
-                      />
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold">{dish.name}</h4>
-                        {dish.isPopular && (
+                  {mesas
+                    .filter((mesa) => mesa.estado_de_disponibilidad)
+                    .map((mesa) => (
+                      <div
+                        key={mesa.id_mesa}
+                        className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold">Mesa #{mesa.id_mesa}</h4>
                           <Badge variant="secondary" className="text-xs">
-                            Popular
+                            Disponible
                           </Badge>
-                        )}
+                        </div>
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Users className="h-4 w-4 text-gray-600" />
+                          <span className="text-sm text-gray-600">
+                            {mesa.cant_personas} personas
+                          </span>
+                        </div>
+                        <p className="font-bold text-lg text-green-600">
+                          ${mesa.precio.toFixed(2)}
+                        </p>
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">
-                        {dish.description}
-                      </p>
-                      <p className="font-bold text-lg text-green-600">
-                        ${dish.price.toFixed(2)}
-                      </p>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </CardContent>
             </Card>
           )}
 
-          {/* Reseñas */}
-          {!loading.reviews && reviews.length > 0 && (
+          {/* Comentarios */}
+          {!loading.comentarios && comentarios.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Star className="h-5 w-5 text-yellow-500" />
-                  <span>Reseñas de Clientes</span>
+                  <span>Comentarios de Clientes</span>
                 </CardTitle>
                 <CardDescription>
                   Lo que dicen nuestros clientes
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                {reviews.map((review) => (
+                {comentarios.map((comentario) => (
                   <div
-                    key={review.id}
+                    key={comentario.id_comentario}
                     className="border-b pb-4 last:border-b-0"
                   >
-                    <div className="flex items-start space-x-4">
-                      <Avatar>
-                        <AvatarImage
-                          src={review.avatar || "/placeholder.svg"}
-                          alt={review.customerName}
-                        />
-                        <AvatarFallback>
-                          {review.customerName.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center space-x-2">
-                            <h4 className="font-semibold">
-                              {review.customerName}
-                            </h4>
-                            {review.verified && (
-                              <Badge variant="outline" className="text-xs">
-                                Verificado
-                              </Badge>
-                            )}
-                          </div>
-                          <span className="text-sm text-gray-500">
-                            {review.date}
-                          </span>
-                        </div>
-                        <div className="flex items-center mb-2">
-                          {renderStars(review.rating)}
-                        </div>
-                        <p className="text-gray-600">{review.comment}</p>
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center mb-2">
+                        {renderStars(comentario.calificacion)}
                       </div>
+                      <span className="text-sm text-gray-500">
+                        {new Date(comentario.fecha).toLocaleDateString()}
+                      </span>
                     </div>
+                    <p className="text-gray-600">{comentario.comentario}</p>
                   </div>
                 ))}
-                <Button
-                  variant="outline"
-                  className="w-full bg-transparent"
-                  onClick={() => loadMoreReviews(10)}
-                >
-                  Ver todas las reseñas
-                </Button>
               </CardContent>
             </Card>
           )}
@@ -452,128 +265,168 @@ export default function RestaurantPage() {
               </CardTitle>
               <CardDescription>Reserve su mesa ahora</CardDescription>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleReservation} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="date">Fecha</Label>
-                    <Input
-                      id="date"
-                      type="date"
-                      value={reservationData.date}
-                      onChange={(e) => handleDateChange(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="time">Hora</Label>
-                    <Select
-                      onValueChange={(value) =>
-                        setReservationData({ ...reservationData, time: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableSlots.map((slot) => (
-                          <SelectItem key={slot} value={slot}>
-                            {slot}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="guests">Número de Comensales</Label>
+                  <Label htmlFor="date">Fecha</Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={reservationData.date}
+                    onChange={(e) => handleDateChange(e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="time">Hora</Label>
                   <Select
                     onValueChange={(value) =>
-                      setReservationData({ ...reservationData, guests: value })
+                      setReservationData({ ...reservationData, time: value })
                     }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Seleccionar" />
                     </SelectTrigger>
                     <SelectContent>
-                      {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-                        <SelectItem key={num} value={num.toString()}>
-                          {num} {num === 1 ? "persona" : "personas"}
+                      {availableSlots.map((slot) => (
+                        <SelectItem key={slot} value={slot}>
+                          {slot}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
 
-                <Separator />
+              <div>
+                <Label htmlFor="guests">Número de Comensales</Label>
+                <Select
+                  onValueChange={(value) =>
+                    setReservationData({ ...reservationData, guests: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+                      <SelectItem key={num} value={num.toString()}>
+                        {num} {num === 1 ? "persona" : "personas"}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                <div>
-                  <Label htmlFor="name">Nombre Completo</Label>
-                  <Input
-                    id="name"
-                    value={reservationData.name}
-                    onChange={(e) =>
-                      setReservationData({
-                        ...reservationData,
-                        name: e.target.value,
-                      })
-                    }
-                    required
-                  />
-                </div>
+              <div>
+                <Label htmlFor="mesa">Seleccionar Mesa</Label>
+                <Select
+                  onValueChange={(value) =>
+                    setReservationData({ ...reservationData, mesaId: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar mesa" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {mesas
+                      .filter((mesa) => mesa.estado_de_disponibilidad)
+                      .map((mesa) => (
+                        <SelectItem
+                          key={mesa.id_mesa}
+                          value={mesa.id_mesa.toString()}
+                        >
+                          Mesa #{mesa.id_mesa} - {mesa.cant_personas} personas
+                          - ${mesa.precio}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                <div>
-                  <Label htmlFor="phone">Teléfono</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={reservationData.phone}
-                    onChange={(e) =>
-                      setReservationData({
-                        ...reservationData,
-                        phone: e.target.value,
-                      })
-                    }
-                    required
-                  />
-                </div>
+              <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                <DialogTrigger asChild>
+                  <Button className="w-full" size="lg">
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    Hacer Pago de Reserva
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle>Confirmar Pago de Reserva</DialogTitle>
+                    <DialogDescription>
+                      Revise los detalles de su reserva antes de proceder al
+                      pago
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    {/* Resumen de Reserva */}
+                    <div className="rounded-lg border p-4 space-y-3">
+                      <h3 className="font-semibold text-lg">
+                        Resumen de Reserva
+                      </h3>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Fecha:</span>
+                          <span className="font-medium">
+                            {reservationData.date || "No seleccionada"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Hora:</span>
+                          <span className="font-medium">
+                            {reservationData.time || "No seleccionada"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Comensales:</span>
+                          <span className="font-medium">
+                            {reservationData.guests || "0"} personas
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Mesa:</span>
+                          <span className="font-medium">
+                            #{reservationData.mesaId || "No seleccionada"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="pt-3 border-t">
+                        <div className="flex justify-between items-center">
+                          <span className="font-semibold">Total a Pagar:</span>
+                          <span className="text-2xl font-bold text-green-600">
+                            $
+                            {mesas
+                              .find(
+                                (m) =>
+                                  m.id_mesa.toString() ===
+                                  reservationData.mesaId
+                              )
+                              ?.precio.toFixed(2) || "0.00"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
 
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={reservationData.email}
-                    onChange={(e) =>
-                      setReservationData({
-                        ...reservationData,
-                        email: e.target.value,
-                      })
-                    }
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="requests">Peticiones Especiales</Label>
-                  <Textarea
-                    id="requests"
-                    placeholder="Alergias, celebraciones, preferencias de mesa..."
-                    value={reservationData.specialRequests}
-                    onChange={(e) =>
-                      setReservationData({
-                        ...reservationData,
-                        specialRequests: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-
-                <Button type="submit" className="w-full" size="lg">
-                  Confirmar Reserva
-                </Button>
-              </form>
+                    {/* Botones de Acción */}
+                    <div className="flex gap-3">
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => setIsModalOpen(false)}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        className="flex-1"
+                        onClick={handlePaymentReservation}
+                      >
+                        Proceder al Pago
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </CardContent>
           </Card>
 
@@ -583,11 +436,10 @@ export default function RestaurantPage() {
               <CardTitle>Información Importante</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-gray-600">
-              <p>• Las reservas se confirman por teléfono o email</p>
+              <p>• Las reservas se confirman tras el pago</p>
               <p>• Cancelaciones gratuitas hasta 2 horas antes</p>
               <p>• Mesa reservada por 2 horas máximo</p>
               <p>• Aceptamos todas las tarjetas de crédito</p>
-              <p>• Código de vestimenta: Smart casual</p>
             </CardContent>
           </Card>
         </div>

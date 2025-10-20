@@ -8,7 +8,7 @@ RETURNS TABLE (
     horario_cierre TIME,
     documento NUMERIC
 ) LANGUAGE sql AS $$
-SELECT NIT, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, documento
+SELECT nit, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, documento
 FROM "Restaurante";
 $$;
 
@@ -22,7 +22,7 @@ RETURNS TABLE (
     horario_cierre TIME,
     documento NUMERIC
 ) LANGUAGE sql AS $$
-SELECT NIT, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, documento
+SELECT nit, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, documento
 FROM "Restaurante"
-WHERE NIT = p_nit;
+WHERE nit = p_nit;
 $$;

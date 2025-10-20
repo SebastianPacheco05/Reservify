@@ -1,0 +1,2082 @@
+{
+  "info": {
+    "_postman_id": "reservify-api-collection",
+    "name": "Reservify API",
+    "description": "Colección completa de endpoints para el sistema Reservify",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "reservify"
+  },
+  "item": [
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@ejemplo.com\",\n  \"password\": \"contraseña123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Registrar Cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nuevo@ejemplo.com\",\n  \"password\": \"contraseña123\",\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Pérez\",\n  \"tipo_documento\": \"CC\",\n  \"documento\": 123456789,\n  \"nacionalidad\": \"Colombiana\",\n  \"telefono\": \"3001234567\",\n  \"id_rol\": 3\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/register/register",
+              "host": ["{{base_url}}"],
+              "path": ["register", "register"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Credenciales",
+      "item": [
+        {
+          "name": "Editar Credencial",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_credencial\": 1,\n  \"email\": \"nuevo@ejemplo.com\",\n  \"password\": \"nuevaContraseña123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/credenciales/editarcredencial",
+              "host": ["{{base_url}}"],
+              "path": ["credenciales", "editarcredencial"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar Credencial",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_credencial\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/credenciales/borrarcredencial",
+              "host": ["{{base_url}}"],
+              "path": ["credenciales", "borrarcredencial"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Roles",
+      "item": [
+        {
+          "name": "Insertar Rol",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre_rol\": \"Administrador\",\n  \"descripcion\": \"Rol con permisos completos\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/insertaroles",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "insertaroles"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Rol",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/listar_rol?id_rol=1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "listar_rol"],
+              "query": [
+                {
+                  "key": "id_rol",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Roles",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/listar_roles",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "listar_roles"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar Rol",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_rol\": 1,\n  \"nombre_rol\": \"Super Administrador\",\n  \"descripcion\": \"Rol con permisos totales\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/editaroles",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "editaroles"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar Rol",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_rol\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/borraroles",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "borraroles"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dueño",
+      "item": [
+        {
+          "name": "Insertar Dueño",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documento\": 987654321,\n  \"tipo_documento\": \"CC\",\n  \"nombre\": \"Carlos\",\n  \"apellido\": \"Gómez\",\n  \"id_rol\": 2,\n  \"id_credencial\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/dueno/insertardueno",
+              "host": ["{{base_url}}"],
+              "path": ["dueno", "insertardueno"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Dueño",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dueno/listar_dueno?documento=987654321",
+              "host": ["{{base_url}}"],
+              "path": ["dueno", "listar_dueno"],
+              "query": [
+                {
+                  "key": "documento",
+                  "value": "987654321"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Dueños",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dueno/listar_duenos",
+              "host": ["{{base_url}}"],
+              "path": ["dueno", "listar_duenos"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar Dueño",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documento\": 987654321,\n  \"tipo_documento\": \"CC\",\n  \"nombre\": \"Carlos Andrés\",\n  \"apellido\": \"Gómez\",\n  \"id_rol\": 2,\n  \"id_credencial\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/dueno/editardueno",
+              "host": ["{{base_url}}"],
+              "path": ["dueno", "editardueno"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar Dueño",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documento\": 987654321\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/dueno/borrardueno",
+              "host": ["{{base_url}}"],
+              "path": ["dueno", "borrardueno"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Restaurante",
+      "item": [
+        {
+          "name": "Obtener Restaurante (Público)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/restaurante/1111111111",
+              "host": ["{{base_url}}"],
+              "path": ["restaurante", "1111111111"]
+            },
+            "description": "Endpoint público para obtener información detallada de un restaurante por nit sin autenticación"
+          },
+          "response": []
+        },
+        {
+          "name": "Insertar Restaurante",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nit\": 123456789,\n  \"direccion\": \"Calle 123 #45-67\",\n  \"nombre_restaurante\": \"El Sabor Colombiano\",\n  \"descripcion_restaurante\": \"Restaurante de comida típica colombiana\",\n  \"horario_apertura\": \"08:00:00\",\n  \"horario_cierre\": \"22:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurante/insertarrestaurante",
+              "host": ["{{base_url}}"],
+              "path": ["restaurante", "insertarrestaurante"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Restaurante",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/restaurante/listar_restaurante?nit=123456789",
+              "host": ["{{base_url}}"],
+              "path": ["restaurante", "listar_restaurante"],
+              "query": [
+                {
+                  "key": "nit",
+                  "value": "123456789"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Restaurantes",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/restaurante/listar_restaurantes",
+              "host": ["{{base_url}}"],
+              "path": ["restaurante", "listar_restaurantes"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar Restaurante",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nit\": 123456789,\n  \"nit\": 123456789,\n  \"direccion\": \"Carrera 50 #30-20\",\n  \"nombre_restaurante\": \"El Sabor Colombiano Gourmet\",\n  \"descripcion_restaurante\": \"Restaurante de comida típica colombiana con toque gourmet\",\n  \"horario_apertura\": \"09:00:00\",\n  \"horario_cierre\": \"23:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurante/editarrestaurante",
+              "host": ["{{base_url}}"],
+              "path": ["restaurante", "editarrestaurante"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar Restaurante",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nit\": 123456789\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/restaurante/borrarrestaurante",
+              "host": ["{{base_url}}"],
+              "path": ["restaurante", "borrarrestaurante"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Mesas",
+      "item": [
+        {
+          "name": "Obtener Mesas por Restaurante (Público)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/mesas/restaurante/1111111111",
+              "host": ["{{base_url}}"],
+              "path": ["mesas", "restaurante", "1111111111"]
+            },
+            "description": "Endpoint público para obtener todas las mesas de un restaurante por nit sin autenticación"
+          },
+          "response": []
+        },
+        {
+          "name": "Insertar Mesa",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado_de_disponibilidad\": true,\n  \"cant_personas\": 4,\n  \"nit\": 123456789,\n  \"precio\": 50000.0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/mesas/insertarmesas",
+              "host": ["{{base_url}}"],
+              "path": ["mesas", "insertarmesas"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Mesa",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/mesas/listar_mesa?id_mesa=1",
+              "host": ["{{base_url}}"],
+              "path": ["mesas", "listar_mesa"],
+              "query": [
+                {
+                  "key": "id_mesa",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Mesas",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/mesas/listar_mesas",
+              "host": ["{{base_url}}"],
+              "path": ["mesas", "listar_mesas"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar Mesa",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_mesa\": 1,\n  \"estado_de_disponibilidad\": false,\n  \"cant_personas\": 6,\n  \"nit\": 123456789,\n  \"precio\": 75000.0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/mesas/editarmesas",
+              "host": ["{{base_url}}"],
+              "path": ["mesas", "editarmesas"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar Mesa",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_mesa\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/mesas/borrarmesas",
+              "host": ["{{base_url}}"],
+              "path": ["mesas", "borrarmesas"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cliente",
+      "item": [
+        {
+          "name": "Listar Cliente",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/cliente/listar_cliente?documento=123456789",
+              "host": ["{{base_url}}"],
+              "path": ["cliente", "listar_cliente"],
+              "query": [
+                {
+                  "key": "documento",
+                  "value": "123456789"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Clientes",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/cliente/listar_clientes",
+              "host": ["{{base_url}}"],
+              "path": ["cliente", "listar_clientes"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar Cliente",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_credencial\": 10,\n  \"nombre\": \"Juan Carlos\",\n  \"apellido\": \"Pérez García\",\n  \"tipo_documento\": \"CC\",\n  \"documento\": 123456789,\n  \"nacionalidad\": \"Colombiana\",\n  \"telefono\": \"3001234567\",\n  \"id_rol\": 3\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cliente/editarcliente",
+              "host": ["{{base_url}}"],
+              "path": ["cliente", "editarcliente"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar Cliente",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documento\": 123456789\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cliente/borrarcliente",
+              "host": ["{{base_url}}"],
+              "path": ["cliente", "borrarcliente"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Empleado",
+      "item": [
+        {
+          "name": "Insertar Empleado",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_credencial\": 15,\n  \"nombre\": \"María\",\n  \"apellido\": \"González\",\n  \"tipo_documento\": \"CC\",\n  \"documento\": 234567890,\n  \"nacionalidad\": \"Colombiana\",\n  \"telefono\": \"3107654321\",\n  \"id_rol\": 4,\n  \"nit\": 123456789\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/empleado/insertarempleado",
+              "host": ["{{base_url}}"],
+              "path": ["empleado", "insertarempleado"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Empleado",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/empleado/listar_empleado?documento=234567890",
+              "host": ["{{base_url}}"],
+              "path": ["empleado", "listar_empleado"],
+              "query": [
+                {
+                  "key": "documento",
+                  "value": "234567890"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Empleados",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/empleado/listar_empleados",
+              "host": ["{{base_url}}"],
+              "path": ["empleado", "listar_empleados"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar Empleado",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_credencial\": 15,\n  \"nombre\": \"María Fernanda\",\n  \"apellido\": \"González Ramírez\",\n  \"tipo_documento\": \"CC\",\n  \"documento\": 234567890,\n  \"nacionalidad\": \"Colombiana\",\n  \"telefono\": \"3107654321\",\n  \"id_rol\": 4,\n  \"nit\": 123456789\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/empleado/editarempleado",
+              "host": ["{{base_url}}"],
+              "path": ["empleado", "editarempleado"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar Empleado",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documento\": 234567890\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/empleado/borrarempleado",
+              "host": ["{{base_url}}"],
+              "path": ["empleado", "borrarempleado"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reserva",
+      "item": [
+        {
+          "name": "Insertar Reserva",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_mesa\": 1,\n  \"documento\": 123456789,\n  \"id_encab_fact\": 1,\n  \"horario\": \"19:00:00\",\n  \"fecha\": \"2025-10-25\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/reserva/insertarreserva",
+              "host": ["{{base_url}}"],
+              "path": ["reserva", "insertarreserva"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Reserva",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/reserva/listar_reserva?id_reserva=1",
+              "host": ["{{base_url}}"],
+              "path": ["reserva", "listar_reserva"],
+              "query": [
+                {
+                  "key": "id_reserva",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Reservas",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/reserva/listar_reservas",
+              "host": ["{{base_url}}"],
+              "path": ["reserva", "listar_reservas"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar Reserva",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_reserva\": 1,\n  \"id_mesa\": 2,\n  \"documento\": 123456789,\n  \"id_encab_fact\": 1,\n  \"horario\": \"20:00:00\",\n  \"fecha\": \"2025-10-26\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/reserva/editarreserva",
+              "host": ["{{base_url}}"],
+              "path": ["reserva", "editarreserva"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar Reserva",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_reserva\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/reserva/borrarreserva",
+              "host": ["{{base_url}}"],
+              "path": ["reserva", "borrarreserva"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Categorías",
+      "item": [
+        {
+          "name": "Insertar Categoría",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre_categoria\": \"Comida Italiana\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categorias/insertarcategoria",
+              "host": ["{{base_url}}"],
+              "path": ["categorias", "insertarcategoria"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Categoría",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categorias/listar_categoria?id_categoria=1",
+              "host": ["{{base_url}}"],
+              "path": ["categorias", "listar_categoria"],
+              "query": [
+                {
+                  "key": "id_categoria",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Categorías",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categorias/listar_categorias",
+              "host": ["{{base_url}}"],
+              "path": ["categorias", "listar_categorias"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar Categoría",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_categoria\": 1,\n  \"nombre_categoria\": \"Cocina Italiana Auténtica\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categorias/editarcategoria",
+              "host": ["{{base_url}}"],
+              "path": ["categorias", "editarcategoria"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar Categoría",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_categoria\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categorias/borrar_categoria",
+              "host": ["{{base_url}}"],
+              "path": ["categorias", "borrar_categoria"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Comentarios",
+      "item": [
+        {
+          "name": "Obtener Comentarios por Restaurante (Público)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/comentarios/restaurante/1111111111",
+              "host": ["{{base_url}}"],
+              "path": ["comentarios", "restaurante", "1111111111"]
+            },
+            "description": "Endpoint público para obtener todos los comentarios de un restaurante por nit sin autenticación"
+          },
+          "response": []
+        },
+        {
+          "name": "Insertar Comentario",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documento\": 123456789,\n  \"nit\": 987654321,\n  \"comentario\": \"Excelente servicio y comida deliciosa!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/comentarios/insertarcomentario",
+              "host": ["{{base_url}}"],
+              "path": ["comentarios", "insertarcomentario"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Comentario",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/comentarios/listar_comentario?id_comentario=1",
+              "host": ["{{base_url}}"],
+              "path": ["comentarios", "listar_comentario"],
+              "query": [
+                {
+                  "key": "id_comentario",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Comentarios",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/comentarios/listar_comentarios",
+              "host": ["{{base_url}}"],
+              "path": ["comentarios", "listar_comentarios"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar Comentario",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_comentario\": 1,\n  \"documento\": 123456789,\n  \"nit\": 987654321,\n  \"comentario\": \"Actualización: Muy buena experiencia, recomendado!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/comentarios/editarcomentario",
+              "host": ["{{base_url}}"],
+              "path": ["comentarios", "editarcomentario"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar Comentario",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_comentario\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/comentarios/borrarcomentario",
+              "host": ["{{base_url}}"],
+              "path": ["comentarios", "borrarcomentario"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Encabezado Factura",
+      "item": [
+        {
+          "name": "Insertar Encabezado Factura",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nit\": 123456789,\n  \"nombre_restaurante\": \"El Sabor Colombiano\",\n  \"direccion\": \"Calle 123 #45-67\",\n  \"ciudad\": \"Bogotá\",\n  \"fecha\": \"2025-10-19\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/encabezado_factura/insertarencabezadofactura",
+              "host": ["{{base_url}}"],
+              "path": ["encabezado_factura", "insertarencabezadofactura"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Encabezado Factura",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/encabezado_factura/listar_encabezado_factura?id_encab_fact=1",
+              "host": ["{{base_url}}"],
+              "path": ["encabezado_factura", "listar_encabezado_factura"],
+              "query": [
+                {
+                  "key": "id_encab_fact",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Encabezados Factura",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/encabezado_factura/listar_encabezados_factura",
+              "host": ["{{base_url}}"],
+              "path": ["encabezado_factura", "listar_encabezados_factura"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar Encabezado Factura",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_encab_fact\": 1,\n  \"nit\": 123456789,\n  \"nombre_restaurante\": \"El Sabor Colombiano Gourmet\",\n  \"direccion\": \"Carrera 50 #30-20\",\n  \"ciudad\": \"Bogotá\",\n  \"fecha\": \"2025-10-20\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/encabezado_factura/editarencabezadofactura",
+              "host": ["{{base_url}}"],
+              "path": ["encabezado_factura", "editarencabezadofactura"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar Encabezado Factura",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_encab_fact\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/encabezado_factura/borrarencabezadofactura",
+              "host": ["{{base_url}}"],
+              "path": ["encabezado_factura", "borrarencabezadofactura"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Detalle Factura",
+      "item": [
+        {
+          "name": "Insertar Detalle Factura",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": [\"Bandeja Paisa\", \"Limonada Natural\"],\n  \"unidades\": [2, 2],\n  \"precio_unitario\": [35000.0, 5000.0],\n  \"precio_total\": 80000.0,\n  \"forma_pago\": \"Tarjeta de Crédito\",\n  \"id_encab_fact\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/detalle_factura/insertardetallefactura",
+              "host": ["{{base_url}}"],
+              "path": ["detalle_factura", "insertardetallefactura"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Detalle Factura",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/detalle_factura/listar_detalle_factura?id_det_fact=1",
+              "host": ["{{base_url}}"],
+              "path": ["detalle_factura", "listar_detalle_factura"],
+              "query": [
+                {
+                  "key": "id_det_fact",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Detalles Factura",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/detalle_factura/listar_detalles_factura",
+              "host": ["{{base_url}}"],
+              "path": ["detalle_factura", "listar_detalles_factura"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar Detalle Factura",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_det_fact\": 1,\n  \"descripcion\": [\"Bandeja Paisa\", \"Limonada Natural\", \"Postre\"],\n  \"unidades\": [2, 2, 1],\n  \"precio_unitario\": [35000.0, 5000.0, 8000.0],\n  \"precio_total\": 88000.0,\n  \"forma_pago\": \"Tarjeta de Crédito\",\n  \"id_encab_fact\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/detalle_factura/editardetallefactura",
+              "host": ["{{base_url}}"],
+              "path": ["detalle_factura", "editardetallefactura"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar Detalle Factura",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_det_fact\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/detalle_factura/borrardetallefactura",
+              "host": ["{{base_url}}"],
+              "path": ["detalle_factura", "borrardetallefactura"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cálculos Mensuales",
+      "item": [
+        {
+          "name": "Insertar Cálculo Mensual",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nit\": 123456789,\n  \"mes\": 10,\n  \"anio\": 2025,\n  \"total_reservas\": 150,\n  \"revenue\": 7500000.0,\n  \"total_clientes\": 120\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/calculos_mensuales/insertar_calculo_mensual",
+              "host": ["{{base_url}}"],
+              "path": ["calculos_mensuales", "insertar_calculo_mensual"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Cálculo Mensual",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/calculos_mensuales/listar_calculo_mensual?id_calculo=1",
+              "host": ["{{base_url}}"],
+              "path": ["calculos_mensuales", "listar_calculo_mensual"],
+              "query": [
+                {
+                  "key": "id_calculo",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Cálculos Mensuales",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/calculos_mensuales/listar_calculos_mensuales",
+              "host": ["{{base_url}}"],
+              "path": ["calculos_mensuales", "listar_calculos_mensuales"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Editar Cálculo Mensual",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_calculo\": 1,\n  \"nit\": 123456789,\n  \"mes\": 10,\n  \"anio\": 2025,\n  \"total_reservas\": 175,\n  \"revenue\": 8750000.0,\n  \"total_clientes\": 140\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/calculos_mensuales/editar_calculo_mensual",
+              "host": ["{{base_url}}"],
+              "path": ["calculos_mensuales", "editar_calculo_mensual"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Borrar Cálculo Mensual",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_calculo\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/calculos_mensuales/borrar_calculo_mensual",
+              "host": ["{{base_url}}"],
+              "path": ["calculos_mensuales", "borrar_calculo_mensual"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Búsqueda y Top",
+      "item": [
+        {
+          "name": "Top Restaurantes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/top",
+              "host": ["{{base_url}}"],
+              "path": ["top"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Restaurante",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre_restaurante\": \"Colombiano\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/buscar_restaurante",
+              "host": ["{{base_url}}"],
+              "path": ["buscar_restaurante"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Data Owner",
+      "item": [
+        {
+          "name": "Obtener Estadísticas del Dueño",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/data-owner/987654321",
+              "host": ["{{base_url}}"],
+              "path": ["data-owner", "987654321"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Contacto",
+      "item": [
+        {
+          "name": "Contactanos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"contacto@reservify.com\",\n  \"subject\": \"Consulta sobre reservas\",\n  \"message\": \"Hola, quisiera información sobre cómo realizar una reserva...\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/contactanos",
+              "host": ["{{base_url}}"],
+              "path": ["contactanos"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

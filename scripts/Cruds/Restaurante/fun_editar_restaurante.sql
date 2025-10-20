@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION editar_restaurante(
-    p_NIT INT,
+    p_nit INT,
     p_direccion VARCHAR(50),
     p_nombre_restaurante VARCHAR(20),
     p_descripcion_restaurante VARCHAR(100),
@@ -17,6 +17,6 @@ BEGIN
         horario_cierre = p_horario_cierre,
         documento = p_documento,
         id_categoria = p_id_categoria
-    WHERE NIT = p_NIT;
+    WHERE nit = p_nit;
 END;
 $$ LANGUAGE plpgsql;

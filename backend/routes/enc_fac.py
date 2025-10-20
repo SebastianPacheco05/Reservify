@@ -15,7 +15,7 @@ router = APIRouter(
 async def insertar(data: Encabezado_facturaBase, db: Session = Depends(get_db)):
     enc_fac.insertar_enc_fac(
         db,
-        data.NIT,
+        data.nit,
         data.nombre_restaurante,
         data.direccion,
         data.ciudad,
@@ -40,7 +40,7 @@ async def editar(data: Encabezado_facturaUpdate, db: Session = Depends(get_db)):
     enc_fac.editar_enc_fac(
         db,
         data.id_encab_fact,
-        data.NIT,
+        data.nit,
         data.nombre_restaurante,
         data.direccion,
         data.ciudad,

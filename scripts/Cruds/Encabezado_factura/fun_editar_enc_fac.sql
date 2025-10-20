@@ -1,6 +1,6 @@
 CREATE OR REPLACE FUNCTION editar_enc_fac(
     p_id_encab_fact INT,
-    p_NIT INT,
+    p_nit INT,
     p_nombre_restaurante VARCHAR(20),
     p_direccion VARCHAR(50),
     p_ciudad VARCHAR(20),
@@ -9,7 +9,7 @@ CREATE OR REPLACE FUNCTION editar_enc_fac(
 ) RETURNS VOID AS $$
 BEGIN
     UPDATE "Encabezado_Factura"
-    SET NIT = p_NIT,
+    SET nit = p_nit,
         nombre_restaurante = p_nombre_restaurante,
         direccion = p_direccion,
         ciudad = p_ciudad,

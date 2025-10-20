@@ -10,7 +10,7 @@ CREATE OR REPLACE FUNCTION editar_calculo_mensual(
 RETURNS VOID AS $$
 BEGIN
     UPDATE "Calculos_mensuales"
-    SET NIT = p_nit,
+    SET nit = p_nit,
         mes = p_mes,
         anio = p_anio,
         total_reservas = p_total_reservas,

@@ -20,8 +20,7 @@ DROP TABLE IF EXISTS "Roles";
 DROP TABLE IF EXISTS "jwt_tokens";
 DROP TABLE IF EXISTS "Credenciales";
 DROP TABLE IF EXISTS "Categorias";
-DROP TABLE IF EXISTS "Pagos";
-DROP TABLE IF EXISTS "Pagos_MercadoPago";
+
 
 -- Tabla Credenciales: Almacena la información de autenticación de usuarios
 CREATE TABLE "Credenciales" (
@@ -57,7 +56,7 @@ CREATE TABLE "Categorias" (
 
 -- Tabla Restaurante: Almacena información de los restaurantes
 CREATE TABLE "Restaurante" (
-    NIT DECIMAL(10, 0) PRIMARY KEY NOT NULL,  -- NIT como identificador único
+    nit DECIMAL(10, 0) PRIMARY KEY NOT NULL,  -- nit como identificador único
     direccion VARCHAR(50) NOT NULL,  -- Dirección del restaurante
     nombre_restaurante VARCHAR(50) NOT NULL,  -- Nombre del restaurante
     descripcion_restaurante VARCHAR(100) NOT NULL,  -- Descripción del restaurante
@@ -79,9 +78,9 @@ CREATE TABLE "Mesas" (
     id_mesa SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     estado_de_disponibilidad BOOLEAN NOT NULL,  -- Estado de disponibilidad
     cant_personas INT CHECK (cant_personas > 0),  -- Capacidad de personas
-    NIT DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
+    nit DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
     precio DECIMAL(10, 2) NOT NULL CHECK (precio >= 0),  -- Precio de la mesa
-    FOREIGN KEY (NIT) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE
+    FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
 );
 
 -- Tabla Cliente: Almacena información de los clientes
@@ -108,8 +107,8 @@ CREATE TABLE "Empleado" (
     nacionalidad VARCHAR(20) NOT NULL,  -- Nacionalidad
     telefono VARCHAR(10) NOT NULL CHECK (telefono ~ '^[0-9]{10}$'),  -- Teléfono con validación de formato
     id_rol INT NOT NULL,  -- Referencia al rol
-    NIT DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
-    FOREIGN KEY (NIT) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE,
+    nit DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
+    FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE,
     FOREIGN KEY (id_rol) REFERENCES "Roles" (id_rol) ON DELETE CASCADE,
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
 );
@@ -117,13 +116,13 @@ CREATE TABLE "Empleado" (
 -- Tabla Encabezado_Factura: Almacena la información principal de las facturas
 CREATE TABLE "Encabezado_Factura" (
     id_encab_fact SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
-    NIT DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
+    nit DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
     nombre_restaurante VARCHAR(50) NOT NULL,  -- Nombre del restaurante
     direccion VARCHAR(50) NOT NULL,  -- Dirección del restaurante
     ciudad VARCHAR(20) NOT NULL,  -- Ciudad
     fecha DATE NOT NULL CHECK (fecha = CURRENT_DATE),  -- Fecha de la factura
     documento DECIMAL(10, 0) NOT NULL,  -- Referencia al cliente
-    FOREIGN KEY (NIT) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE,
+    FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE,
     FOREIGN KEY (documento) REFERENCES "Cliente" (documento) ON DELETE CASCADE
 );
 
@@ -164,24 +163,24 @@ CREATE TABLE "Reserva" (
 
 CREATE TABLE "Calculos_mensuales" (
     id_calculo SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
-    NIT DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
+    nit DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
     mes INT NOT NULL CHECK (mes >= 1 AND mes <= 12),  -- Mes del cálculo
     anio INT NOT NULL CHECK (anio > 0),  -- Año del cálculo
     total_reservas INT NOT NULL DEFAULT 0,  -- Total de reservas del mes
     revenue DECIMAL(10, 2) NOT NULL DEFAULT 0.00,  -- Total facturado del mes
     total_clientes INT NOT NULL DEFAULT 0,  -- Total de clientes del mes
-    FOREIGN KEY (NIT) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE
+    FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
 );
 
 CREATE TABLE "Comentarios" (
     id_comentario SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     documento DECIMAL(10, 0) NOT NULL,  -- Referencia al cliente
-    NIT DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
+    nit DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
     comentario TEXT NOT NULL,  -- Comentario del cliente
     fecha TIMESTAMP NOT NULL DEFAULT NOW(),  -- Fecha del comentario
     calificacion INT CHECK (calificacion >= 1 AND calificacion <= 5),  -- Calificación del 1 al 5
     FOREIGN KEY (documento) REFERENCES "Cliente" (documento) ON DELETE CASCADE,
-    FOREIGN KEY (NIT) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE
+    FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
 );
 
 -- Tabla JWT_Tokens: Almacena tokens JWT (generalmente de refresco) para autenticación segura
@@ -199,35 +198,3 @@ CREATE TABLE "jwt_tokens" (
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
 );
 
-CREATE TABLE "Pagos_MercadoPago" (
-    id_pago SERIAL PRIMARY KEY,
-    id_reserva INT REFERENCES "Reserva"(id_reserva),
-    id_factura INT REFERENCES "Encabezado_Factura"(id_encab_fact),
-    estado_pago VARCHAR(50),
-    id_mercadopago VARCHAR(100),
-    external_reference VARCHAR(100),
-    monto NUMERIC(10,2),
-    fecha_pago TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-
-CREATE TABLE "Pagos" (
-    id_pago SERIAL PRIMARY KEY NOT NULL,               -- Identificador interno del pago
-    id_encab_fact INT NOT NULL,                        -- Relación con la factura generada
-    documento DECIMAL(10, 0) NOT NULL,                 -- Cliente que realiza el pago
-    NIT DECIMAL(10, 0) NOT NULL,                       -- Restaurante donde se realiza el pago
-    id_reserva INT,                                    -- (Opcional) Referencia a la reserva
-    id_transaccion_mp VARCHAR(50) UNIQUE,              -- ID de transacción generado por Mercado Pago
-    estado_pago VARCHAR(30) NOT NULL CHECK (
-        estado_pago IN ('pendiente', 'aprobado', 'rechazado', 'cancelado', 'reembolsado')
-    ),                                                 -- Estado del pago según Mercado Pago
-    monto_total DECIMAL(10, 2) NOT NULL CHECK (monto_total >= 0),  -- Monto pagado
-    metodo_pago VARCHAR(50),                           -- Ej: "credit_card", "debit_card", "pix", "transferencia", etc.
-    tipo_transaccion VARCHAR(30) DEFAULT 'online',     -- Puede ser 'online' (Mercado Pago) o 'manual' (efectivo)
-    fecha_pago TIMESTAMP NOT NULL DEFAULT NOW(),       -- Fecha y hora del pago
-    detalle JSONB,                                     -- Detalles adicionales (recibo, tasas, etc.)
-    FOREIGN KEY (id_encab_fact) REFERENCES "Encabezado_Factura" (id_encab_fact) ON DELETE CASCADE,
-    FOREIGN KEY (documento) REFERENCES "Cliente" (documento) ON DELETE CASCADE,
-    FOREIGN KEY (NIT) REFERENCES "Restaurante" (NIT) ON DELETE CASCADE,
-    FOREIGN KEY (id_reserva) REFERENCES "Reserva" (id_reserva) ON DELETE SET NULL
-);

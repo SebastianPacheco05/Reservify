@@ -10,7 +10,7 @@ RETURNS TABLE (
     id_rol INTEGER,
     nit NUMERIC
 ) LANGUAGE sql AS $$
-SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, NIT
+SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit
 FROM "Empleado";
 $$;
 
@@ -26,7 +26,7 @@ RETURNS TABLE (
     id_rol INTEGER,
     nit NUMERIC
 ) LANGUAGE sql AS $$
-SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, NIT
+SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit
 FROM "Empleado"
 WHERE documento = p_documento;
 $$;

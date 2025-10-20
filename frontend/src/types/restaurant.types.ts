@@ -98,3 +98,33 @@ export interface Restaurante {
 export interface BuscarRestaurante {
   nombre_restaurante: string;
 }
+
+// Interfaces para datos desde la base de datos
+export interface RestaurantDetailFromDB {
+  nit: number;
+  direccion: string;
+  nombre_restaurante: string;
+  descripcion_restaurante: string;
+  rating: number;
+  reviews: number;
+  availabletoday: boolean;
+  horario_apertura: string;
+  horario_cierre: string;
+  url_image: string;
+  nombre_categoria: string;
+}
+
+export interface MesaFromDB {
+  id_mesa: number;
+  estado_de_disponibilidad: boolean;
+  cant_personas: number;
+  precio: number;
+  nit: number;
+}
+
+export interface ComentarioFromDB {
+  id_comentario: number;
+  comentario: string;
+  fecha: string; // Solo año/mes/día
+  calificacion: number;
+}

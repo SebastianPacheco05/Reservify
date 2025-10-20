@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from config import get_db
 from funciones.auth.dependencies import verificar_token
@@ -16,8 +16,8 @@ async def insertar(data: insertarCategorias, db: Session = Depends(get_db)):
     categorias.insertar_categoria(db, data.nombre_categoria)
 
 @router.get("/listar_categoria")
-async def listar_categoria(data: ListarCategorias, db: Session = Depends(get_db)):
-    respuesta = categorias_queries.obtener_categoria(db, data.id_categoria)
+async def listar_categoria(id_categoria: int = Query(...), db: Session = Depends(get_db)):
+    respuesta = categorias_queries.obtener_categoria(db, id_categoria)
     return {"respuesta": respuesta}
 
 @router.get("/listar_categorias")

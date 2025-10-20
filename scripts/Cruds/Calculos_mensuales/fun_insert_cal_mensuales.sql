@@ -8,7 +8,7 @@ CREATE OR REPLACE FUNCTION insertar_calculo_mensual(
 )
 RETURNS VOID AS $$
 BEGIN
-    INSERT INTO "Calculos_mensuales" (NIT, mes, anio, total_reservas, revenue, total_clientes)
+    INSERT INTO "Calculos_mensuales" (nit, mes, anio, total_reservas, revenue, total_clientes)
     VALUES (p_nit, p_mes, p_anio, p_total_reservas, p_revenue, p_total_clientes);
 END;
 $$ LANGUAGE plpgsql;

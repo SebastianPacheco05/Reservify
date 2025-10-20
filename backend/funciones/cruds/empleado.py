@@ -14,12 +14,12 @@ def insertar_empleado(
     nacionalidad: str,
     telefono: str,
     id_rol: int,
-    NIT: int,
+    nit: int,
 ):
     try:
         db.execute(
             text(
-                "SELECT insertar_empleado(:id_credencial, :nombre, :apellido, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol, :NIT)"
+                "SELECT insertar_empleado(:id_credencial, :nombre, :apellido, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol, :nit)"
             ),
             {
                 "id_credencial": id_credencial,
@@ -30,7 +30,7 @@ def insertar_empleado(
                 "nacionalidad": nacionalidad,
                 "telefono": telefono,
                 "id_rol": id_rol,
-                "NIT": NIT,
+                "nit": nit,
             },
         )
         db.commit()
@@ -59,12 +59,12 @@ def editar_empleado(
     nacionalidad: str,
     telefono: str,
     id_rol: int,
-    NIT: int,
+    nit: int,
 ):
     try:
         db.execute(
             text(
-                "SELECT editar_empleado(:id_credencial, :nombre, :apellido, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol, :NIT)"
+                "SELECT editar_empleado(:id_credencial, :nombre, :apellido, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol, :nit)"
             ),
             {
                 "id_credencial": id_credencial,
@@ -75,7 +75,7 @@ def editar_empleado(
                 "nacionalidad": nacionalidad,
                 "telefono": telefono,
                 "id_rol": id_rol,
-                "NIT": NIT,
+                "nit": nit,
             },
         )
         db.commit()

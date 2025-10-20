@@ -1,8 +1,8 @@
 CREATE OR REPLACE FUNCTION borrar_restaurante(
-    p_NIT INT
+    p_nit INT
 ) RETURNS VOID AS $$
 BEGIN
     DELETE FROM "Restaurante"
-    WHERE NIT = p_NIT;
+    WHERE nit = p_nit;
 END;
 $$ LANGUAGE plpgsql;

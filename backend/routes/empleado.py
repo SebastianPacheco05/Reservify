@@ -23,7 +23,7 @@ async def insertar(data: EmpleadoBase, db: Session = Depends(get_db)):
         data.nacionalidad,
         data.telefono,
         data.id_rol,
-        data.NIT,
+        data.nit,
     )
 
 @router.get("/listar_empleado")
@@ -48,7 +48,7 @@ async def editar(data: EmpleadoUpdate, db: Session = Depends(get_db)):
         data.nacionalidad,
         data.telefono,
         data.id_rol,
-        data.NIT,
+        data.nit,
     )
 
 @router.delete("/borrarempleado")
