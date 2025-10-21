@@ -84,60 +84,45 @@ export default function RestaurantPage() {
         return;
       }
 
-      // 1. Crear encabezado de factura (el backend obtiene el documento usando el email del JWT)
-      const fechaActual = new Date().toISOString().split('T')[0];
-      const encabezadoResponse = await fetch("http://localhost:8000/encabezado_factura/insertarencabezadofactura", {
+      // Obtener el email del cliente desde el token JWT
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const emailCliente = tokenPayload.sub;
+
+      if (!emailCliente) {
+        alert("No se pudo obtener la información del cliente");
+        return;
+      }
+
+      // Usar la nueva función de reserva que crea factura y reserva en una sola operación
+      const reservaResponse = await fetch("http://localhost:8000/facturas/reservar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
-          nit: restaurantNIT,
-          nombre_restaurante: restaurantInfo?.nombre_restaurante || "",
-          direccion: restaurantInfo?.direccion || "",
-          ciudad: "Bogotá",
-          fecha: fechaActual
-        })
-      });
-
-      if (!encabezadoResponse.ok) {
-        const errorData = await encabezadoResponse.json();
-        throw new Error(errorData.detail || "Error al crear encabezado de factura");
-      }
-
-      const encabezadoData = await encabezadoResponse.json();
-      const idEncabFact = encabezadoData.id_encab_fact;
-
-      if (!idEncabFact) {
-        throw new Error("No se pudo obtener el ID del encabezado de factura");
-      }
-
-      // 2. Crear reserva con estado "pendiente" usando el email del usuario autenticado
-      const reservaResponse = await fetch("http://localhost:8000/reserva/insertarreserva", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          id_mesa: parseInt(reservationData.mesaId),
-          id_encab_fact: idEncabFact,
-          horario: reservationData.time,
-          fecha: reservationData.date
+          p_nit: restaurantNIT,
+          p_nombre_restaurante: restaurantInfo?.nombre_restaurante || "",
+          p_direccion: restaurantInfo?.direccion || "",
+          p_ciudad: "Bogotá",
+          p_email_cliente: emailCliente,
+          p_id_mesa: parseInt(reservationData.mesaId),
+          p_num_comensales: parseInt(reservationData.guests),
+          p_horario: reservationData.time,
+          p_fecha: reservationData.date
         })
       });
 
       if (!reservaResponse.ok) {
         const errorData = await reservaResponse.json();
-        throw new Error(errorData.detail || "Error al crear la reserva");
+        throw new Error(errorData.detail || "Error al procesar la reserva");
       }
 
       const reservaData = await reservaResponse.json();
       
-      // 3. Guardar solo el ID de reserva y datos mínimos para la pasarela
+      // Guardar datos para la pasarela de pagos
       const paymentData = {
-        id_reserva: reservaData.id_reserva || null,
+        id_encab_fact: reservaData.id_encab_fact,
         restaurant: restaurantInfo,
         mesa: mesaSeleccionada,
         guests: parseInt(reservationData.guests),
@@ -153,7 +138,7 @@ export default function RestaurantPage() {
       
     } catch (error) {
       console.error("Error al procesar la reserva:", error);
-      alert(error.message || "Error al procesar la reserva. Inténtalo de nuevo.");
+      alert((error as { message?: string })?.message || "Error al procesar la reserva. Inténtalo de nuevo.");
     }
   };
 

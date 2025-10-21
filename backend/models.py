@@ -296,3 +296,16 @@ class BuscarRestaurante(BaseModel):
     nombre_restaurante: str
 
 
+# Registrar Factura y Reserva
+class FacturaReservaSchema(BaseModel):
+    p_nit: int
+    p_nombre_restaurante: str
+    p_direccion: str
+    p_ciudad: str
+    p_email_cliente: str
+    p_id_mesa: int
+    p_num_comensales: int
+    p_horario: str
+    p_fecha: str
+
+
