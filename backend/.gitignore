@@ -4,7 +4,17 @@ __pycache__/
 
 # Ignorar archivos compilados de Python
 *.pyc
-**/*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Archivos específicos de Python
+*.py[cod]
+*$py.class
 
 # Ignorar entorno virtual
 venv/
