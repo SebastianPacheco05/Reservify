@@ -5,12 +5,14 @@ import { ReservationSummary } from "./reservation-summary"
 import { CustomerForm } from "./customer-form"
 import { PaymentSection } from "./payment-section"
 import { CheckCircle2 } from "lucide-react"
+import { useToastContext } from "./ToastProvider"
 
 interface CheckoutPageProps {
     reservationData?: any
 }
 
 export default function CheckoutPage({ reservationData: propReservationData }: CheckoutPageProps) {
+    const { toast } = useToastContext();
     const [step, setStep] = useState<"form" | "payment" | "success">("form")
     const [customerData, setCustomerData] = useState({
         nombre_completo: "",
@@ -36,7 +38,11 @@ export default function CheckoutPage({ reservationData: propReservationData }: C
         try {
             const token = localStorage.getItem("token")
             if (!token) {
-                alert("Sesión expirada. Por favor inicia sesión nuevamente.")
+                toast({
+                    title: "Sesión expirada",
+                    description: "Por favor inicia sesión nuevamente.",
+                    variant: "warning"
+                });
                 window.location.href = "/login"
                 return
             }
@@ -65,7 +71,11 @@ export default function CheckoutPage({ reservationData: propReservationData }: C
             setStep("success")
         } catch (error) {
             console.error("Error al confirmar la reserva:", error)
-            alert("Error al confirmar la reserva. Inténtalo de nuevo.")
+            toast({
+                title: "Error en la confirmación",
+                description: "Error al confirmar la reserva. Inténtalo de nuevo.",
+                variant: "destructive"
+            });
         }
     }
 

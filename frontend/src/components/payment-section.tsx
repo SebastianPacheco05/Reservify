@@ -1,3 +1,6 @@
+import { useState } from "react"
+import { useToastContext } from "./ToastProvider"
+
 interface PaymentSectionProps {
     customerData: any
     reservationData: any
@@ -6,6 +9,7 @@ interface PaymentSectionProps {
 }
 
 export function PaymentSection({ customerData, reservationData, onSuccess, onBack }: PaymentSectionProps) {
+    const { toast } = useToastContext();
     const [paymentData, setPaymentData] = useState({
         numero_tarjeta: "",
         fecha_vencimiento: "",
@@ -16,7 +20,11 @@ export function PaymentSection({ customerData, reservationData, onSuccess, onBac
     const handlePayment = async () => {
         // Validar campos de pago
         if (!paymentData.numero_tarjeta || !paymentData.fecha_vencimiento || !paymentData.nombre_titular || !paymentData.cvc) {
-            alert("Por favor completa todos los campos de pago")
+            toast({
+                title: "Campos incompletos",
+                description: "Por favor completa todos los campos de pago",
+                variant: "warning"
+            });
             return
         }
         
@@ -34,7 +42,11 @@ export function PaymentSection({ customerData, reservationData, onSuccess, onBac
             onSuccess()
         } catch (error) {
             console.error("Error al procesar el pago:", error)
-            alert("Error al procesar el pago. Inténtalo de nuevo.")
+            toast({
+                title: "Error en el pago",
+                description: "Error al procesar el pago. Inténtalo de nuevo.",
+                variant: "destructive"
+            });
         }
     }
 

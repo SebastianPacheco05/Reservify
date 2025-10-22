@@ -17,9 +17,11 @@ import {
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
+import { useToastContext } from "../components/ToastProvider";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { toast } = useToastContext();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -50,7 +52,11 @@ export default function Login() {
         navigate("/"); // fallback por si no devuelve nada
       }
     } catch (err: any) {
-      alert("Error de inicio de sesión: " + err.message);
+      toast({
+        title: "Error de inicio de sesión",
+        description: err.message,
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }

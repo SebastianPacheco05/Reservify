@@ -37,8 +37,10 @@ import {
 } from "../components/ui/select";
 import { useTheme } from "../components/theme-provider";
 import { useNavigate } from "react-router-dom";
+import { useToastContext } from "../components/ToastProvider";
 
 export default function Registrar() {
+  const { toast } = useToastContext();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -60,7 +62,11 @@ export default function Registrar() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("Las contraseñas no coinciden.");
+      toast({
+        title: "Error de validación",
+        description: "Las contraseñas no coinciden.",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -91,11 +97,19 @@ export default function Registrar() {
         throw new Error(data.detail ?? "Error en el registro");
       }
 
-      alert(data.message ?? "Registro exitoso");
+      toast({
+        title: "Registro exitoso",
+        description: data.message ?? "Tu cuenta ha sido creada correctamente",
+        variant: "success"
+      });
 
       navigate("/");
     } catch (err: any) {
-      alert("Error en el registro: " + err.message);
+      toast({
+        title: "Error en el registro",
+        description: err.message,
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }
@@ -103,13 +117,25 @@ export default function Registrar() {
 
   const handleContinue = () => {
     if (email == "") {
-      alert("Por favor, ingresa un correo electrónico.");
+      toast({
+        title: "Campo requerido",
+        description: "Por favor, ingresa un correo electrónico.",
+        variant: "warning"
+      });
       return;
     } else if (password !== confirmPassword) {
-      alert("Las contraseñas no coinciden.");
+      toast({
+        title: "Error de validación",
+        description: "Las contraseñas no coinciden.",
+        variant: "destructive"
+      });
       return;
     } else if (password == "" && confirmPassword == "") {
-      alert("Por favor, ingresa una contraseña.");
+      toast({
+        title: "Campo requerido",
+        description: "Por favor, ingresa una contraseña.",
+        variant: "warning"
+      });
       return;
     }
     setShowCard(false); // 👈 solo avanza si las contraseñas coinciden

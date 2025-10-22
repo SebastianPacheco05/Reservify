@@ -39,8 +39,10 @@ import {
 } from "lucide-react";
 
 import { useRestaurantData } from "../hooks/useRestaurantData";
+import { useToastContext } from "../components/ToastProvider";
 
 export default function RestaurantPage() {
+  const { toast } = useToastContext();
   const [searchParams] = useSearchParams();
   const restaurantNIT = Number(searchParams.get("nit") || 0);
   const { restaurantInfo, mesas, comentarios, loading, getAvailableSlots } =
@@ -67,20 +69,32 @@ export default function RestaurantPage() {
     try {
       // Validar que todos los campos estén completos
       if (!reservationData.date || !reservationData.time || !reservationData.guests || !reservationData.mesaId) {
-        alert("Por favor completa todos los campos de la reserva");
+        toast({
+          title: "Campos incompletos",
+          description: "Por favor completa todos los campos de la reserva",
+          variant: "warning"
+        });
         return;
       }
 
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Debes iniciar sesión para hacer una reserva");
+        toast({
+          title: "Sesión requerida",
+          description: "Debes iniciar sesión para hacer una reserva",
+          variant: "warning"
+        });
         return;
       }
 
       // Obtener el precio de la mesa seleccionada
       const mesaSeleccionada = mesas.find(m => m.id_mesa.toString() === reservationData.mesaId);
       if (!mesaSeleccionada) {
-        alert("Mesa no encontrada");
+        toast({
+          title: "Error de selección",
+          description: "Mesa no encontrada",
+          variant: "destructive"
+        });
         return;
       }
 
@@ -89,7 +103,11 @@ export default function RestaurantPage() {
       const emailCliente = tokenPayload.sub;
 
       if (!emailCliente) {
-        alert("No se pudo obtener la información del cliente");
+        toast({
+          title: "Error de autenticación",
+          description: "No se pudo obtener la información del cliente",
+          variant: "destructive"
+        });
         return;
       }
 
@@ -138,7 +156,11 @@ export default function RestaurantPage() {
       
     } catch (error) {
       console.error("Error al procesar la reserva:", error);
-      alert((error as { message?: string })?.message || "Error al procesar la reserva. Inténtalo de nuevo.");
+      toast({
+        title: "Error en la reserva",
+        description: (error as { message?: string })?.message || "Error al procesar la reserva. Inténtalo de nuevo.",
+        variant: "destructive"
+      });
     }
   };
 
