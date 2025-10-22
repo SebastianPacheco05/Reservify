@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import EmployeeDashboard from "./pages/employee-dashboard";
 import ClientDashboard from "./pages/Dashboard_cliente";
 import Restaurant from "./pages/Restaurant";
+import NotFound from "./pages/NotFound";
 
 import Datos_personales from "./pages/datos_personales";
 import Pasarela_pagos from "./pages/Pasarela_pagos";
@@ -23,6 +24,7 @@ function App() {
       <Route path="/Restaurant" element={<Restaurant />} />
       <Route path="/Datos_personales" element={<Datos_personales />} />
       <Route path="/Pasarela_pagos" element={<Pasarela_pagos />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
     // </ThemeProvider>
   );
