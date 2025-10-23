@@ -1,18 +1,23 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import CheckoutPage from "../components/checkout-page"
+import CheckoutPage from "../components/CheckoutPage"
+
+interface ReservationData {
+    id: string
+    restaurante: string
+    total: number
+    email: string
+}
 
 export default function Pasarela_pagos() {
-    const [reservationData, setReservationData] = useState(null)
+    const [reservationData, setReservationData] = useState<ReservationData | null>(null)
     const navigate = useNavigate()
 
     useEffect(() => {
-        // Obtener datos de la reserva desde sessionStorage
         const data = sessionStorage.getItem("pendingReservation")
         if (data) {
             setReservationData(JSON.parse(data))
         } else {
-            // Si no hay datos, redirigir al home
             navigate("/")
         }
     }, [navigate])

@@ -21,6 +21,7 @@ from routes.top import app as top_router
 from routes.searchBox import app as searchBox_router
 from routes.data_owner import router as data_owner_router
 from routes.enc_fac_reserva import router as enc_fac_reserva_router
+from routes.wompi import router as wompi_router
 
 
 
@@ -56,7 +57,7 @@ app.include_router(comentarios_router)
 app.include_router(cal_mensuales_router)
 app.include_router(data_owner_router, prefix="/data-owner")
 app.include_router(enc_fac_reserva_router)
-
+app.include_router(wompi_router)
 
 
 # Routers públicos (sin autenticación)

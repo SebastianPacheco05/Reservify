@@ -1,10 +1,10 @@
 {
   "info": {
-    "_postman_id": "reservify-api-collection",
-    "name": "Reservify API",
-    "description": "Colección completa de endpoints para el sistema Reservify",
+    "_postman_id": "reservify-api-completa-collection",
+    "name": "Reservify API Completa",
+    "description": "Colección completa y actualizada de endpoints para el sistema Reservify incluyendo pagos Wompi y webhooks",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "reservify"
+    "_exporter_id": "reservify-completa"
   },
   "item": [
     {
@@ -554,7 +554,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nit\": 123456789,\n  \"nit\": 123456789,\n  \"direccion\": \"Carrera 50 #30-20\",\n  \"nombre_restaurante\": \"El Sabor Colombiano Gourmet\",\n  \"descripcion_restaurante\": \"Restaurante de comida típica colombiana con toque gourmet\",\n  \"horario_apertura\": \"09:00:00\",\n  \"horario_cierre\": \"23:00:00\"\n}"
+              "raw": "{\n  \"nit\": 123456789,\n  \"direccion\": \"Carrera 50 #30-20\",\n  \"nombre_restaurante\": \"El Sabor Colombiano Gourmet\",\n  \"descripcion_restaurante\": \"Restaurante de comida típica colombiana con toque gourmet\",\n  \"horario_apertura\": \"09:00:00\",\n  \"horario_cierre\": \"23:00:00\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/restaurante/editarrestaurante",
@@ -2034,6 +2034,100 @@
               "host": ["{{base_url}}"],
               "path": ["data-owner", "987654321"]
             }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Pagos Wompi",
+      "item": [
+        {
+          "name": "Crear Pago",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount_in_cents\": 50000,\n  \"currency\": \"COP\",\n  \"reference\": \"reserva-123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/wompi/crear_pago/",
+              "host": ["{{base_url}}"],
+              "path": ["wompi", "crear_pago", ""]
+            },
+            "description": "Crea un enlace de pago usando la API de Wompi"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "Webhook Wompi",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event\": \"transaction.updated\",\n  \"data\": {\n    \"transaction\": {\n      \"id\": \"123456789\",\n      \"status\": \"APPROVED\",\n      \"reference\": \"reserva-123\",\n      \"amount_in_cents\": 50000\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook/wompi",
+              "host": ["{{base_url}}"],
+              "path": ["webhook", "wompi"]
+            },
+            "description": "Endpoint para recibir notificaciones de Wompi sobre el estado de las transacciones"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Facturas y Reservas",
+      "item": [
+        {
+          "name": "Registrar Factura y Reserva",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"p_nit\": 123456789,\n  \"p_nombre_restaurante\": \"El Sabor Colombiano\",\n  \"p_direccion\": \"Calle 123 #45-67\",\n  \"p_ciudad\": \"Bogotá\",\n  \"p_email_cliente\": \"cliente@ejemplo.com\",\n  \"p_id_mesa\": 1,\n  \"p_num_comensales\": 4,\n  \"p_horario\": \"19:00:00\",\n  \"p_fecha\": \"2025-10-25\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/facturas/reservar",
+              "host": ["{{base_url}}"],
+              "path": ["facturas", "reservar"]
+            },
+            "description": "Registra una factura y una reserva de manera conjunta"
           },
           "response": []
         }
