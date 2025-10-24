@@ -81,7 +81,7 @@ export default function Registrar() {
       nombre,
       apellido,
       nacionalidad,
-      id_rol: 32,
+      id_rol: 4,
     };
 
     try {
@@ -185,9 +185,8 @@ export default function Registrar() {
           {/* Registro */}
           <div className="flex justify-center items-center space-x-4 h-full grid-cols-2">
             <Card
-              className={`${
-                showCard ? "block" : "hidden"
-              } shadow-xl w-[23rem] border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-300`}
+              className={`${showCard ? "block" : "hidden"
+                } shadow-xl w-[23rem] border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-300`}
             >
               <CardHeader className="space-y-0.5 pb-3">
                 <CardTitle className="text-xl text-center text-gray-900 dark:text-white transition-colors duration-300">
@@ -356,9 +355,8 @@ export default function Registrar() {
           {/* Datos personales */}
           <div className="justify-center items-center h-full">
             <Card
-              className={`${
-                showCard ? "hidden" : "block"
-              } shadow-xl w-full border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-300`}
+              className={`${showCard ? "hidden" : "block"
+                } shadow-xl w-full border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-300`}
             >
               <CardHeader
                 className="space-y-1 pb-6 cursor-pointer"
@@ -581,7 +579,7 @@ export default function Registrar() {
                         </div>
                       ) : (
                         <div className="flex items-center space-x-2">
-                         <span>Registrate</span>
+                          <span>Registrate</span>
                           <ArrowRight className="w-4 h-4" />
                         </div>
                       )}

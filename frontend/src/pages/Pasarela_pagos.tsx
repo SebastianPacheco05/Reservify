@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom"
 import CheckoutPage from "../components/CheckoutPage"
 
 interface ReservationData {
-    id: string
-    restaurante: string
-    total: number
-    email: string
+    id_encab_fact: number
+    restaurant: any
+    mesa: any
+    guests: number
+    fecha: string
+    horario: string
 }
 
 export default function Pasarela_pagos() {

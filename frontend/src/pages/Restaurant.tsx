@@ -137,7 +137,7 @@ export default function RestaurantPage() {
       }
 
       const reservaData = await reservaResponse.json();
-      
+
       // Guardar datos para la pasarela de pagos
       const paymentData = {
         id_encab_fact: reservaData.id_encab_fact,
@@ -149,11 +149,11 @@ export default function RestaurantPage() {
       };
 
       sessionStorage.setItem("pendingReservation", JSON.stringify(paymentData));
-      
+
       // Redirigir a la pasarela de pagos
       window.location.href = "/Pasarela_pagos";
       setIsModalOpen(false);
-      
+
     } catch (error) {
       console.error("Error al procesar la reserva:", error);
       toast({

@@ -309,3 +309,20 @@ class FacturaReservaSchema(BaseModel):
     p_fecha: str
 
 
+class PaymentMethod(BaseModel):
+    type: str
+    token: Optional[str] = None
+    installments: Optional[int] = None
+    payment_description: Optional[str] = None
+    # Campos para tokenización en el backend
+    card_number: Optional[str] = None
+    cvc: Optional[str] = None
+    exp_month: Optional[str] = None
+    exp_year: Optional[str] = None
+    card_holder: Optional[str] = None
+
+class PagoRequest(BaseModel):
+    monto: float
+    referencia: str
+    correo_cliente: str
+    payment_method: PaymentMethod
