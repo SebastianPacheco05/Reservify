@@ -114,6 +114,16 @@ export default function Home() {
     }
   };
 
+  const handleLogout = () => {
+    // Eliminar token del localStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("token_type");
+    // Actualizar estado
+    setIsLoggedIn(false);
+    // Recargar la página para actualizar el estado en toda la aplicación
+    window.location.href = "/";
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
       <Header
@@ -122,6 +132,7 @@ export default function Home() {
         isLoggedIn={isLoggedIn}
         isDarkMode={isDarkMode}
         toggleDarkMode={toggleDarkMode}
+        onLogout={handleLogout}
       />
 
       <HeroSection

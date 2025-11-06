@@ -138,17 +138,34 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                 return
             }
 
-            // Verificar estado del pago
-            if (result.data?.status === "APPROVED") {
+            // Verificar si la reserva fue confirmada en el backend (prioridad máxima)
+            if (result.reserva_confirmada === true) {
+                alert("¡Pago exitoso! Tu reserva ha sido confirmada")
+                sessionStorage.removeItem("pendingReservation")
+                window.location.href = "/"
+                return
+            }
+
+            // Verificar estado del pago si la reserva no fue confirmada
+            const httpStatus = result.http_status_code
+            const tieneData = result.data && result.data !== null
+            const dataStatus = result.data?.status
+
+            // Si el HTTP status es 200 o 201 y hay data, consideramos el pago exitoso
+            if ((httpStatus === 200 || httpStatus === 201) && tieneData) {
+                alert("¡Pago exitoso! Tu reserva ha sido confirmada")
+                sessionStorage.removeItem("pendingReservation")
+                window.location.href = "/"
+            } else if (dataStatus === "APPROVED") {
                 alert("¡Pago aprobado! Tu reserva ha sido confirmada")
                 sessionStorage.removeItem("pendingReservation")
                 window.location.href = "/"
-            } else if (result.data?.status === "DECLINED") {
+            } else if (dataStatus === "DECLINED") {
                 alert("El pago fue rechazado. Por favor intenta con otra tarjeta")
-            } else if (result.data?.status === "ERROR") {
+            } else if (dataStatus === "ERROR") {
                 alert("Error al procesar el pago. Por favor intenta de nuevo")
             } else {
-                alert("Pago procesado. Estado: " + (result.data?.status || "PENDIENTE"))
+                alert("Pago procesado. Estado: " + (dataStatus || "PENDIENTE"))
             }
         } catch (err) {
             console.error(err)

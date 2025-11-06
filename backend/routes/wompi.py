@@ -1,8 +1,11 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, Depends
 import os
+import re
+import traceback
 from dotenv import load_dotenv
-from funciones.wompi.wompi_service import crear_transaccion, tokenizar_tarjeta
+from sqlalchemy.orm import Session
+from config import get_db
+from funciones.wompi.wompi_service import crear_transaccion, tokenizar_tarjeta, confirmar_reserva_por_pago
 from models import PagoRequest
 
 load_dotenv()
@@ -11,6 +14,15 @@ router = APIRouter(
     prefix="/wompi",
     tags=["Wompi"]
 )
+
+def extraer_id_encab_fact(referencia: str) -> int:
+    """
+    Extrae el id_encab_fact de la referencia (formato: RES-{id_encab_fact})
+    """
+    match = re.search(r'RES-(\d+)', referencia)
+    if match:
+        return int(match.group(1))
+    raise ValueError(f"Formato de referencia inválido: {referencia}")
 
 @router.get("/public-key")
 async def obtener_clave_publica():
@@ -23,7 +35,7 @@ async def obtener_clave_publica():
     return {"public_key": public_key}
 
 @router.post("/crear_pago")
-async def crear_pago(data: PagoRequest):
+async def crear_pago(data: PagoRequest, db: Session = Depends(get_db)):
     try:
         print("Request recibido Wompi:", data.dict())  # Depuración
         
@@ -65,9 +77,37 @@ async def crear_pago(data: PagoRequest):
             correo_cliente=data.correo_cliente,
             metodo_pago=pm_dict
         )
+        
+        # Confirmar la reserva automáticamente siempre que el endpoint responda exitosamente
+        # Independientemente de la respuesta de Wompi, si llegamos aquí, el pago fue procesado
+        print("✅ Pago enviado a Wompi, confirmando reserva automáticamente...")
+        try:
+            # Extraer el id_encab_fact de la referencia (formato: RES-{id_encab_fact})
+            id_encab_fact = extraer_id_encab_fact(data.referencia)
+            print(f"ID Encabezado Factura extraído: {id_encab_fact}")
+            
+            # Confirmar la reserva en la base de datos automáticamente
+            reserva_confirmada = confirmar_reserva_por_pago(db, id_encab_fact)
+            if reserva_confirmada:
+                print("✅ Reserva confirmada exitosamente en la base de datos")
+                # Agregar flag a la respuesta para indicar que la reserva fue confirmada
+                respuesta["reserva_confirmada"] = True
+            else:
+                print("⚠️ No se encontró una reserva pendiente para confirmar")
+                respuesta["reserva_confirmada"] = False
+        except ValueError as e:
+            print(f"⚠️ Error al extraer id_encab_fact: {str(e)}")
+            respuesta["reserva_confirmada"] = False
+        except Exception as e:
+            print(f"⚠️ Error al confirmar reserva: {str(e)}")
+            print(f"Tipo de error: {type(e).__name__}")
+            print(f"Traceback: {traceback.format_exc()}")
+            respuesta["reserva_confirmada"] = False
+            # No lanzamos excepción para no afectar la respuesta del pago
+        
         return respuesta
     except HTTPException:
         raise
     except Exception as e:
         print(f"Error en crear_pago: {str(e)}")
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e

@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 import requests
+from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 load_dotenv()
 
@@ -72,6 +74,8 @@ def crear_transaccion(
 
     try:
         data = response.json()
+        # Agregar el status code HTTP a la respuesta para facilitar la verificación
+        data["http_status_code"] = response.status_code
         # Si es asincrónico (ej. BANCOLOMBIA_TRANSFER), devolver async_payment_url
         if "data" in data and "payment_method" in data["data"]:
             pm = data["data"]["payment_method"]
@@ -82,5 +86,33 @@ def crear_transaccion(
         return {
             "status": "error",
             "mensaje": response.text,
-            "code": response.status_code
+            "http_status_code": response.status_code
         }
+
+
+def confirmar_reserva_por_pago(db: Session, id_encab_fact: int) -> bool:
+    """
+    Ejecuta la función SQL confirmar_reserva_por_pago para actualizar el estado
+    de la reserva de 'pendiente' a 'confirmada' cuando el pago ha sido aprobado.
+    
+    Parámetros:
+        db: Sesión de base de datos
+        id_encab_fact: ID del encabezado de factura asociado a la reserva
+    
+    Retorna:
+        True si la reserva fue actualizada correctamente
+        False si no se encontró una reserva pendiente con ese id_encab_fact
+    """
+    try:
+        print(f"Ejecutando función SQL confirmar_reserva_por_pago con id_encab_fact: {id_encab_fact}")
+        query = text("SELECT confirmar_reserva_por_pago(:id_encab_fact)")
+        result = db.execute(query, {"id_encab_fact": id_encab_fact})
+        db.commit()
+        reserva_confirmada = result.scalar()
+        print(f"Resultado de confirmar_reserva_por_pago: {reserva_confirmada}")
+        return reserva_confirmada
+    except Exception as e:
+        db.rollback()
+        print(f"Error al ejecutar confirmar_reserva_por_pago: {str(e)}")
+        print(f"Tipo de error: {type(e).__name__}")
+        raise

@@ -1,7 +1,5 @@
-import type React from "react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { X, MenuIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -11,6 +9,7 @@ interface HeaderProps {
   isLoggedIn: boolean;
   isDarkMode: boolean;
   toggleDarkMode: () => void;
+  onLogout: () => void;
 }
 
 export default function Header({
@@ -19,6 +18,7 @@ export default function Header({
   isLoggedIn,
   isDarkMode,
   toggleDarkMode,
+  onLogout,
 }: HeaderProps) {
   return (
     <header className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md fixed top-0 w-full z-50 shadow-lg border-b border-blue-100 dark:border-gray-700 transition-colors duration-300">
@@ -43,7 +43,15 @@ export default function Header({
           {/* Botón de cambio de tema */}
           <ThemeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
 
-          {!isLoggedIn && (
+          {isLoggedIn ? (
+            <Button
+              onClick={onLogout}
+              className="text-white bg-red-600 hover:bg-red-700 transition-all duration-300 hover:scale-105 transform"
+              size="sm"
+            >
+              Cerrar Sesión
+            </Button>
+          ) : (
             <>
               <Link to="/Login">
                 <Button
@@ -75,7 +83,7 @@ export default function Header({
           {isMenuOpen ? (
             <X className="w-5 h-5 text-black dark:text-white" />
           ) : (
-            <Menu className="w-5 h-5 text-black dark:text-white" />
+            <MenuIcon className="w-5 h-5 text-black dark:text-white" />
           )}
         </Button>
       </div>
@@ -102,7 +110,17 @@ export default function Header({
             <ThemeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
           </div>
 
-          {!isLoggedIn && (
+          {isLoggedIn ? (
+            <div className="pt-2">
+              <Button
+                onClick={onLogout}
+                size="sm"
+                className="w-full bg-red-600 hover:bg-red-700 transition-all duration-300"
+              >
+                Cerrar Sesión
+              </Button>
+            </div>
+          ) : (
             <div className="flex space-x-2 pt-2">
               <Link to="/Login">
                 <Button
