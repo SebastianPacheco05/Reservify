@@ -154,7 +154,7 @@ npm install
 Crear archivo `.env` en la carpeta `frontend`:
 
 ```env
-VITE_API_URL=http://localhost:8000
+VITE_API_URL=http://10.5.213.111:8001
 ```
 
 ### 4. Configuración de la Base de Datos
@@ -176,7 +176,7 @@ cd backend
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-**Servidor disponible en:** `http://localhost:8000`
+**Servidor disponible en:** `http://10.5.213.111:8001`
 
 ### Frontend
 ```bash
@@ -188,9 +188,9 @@ npm run dev
 
 ## 📚 Documentación de la API
 
-- **Swagger UI:** `http://localhost:8000/docs`
-- **ReDoc:** `http://localhost:8000/redoc`
-- **OpenAPI JSON:** `http://localhost:8000/openapi.json`
+- **Swagger UI:** `http://10.5.213.111:8001/docs`
+- **ReDoc:** `http://10.5.213.111:8001/redoc`
+- **OpenAPI JSON:** `http://10.5.213.111:8001/openapi.json`
 
 ## 🏗️ Estructura del Proyecto
 

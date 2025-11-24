@@ -85,7 +85,7 @@ export default function Registrar() {
     };
 
     try {
-      const res = await fetch("http://localhost:8000/register/register", {
+      const res = await fetch("http://10.5.213.111:8001/register/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data2send),

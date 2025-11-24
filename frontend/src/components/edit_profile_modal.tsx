@@ -79,7 +79,7 @@ export function EditProfileModal({
       setTelefono(cliente.telefono);
 
       // Cargar datos adicionales del cliente
-      fetch("http://localhost:8000/listar_cliente", {
+      fetch("http://10.5.213.111:8001/listar_cliente", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id_cliente: cliente.id_cliente }),
@@ -104,7 +104,7 @@ export function EditProfileModal({
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/editarcliente", {
+      const response = await fetch("http://10.5.213.111:8001/editarcliente", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

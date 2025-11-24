@@ -32,7 +32,7 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/credenciales/login", {
+      const res = await fetch("http://10.5.213.111:8001/credenciales/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

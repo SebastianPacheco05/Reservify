@@ -112,7 +112,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                 payment_method: paymentMethod
             })
 
-            const response = await fetch("http://localhost:8000/wompi/crear_pago", {
+            const response = await fetch("http://10.5.213.111:8001/wompi/crear_pago", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

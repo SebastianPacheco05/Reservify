@@ -112,7 +112,7 @@ export default function RestaurantPage() {
       }
 
       // Usar la nueva función de reserva que crea factura y reserva en una sola operación
-      const reservaResponse = await fetch("http://localhost:8000/facturas/reservar", {
+      const reservaResponse = await fetch("http://10.5.213.111:8001/facturas/reservar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

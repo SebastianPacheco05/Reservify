@@ -81,13 +81,13 @@ python -m uvicorn main:app --reload
 
 ### 2. Verificar que el Backend esté Corriendo
 
-Abre tu navegador en: http://localhost:8000/docs
+Abre tu navegador en: http://10.5.213.111:8001/docs
 
 Deberías ver la documentación de la API (Swagger UI)
 
 ### 3. Probar el Endpoint de Clave Pública
 
-En tu navegador, ve a: http://localhost:8000/wompi/public-key
+En tu navegador, ve a: http://10.5.213.111:8001/wompi/public-key
 
 Deberías ver algo como:
 
@@ -132,7 +132,7 @@ npm run dev
 1. Verifica que el archivo `.env` existe en `backend/`
 2. Verifica que tiene `WOMPI_PUBLIC_KEY=pub_test_...`
 3. Reinicia el backend
-4. Verifica en http://localhost:8000/wompi/public-key
+4. Verifica en http://10.5.213.111:8001/wompi/public-key
 
 ### Problema: "Clave pública de Wompi no configurada"
 
@@ -200,11 +200,11 @@ Antes de reportar un problema, verifica:
 - [ ] `WOMPI_PUBLIC_KEY` está configurado en `.env`
 - [ ] `WOMPI_PRIVATE_KEY` está configurado en `.env`
 - [ ] `WOMPI_API_URL` está configurado en `.env`
-- [ ] Backend está corriendo (http://localhost:8000/docs funciona)
+- [ ] Backend está corriendo (http://10.5.213.111:8001/docs funciona)
 - [ ] Frontend está corriendo (http://localhost:5173 funciona)
 - [ ] Has iniciado sesión en la aplicación
 - [ ] La consola del navegador muestra los logs de Wompi
-- [ ] http://localhost:8000/wompi/public-key devuelve la clave
+- [ ] http://10.5.213.111:8001/wompi/public-key devuelve la clave
 
 ## 🎉 ¡Todo Funciona!
 
