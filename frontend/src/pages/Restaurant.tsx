@@ -77,7 +77,7 @@ export default function RestaurantPage() {
         return;
       }
 
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("access_token");
       if (!token) {
         toast({
           title: "Sesión requerida",
@@ -112,7 +112,7 @@ export default function RestaurantPage() {
       }
 
       // Usar la nueva función de reserva que crea factura y reserva en una sola operación
-      const reservaResponse = await fetch("http://10.5.213.111:8001/facturas/reservar", {
+      const reservaResponse = await fetch("http://10.5.213.111:1106/facturas/reservar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

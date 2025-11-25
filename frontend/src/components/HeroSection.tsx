@@ -88,7 +88,7 @@ export default function HeroSection({
           setSearchQuery={setSearchQuery}
           showSuggestions={showSuggestions}
           setShowSuggestions={setShowSuggestions}
-          filteredCuisines={filteredCuisines}
+          // filteredCuisines={filteredCuisines}
           onSearch={onSearch}
           onSearchSubmit={onSearchSubmit}
         />

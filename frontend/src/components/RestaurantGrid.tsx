@@ -11,7 +11,7 @@ export default function RestaurantGrid() {
   const [restaurantes, setRestaurantes] = useState<Restaurante[]>([]);
 
   useEffect(() => {
-    fetch("http://10.5.213.111:8001/top")
+    fetch("http://10.5.213.111:1106/top")
       .then((res) => res.json())
       .then((data: Restaurante[]) => setRestaurantes(data))
       .catch((err) => console.error(err));

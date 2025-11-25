@@ -76,22 +76,43 @@ def login_usuario(db: Session, email: str, password: str, request: Request):
             },
         )
 
-        # Obtener la ruta del dashboard según el rol/usuario
-        dashboard_route = db.execute(
-            text("SELECT get_dashboard_route(:id_credencial)"),
+        # Verificar en qué tabla está el usuario (Dueno, Empleado o Cliente)
+        es_dueno = db.execute(
+            text('SELECT 1 FROM "Dueno" WHERE id_credencial = :id_credencial'),
             {"id_credencial": id_credencial},
-        ).scalar()
+        ).fetchone()
+
+        es_empleado = db.execute(
+            text('SELECT 1 FROM "Empleado" WHERE id_credencial = :id_credencial'),
+            {"id_credencial": id_credencial},
+        ).fetchone()
+
+        es_cliente = db.execute(
+            text('SELECT 1 FROM "Cliente" WHERE id_credencial = :id_credencial'),
+            {"id_credencial": id_credencial},
+        ).fetchone()
 
         db.commit()
 
-        if not dashboard_route:
-            raise HTTPException(status_code=404, detail="No se encontró ruta para este usuario")
+        # Determinar el tipo de usuario y la ruta de redirección
+        if es_dueno:
+            tipo_usuario = "dueno"
+            redirect_to = "/DuenoDashboard"
+        elif es_empleado:
+            tipo_usuario = "empleado"
+            redirect_to = "/EmpleadoDashboard"
+        elif es_cliente:
+            tipo_usuario = "cliente"
+            redirect_to = "/"
+        else:
+            raise HTTPException(status_code=404, detail="No se encontró el usuario en ninguna tabla")
 
-        # 🔑 Devolver token + ruta a donde redirigir
+        # 🔑 Devolver token + tipo de usuario y ruta de redirección
         return {
             "access_token": token,
             "token_type": "bearer",
-            "redirect_to": dashboard_route
+            "tipo_usuario": tipo_usuario,
+            "redirect_to": redirect_to
         }
 
     except Exception as e:

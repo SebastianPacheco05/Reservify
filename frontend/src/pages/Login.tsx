@@ -32,7 +32,7 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await fetch("http://10.5.213.111:8001/credenciales/login", {
+      const res = await fetch("http://10.5.213.111:1106/credenciales/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -40,17 +40,23 @@ export default function Login() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail ?? "Error en el login");
 
-      // Guardar token
-      localStorage.setItem("token", data.access_token);
+      // Guardar token y tipo de usuario
+      localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("token_type", data.token_type ?? "bearer");
+      localStorage.setItem("tipo_usuario", data.tipo_usuario);
 
-      // 🔑 Redirigir a la ruta que mande el backend
+      // 🔑 Redirigir a la ruta que devuelve el backend
       if (data.redirect_to) {
         navigate(data.redirect_to);
-        return console.log(data.redirect_to)
       } else {
-        navigate("/"); // fallback por si no devuelve nada
+        navigate("/"); // fallback por si no hay ruta
       }
+
+      toast({
+        title: "Inicio de sesión exitoso",
+        description: "Bienvenido a Reservify",
+        variant: "default"
+      });
     } catch (err: any) {
       toast({
         title: "Error de inicio de sesión",

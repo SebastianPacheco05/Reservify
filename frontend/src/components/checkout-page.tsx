@@ -36,7 +36,7 @@ export default function CheckoutPage({ reservationData: propReservationData }: C
 
     const handlePaymentSuccess = async () => {
         try {
-            const token = localStorage.getItem("token")
+            const token = localStorage.getItem("access_token")
             if (!token) {
                 toast({
                     title: "Sesión expirada",
@@ -55,7 +55,7 @@ export default function CheckoutPage({ reservationData: propReservationData }: C
             }
 
             // Actualizar estado de reserva a "confirmada"
-            const response = await fetch(`http://10.5.213.111:8001/reserva/confirmar/${idReserva}`, {
+            const response = await fetch(`http://10.5.213.111:1106/reserva/confirmar/${idReserva}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

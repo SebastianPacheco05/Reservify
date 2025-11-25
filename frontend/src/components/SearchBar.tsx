@@ -49,7 +49,7 @@ export default function SearchBar({
 
     const controller = new AbortController();
     const timer = setTimeout(() => {
-      fetch("http://10.5.213.111:8001/buscar_restaurante", {
+      fetch("http://10.5.213.111:1106/buscar_restaurante", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombre_restaurante: searchQuery }),

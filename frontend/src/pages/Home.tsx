@@ -22,7 +22,7 @@ export default function Home() {
 
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("access_token");
     setIsLoggedIn(!!token);
 
     // Verificar si hay un tema guardado en localStorage
@@ -116,8 +116,9 @@ export default function Home() {
 
   const handleLogout = () => {
     // Eliminar token del localStorage
-    localStorage.removeItem("token");
+    localStorage.removeItem("access_token");
     localStorage.removeItem("token_type");
+    localStorage.removeItem("tipo_usuario");
     // Actualizar estado
     setIsLoggedIn(false);
     // Recargar la página para actualizar el estado en toda la aplicación

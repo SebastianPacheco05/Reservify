@@ -36,7 +36,7 @@ export default function ClientDashboard() {
     // Aquí normalmente obtendrías el ID del usuario actual desde el contexto de autenticación
     const currentUserId = 1; // Ejemplo
 
-    fetch("http://10.5.213.111:8001/listar_cliente", {
+    fetch("http://10.5.213.111:1106/listar_cliente", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id_cliente: currentUserId }),

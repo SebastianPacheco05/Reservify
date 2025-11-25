@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Sidebar } from "../components/ui/sidebar"
 import { MetricCards } from "../components/ui/metric-cards"
 import { RestaurantsGrid } from "../components/ui/restaurants-grid"
@@ -9,21 +9,50 @@ import { MonthlyChart } from "../components/ui/monthly-chart"
 import { InvoicesTable } from "../components/ui/invoices-table"
 import { restaurants, reservations, monthlyFlow, invoices } from "../data/mockData"
 import { Button } from "../components/ui/button"
+import { OwnerMetricsService, type OwnerMetrics } from "../services/OwnerMetricsService"
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview")
+  const [metrics, setMetrics] = useState<OwnerMetrics>({
+    total_restaurantes: 0,
+    reservas_activas: 0,
+    revenue_mes: 0,
+  })
+  const [isLoadingMetrics, setIsLoadingMetrics] = useState(true)
+
+  // Cargar métricas al montar el componente
+  useEffect(() => {
+    const loadMetrics = async () => {
+      setIsLoadingMetrics(true)
+      try {
+        const data = await OwnerMetricsService.getMetrics()
+        setMetrics(data)
+      } catch (error) {
+        console.error("Error al cargar métricas:", error)
+      } finally {
+        setIsLoadingMetrics(false)
+      }
+    }
+
+    loadMetrics()
+  }, [])
 
   const renderContent = () => {
     switch (activeTab) {
       case "overview":
         return (
           <div className="space-y-6">
-            <MetricCards
-              totalRestaurants={restaurants.length}
-              totalReservations={reservations.filter((r) => r.status === "confirmed").length}
-              monthlyVisitors={monthlyFlow[monthlyFlow.length - 1]?.visitors || 0}
-              monthlyRevenue={monthlyFlow[monthlyFlow.length - 1]?.revenue || 0}
-            />
+            {isLoadingMetrics ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Cargando métricas...</p>
+              </div>
+            ) : (
+              <MetricCards
+                totalRestaurants={metrics.total_restaurantes}
+                totalReservations={metrics.reservas_activas}
+                monthlyRevenue={metrics.revenue_mes}
+              />
+            )}
             <div className="grid gap-6 lg:grid-cols-2">
               <ReservationsTable reservations={reservations.slice(0, 5)} />
               <MonthlyChart data={monthlyFlow.slice(-6)} />
@@ -59,12 +88,17 @@ export default function Dashboard() {
         return (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold">Análisis y Métricas</h2>
-            <MetricCards
-              totalRestaurants={restaurants.length}
-              totalReservations={reservations.filter((r) => r.status === "confirmed").length}
-              monthlyVisitors={monthlyFlow[monthlyFlow.length - 1]?.visitors || 0}
-              monthlyRevenue={monthlyFlow[monthlyFlow.length - 1]?.revenue || 0}
-            />
+            {isLoadingMetrics ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Cargando métricas...</p>
+              </div>
+            ) : (
+              <MetricCards
+                totalRestaurants={metrics.total_restaurantes}
+                totalReservations={metrics.reservas_activas}
+                monthlyRevenue={metrics.revenue_mes}
+              />
+            )}
             <MonthlyChart data={monthlyFlow} />
           </div>
         )

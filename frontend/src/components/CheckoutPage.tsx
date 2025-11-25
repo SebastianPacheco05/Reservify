@@ -46,7 +46,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
     // Extraer email del token JWT
     useEffect(() => {
         console.log("Extrayendo email del token...")
-        const token = localStorage.getItem("token")
+        const token = localStorage.getItem("access_token")
         console.log("Token encontrado:", !!token)
 
         if (token) {
@@ -112,7 +112,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                 payment_method: paymentMethod
             })
 
-            const response = await fetch("http://10.5.213.111:8001/wompi/crear_pago", {
+            const response = await fetch("http://10.5.213.111:1106/wompi/crear_pago", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

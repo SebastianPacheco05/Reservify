@@ -4,7 +4,7 @@ import type {
   ComentarioFromDB,
 } from "../types/restaurant.types";
 
-const API_BASE_URL = "http://10.5.213.111:8001"; // Ajusta según tu backend
+const API_BASE_URL = "http://10.5.213.111:1106"; // Ajusta según tu backend
 
 export class RestaurantDataService {
   private static instance: RestaurantDataService;
