@@ -81,7 +81,7 @@ export default function Registrar() {
       nombre,
       apellido,
       nacionalidad,
-      id_rol: 4,
+      id_rol: 2,
     };
 
     try {
@@ -547,17 +547,46 @@ export default function Registrar() {
                         Nacionalidad
                       </Label>
                       <div className="relative">
-                        <Flag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
-                        <Input
-                          id="nacionalidad"
-                          type="text"
-                          placeholder="tu nacionalidad"
-                          value={nacionalidad}
-                          onChange={(e) => setNacionalidad(e.target.value)}
-                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
-                          required
-                        />
-                      </div>
+  <Flag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+  <select
+    id="nacionalidad"
+    value={nacionalidad}
+    onChange={(e) => setNacionalidad(e.target.value)}
+    className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 w-full rounded-md"
+    required
+  >
+    <option value="">Selecciona tu nacionalidad</option>
+    <option value="Argentina">Argentina</option>
+    <option value="Belice">Belice</option>
+    <option value="Bolivia">Bolivia</option>
+    <option value="Brasil">Brasil</option>
+    <option value="Canadá">Canadá</option>
+    <option value="Chile">Chile</option>
+    <option value="Colombia">Colombia</option>
+    <option value="Costa Rica">Costa Rica</option>
+    <option value="Cuba">Cuba</option>
+    <option value="Dominica">Dominica</option>
+    <option value="Ecuador">Ecuador</option>
+    <option value="El Salvador">El Salvador</option>
+    <option value="Estados Unidos">Estados Unidos</option>
+    <option value="Guatemala">Guatemala</option>
+    <option value="Guyana">Guyana</option>
+    <option value="Haití">Haití</option>
+    <option value="Honduras">Honduras</option>
+    <option value="Jamaica">Jamaica</option>
+    <option value="México">México</option>
+    <option value="Nicaragua">Nicaragua</option>
+    <option value="Panamá">Panamá</option>
+    <option value="Paraguay">Paraguay</option>
+    <option value="Perú">Perú</option>
+    <option value="República Dominicana">República Dominicana</option>
+    <option value="Surinam">Surinam</option>
+    <option value="Trinidad y Tobago">Trinidad y Tobago</option>
+    <option value="Uruguay">Uruguay</option>
+    <option value="Venezuela">Venezuela</option>
+  </select>
+</div>
+
                     </div>
                   </div>
 

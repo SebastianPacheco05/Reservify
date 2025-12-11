@@ -31,14 +31,30 @@ def tokenizar_tarjeta(numero: str, cvc: str, exp_month: str, exp_year: str, card
         "card_holder": card_holder
     }
     
-    print("Tokenizando tarjeta...")  # Depuración
+    print("=" * 80)
+    print("🔐 TOKENIZANDO TARJETA:")
+    print(f"  URL: {url}")
+    print(f"  Tarjeta: ****{numero[-4:] if len(numero) >= 4 else '****'}")
+    print(f"  CVC: ***")
+    print(f"  Exp: {exp_month}/{exp_year}")
+    print(f"  Titular: {card_holder}")
+    print("=" * 80)
+    
     response = requests.post(url, json=payload, headers=headers)
+    
+    print(f"📥 RESPUESTA TOKENIZACIÓN:")
+    print(f"  Status Code: {response.status_code}")
     
     if response.status_code == 201:
         data = response.json()
-        return {"success": True, "token": data["data"]["id"]}
+        token = data["data"]["id"]
+        print(f"  ✅ Token generado: {token[:20]}...")
+        print("=" * 80)
+        return {"success": True, "token": token}
     else:
-        print(f"Error al tokenizar: {response.status_code} - {response.text}")
+        print(f"  ❌ Error al tokenizar")
+        print(f"  Respuesta: {response.text}")
+        print("=" * 80)
         return {"success": False, "error": response.text}
 
 def crear_transaccion(
@@ -68,21 +84,43 @@ def crear_transaccion(
         "redirect_url": "https://tuweb.com/pago_exitoso"
     }
 
-    print("Payload Wompi:", payload)  # Depuración
+    print("=" * 80)
+    print("📤 ENVIANDO TRANSACCIÓN A WOMPI:")
+    print(f"  URL: {url}")
+    print(f"  Monto: ${monto:,.0f} COP ({int(monto * 100)} centavos)")
+    print(f"  Email: {correo_cliente}")
+    print(f"  Referencia: {referencia}")
+    print(f"  Método de pago: {metodo_pago.get('type')}")
+    print(f"  Payload completo: {payload}")
+    print("=" * 80)
 
     response = requests.post(url, json=payload, headers=headers)
+
+    print(f"📥 RESPUESTA DE WOMPI:")
+    print(f"  Status Code: {response.status_code}")
+    print(f"  Respuesta completa: {response.text}")
+    print("=" * 80)
 
     try:
         data = response.json()
         # Agregar el status code HTTP a la respuesta para facilitar la verificación
         data["http_status_code"] = response.status_code
+        
+        # Verificar si hay error en la respuesta
+        if "error" in data:
+            print(f"❌ ERROR EN WOMPI: {data['error']}")
+            if "messages" in data["error"]:
+                print(f"   Mensajes: {data['error']['messages']}")
+        
         # Si es asincrónico (ej. BANCOLOMBIA_TRANSFER), devolver async_payment_url
         if "data" in data and "payment_method" in data["data"]:
             pm = data["data"]["payment_method"]
             if pm.get("extra") and pm["extra"].get("async_payment_url"):
                 data["redirect_to"] = pm["extra"]["async_payment_url"]
+        
         return data
-    except Exception:
+    except Exception as e:
+        print(f"❌ ERROR AL PARSEAR RESPUESTA: {str(e)}")
         return {
             "status": "error",
             "mensaje": response.text,

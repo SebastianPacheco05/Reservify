@@ -40,8 +40,9 @@ export default function Login() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail ?? "Error en el login");
 
-      // Guardar token y tipo de usuario
+      // Guardar access token, refresh token y tipo de usuario
       localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("refresh_token", data.refresh_token);
       localStorage.setItem("token_type", data.token_type ?? "bearer");
       localStorage.setItem("tipo_usuario", data.tipo_usuario);
 

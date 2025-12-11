@@ -12,7 +12,9 @@ def registrar_factura_y_reserva(
     p_id_mesa: int,
     p_num_comensales: int,
     p_horario: str,
-    p_fecha: str
+    p_fecha: str,
+    p_forma_pago: str,
+    p_precio_total: float
 ):
     # Obtener el documento del cliente usando su email
     p_documento_cliente = obtener_documento_por_email(db, p_email_cliente)
@@ -27,7 +29,9 @@ def registrar_factura_y_reserva(
             :p_id_mesa,
             :p_num_comensales,
             :p_horario,
-            :p_fecha
+            :p_fecha,
+            :p_forma_pago,
+            :p_precio_total
         ) AS id_encab_fact;
     """)
 
@@ -40,7 +44,9 @@ def registrar_factura_y_reserva(
         "p_id_mesa": p_id_mesa,
         "p_num_comensales": p_num_comensales,
         "p_horario": p_horario,
-        "p_fecha": p_fecha
+        "p_fecha": p_fecha,
+        "p_forma_pago": p_forma_pago,
+        "p_precio_total": p_precio_total
     })
 
     db.commit()

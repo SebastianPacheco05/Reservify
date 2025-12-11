@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Sidebar } from "../components/ui/sidebar"
 import { MetricCards } from "../components/ui/metric-cards"
 import { RestaurantsGrid } from "../components/ui/restaurants-grid"
-import { ReservationsTable } from "../components/ui/reservations-table"
+// import { ReservationsTable } from "../components/ui/reservations-table"
 import { MonthlyChart } from "../components/ui/monthly-chart"
 import { InvoicesTable } from "../components/ui/invoices-table"
 import { restaurants, reservations, monthlyFlow, invoices } from "../data/mockData"
@@ -54,7 +54,7 @@ export default function Dashboard() {
               />
             )}
             <div className="grid gap-6 lg:grid-cols-2">
-              <ReservationsTable reservations={reservations.slice(0, 5)} />
+              {/* <ReservationsTable reservations={reservations.slice(0, 5)} /> */}
               <MonthlyChart data={monthlyFlow.slice(-6)} />
             </div>
           </div>
@@ -80,7 +80,7 @@ export default function Dashboard() {
               <h2 className="text-2xl font-bold">Reservas</h2>
               <span className="text-muted-foreground">{reservations.length} reservas totales</span>
             </div>
-            <ReservationsTable reservations={reservations} />
+            {/* <ReservationsTable reservations={reservations} /> */}
           </div>
         )
 

@@ -17,7 +17,6 @@ export default function HeroSection({
   setSearchQuery,
   showSuggestions,
   setShowSuggestions,
-  filteredCuisines,
   onSearch,
   onSearchSubmit,
 }: HeroSectionProps) {

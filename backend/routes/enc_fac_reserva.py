@@ -24,6 +24,8 @@ def registrar_factura_y_reserva_endpoint(
             data.p_num_comensales,
             data.p_horario,
             data.p_fecha,
+            data.p_forma_pago,
+            data.p_precio_total,
         )
         return {"id_encab_fact": id_encab_fact}
     except Exception as e:

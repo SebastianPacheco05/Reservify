@@ -28,6 +28,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../components/ui/dialog";
+import { authFetch, isAuthenticated } from "../services/authService";
 import { Skeleton } from "../components/ui/skeleton";
 import {
   MapPin,
@@ -77,8 +78,8 @@ export default function RestaurantPage() {
         return;
       }
 
-      const token = localStorage.getItem("access_token");
-      if (!token) {
+      // Verificar autenticación usando el nuevo servicio
+      if (!isAuthenticated()) {
         toast({
           title: "Sesión requerida",
           description: "Debes iniciar sesión para hacer una reserva",
@@ -99,6 +100,9 @@ export default function RestaurantPage() {
       }
 
       // Obtener el email del cliente desde el token JWT
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+      
       const tokenPayload = JSON.parse(atob(token.split('.')[1]));
       const emailCliente = tokenPayload.sub;
 
@@ -111,12 +115,12 @@ export default function RestaurantPage() {
         return;
       }
 
-      // Usar la nueva función de reserva que crea factura y reserva en una sola operación
-      const reservaResponse = await fetch("http://10.5.213.111:1106/facturas/reservar", {
+      // Usar authFetch que maneja automáticamente la renovación de tokens
+      const reservaResponse = await authFetch("http://10.5.213.111:1106/facturas/reservar", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          "Content-Type": "application/json"
+          // El header Authorization se agrega automáticamente
         },
         body: JSON.stringify({
           p_nit: restaurantNIT,
@@ -127,7 +131,9 @@ export default function RestaurantPage() {
           p_id_mesa: parseInt(reservationData.mesaId),
           p_num_comensales: parseInt(reservationData.guests),
           p_horario: reservationData.time,
-          p_fecha: reservationData.date
+          p_fecha: reservationData.date,
+          p_forma_pago: "Pendiente",
+          p_precio_total: mesaSeleccionada.precio
         })
       });
 

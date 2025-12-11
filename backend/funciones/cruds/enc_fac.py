@@ -54,7 +54,7 @@ def editar_enc_fac(
     direccion: str,
     ciudad: str,
     fecha: str,
-    documento: str,
+    documento: int,
 ):
     try:
         db.execute(

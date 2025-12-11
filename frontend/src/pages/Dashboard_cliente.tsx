@@ -12,7 +12,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Badge } from "../components/ui/badge";
 import { EditProfileModal } from "../components/edit_profile_modal";
-import { User, Phone, FileText, Globe } from "lucide-react";
+import { AllReservationsModal } from "../components/AllReservationsModal";
+import { User, Phone, FileText, Globe, Calendar, Clock, Users, UtensilsCrossed } from "lucide-react";
+import { authFetch } from "../services/authService";
 
 interface Cliente {
   id_cliente: number;
@@ -26,10 +28,88 @@ interface Cliente {
   telefono: string;
 }
 
+interface Reserva {
+  id_reserva: number;
+  horario: string;
+  fecha: string;
+  estado_reserva: string;
+  id_mesa: number;
+  cant_personas: number;
+  nombre_restaurante: string;
+  nit: number;
+  num_comensales: number;
+  cliente_nombre: string;
+  cliente_telefono: string;
+  cliente_documento: number;
+}
+
+interface Metricas {
+  total_restaurantes: number;
+  reservas_activas: number;
+  revenue_mes: number;
+}
+
 export default function ClientDashboard() {
   const [cliente, setCliente] = useState<Cliente | null>(null);
+  const [reservas, setReservas] = useState<Reserva[]>([]);
+  const [metricas, setMetricas] = useState<Metricas | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAllReservationsModalOpen, setIsAllReservationsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingReservas, setIsLoadingReservas] = useState(true);
+  const [isLoadingMetricas, setIsLoadingMetricas] = useState(true);
+
+  // Cargar métricas del dueño
+  useEffect(() => {
+    const fetchMetricas = async () => {
+      try {
+        setIsLoadingMetricas(true);
+        const response = await authFetch("http://10.5.213.111:1106/data-owner/metricas", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al obtener las métricas");
+        }
+
+        const data = await response.json();
+        setMetricas(data);
+      } catch (error) {
+        console.error("Error al cargar métricas:", error);
+      } finally {
+        setIsLoadingMetricas(false);
+      }
+    };
+
+    fetchMetricas();
+  }, []);
+
+  // Cargar reservas del dueño
+  useEffect(() => {
+    const fetchReservas = async () => {
+      try {
+        setIsLoadingReservas(true);
+        const response = await authFetch("http://10.5.213.111:1106/data-owner/reservas", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al obtener las reservas");
+        }
+
+        const data = await response.json();
+        setReservas(data.reservas || []);
+      } catch (error) {
+        console.error("Error al cargar reservas:", error);
+      } finally {
+        setIsLoadingReservas(false);
+      }
+    };
+
+    fetchReservas();
+  }, []);
 
   // Simular carga de datos del usuario actual
   useEffect(() => {
@@ -65,6 +145,31 @@ export default function ClientDashboard() {
   const handleProfileUpdate = (updatedCliente: Cliente) => {
     setCliente(updatedCliente);
     setIsEditModalOpen(false);
+  };
+
+  // Función para obtener el color del badge según el estado
+  const getEstadoBadge = (estado: string) => {
+    switch (estado?.toLowerCase()) {
+      case "confirmada":
+      case "completada":
+        return "bg-green-50 text-green-700 border-green-200";
+      case "pendiente":
+        return "bg-yellow-50 text-yellow-700 border-yellow-200";
+      case "cancelada":
+        return "bg-red-50 text-red-700 border-red-200";
+      default:
+        return "bg-gray-50 text-gray-700 border-gray-200";
+    }
+  };
+
+  // Función para formatear la fecha
+  const formatearFecha = (fecha: string) => {
+    const date = new Date(fecha);
+    return date.toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
   };
 
   if (isLoading) {
@@ -183,63 +288,125 @@ export default function ClientDashboard() {
               <CardHeader>
                 <CardTitle>Resumen de Actividad</CardTitle>
                 <CardDescription>
-                  Tu actividad reciente en la plataforma
+                  Estadísticas de tus restaurantes
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">12</div>
-                    <div className="text-sm text-gray-600">
-                      Reservas Activas
+                {isLoadingMetricas ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Cargando estadísticas...</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="text-center p-4 bg-blue-50 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600">
+                        {metricas?.total_restaurantes || 0}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Total Restaurantes
+                      </div>
+                    </div>
+                    <div className="text-center p-4 bg-green-50 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600">
+                        {metricas?.reservas_activas || 0}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Reservas Activas
+                      </div>
+                    </div>
+                    <div className="text-center p-4 bg-purple-50 rounded-lg">
+                      <div className="text-2xl font-bold text-purple-600">
+                        ${metricas?.revenue_mes?.toFixed(2) || "0.00"}
+                      </div>
+                      <div className="text-sm text-gray-600">Ingresos del Mes</div>
                     </div>
                   </div>
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">45</div>
-                    <div className="text-sm text-gray-600">
-                      Reservas Completadas
-                    </div>
-                  </div>
-                  <div className="text-center p-4 bg-purple-50 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-600">3</div>
-                    <div className="text-sm text-gray-600">Favoritos</div>
-                  </div>
-                </div>
+                )}
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader>
-                <CardTitle>Reservas Recientes</CardTitle>
-                <CardDescription>
-                  Tus últimas reservas realizadas
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                <div>
+                  <CardTitle>Reservas Recientes</CardTitle>
+                  <CardDescription>
+                    Las 50 reservas más recientes de todos tus restaurantes
+                  </CardDescription>
+                </div>
+                <Button
+                  onClick={() => setIsAllReservationsModalOpen(true)}
+                  variant="outline"
+                  size="sm"
+                  className="ml-auto"
+                >
+                  Ver todas las reservas
+                </Button>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {[1, 2, 3].map((item) => (
-                    <div
-                      key={item}
-                      className="flex items-center justify-between p-4 border rounded-lg"
-                    >
-                      <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                          <User className="h-6 w-6 text-gray-400" />
-                        </div>
-                        <div>
-                          <p className="font-medium">Reserva #{item}001</p>
-                          <p className="text-sm text-gray-600">Hace 2 días</p>
-                        </div>
-                      </div>
-                      <Badge
-                        variant="outline"
-                        className="bg-green-50 text-green-700 border-green-200"
+                {isLoadingReservas ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Cargando reservas...</p>
+                  </div>
+                ) : reservas.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-600">No hay reservas disponibles</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                    {reservas.map((reserva) => (
+                      <div
+                        key={reserva.id_reserva}
+                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
                       >
-                        Completada
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
+                        <div className="flex items-center space-x-4 flex-1">
+                          <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <UtensilsCrossed className="h-6 w-6 text-blue-600" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium text-gray-900">
+                                {reserva.nombre_restaurante}
+                              </p>
+                              <Badge variant="outline" className="text-xs">
+                                #{reserva.id_reserva}
+                              </Badge>
+                            </div>
+                            <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-600">
+                              <div className="flex items-center gap-1">
+                                <User className="h-3.5 w-3.5" />
+                                <span>{reserva.cliente_nombre}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Phone className="h-3.5 w-3.5" />
+                                <span>{reserva.cliente_telefono}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Calendar className="h-3.5 w-3.5" />
+                                <span>{formatearFecha(reserva.fecha)}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Clock className="h-3.5 w-3.5" />
+                                <span>{reserva.horario}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Users className="h-3.5 w-3.5" />
+                                <span>{reserva.num_comensales} personas</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className={getEstadoBadge(reserva.estado_reserva)}
+                        >
+                          {reserva.estado_reserva}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -252,6 +419,12 @@ export default function ClientDashboard() {
         onClose={() => setIsEditModalOpen(false)}
         cliente={cliente}
         onUpdate={handleProfileUpdate}
+      />
+
+      {/* All Reservations Modal */}
+      <AllReservationsModal
+        isOpen={isAllReservationsModalOpen}
+        onClose={() => setIsAllReservationsModalOpen(false)}
       />
     </div>
   );

@@ -37,7 +37,7 @@ async def obtener_clave_publica():
 @router.post("/crear_pago")
 async def crear_pago(data: PagoRequest, db: Session = Depends(get_db)):
     try:
-        print("Request recibido Wompi:", data.dict())  # Depuración
+        print("Request recibido Wompi:", data.model_dump())  # Depuración
         
         pm = data.payment_method
         

@@ -9,6 +9,7 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+REFRESH_TOKEN_EXPIRE_DAYS = 7  # Los refresh tokens duran 7 días
 
 
 def crear_token(data: dict, expires_delta: timedelta = None):
@@ -17,5 +18,16 @@ def crear_token(data: dict, expires_delta: timedelta = None):
         expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     to_encode.update({"exp": expire})
+    token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return token, expire
+
+
+def crear_refresh_token(data: dict):
+    """
+    Crea un refresh token de larga duración (7 días)
+    """
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    to_encode.update({"exp": expire, "type": "refresh"})
     token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return token, expire

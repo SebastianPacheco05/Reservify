@@ -66,6 +66,7 @@ async def insertar(data: RestauranteBase, db: Session = Depends(get_db)):
         data.horario_apertura,
         data.horario_cierre,
         data.documento,
+        data.id_categoria,
     )
 
 @router.get("/listar_restaurante")
@@ -89,6 +90,7 @@ async def editar(data: RestauranteUpdate, db: Session = Depends(get_db)):
         data.horario_apertura,
         data.horario_cierre,
         data.documento,
+        data.id_categoria,
     )
 
 @router.delete("/borrarrestaurante")

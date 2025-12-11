@@ -57,10 +57,19 @@ class RestauranteBase(BaseModel):
     descripcion_restaurante: str
     horario_apertura: str
     horario_cierre: str
+    documento: int
+    id_categoria: int
 
 
-class RestauranteUpdate(RestauranteBase):
+class RestauranteUpdate(BaseModel):
     nit: int
+    direccion: str
+    nombre_restaurante: str
+    descripcion_restaurante: str
+    horario_apertura: str
+    horario_cierre: str
+    documento: int
+    id_categoria: int
 
 
 class RestauranteDelete(BaseModel):
@@ -133,8 +142,14 @@ class Encabezado_facturaBase(BaseModel):
     fecha: str
 
 
-class Encabezado_facturaUpdate(Encabezado_facturaBase):
+class Encabezado_facturaUpdate(BaseModel):
     id_encab_fact: int
+    nit: int
+    nombre_restaurante: str
+    direccion: str
+    ciudad: str
+    fecha: str
+    documento: int
 
 
 class Encabezado_facturaDelete(BaseModel):
@@ -178,6 +193,10 @@ class ReservaDelete(BaseModel):
 class login(BaseModel):
     email: str
     password: str
+
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
 
 
 class ListarRoles(BaseModel):
@@ -307,6 +326,8 @@ class FacturaReservaSchema(BaseModel):
     p_num_comensales: int
     p_horario: str
     p_fecha: str
+    p_forma_pago: str
+    p_precio_total: float
 
 
 class PaymentMethod(BaseModel):
@@ -326,3 +347,8 @@ class PagoRequest(BaseModel):
     referencia: str
     correo_cliente: str
     payment_method: PaymentMethod
+
+# Confirmar Reserva y Crear Detalle de Factura
+class ConfirmarReservaDetalleSchema(BaseModel):
+    id_reserva: int
+    forma_pago: str  # Efectivo, Tarjeta, Transferencia, Otro

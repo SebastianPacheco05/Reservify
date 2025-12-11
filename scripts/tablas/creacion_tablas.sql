@@ -7,7 +7,6 @@
 -- Primero se eliminan todas las tablas existentes en orden inverso a su creación
 -- para evitar problemas de dependencias
 DROP TABLE IF EXISTS "Reserva";
-DROP TABLE IF EXISTS "Detalle_Factura";
 DROP TABLE IF EXISTS "Encabezado_Factura";
 DROP TABLE IF EXISTS "Empleado";
 DROP TABLE IF EXISTS "Comentarios";
@@ -122,24 +121,10 @@ CREATE TABLE "Encabezado_Factura" (
     ciudad VARCHAR(20) NOT NULL,  -- Ciudad
     fecha DATE NOT NULL CHECK (fecha = CURRENT_DATE),  -- Fecha de la factura
     documento DECIMAL(10, 0) NOT NULL,  -- Referencia al cliente
+    forma_pago VARCHAR(50) NOT NULL CHECK (forma_pago IN ('Efectivo', 'Tarjeta', 'Transferencia', 'Otro', 'Pendiente')),  -- Forma de pago con validación
+    precio_total DECIMAL(10, 2) NOT NULL,  -- Precio total
     FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE,
     FOREIGN KEY (documento) REFERENCES "Cliente" (documento) ON DELETE CASCADE
-);
-
--- Tabla Detalle_Factura: Almacena los detalles de cada factura
-CREATE TABLE "Detalle_Factura" (
-    id_det_fact SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
-    descripcion VARCHAR(100)[] NOT NULL,  -- Array de descripciones
-    unidades INT[] NOT NULL,  -- Array de unidades
-    precio_unitario DECIMAL(10, 2)[] NOT NULL,  -- Array de precios unitarios
-    precio_total DECIMAL(10, 2) NOT NULL,  -- Precio total
-    forma_pago VARCHAR(50) NOT NULL CHECK (forma_pago IN ('Efectivo', 'Tarjeta', 'Transferencia', 'Otro')),  -- Forma de pago con validación
-    id_encab_fact INT NOT NULL,  -- Referencia al encabezado de la factura
-    CHECK (  -- Validación de longitud de arrays
-        array_length(descripcion, 1) = array_length(unidades, 1)
-        AND array_length(descripcion, 1) = array_length(precio_unitario, 1)
-        ),
-    FOREIGN KEY (id_encab_fact) REFERENCES "Encabezado_Factura" (id_encab_fact) ON DELETE CASCADE
 );
 
 -- Tabla Reserva: Almacena las reservas de mesas
@@ -147,7 +132,7 @@ CREATE TABLE "Reserva" (
     id_reserva SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     id_mesa INT NOT NULL,  -- Referencia a la mesa
     documento DECIMAL(10, 0) NOT NULL,  -- Referencia al cliente
-    id_encab_fact INT NOT NULL,  -- Referencia a la factura
+    id_encab_fact INT,  -- Referencia a la factura
     estado_reserva VARCHAR NOT NULL DEFAULT 'no presentada'
     CHECK (estado_reserva IN (
     'pendiente', 'confirmada', 'en curso', 'finalizada', 'cancelada', 'no presentada')
