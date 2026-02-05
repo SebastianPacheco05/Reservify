@@ -128,7 +128,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
         }
       }
 
-      const response = await fetch("http://10.5.213.111:1106/wompi/crear_pago", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/wompi/crear_pago`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

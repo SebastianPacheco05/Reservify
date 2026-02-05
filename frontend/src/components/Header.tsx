@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { X, MenuIcon } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./ui/button";
 import { ThemeToggle } from "./theme-toggle";
+import { fadeInDown, transitionNormal } from "../lib/animations";
 
 interface HeaderProps {
   isMenuOpen: boolean;
@@ -21,24 +23,37 @@ export default function Header({
   onLogout,
 }: HeaderProps) {
   return (
-    <header className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md fixed top-0 w-full z-50 shadow-lg border-b border-blue-100 dark:border-gray-700 transition-colors duration-300">
+    <motion.header
+      initial="initial"
+      animate="animate"
+      variants={fadeInDown}
+      transition={transitionNormal}
+      className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl fixed top-0 w-full z-50 shadow-lg border-b border-slate-200/80 dark:border-gray-700/80 transition-colors duration-300"
+    >
       <div className="max-w-7xl mx-auto flex justify-between items-center px-4 h-16">
-        <div className="flex items-center space-x-2 animate-in fade-in duration-1000 dark:flex">
+        <motion.div
+          className="flex items-center space-x-2"
+          whileHover={{ scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
+        >
           <img
             src="/logoreservify.png"
             className="w-full dark:w-full dark:invert h-15"
             alt="Reservify Logo"
           />
-        </div>
+        </motion.div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8 animate-in slide-in-from-right duration-700 delay-300">
-          <a
+        <nav className="hidden md:flex items-center space-x-8">
+          <motion.a
             href="#restaurantes"
-            className="text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:scale-105 font-medium"
+            className="text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+            whileHover={{ scale: 1.05, y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
             Restaurantes
-          </a>
+          </motion.a>
 
           {/* Botón de cambio de tema */}
           <ThemeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
@@ -89,8 +104,15 @@ export default function Header({
       </div>
 
       {/* Mobile Menu */}
+      <AnimatePresence>
       {isMenuOpen && (
-        <div className="md:hidden bg-white dark:bg-gray-900 border-t border-blue-100 dark:border-gray-700 px-4 py-4 space-y-4 animate-in slide-in-from-top duration-300">
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+          className="md:hidden bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-gray-700 px-4 py-4 space-y-4 overflow-hidden"
+        >
           <a
             href="#"
             className="block text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300"
@@ -141,8 +163,9 @@ export default function Header({
               </Link>
             </div>
           )}
-        </div>
+        </motion.div>
       )}
-    </header>
+      </AnimatePresence>
+    </motion.header>
   );
 }

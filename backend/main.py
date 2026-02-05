@@ -1,6 +1,8 @@
 # Importacion del FastAPI
 from fastapi import FastAPI, HTTPException , Request
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+import asyncio
 
 
 # Importacion de los routers
@@ -32,7 +34,16 @@ from models import *
 from funciones.email_sender.timer_reserv import tarea_programada
 from funciones.email_sender.email_utils import send_email
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Iniciar tarea programada
+    asyncio.create_task(tarea_programada())
+    yield
+    # Shutdown: Aquí puedes agregar código de limpieza si es necesario
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 app.add_middleware(
@@ -77,10 +88,14 @@ async def enviar_correo(data: EmailSchema):
     else:
         raise HTTPException(status_code=500, detail="No se pudo enviar el correo")
 
-# Tarea programada para enviar correos cada minuto
-
-
-@app.on_event("startup")
-async def startup_event():
-    import asyncio
-    asyncio.create_task(tarea_programada())
+# Ejecutar servidor cuando se ejecute directamente con python3 main.py
+if __name__ == "__main__":
+    import uvicorn
+    from config import BACKEND_HOST, BACKEND_PORT
+    
+    uvicorn.run(
+        "main:app",
+        host=BACKEND_HOST,
+        port=BACKEND_PORT,
+        reload=True
+    )

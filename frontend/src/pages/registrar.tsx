@@ -1,8 +1,8 @@
 "use client";
 
-
 import type React from "react";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Eye,
   EyeOff,
@@ -17,6 +17,7 @@ import {
   Sun,
   Moon,
 } from "lucide-react";
+import { fadeInUp, fadeIn, transitionNormal, staggerContainer } from "../lib/animations";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -85,7 +86,7 @@ export default function Registrar() {
     };
 
     try {
-      const res = await fetch("http://10.5.213.111:1106/register/register", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/register/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data2send),
@@ -142,10 +143,25 @@ export default function Registrar() {
   };
 
   return (
-    <div className={`min-h-screen`}>
+    <motion.div
+      className="min-h-screen"
+      initial="initial"
+      animate="animate"
+      variants={fadeIn}
+      transition={transitionNormal}
+    >
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-black flex items-center justify-center p-4 transition-colors duration-300">
-        <div className="w-full max-w-max">
-          <div className="flex justify-between items-center mb-6">
+        <motion.div
+          className="w-full max-w-max"
+          variants={staggerContainer}
+          initial="initial"
+          animate="animate"
+        >
+          <motion.div
+            className="flex justify-between items-center mb-6"
+            variants={fadeInUp}
+            transition={transitionNormal}
+          >
             <Button
               onClick={() => (window.location.href = "/")}
               variant="outline"
@@ -167,26 +183,43 @@ export default function Registrar() {
                 <Moon className="w-4 h-4" />
               )}
             </Button>
-          </div>
+          </motion.div>
 
           {/* Logo/Brand */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+          <motion.div
+            className="text-center mb-8"
+            variants={fadeInUp}
+            transition={transitionNormal}
+          >
+            <motion.div
+              className="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg"
+              whileHover={{ scale: 1.05 }}
+              transition={transitionNormal}
+            >
               <Lock className="w-8 h-8 text-white" />
-            </div>
+            </motion.div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
               Bienvenido a Reservify
             </h1>
             <p className="text-gray-600 dark:text-gray-300 mt-2 transition-colors duration-300">
               Registra tu cuenta de Reservify
             </p>
-          </div>
+          </motion.div>
 
           {/* Registro */}
           <div className="flex justify-center items-center space-x-4 h-full grid-cols-2">
+            <AnimatePresence mode="wait">
+              {showCard ? (
+                <motion.div
+                  key="credenciales"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={transitionNormal}
+                  className="flex justify-center"
+                >
             <Card
-              className={`${showCard ? "block" : "hidden"
-                } shadow-xl w-[23rem] border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-300`}
+              className="shadow-xl w-[23rem] border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-300"
             >
               <CardHeader className="space-y-0.5 pb-3">
                 <CardTitle className="text-xl text-center text-gray-900 dark:text-white transition-colors duration-300">
@@ -350,13 +383,18 @@ export default function Registrar() {
                 </div>
               </CardContent>
             </Card>
-          </div>
-
-          {/* Datos personales */}
-          <div className="justify-center items-center h-full">
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="datos-personales"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={transitionNormal}
+                  className="justify-center items-center w-full max-w-2xl"
+                >
             <Card
-              className={`${showCard ? "hidden" : "block"
-                } shadow-xl w-full border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-300`}
+              className="shadow-xl w-full border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-300"
             >
               <CardHeader
                 className="space-y-1 pb-6 cursor-pointer"
@@ -617,10 +655,19 @@ export default function Registrar() {
                 </form>
               </CardContent>
             </Card>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Footer */}
-          <div className="text-center mt-8 text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300">
+          <motion.div
+            className="text-center mt-8 text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300"
+            variants={fadeInUp}
+            initial="initial"
+            animate="animate"
+            transition={{ ...transitionNormal, delay: 0.2 }}
+          >
             <p>Al registrarte, aceptas nuestros</p>
             <div className="space-x-4 mt-1">
               <button className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-blue-400 rounded">
@@ -631,9 +678,9 @@ export default function Registrar() {
                 Política de Privacidad
               </button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

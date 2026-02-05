@@ -1,17 +1,18 @@
 import { Link } from "react-router-dom";
 import { Star, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import type { Restaurante } from "../types/restaurant.types";
-
+import { fadeInUp, staggerContainer, transitionNormal } from "../lib/animations";
 
 export default function RestaurantGrid() {
   const [restaurantes, setRestaurantes] = useState<Restaurante[]>([]);
 
   useEffect(() => {
-    fetch("http://10.5.213.111:1106/top")
+    fetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/top`)
       .then((res) => res.json())
       .then((data: Restaurante[]) => setRestaurantes(data))
       .catch((err) => console.error(err));
@@ -20,23 +21,41 @@ export default function RestaurantGrid() {
   return (
     <section
       id="restaurantes"
-      className="bg-white dark:bg-gray-900 py-20 px-4 transition-colors duration-300"
+      className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm py-24 px-4 transition-colors duration-300"
     >
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h3 className="text-3xl font-bold text-black dark:text-white mb-4">
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={transitionNormal}
+        >
+          <h3 className="text-3xl md:text-4xl font-bold text-black dark:text-white mb-4">
             Restaurantes Destacados
           </h3>
-          <p className="text-gray-700 dark:text-gray-300 text-lg">
+          <p className="text-slate-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
             Los favoritos de nuestra comunidad
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <motion.div
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+          variants={staggerContainer}
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, margin: "-50px" }}
+        >
           {restaurantes.map((restaurant) => (
-            <Card
+            <motion.div
               key={restaurant.nit}
-              className="overflow-hidden hover:shadow-2xl transition-all duration-500 group cursor-pointer border-2 hover:border-blue-200 dark:bg-gray-800 dark:border-gray-700 dark:hover:border-blue-600"
+              variants={fadeInUp}
+              transition={transitionNormal}
+              whileHover={{ y: -6 }}
+              className="h-full"
+            >
+            <Card
+              className="overflow-hidden hover:shadow-2xl transition-all duration-500 group cursor-pointer border-2 border-slate-200 hover:border-blue-300 dark:bg-gray-800 dark:border-gray-700 dark:hover:border-blue-600 rounded-2xl h-full"
             >
               <div className="relative">
                 <img
@@ -105,14 +124,15 @@ export default function RestaurantGrid() {
                 </div>
 
                 <Link to={`/Restaurant?nit=${restaurant.nit}`}>
-                  <Button className="w-full mt-4 text-white bg-blue-600 hover:bg-green-600 transition-all duration-300 hover:scale-105 transform">
+                  <Button className="w-full mt-4 text-white bg-blue-600 hover:bg-emerald-600 transition-all duration-300 rounded-xl">
                     Ver disponibilidad
                   </Button>
                 </Link>
               </CardContent>
             </Card>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

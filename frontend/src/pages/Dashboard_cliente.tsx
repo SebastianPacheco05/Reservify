@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -64,7 +65,7 @@ export default function ClientDashboard() {
     const fetchMetricas = async () => {
       try {
         setIsLoadingMetricas(true);
-        const response = await authFetch("http://10.5.213.111:1106/data-owner/metricas", {
+        const response = await authFetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/data-owner/metricas`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -90,7 +91,7 @@ export default function ClientDashboard() {
     const fetchReservas = async () => {
       try {
         setIsLoadingReservas(true);
-        const response = await authFetch("http://10.5.213.111:1106/data-owner/reservas", {
+        const response = await authFetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/data-owner/reservas`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -116,7 +117,7 @@ export default function ClientDashboard() {
     // Aquí normalmente obtendrías el ID del usuario actual desde el contexto de autenticación
     const currentUserId = 1; // Ejemplo
 
-    fetch("http://10.5.213.111:1106/listar_cliente", {
+    fetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/listar_cliente`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id_cliente: currentUserId }),
@@ -203,9 +204,14 @@ export default function ClientDashboard() {
   const initials = `${cliente.nombre1[0]}${cliente.apellido1[0]}`.toUpperCase();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-900 transition-colors duration-300">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <motion.div
+        className="bg-white dark:bg-gray-800 shadow-sm border-b border-slate-200 dark:border-gray-700"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-4">
@@ -228,14 +234,24 @@ export default function ClientDashboard() {
             </Button>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <motion.div
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
+        >
           {/* Profile Card */}
-          <div className="lg:col-span-1">
-            <Card>
+          <motion.div
+            className="lg:col-span-1"
+            initial={{ opacity: 0, x: -16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.15, duration: 0.35 }}
+          >
+            <Card className="rounded-2xl border-slate-200 dark:border-gray-700 shadow-lg">
               <CardHeader className="text-center">
                 <Avatar className="h-24 w-24 mx-auto mb-4">
                   <AvatarImage src="/placeholder.svg?height=96&width=96" />
@@ -280,11 +296,16 @@ export default function ClientDashboard() {
                 </div>
               </CardContent>
             </Card>
-          </div>
+          </motion.div>
 
           {/* Dashboard Content */}
-          <div className="lg:col-span-2 space-y-6">
-            <Card>
+          <motion.div
+            className="lg:col-span-2 space-y-6"
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2, duration: 0.35 }}
+          >
+            <Card className="rounded-2xl border-slate-200 dark:border-gray-700 shadow-lg">
               <CardHeader>
                 <CardTitle>Resumen de Actividad</CardTitle>
                 <CardDescription>
@@ -409,8 +430,8 @@ export default function ClientDashboard() {
                 )}
               </CardContent>
             </Card>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
 
       {/* Edit Profile Modal */}

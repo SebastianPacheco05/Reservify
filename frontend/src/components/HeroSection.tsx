@@ -1,6 +1,8 @@
 import type React from "react";
 import { MapPin } from "lucide-react";
+import { motion } from "framer-motion";
 import SearchBar from "./SearchBar";
+import { fadeInUp, staggerContainer, transitionNormal } from "../lib/animations";
 
 interface HeroSectionProps {
   searchQuery: string;
@@ -21,82 +23,72 @@ export default function HeroSection({
   onSearchSubmit,
 }: HeroSectionProps) {
   return (
-    <section className="pt-24 pb-20 px-4">
-      <div className="max-w-4xl mx-auto text-center">
-        <div className="relative">
-          <h2 className="text-5xl md:text-6xl font-bold mb-6 leading-tight animate-in fade-in slide-in-from-bottom duration-1000">
-            <span className="text-blue-500 dark:text-blue-400">
+    <section className="relative min-h-screen flex flex-col justify-center pt-24 pb-24 px-4 sm:px-6 md:px-8 overflow-hidden bg-gradient-to-b from-blue-50/40 via-white to-emerald-50/40 dark:from-blue-950/20 dark:via-transparent dark:to-emerald-950/20">
+      {/* Fondo de estrellas */}
+      <div className="absolute inset-0 pointer-events-none z-0" aria-hidden="true">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className={`star-bg star-${i + 1}`}
+            style={{ animationDuration: `${2.5 + (i % 3) * 0.8}s` }}
+          />
+        ))}
+      </div>
+
+      <motion.div
+        className="relative z-10 max-w-4xl mx-auto text-center w-full space-y-12 sm:space-y-14 md:space-y-16"
+        variants={staggerContainer}
+        initial="initial"
+        animate="animate"
+      >
+        <div className="space-y-4">
+          <motion.h2
+            variants={fadeInUp}
+            transition={transitionNormal}
+            className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight"
+          >
+            <span className="text-blue-600 dark:text-blue-400 bg-gradient-to-r from-blue-600 to-emerald-600 dark:from-blue-400 dark:to-emerald-400 bg-clip-text text-transparent">
               Reserva en tu restaurante favorito
             </span>
-          </h2>
-
-          {/* Brillos alrededor del título */}
-          <div className="absolute inset-0 pointer-events-none">
-            {/* Brillo superior izquierdo */}
-            <div className="sparkle-1 absolute -top-4 -left-8 w-4 h-4">
-              <div className="w-full h-full bg-gradient-to-br from-yellow-300 to-blue-500 rounded-full shadow-lg shadow-blue-300/50"></div>
-            </div>
-
-            {/* Brillo superior derecho */}
-            <div className="sparkle-2 absolute -top-6 -right-12 w-3 h-3">
-              <div className="w-full h-full bg-gradient-to-br from-blue-400 to-green-500 rounded-full shadow-lg shadow-green-300/50"></div>
-            </div>
-
-            {/* Brillo inferior izquierdo */}
-            <div className="sparkle-3 absolute -bottom-2 -left-4 w-2 h-2">
-              <div className="w-full h-full bg-gradient-to-br from-yellow-400 to-blue-600 rounded-full shadow-lg shadow-blue-400/50"></div>
-            </div>
-
-            {/* Brillo inferior derecho */}
-            <div className="sparkle-4 absolute -bottom-4 -right-6 w-3 h-3">
-              <div className="w-full h-full bg-gradient-to-br from-blue-300 to-green-400 rounded-full shadow-lg shadow-blue-300/50"></div>
-            </div>
-
-            {/* Brillo medio izquierdo */}
-            <div className="sparkle-5 absolute top-1/2 -left-2 w-2 h-2">
-              <div className="w-full h-full bg-gradient-to-br from-yellow-500 to-blue-700 rounded-full shadow-lg shadow-yellow-400/50"></div>
-            </div>
-
-            {/* Brillo medio derecho */}
-            <div className="sparkle-6 absolute top-1/3 -right-4 w-2 h-2">
-              <div className="w-full h-full bg-gradient-to-br from-blue-500 to-green-600 rounded-full shadow-lg shadow-blue-500/50"></div>
-            </div>
-
-            {/* Brillo superior central */}
-            <div className="sparkle-7 absolute -top-2 left-1/2 transform -translate-x-1/2 w-2 h-2">
-              <div className="w-full h-full bg-gradient-to-br from-yellow-300 to-blue-400 rounded-full shadow-lg shadow-yellow-300/50"></div>
-            </div>
-
-            {/* Brillo inferior central */}
-            <div className="sparkle-8 absolute -bottom-1 left-1/4 w-2 h-2">
-              <div className="w-full h-full bg-gradient-to-br from-blue-400 to-green-500 rounded-full shadow-lg shadow-blue-400/50"></div>
-            </div>
-          </div>
+          </motion.h2>
         </div>
 
-        <p
+        <motion.p
           id="buscar"
-          className="text-xl text-black dark:text-gray-200 mb-12 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom duration-1000 delay-300"
+          variants={fadeInUp}
+          transition={{ ...transitionNormal, delay: 0.1 }}
+          className="text-xl md:text-2xl text-slate-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed"
         >
           Desde comida gourmet hasta cocina casera, encuentra el lugar ideal
           para cada ocasión
-        </p>
+        </motion.p>
 
-        <SearchBar
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          showSuggestions={showSuggestions}
-          setShowSuggestions={setShowSuggestions}
-          // filteredCuisines={filteredCuisines}
-          onSearch={onSearch}
-          onSearchSubmit={onSearchSubmit}
-        />
+        <motion.div
+          variants={fadeInUp}
+          transition={{ ...transitionNormal, delay: 0.2 }}
+          className="flex justify-center"
+        >
+          <SearchBar
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            showSuggestions={showSuggestions}
+            setShowSuggestions={setShowSuggestions}
+            onSearch={onSearch}
+            onSearchSubmit={onSearchSubmit}
+          />
+        </motion.div>
 
-        <div className="flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-all hover:scale-105 animate-in fade-in duration-100 delay-400 mt-30">
-          <MapPin className="w-4 h-4 mr-2" />
-          <span>Usar mi ubicación actual</span>
-        </div>
-      </div>
+        <motion.div
+          variants={fadeInUp}
+          transition={{ ...transitionNormal, delay: 0.3 }}
+          className="flex items-center justify-center text-slate-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <MapPin className="w-5 h-5 mr-2 shrink-0" />
+          <span className="text-lg font-medium">Usar mi ubicación actual</span>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

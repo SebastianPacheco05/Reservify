@@ -1,7 +1,9 @@
 import type React from "react";
 import { useState } from "react";
 import { ChefHat, Utensils, Coffee, Pizza } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "./ui/card";
+import { fadeInUp, transitionNormal } from "../lib/animations";
 
 interface CuisineType {
   name: string;
@@ -118,16 +120,24 @@ export default function CuisineCarousel() {
   };
 
   return (
-    <section id="cocinas" className="max-w-7xl mx-auto px-4 py-16">
-      <h3 className="text-3xl font-bold mb-12 text-center text-black dark:text-white animate-in fade-in slide-in-from-bottom duration-800">
+    <section id="cocinas" className="max-w-7xl mx-auto px-4 py-20">
+      <motion.h3
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={transitionNormal}
+        className="text-3xl md:text-4xl font-bold mb-12 text-center text-black dark:text-white"
+      >
         Tipos de Cocina
-      </h3>
+      </motion.h3>
 
       <div className="relative">
         {/* Botones de navegación */}
-        <button
+        <motion.button
           onClick={prevSlide}
-          className="absolute left-4 top-[calc(50%-2rem)] transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-blue-600 hover:text-blue-700 rounded-full p-4 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110 border-2 border-blue-300"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="absolute left-4 top-[calc(50%-2rem)] transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-blue-600 hover:text-blue-700 rounded-full p-4 shadow-xl hover:shadow-2xl transition-colors border-2 border-blue-300 dark:border-blue-600 dark:bg-gray-800/90"
         >
           <svg
             className="w-7 h-7"
@@ -142,11 +152,13 @@ export default function CuisineCarousel() {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-        </button>
+        </motion.button>
 
-        <button
+        <motion.button
           onClick={nextSlide}
-          className="absolute right-4 top-[calc(50%-2rem)] transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-blue-600 hover:text-blue-700 rounded-full p-4 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110 border-2 border-blue-300"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="absolute right-4 top-[calc(50%-2rem)] transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-blue-600 hover:text-blue-700 rounded-full p-4 shadow-xl hover:shadow-2xl transition-colors border-2 border-blue-300 dark:border-blue-600 dark:bg-gray-800/90"
         >
           <svg
             className="w-7 h-7"
@@ -161,13 +173,15 @@ export default function CuisineCarousel() {
               d="M9 5l7 7-7 7"
             />
           </svg>
-        </button>
+        </motion.button>
 
         {/* Contenedor del carrusel */}
         <div className="overflow-hidden">
-          <div
-            className="flex transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+          <motion.div
+            className="flex"
+            animate={{ x: `-${currentSlide * 100}%` }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            style={{ width: "100%" }}
           >
             {Array.from(
               { length: Math.ceil(cuisineTypes.length / 4) },
@@ -180,12 +194,16 @@ export default function CuisineCarousel() {
                         const IconComponent = category.icon;
                         const actualIndex = slideIndex * 4 + index;
                         return (
-                          <div key={actualIndex} className="p-2">
+                          <motion.div
+                            key={actualIndex}
+                            className="p-2"
+                            initial={{ opacity: 0, y: 16 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ ...transitionNormal, delay: index * 0.05 }}
+                          >
                             <Card
-                              className={`${category.color} border-4 hover:shadow-xl cursor-pointer group dark:bg-gray-400/20 transition-all hover:scale-105 animate-in fade-in slide-in-from-bottom duration-800`}
-                              style={{
-                                animationDelay: `${actualIndex * 150}ms`,
-                              }}
+                              className={`${category.color} border-2 hover:shadow-xl cursor-pointer group dark:bg-gray-400/20 transition-shadow rounded-2xl`}
                             >
                               <CardContent className="p-6 text-center">
                                 <IconComponent className="w-8 h-8 mx-auto mb-3 group-hover:scale-110 transition-transform duration-300" />
@@ -194,14 +212,14 @@ export default function CuisineCarousel() {
                                 </h4>
                               </CardContent>
                             </Card>
-                          </div>
+                          </motion.div>
                         );
                       })}
                   </div>
                 </div>
               )
             )}
-          </div>
+          </motion.div>
         </div>
 
         {/* Indicadores de navegación */}
@@ -209,14 +227,17 @@ export default function CuisineCarousel() {
           {Array.from(
             { length: Math.ceil(cuisineTypes.length / 4) },
             (_, index) => (
-              <button
+              <motion.button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`w-4 h-4 rounded-full transition-all duration-300 ${
+                className={`w-4 h-4 rounded-full transition-colors ${
                   index === currentSlide
-                    ? "bg-blue-600 scale-125"
-                    : "bg-blue-300 hover:bg-blue-400"
+                    ? "bg-blue-600"
+                    : "bg-blue-300 hover:bg-blue-400 dark:bg-gray-600 dark:hover:bg-gray-500"
                 }`}
+                animate={{ scale: index === currentSlide ? 1.25 : 1 }}
+                whileHover={{ scale: 1.15 }}
+                whileTap={{ scale: 0.9 }}
               />
             )
           )}

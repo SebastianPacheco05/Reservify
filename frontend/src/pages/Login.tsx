@@ -1,12 +1,12 @@
 "use client";
 import { Link } from "react-router-dom";
-
 import type React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Home } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { transitionNormal } from "../lib/animations";
 import {
   Card,
   CardContent,
@@ -32,7 +32,7 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await fetch("http://10.5.213.111:1106/credenciales/login", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/credenciales/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -75,9 +75,14 @@ export default function Login() {
 
   return (
     <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-black dark:to-gray-800 flex items-center justify-center p-4 transition-colors duration-300">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/40 to-emerald-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-800 flex items-center justify-center p-4 transition-colors duration-500">
         <div className="w-full max-w-md">
-          <div className="flex justify-between items-center mb-6">
+          <motion.div
+            className="flex justify-between items-center mb-6"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={transitionNormal}
+          >
             <Button
               onClick={handleBackToHome}
               variant="outline"
@@ -95,22 +100,36 @@ export default function Login() {
             >
               {isDarkMode ? "☀️" : "🌙"}
             </Button>
-          </div>
+          </motion.div>
 
           {/* Logo/Brand */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+          <motion.div
+            className="text-center mb-8"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.4 }}
+          >
+            <motion.div
+              className="w-16 h-16 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-xl"
+              whileHover={{ scale: 1.05, rotate: 2 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            >
               <Lock className="w-8 h-8 text-white" />
-            </div>
+            </motion.div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
               Bienvenido a Reservify
             </h1>
-            <p className="text-gray-600 dark:text-gray-300 mt-2 transition-colors duration-300">
+            <p className="text-slate-600 dark:text-gray-300 mt-2">
               Inicia sesión en tu cuenta
             </p>
-          </div>
+          </motion.div>
 
-          <Card className="shadow-xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-colors duration-300">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+          >
+          <Card className="shadow-xl border-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl border border-slate-200/50 dark:border-gray-700/50">
             <CardHeader className="space-y-1 pb-6">
               <CardTitle className="text-xl text-center text-gray-900 dark:text-white transition-colors duration-300">
                 Iniciar Sesión
@@ -260,6 +279,7 @@ export default function Login() {
               </div>
             </CardContent>
           </Card>
+          </motion.div>
 
           {/* Footer */}
           <div className="text-center mt-8 text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300">

@@ -1,25 +1,57 @@
 import type React from "react";
+import { motion } from "framer-motion";
 import { Button } from "./ui/button";
+import { fadeInUp, transitionNormal } from "../lib/animations";
 
 export default function CTASection() {
   return (
-    <section className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-20 px-4">
-      <div className="max-w-4xl mx-auto text-center">
-        <h3 className="text-4xl font-bold mb-6">
+    <motion.section
+      className="bg-gradient-to-r from-blue-600 via-blue-500 to-emerald-600 text-white py-24 px-4 relative overflow-hidden"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
+      <div className="max-w-4xl mx-auto text-center relative z-10">
+        <motion.h3
+          className="text-4xl md:text-5xl font-bold mb-6"
+          variants={fadeInUp}
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true }}
+          transition={transitionNormal}
+        >
           ¿Listo para tu próxima experiencia culinaria?
-        </h3>
-        <p className="text-xl mb-8 text-blue-100">
+        </motion.h3>
+        <motion.p
+          className="text-xl mb-10 text-blue-100"
+          variants={fadeInUp}
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true }}
+          transition={{ ...transitionNormal, delay: 0.1 }}
+        >
           Miles de mesas disponibles en los mejores restaurantes de tu ciudad
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button
-            size="lg"
-            className="border-white bg-white text-black hover:bg-blue-100 hover:text-blue-700 transition-all duration-300 hover:scale-105 transform"
-          >
-            Descargar app
-          </Button>
-        </div>
+        </motion.p>
+        <motion.div
+          className="flex flex-col sm:flex-row gap-4 justify-center"
+          variants={fadeInUp}
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true }}
+          transition={{ ...transitionNormal, delay: 0.2 }}
+        >
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+            <Button
+              size="lg"
+              className="border-2 border-white bg-white text-blue-700 hover:bg-blue-50 hover:border-blue-100 font-semibold rounded-xl px-8 py-6 text-lg transition-all duration-300 shadow-xl"
+            >
+              Descargar app
+            </Button>
+          </motion.div>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 }

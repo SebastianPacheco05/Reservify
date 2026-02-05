@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from datetime import datetime, timedelta
@@ -6,8 +6,6 @@ from funciones.email_sender.email_utils import send_email
 from models import EmailSchema
 from config import SessionLocal  # asegúrate de tener esto bien configurado
 import asyncio
-
-app = FastAPI()
 
 # Diccionario temporal para saber qué correos ya se enviaron
 enviados = set()
@@ -100,10 +98,3 @@ async def tarea_programada():
                 f"Esperando {tiempo_espera/3600:.1f} horas hasta las {siguiente_ejecucion.strftime('%H:%M')}..."
             )
             await asyncio.sleep(tiempo_espera)
-
-
-# Iniciar la tarea cuando arranca FastAPI
-@app.on_event("startup")
-async def iniciar():
-    print("Iniciando tarea programada en segundo plano...")
-    asyncio.create_task(tarea_programada())

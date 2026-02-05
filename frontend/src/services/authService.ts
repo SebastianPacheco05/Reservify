@@ -2,7 +2,7 @@
  * Servicio de autenticación con renovación automática de tokens
  */
 
-const API_BASE_URL = "http://10.5.213.111:1106";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://10.5.213.111:1106";
 let isRefreshing = false;
 let refreshSubscribers: Array<(token: string) => void> = [];
 

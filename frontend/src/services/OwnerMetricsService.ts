@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://10.5.213.111:1106";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://10.5.213.111:1106";
 
 export interface OwnerMetrics {
   total_restaurantes: number;

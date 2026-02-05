@@ -55,7 +55,7 @@ export default function CheckoutPage({ reservationData: propReservationData }: C
             }
 
             // Actualizar estado de reserva a "confirmada"
-            const response = await fetch(`http://10.5.213.111:1106/reserva/confirmar/${idReserva}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/reserva/confirmar/${idReserva}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

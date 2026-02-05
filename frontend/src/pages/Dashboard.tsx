@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
 import { Sidebar } from "../components/ui/sidebar"
 import { MetricCards } from "../components/ui/metric-cards"
 import { RestaurantsGrid } from "../components/ui/restaurants-grid"
@@ -124,18 +125,23 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-slate-50 dark:bg-gray-900 transition-colors duration-300">
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
       <main className="flex-1 overflow-auto">
-        <div className="p-6 md:p-8 md:ml-0">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">Dashboard de Administración</h1>
-            <p className="text-muted-foreground">Gestiona tus restaurantes y reservas desde un solo lugar</p>
+        <motion.div
+          className="p-6 md:p-8 md:ml-0"
+          initial={{ opacity: 0, x: 8 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+        >
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard de Administración</h1>
+            <p className="text-muted-foreground mt-1">Gestiona tus restaurantes y reservas desde un solo lugar</p>
           </div>
 
           {renderContent()}
-        </div>
+        </motion.div>
       </main>
     </div>
   )

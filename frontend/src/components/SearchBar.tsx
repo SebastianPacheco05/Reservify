@@ -1,6 +1,7 @@
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
@@ -49,7 +50,7 @@ export default function SearchBar({
 
     const controller = new AbortController();
     const timer = setTimeout(() => {
-      fetch("http://10.5.213.111:1106/buscar_restaurante", {
+      fetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/buscar_restaurante`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombre_restaurante: searchQuery }),
@@ -76,25 +77,25 @@ export default function SearchBar({
   }, [searchQuery, setShowSuggestions]);
 
   return (
-    <div className="search-container relative max-w-3xl mx-auto mb-8 animate-in fade-in slide-in-from-bottom duration-1000 delay-500">
+    <div className="search-container relative w-full max-w-4xl mx-auto mb-8">
       <form onSubmit={onSearchSubmit} className="relative">
         <div className="relative group">
-          {/* Icono de búsqueda con animación */}
-          <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-blue-400 w-6 h-6 group-hover:text-blue-600 transition-all duration-300 group-hover:scale-110 z-10" />
+          {/* Icono de búsqueda */}
+          <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-blue-400 w-7 h-7 group-hover:text-blue-600 transition-all duration-300 z-10 pointer-events-none" />
 
-          {/* Input principal con efectos mejorados */}
+          {/* Input principal: más grande y cómodo */}
           <Input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="¿Qué tipo de cocina te apetece hoy?"
-            className="pl-16 pr-20 py-8 text-xl rounded-3xl border-3 border-blue-200 dark:border-blue-600 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-2xl transition-all duration-500 hover:shadow-blue-200/50 focus:shadow-blue-300/50 focus:scale-105 group-hover:border-blue-300 dark:text-white dark:placeholder-gray-400"
+            className="w-full min-h-[4.5rem] pl-[3.25rem] pr-[6.5rem] py-4 text-xl sm:text-2xl rounded-3xl border-2 border-blue-200 dark:border-blue-600 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-xl transition-all duration-300 hover:shadow-blue-200/30 focus:shadow-blue-300/40 group-hover:border-blue-300 dark:text-white dark:placeholder-gray-400 placeholder:text-base sm:placeholder:text-lg"
           />
 
-          {/* Botón de búsqueda mejorado */}
+          {/* Botón Buscar más grande */}
           <Button
             type="submit"
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 rounded-2xl bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold px-6 py-2 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-blue-300/50"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-2xl bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 transition-all duration-300 hover:scale-105 shadow-lg"
           >
             Buscar
           </Button>
@@ -102,7 +103,13 @@ export default function SearchBar({
 
         {/* Sugerencias de búsqueda */}
         {showSuggestions && filteredCuisines.length > 0 && (
-          <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-blue-200 dark:border-blue-600 max-h-64 overflow-y-auto z-50 animate-in fade-in slide-in-from-top duration-300">
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="absolute top-full left-0 right-0 mt-2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 max-h-64 overflow-y-auto z-50"
+          >
             <div className="p-4">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {filteredCuisines.slice(0, 12).map((cuisine, index) => (
@@ -129,25 +136,30 @@ export default function SearchBar({
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
 
-        {/* Sugerencias rápidas cuando no hay búsqueda */}
+        {/* Botones de cocina rápida: siempre en fila */}
         {!showSuggestions && searchQuery === "" && (
-          <div className="absolute top-full left-0 right-0 mt-4 flex flex-wrap justify-center gap-3 animate-in fade-in duration-500 delay-300">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="absolute top-full left-0 right-0 mt-5 flex flex-row flex-nowrap justify-center items-center gap-3 sm:gap-4 overflow-x-auto pb-1"
+          >
             {["Italiana", "Japonesa", "Mexicana", "Mediterránea"].map(
               (cuisine, index) => (
                 <button
                   key={index}
                   type="button"
                   onClick={() => onSearch(cuisine)}
-                  className="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium transition-all duration-300 hover:scale-110 hover:shadow-lg border border-blue-200 dark:border-blue-700 hover:border-blue-300 dark:hover:border-blue-600"
+                  className="shrink-0 px-5 py-3 sm:px-6 sm:py-3 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-300 rounded-full text-sm sm:text-base font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg border border-blue-200 dark:border-blue-700 hover:border-blue-300 dark:hover:border-blue-600 whitespace-nowrap"
                 >
                   {cuisine}
                 </button>
               )
             )}
-          </div>
+          </motion.div>
         )}
       </form>
     </div>
