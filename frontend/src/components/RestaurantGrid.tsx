@@ -21,7 +21,7 @@ export default function RestaurantGrid() {
   return (
     <section
       id="restaurantes"
-      className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm py-24 px-4 transition-colors duration-300"
+      className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm py-16 sm:py-20 md:py-24 px-4 sm:px-6 transition-colors duration-300"
     >
       <div className="max-w-7xl mx-auto">
         <motion.div
@@ -31,7 +31,7 @@ export default function RestaurantGrid() {
           viewport={{ once: true }}
           transition={transitionNormal}
         >
-          <h3 className="text-3xl md:text-4xl font-bold text-black dark:text-white mb-4">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black dark:text-white mb-4">
             Restaurantes Destacados
           </h3>
           <p className="text-slate-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
@@ -40,7 +40,7 @@ export default function RestaurantGrid() {
         </motion.div>
 
         <motion.div
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
           variants={staggerContainer}
           initial="initial"
           whileInView="animate"
@@ -90,7 +90,7 @@ export default function RestaurantGrid() {
                   </span>
                 </div>
 
-                <p className="text-gray-600 dark:text-gray-300 mb-3 group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors duration-300">
+                <p className="text-gray-600 dark:text-gray-300 mb-3 group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors duration-300 line-clamp-2 sm:line-clamp-3">
                   {restaurant.descripcion_restaurante ?? "Sin descripción"}
                 </p>
 
@@ -113,7 +113,7 @@ export default function RestaurantGrid() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">
                     <MapPin className="w-4 h-4 mr-1" />
-                    <span className="text-sm">{restaurant.direccion}</span>
+                    <span className="text-sm truncate max-w-[180px] sm:max-w-none" title={restaurant.direccion}>{restaurant.direccion}</span>
                   </div>
                   <Badge
                     variant="outline"

@@ -98,33 +98,32 @@ export function Tables() {
   )
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Gestión de Mesas</h1>
-          <p className="text-gray-600">Estado actual de todas las mesas</p>
+          <h2 className="text-xl font-semibold text-foreground">Estado de mesas</h2>
+          <p className="text-sm text-muted-foreground mt-0.5">Estado actual de todas las mesas</p>
         </div>
 
-        {/* Leyenda de estados */}
         <div className="flex flex-wrap gap-2">
-          <Badge className="bg-green-100 text-green-800 border-green-300">Disponible</Badge>
-          <Badge className="bg-red-100 text-red-800 border-red-300">Ocupada</Badge>
-          <Badge className="bg-blue-100 text-blue-800 border-blue-300">Reservada</Badge>
-          <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">Limpieza</Badge>
+          <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-0">Disponible</Badge>
+          <Badge variant="secondary" className="bg-red-500/10 text-red-700 dark:text-red-400 border-0">Ocupada</Badge>
+          <Badge variant="secondary" className="bg-blue-500/10 text-blue-700 dark:text-blue-400 border-0">Reservada</Badge>
+          <Badge variant="secondary" className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-0">Limpieza</Badge>
         </div>
       </div>
 
       {/* Mesas agrupadas por sección */}
       {Object.entries(groupedTables).map(([section, sectionTables]) => (
         <div key={section}>
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <MapPin className="h-5 w-5" />
+          <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-muted-foreground" />
             {section}
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {sectionTables.map((table) => (
-              <Card key={table.id} className={cn("transition-all duration-200", getStatusColor(table.status))}>
+              <Card key={table.id} className={cn("border-border/80 bg-card shadow-sm transition-all duration-200", getStatusColor(table.status))}>
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
                     <CardTitle className="text-lg">Mesa {table.number}</CardTitle>
@@ -148,13 +147,13 @@ export function Tables() {
                   )}
 
                   {table.currentReservation && (
-                    <div className="bg-white/50 p-3 rounded border">
-                      <p className="font-medium text-sm">{table.currentReservation.customerName}</p>
-                      <p className="text-xs text-gray-600">
+                    <div className="bg-muted/50 p-3 rounded-lg border border-border">
+                      <p className="font-medium text-sm text-foreground">{table.currentReservation.customerName}</p>
+                      <p className="text-xs text-muted-foreground">
                         {table.currentReservation.time} - {table.currentReservation.guests} personas
                       </p>
                       {table.currentReservation.specialRequests && (
-                        <p className="text-xs text-gray-500 mt-1 italic">{table.currentReservation.specialRequests}</p>
+                        <p className="text-xs text-muted-foreground mt-1 italic">{table.currentReservation.specialRequests}</p>
                       )}
                     </div>
                   )}

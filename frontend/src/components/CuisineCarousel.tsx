@@ -120,13 +120,13 @@ export default function CuisineCarousel() {
   };
 
   return (
-    <section id="cocinas" className="max-w-7xl mx-auto px-4 py-20">
+    <section id="cocinas" className="max-w-7xl mx-auto px-3 sm:px-4 py-12 sm:py-16 md:py-20 overflow-hidden">
       <motion.h3
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={transitionNormal}
-        className="text-3xl md:text-4xl font-bold mb-12 text-center text-black dark:text-white"
+        className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 sm:mb-12 text-center text-black dark:text-white"
       >
         Tipos de Cocina
       </motion.h3>
@@ -137,10 +137,10 @@ export default function CuisineCarousel() {
           onClick={prevSlide}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          className="absolute left-4 top-[calc(50%-2rem)] transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-blue-600 hover:text-blue-700 rounded-full p-4 shadow-xl hover:shadow-2xl transition-colors border-2 border-blue-300 dark:border-blue-600 dark:bg-gray-800/90"
+          className="absolute left-0 sm:left-4 top-[calc(50%-2rem)] transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-blue-600 hover:text-blue-700 rounded-full p-2.5 sm:p-4 shadow-xl hover:shadow-2xl transition-colors border-2 border-blue-300 dark:border-blue-600 dark:bg-gray-800/90"
         >
           <svg
-            className="w-7 h-7"
+            className="w-5 h-5 sm:w-7 sm:h-7"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -158,10 +158,10 @@ export default function CuisineCarousel() {
           onClick={nextSlide}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          className="absolute right-4 top-[calc(50%-2rem)] transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-blue-600 hover:text-blue-700 rounded-full p-4 shadow-xl hover:shadow-2xl transition-colors border-2 border-blue-300 dark:border-blue-600 dark:bg-gray-800/90"
+          className="absolute right-0 sm:right-4 top-[calc(50%-2rem)] transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-blue-600 hover:text-blue-700 rounded-full p-2.5 sm:p-4 shadow-xl hover:shadow-2xl transition-colors border-2 border-blue-300 dark:border-blue-600 dark:bg-gray-800/90"
         >
           <svg
-            className="w-7 h-7"
+            className="w-5 h-5 sm:w-7 sm:h-7"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -186,8 +186,8 @@ export default function CuisineCarousel() {
             {Array.from(
               { length: Math.ceil(cuisineTypes.length / 4) },
               (_, slideIndex) => (
-                <div key={slideIndex} className="w-full flex-shrink-0 px-8">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div key={slideIndex} className="w-full flex-shrink-0 px-2 sm:px-4 md:px-8 min-w-0">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                     {cuisineTypes
                       .slice(slideIndex * 4, (slideIndex + 1) * 4)
                       .map((category, index) => {
@@ -205,9 +205,9 @@ export default function CuisineCarousel() {
                             <Card
                               className={`${category.color} border-2 hover:shadow-xl cursor-pointer group dark:bg-gray-400/20 transition-shadow rounded-2xl`}
                             >
-                              <CardContent className="p-6 text-center">
-                                <IconComponent className="w-8 h-8 mx-auto mb-3 group-hover:scale-110 transition-transform duration-300" />
-                                <h4 className="font-semibold text-lg group-hover:scale-105 transition-transform duration-300">
+                              <CardContent className="p-4 sm:p-6 text-center min-w-0">
+                                <IconComponent className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300" />
+                                <h4 className="font-semibold text-sm sm:text-base md:text-lg group-hover:scale-105 transition-transform duration-300 break-words">
                                   {category.name}
                                 </h4>
                               </CardContent>

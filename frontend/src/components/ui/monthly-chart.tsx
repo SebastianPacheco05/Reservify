@@ -1,32 +1,32 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import type { MonthlyFlow } from "../../types/dashboard"
+import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import type { MonthlyFlow } from "@/types/dashboard";
 
 interface MonthlyChartProps {
-  data: MonthlyFlow[]
+  data: MonthlyFlow[];
 }
 
 export function MonthlyChart({ data }: MonthlyChartProps) {
-  const maxVisitors = Math.max(...data.map((d) => d.visitors))
+  const maxVisitors = Math.max(...data.map((d) => d.visitors), 1);
 
   return (
-    <Card>
+    <Card className="border-border/80 bg-card shadow-sm">
       <CardHeader>
-        <CardTitle>Flujo de Visitantes Mensual</CardTitle>
+        <CardTitle className="text-base font-semibold">Flujo de visitantes</CardTitle>
+        <p className="text-sm text-muted-foreground">Últimos meses</p>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-5">
           {data.map((item, index) => (
-            <div key={index} className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">{item.month}</span>
-                <div className="text-right">
-                  <div className="text-sm font-medium">{item.visitors.toLocaleString()}</div>
-                  <div className="text-xs text-muted-foreground">{item.reservations} reservas</div>
-                </div>
+            <div key={`${item.month}-${index}`} className="space-y-2">
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-medium text-foreground">{item.month}</span>
+                <span className="text-muted-foreground">
+                  {item.visitors.toLocaleString()} visitantes · {item.reservations} reservas
+                </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="h-2.5 w-full rounded-full bg-muted overflow-hidden">
                 <div
-                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                  className="h-full rounded-full bg-primary/80 transition-all duration-500 ease-out min-w-[4px]"
                   style={{ width: `${(item.visitors / maxVisitors) * 100}%` }}
                 />
               </div>
@@ -35,5 +35,5 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

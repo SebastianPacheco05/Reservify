@@ -68,59 +68,63 @@ export function Bills() {
   const totalPaid = bills.filter((b) => b.status === "paid").reduce((acc, bill) => acc + bill.total, 0)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Cuentas</h1>
-        <p className="text-gray-600">Gestión de cuentas y pagos</p>
+        <h2 className="text-xl font-semibold text-foreground">Cuentas</h2>
+        <p className="text-sm text-muted-foreground mt-0.5">Gestión de cuentas y pagos</p>
       </div>
 
-      {/* Resumen de cuentas */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+        <Card className="border-border/80 bg-card shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Cuentas Abiertas</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Cuentas abiertas</CardTitle>
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
+              <Clock className="h-4 w-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">${totalOpen.toFixed(2)}</div>
+            <div className="text-2xl font-bold tracking-tight text-foreground">${totalOpen.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">{bills.filter((b) => b.status === "open").length} cuentas</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-border/80 bg-card shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pendientes de Pago</CardTitle>
-            <AlertCircle className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Pendientes de pago</CardTitle>
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+              <AlertCircle className="h-4 w-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">${totalPending.toFixed(2)}</div>
+            <div className="text-2xl font-bold tracking-tight text-foreground">${totalPending.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">
               {bills.filter((b) => b.status === "pending").length} cuentas
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-border/80 bg-card shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pagadas Hoy</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Pagadas hoy</CardTitle>
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <CheckCircle className="h-4 w-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">${totalPaid.toFixed(2)}</div>
+            <div className="text-2xl font-bold tracking-tight text-foreground">${totalPaid.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">{bills.filter((b) => b.status === "paid").length} cuentas</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Lista de cuentas */}
       <div className="space-y-4">
         {bills.map((bill) => (
-          <Card key={bill.id}>
+          <Card key={bill.id} className="border-border/80 bg-card shadow-sm">
             <CardHeader>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                 <div>
-                  <CardTitle className="text-lg">Cuenta #{bill.id}</CardTitle>
-                  <p className="text-sm text-gray-600">Mesa {bill.tableNumber}</p>
+                  <CardTitle className="text-base font-semibold text-foreground">Cuenta #{bill.id}</CardTitle>
+                  <p className="text-sm text-muted-foreground">Mesa {bill.tableNumber}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   {getStatusBadge(bill.status)}
@@ -130,8 +134,7 @@ export function Bills() {
             </CardHeader>
 
             <CardContent className="space-y-4">
-              {/* Detalles de la cuenta */}
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-muted/30 rounded-lg p-4 border border-border">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -170,7 +173,7 @@ export function Bills() {
               </div>
 
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-muted-foreground">
                   <p>Creada: {new Date(bill.createdAt).toLocaleString("es-ES")}</p>
                   {bill.paidAt && <p>Pagada: {new Date(bill.paidAt).toLocaleString("es-ES")}</p>}
                 </div>

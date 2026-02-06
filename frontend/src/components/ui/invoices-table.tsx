@@ -1,78 +1,90 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
-import { Badge } from "../ui/badge"
-import { Button } from "../ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { Download, Eye, Send } from "lucide-react"
-import type { Invoice } from "../../types/dashboard"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./table";
+import { Badge } from "./badge";
+import { Button } from "./button";
+import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { Download, Eye, Send } from "lucide-react";
+import type { Invoice } from "@/types/dashboard";
 
 interface InvoicesTableProps {
-  invoices: Invoice[]
+  invoices: Invoice[];
 }
 
-const statusColors = {
-  paid: "bg-green-500 hover:bg-green-600",
-  pending: "bg-yellow-500 hover:bg-yellow-600",
-  overdue: "bg-red-500 hover:bg-red-600",
-}
-
-const statusLabels = {
-  paid: "Pagada",
-  pending: "Pendiente",
-  overdue: "Vencida",
-}
+const statusConfig = {
+  paid: { label: "Pagada", className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-0" },
+  pending: { label: "Pendiente", className: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-0" },
+  overdue: { label: "Vencida", className: "bg-red-500/10 text-red-700 dark:text-red-400 border-0" },
+};
 
 export function InvoicesTable({ invoices }: InvoicesTableProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Facturas</CardTitle>
+    <Card className="border-border/80 bg-card shadow-sm overflow-hidden">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-base font-semibold">Facturas recientes</CardTitle>
+        <p className="text-sm text-muted-foreground">Gestiona y descarga tus facturas</p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-0 pb-0 pt-0">
         <div className="overflow-x-auto">
-          <Table>
+          <Table className="[&_th]:px-3 [&_td]:px-3 sm:[&_th]:px-6 sm:[&_td]:px-6">
             <TableHeader>
-              <TableRow>
-                <TableHead>Número</TableHead>
-                <TableHead>Restaurante</TableHead>
-                <TableHead>Monto</TableHead>
-                <TableHead>Fecha</TableHead>
-                <TableHead>Vencimiento</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Acciones</TableHead>
+              <TableRow className="border-border/80 hover:bg-transparent">
+                <TableHead className="font-semibold text-muted-foreground">Número</TableHead>
+                <TableHead className="font-semibold text-muted-foreground">Restaurante</TableHead>
+                <TableHead className="font-semibold text-muted-foreground">Monto</TableHead>
+                <TableHead className="font-semibold text-muted-foreground">Fecha</TableHead>
+                <TableHead className="font-semibold text-muted-foreground">Vencimiento</TableHead>
+                <TableHead className="font-semibold text-muted-foreground">Estado</TableHead>
+                <TableHead className="font-semibold text-muted-foreground text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {invoices.map((invoice) => (
-                <TableRow key={invoice.id}>
-                  <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
-                  <TableCell>{invoice.restaurantName}</TableCell>
-                  <TableCell>${invoice.amount.toLocaleString()}</TableCell>
-                  <TableCell>{new Date(invoice.date).toLocaleDateString()}</TableCell>
-                  <TableCell>{new Date(invoice.dueDate).toLocaleDateString()}</TableCell>
-                  <TableCell>
-                    <Badge className={statusColors[invoice.status]}>{statusLabels[invoice.status]}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        <Download className="h-4 w-4" />
-                      </Button>
-                      {invoice.status === "pending" && (
-                        <Button size="sm" variant="outline">
-                          <Send className="h-4 w-4" />
+              {invoices.map((invoice) => {
+                const status = statusConfig[invoice.status];
+                return (
+                  <TableRow
+                    key={invoice.id}
+                    className="border-border/60 hover:bg-muted/50 transition-colors"
+                  >
+                    <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
+                    <TableCell className="text-muted-foreground">{invoice.restaurantName}</TableCell>
+                    <TableCell className="font-medium">${invoice.amount.toLocaleString()}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {new Date(invoice.date).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {new Date(invoice.dueDate).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={status.className}>{status.label}</Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0" aria-label="Ver">
+                          <Eye className="h-4 w-4" />
                         </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0" aria-label="Descargar">
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        {invoice.status === "pending" && (
+                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0" aria-label="Enviar">
+                            <Send className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

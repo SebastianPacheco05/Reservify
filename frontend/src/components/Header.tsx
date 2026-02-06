@@ -30,21 +30,24 @@ export default function Header({
       transition={transitionNormal}
       className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl fixed top-0 w-full z-50 shadow-lg border-b border-slate-200/80 dark:border-gray-700/80 transition-colors duration-300"
     >
-      <div className="max-w-7xl mx-auto flex justify-between items-center px-4 h-16">
+      <div className="max-w-7xl mx-auto flex justify-between items-center px-3 sm:px-4 h-14 sm:h-16 gap-2">
         <motion.div
-          className="flex items-center space-x-2"
+          className="flex items-center shrink-0 min-w-0 max-w-[180px] sm:max-w-[220px]"
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 17 }}
         >
           <img
             src="/logoreservify.png"
-            className="w-full dark:w-full dark:invert h-15"
-            alt="Reservify Logo"
+            width="140"
+            height="32"
+            className="w-full h-8 sm:h-9 object-contain object-left dark:invert"
+            alt="Reservify - Reserva en tu restaurante favorito"
+            fetchPriority="low"
           />
         </motion.div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
+        <nav className="hidden md:flex items-center space-x-4 lg:space-x-8 shrink-0">
           <motion.a
             href="#restaurantes"
             className="text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium"

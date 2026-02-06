@@ -1,16 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reservify</title>
+    <link rel="apple-touch-icon" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+    <meta name="description" content="Reserva en tu restaurante favorito. Desde comida gourmet hasta cocina casera, encuentra el lugar ideal para cada ocasión." />
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
+    <meta name="robots" content="index, follow" />
+    <title>Reservify – Reserva en tu restaurante favorito</title>
+    <!-- Preconnect a orígenes externos para reducir latencia -->
+    <link rel="preconnect" href="https://checkout.wompi.co" crossorigin />
+    <!-- Wompi se carga en defer para no bloquear el LCP -->
+    <script src="https://checkout.wompi.co/widget.js" defer></script>
   </head>
 
   <body>
-    <div id="root"></div>
-
-    <script src="https://checkout.wompi.co/widget.js"></script>
+    <div id="root">
+      <noscript>Activa JavaScript para usar Reservify.</noscript>
+      <!-- Contenido mínimo para FCP; React lo reemplaza al cargar -->
+      <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;color:#666;font-size:1rem;" id="app-loading">Cargando Reservify…</div>
+    </div>
 
     <script type="module" src="/src/main.tsx"></script>
   </body>

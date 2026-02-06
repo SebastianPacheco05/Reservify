@@ -18,6 +18,7 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
 import { useToastContext } from "../components/ToastProvider";
+import { startProactiveRefresh } from "../services/authService";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -45,6 +46,9 @@ export default function Login() {
       localStorage.setItem("refresh_token", data.refresh_token);
       localStorage.setItem("token_type", data.token_type ?? "bearer");
       localStorage.setItem("tipo_usuario", data.tipo_usuario);
+
+      // Iniciar renovación proactiva del token (sin salir de la página)
+      startProactiveRefresh();
 
       // 🔑 Redirigir a la ruta que devuelve el backend
       if (data.redirect_to) {

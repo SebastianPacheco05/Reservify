@@ -24,6 +24,7 @@ from routes.searchBox import app as searchBox_router
 from routes.data_owner import router as data_owner_router
 from routes.enc_fac_reserva import router as enc_fac_reserva_router
 from routes.wompi import router as wompi_router
+from routes.restaurantes_map import router as restaurantes_map_router
 
 
 
@@ -78,6 +79,7 @@ app.include_router(mesas_router)
 app.include_router(register_router)
 app.include_router(top_router)
 app.include_router(searchBox_router)
+app.include_router(restaurantes_map_router)
 
 # Contactanos
 @app.post("/contactanos")

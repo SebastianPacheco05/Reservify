@@ -1,61 +1,68 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { Badge } from "../ui/badge"
-import { Button } from "../ui/button"
-import { Star, MapPin, Users, Settings } from "lucide-react"
-import type { Restaurant } from "../../types/dashboard"
+import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { Badge } from "./badge";
+import { Button } from "./button";
+import { MapPin, Settings, Star, Users } from "lucide-react";
+import type { Restaurant } from "@/types/dashboard";
 
 interface RestaurantsGridProps {
-  restaurants: Restaurant[]
+  restaurants: Restaurant[];
 }
 
 export function RestaurantsGrid({ restaurants }: RestaurantsGridProps) {
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
       {restaurants.map((restaurant) => (
-        <Card key={restaurant.id} className="overflow-hidden">
-          <div className="aspect-video relative">
+        <Card
+          key={restaurant.id}
+          className="overflow-hidden border-border/80 bg-card shadow-sm transition-all hover:shadow-md"
+        >
+          <div className="aspect-[2/1] relative bg-muted">
             <img
               src={restaurant.image || "/placeholder.svg"}
               alt={restaurant.name}
-              className="w-full h-full object-cover"
+              className="h-full w-full object-cover"
             />
             <Badge
-              className={`absolute top-2 right-2 ${
-                restaurant.status === "active" ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
+              className={`absolute top-3 right-3 ${
+                restaurant.status === "active"
+                  ? "bg-emerald-500/90 text-white border-0 hover:bg-emerald-600"
+                  : "bg-muted-foreground/80 text-white border-0"
               }`}
             >
               {restaurant.status === "active" ? "Activo" : "Inactivo"}
             </Badge>
           </div>
 
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>{restaurant.name}</span>
-              <div className="flex items-center gap-1">
-                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                <span className="text-sm">{restaurant.rating}</span>
-              </div>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center justify-between gap-2 text-base">
+              <span className="truncate">{restaurant.name}</span>
+              <span className="flex items-center gap-1 shrink-0 text-muted-foreground font-normal">
+                <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                {restaurant.rating}
+              </span>
             </CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                {restaurant.location}
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 shrink-0" />
+                <span className="truncate">{restaurant.location}</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Users className="h-4 w-4" />
-                {restaurant.totalTables} mesas disponibles
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 shrink-0" />
+                {restaurant.totalTables} mesas
               </div>
-              <Badge variant="outline">{restaurant.cuisine}</Badge>
+              <Badge variant="secondary" className="font-normal">
+                {restaurant.cuisine}
+              </Badge>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 pt-1">
               <Button size="sm" className="flex-1">
-                Ver Reservas
+                Ver reservas
               </Button>
-              <Button size="sm" variant="outline">
+              <Button size="sm" variant="outline" aria-label="Configuración">
                 <Settings className="h-4 w-4" />
               </Button>
             </div>
@@ -63,5 +70,5 @@ export function RestaurantsGrid({ restaurants }: RestaurantsGridProps) {
         </Card>
       ))}
     </div>
-  )
+  );
 }

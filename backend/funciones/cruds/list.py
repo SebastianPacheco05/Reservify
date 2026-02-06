@@ -1,5 +1,7 @@
+import math
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from sqlalchemy.exc import ProgrammingError
 
 
 def obtener_rol(db: Session, id_rol: int):
@@ -190,6 +192,75 @@ def obtener_restaurantes(db: Session):
         }
         for row in rows
     ]
+
+
+def obtener_restaurantes_para_mapa(db: Session, lat_usuario: float = 4.6097, lng_usuario: float = -74.0817):
+    """
+    Devuelve restaurantes con coordenadas para el mapa.
+    Si existe la tabla MAPA y tiene filas, se usan lat/lng reales; si no, se generan coordenadas cercanas al usuario.
+    Si la tabla MAPA no existe (migración no ejecutada), se usa solo Restaurante y coordenadas generadas.
+    """
+    try:
+        result = db.execute(
+            text("""
+                SELECT r.nit, r.nombre_restaurante, r.direccion, m.lat, m.lng
+                FROM "Restaurante" r
+                LEFT JOIN "MAPA" m ON r.nit = m.nit
+                ORDER BY r.nit
+            """)
+        )
+        rows = result.fetchall()
+    except ProgrammingError:
+        rows = None
+    if rows is None:
+        raw = obtener_restaurantes(db)
+        out = []
+        for i, r in enumerate(raw):
+            offset_km = 0.02 * (i + 1)
+            angle = (i * 0.7) % (2 * math.pi)
+            lat = lat_usuario + (offset_km / 111) * math.cos(angle)
+            lng = lng_usuario + (offset_km / (111 * math.cos(math.radians(lat_usuario)))) * math.sin(angle)
+            out.append({
+                "nit": r["nit"],
+                "nombre_restaurante": r.get("nombre_restaurante", ""),
+                "direccion": r.get("direccion"),
+                "lat": lat,
+                "lng": lng,
+            })
+        return out
+    out = []
+    for i, row in enumerate(rows):
+        nit, nombre_restaurante, direccion, lat_bd, lng_bd = row
+        if lat_bd is not None and lng_bd is not None:
+            lat, lng = float(lat_bd), float(lng_bd)
+        else:
+            offset_km = 0.02 * (i + 1)
+            angle = (i * 0.7) % (2 * math.pi)
+            lat = lat_usuario + (offset_km / 111) * math.cos(angle)
+            lng = lng_usuario + (offset_km / (111 * math.cos(math.radians(lat_usuario)))) * math.sin(angle)
+        out.append({
+            "nit": nit,
+            "nombre_restaurante": nombre_restaurante or "",
+            "direccion": direccion,
+            "lat": lat,
+            "lng": lng,
+        })
+    return out
+
+
+def upsert_mapa(db: Session, nit: int, lat: float, lng: float):
+    """
+    Inserta o actualiza las coordenadas de un restaurante en la tabla MAPA.
+    """
+    db.execute(
+        text("""
+            INSERT INTO "MAPA" (nit, lat, lng)
+            VALUES (:nit, :lat, :lng)
+            ON CONFLICT (nit) DO UPDATE SET lat = :lat, lng = :lng
+        """),
+        {"nit": nit, "lat": lat, "lng": lng},
+    )
+    db.commit()
 
 
 def obtener_mesa(db: Session, id_mesa: int):

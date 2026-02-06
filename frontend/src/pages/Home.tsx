@@ -1,14 +1,16 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import Header from "../components/Header";
 import HeroSection from "../components/HeroSection";
-import CuisineCarousel from "../components/CuisineCarousel";
-import RestaurantGrid from "../components/RestaurantGrid";
-import FeaturesSection from "../components/FeaturesSection";
-import CTASection from "../components/CTASection";
-import Footer from "../components/Footer";
+
+const CuisineCarousel = lazy(() => import("../components/CuisineCarousel"));
+const RestaurantGrid = lazy(() => import("../components/RestaurantGrid"));
+const RestaurantMap = lazy(() => import("../components/RestaurantMap"));
+const FeaturesSection = lazy(() => import("../components/FeaturesSection"));
+const CTASection = lazy(() => import("../components/CTASection"));
+const Footer = lazy(() => import("../components/Footer"));
 
 // Estilos CSS personalizados para la animación de color y brillos
 
@@ -19,6 +21,7 @@ export default function Home() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredCuisines, setFilteredCuisines] = useState<string[]>([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showMapByLocation, setShowMapByLocation] = useState(false);
 
 
   useEffect(() => {
@@ -114,6 +117,13 @@ export default function Home() {
     }
   };
 
+  const handleUseMyLocation = () => {
+    setShowMapByLocation(true);
+    setTimeout(() => {
+      document.getElementById("mapa-ubicacion")?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
+
   const handleLogout = () => {
     // Eliminar token del localStorage
     localStorage.removeItem("access_token");
@@ -126,7 +136,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+    <main className="min-h-screen overflow-x-hidden bg-gradient-to-br from-blue-50 to-green-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
       <Header
         isMenuOpen={isMenuOpen}
         setIsMenuOpen={setIsMenuOpen}
@@ -144,17 +154,41 @@ export default function Home() {
         filteredCuisines={filteredCuisines}
         onSearch={handleSearch}
         onSearchSubmit={handleSearchSubmit}
+        onUseMyLocation={handleUseMyLocation}
       />
 
-      <CuisineCarousel />
+      {showMapByLocation && (
+        <section id="mapa-ubicacion" className="scroll-mt-20 px-4 sm:px-6 md:px-8 py-12">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-2xl font-bold text-center mb-6 text-slate-800 dark:text-slate-100">
+              Restaurantes cerca de ti
+            </h2>
+            <Suspense fallback={<div className="min-h-[300px] flex items-center justify-center text-slate-500">Cargando mapa…</div>}>
+              <RestaurantMap />
+            </Suspense>
+          </div>
+        </section>
+      )}
 
-      <RestaurantGrid />
+      <Suspense fallback={<div className="min-h-[120px]" aria-hidden="true" />}>
+        <CuisineCarousel />
+      </Suspense>
 
-      <FeaturesSection />
+      <Suspense fallback={<div className="min-h-[280px]" aria-hidden="true" />}>
+        <RestaurantGrid />
+      </Suspense>
 
-      <CTASection />
+      <Suspense fallback={<div className="min-h-[200px]" aria-hidden="true" />}>
+        <FeaturesSection />
+      </Suspense>
 
-      <Footer />
+      <Suspense fallback={<div className="min-h-[180px]" aria-hidden="true" />}>
+        <CTASection />
+      </Suspense>
+
+      <Suspense fallback={<footer className="min-h-[200px] bg-slate-100 dark:bg-slate-800" aria-hidden="true" />}>
+        <Footer />
+      </Suspense>
     </main>
   );
 }

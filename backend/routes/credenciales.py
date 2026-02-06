@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException
 from sqlalchemy.orm import Session
 from config import get_db
 from funciones.auth.login import login_usuario, renovar_token
+from funciones.auth.get_user_role import obtener_rol_usuario
+from funciones.auth.dependencies import verificar_token
 from funciones.cruds import credenciales
 from models import CredencialBase, CredencialUpdate, CredencialDelete, login, RefreshTokenRequest
 
@@ -19,6 +21,26 @@ def refresh_access_token(input: RefreshTokenRequest, request: Request, db: Sessi
     Endpoint para renovar el access token usando un refresh token válido
     """
     return renovar_token(db, input.refresh_token, request)
+
+
+@router.get("/me/role")
+def get_current_user_role(
+    current_user: dict = Depends(verificar_token),
+    db: Session = Depends(get_db)
+):
+    """
+    Obtiene el rol del usuario actual basado en su token.
+    Solo accesible para usuarios autenticados.
+    """
+    id_credencial = current_user.get("id")
+    if not id_credencial:
+        raise HTTPException(status_code=401, detail="Token inválido")
+    
+    rol_info = obtener_rol_usuario(db, id_credencial)
+    if not rol_info:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    return rol_info
 
 
 @router.put("/editarcredencial")

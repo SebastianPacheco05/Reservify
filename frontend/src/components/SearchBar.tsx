@@ -77,11 +77,11 @@ export default function SearchBar({
   }, [searchQuery, setShowSuggestions]);
 
   return (
-    <div className="search-container relative w-full max-w-4xl mx-auto mb-8">
+    <div className="search-container relative w-full max-w-4xl mx-auto mb-6 sm:mb-8 px-0 sm:px-2 min-w-0">
       <form onSubmit={onSearchSubmit} className="relative">
-        <div className="relative group">
+        <div className="relative group min-w-0">
           {/* Icono de búsqueda */}
-          <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-blue-400 w-7 h-7 group-hover:text-blue-600 transition-all duration-300 z-10 pointer-events-none" />
+          <Search className="absolute left-3 sm:left-6 top-1/2 transform -translate-y-1/2 text-blue-400 w-5 h-5 sm:w-7 sm:h-7 group-hover:text-blue-600 transition-all duration-300 z-10 pointer-events-none" />
 
           {/* Input principal: más grande y cómodo */}
           <Input
@@ -89,13 +89,13 @@ export default function SearchBar({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="¿Qué tipo de cocina te apetece hoy?"
-            className="w-full min-h-[4.5rem] pl-[3.25rem] pr-[6.5rem] py-4 text-xl sm:text-2xl rounded-3xl border-2 border-blue-200 dark:border-blue-600 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-xl transition-all duration-300 hover:shadow-blue-200/30 focus:shadow-blue-300/40 group-hover:border-blue-300 dark:text-white dark:placeholder-gray-400 placeholder:text-base sm:placeholder:text-lg"
+            className="w-full min-h-[3.25rem] sm:min-h-[4.5rem] pl-10 sm:pl-[3.25rem] pr-20 sm:pr-[6.5rem] py-3 sm:py-4 text-base sm:text-xl md:text-2xl rounded-2xl sm:rounded-3xl border-2 border-blue-200 dark:border-blue-600 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-xl transition-all duration-300 hover:shadow-blue-200/30 focus:shadow-blue-300/40 group-hover:border-blue-300 dark:text-white dark:placeholder-gray-400 placeholder:text-sm sm:placeholder:text-base md:placeholder:text-lg"
           />
 
           {/* Botón Buscar más grande */}
           <Button
             type="submit"
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-2xl bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 transition-all duration-300 hover:scale-105 shadow-lg"
+            className="absolute right-1.5 sm:right-2 top-1/2 transform -translate-y-1/2 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold text-sm sm:text-base md:text-lg px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 transition-all duration-300 hover:scale-105 shadow-lg"
           >
             Buscar
           </Button>
@@ -111,7 +111,7 @@ export default function SearchBar({
             className="absolute top-full left-0 right-0 mt-2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 max-h-64 overflow-y-auto z-50"
           >
             <div className="p-4">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                 {filteredCuisines.slice(0, 12).map((cuisine, index) => (
                   <button
                     key={index}
@@ -145,7 +145,7 @@ export default function SearchBar({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="absolute top-full left-0 right-0 mt-5 flex flex-row flex-nowrap justify-center items-center gap-3 sm:gap-4 overflow-x-auto pb-1"
+            className="absolute top-full left-0 right-0 mt-4 sm:mt-5 flex flex-row flex-nowrap justify-start sm:justify-center items-center gap-2 sm:gap-4 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin"
           >
             {["Italiana", "Japonesa", "Mexicana", "Mediterránea"].map(
               (cuisine, index) => (

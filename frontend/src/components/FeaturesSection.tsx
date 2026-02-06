@@ -31,17 +31,17 @@ export default function FeaturesSection() {
   return (
     <section
       id="acerca_de"
-      className="py-24 px-4 bg-gradient-to-r from-slate-50 via-blue-50/50 to-emerald-50 dark:from-gray-800 dark:via-gray-850 dark:to-gray-900 transition-colors duration-300"
+      className="py-16 sm:py-20 md:py-24 px-4 sm:px-6 bg-gradient-to-r from-slate-50 via-blue-50/50 to-emerald-50 dark:from-gray-800 dark:via-gray-850 dark:to-gray-900 transition-colors duration-300"
     >
       <div className="max-w-7xl mx-auto">
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-14 md:mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={transitionNormal}
         >
-          <h3 className="text-3xl md:text-4xl font-bold text-black dark:text-white mb-4">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black dark:text-white mb-4">
             ¿Por qué elegir Reservify?
           </h3>
           <p className="text-slate-600 dark:text-gray-300 text-lg max-w-xl mx-auto">
@@ -50,7 +50,7 @@ export default function FeaturesSection() {
         </motion.div>
 
         <motion.div
-          className="grid md:grid-cols-3 gap-10"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-10"
           variants={staggerContainer}
           initial="initial"
           whileInView="animate"

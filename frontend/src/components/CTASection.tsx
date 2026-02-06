@@ -6,7 +6,7 @@ import { fadeInUp, transitionNormal } from "../lib/animations";
 export default function CTASection() {
   return (
     <motion.section
-      className="bg-gradient-to-r from-blue-600 via-blue-500 to-emerald-600 text-white py-24 px-4 relative overflow-hidden"
+      className="bg-gradient-to-r from-blue-600 via-blue-500 to-emerald-600 text-white py-16 sm:py-20 md:py-24 px-4 sm:px-6 relative overflow-hidden"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
@@ -15,7 +15,7 @@ export default function CTASection() {
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
       <div className="max-w-4xl mx-auto text-center relative z-10">
         <motion.h3
-          className="text-4xl md:text-5xl font-bold mb-6"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 break-words"
           variants={fadeInUp}
           initial="initial"
           whileInView="animate"
@@ -25,7 +25,7 @@ export default function CTASection() {
           ¿Listo para tu próxima experiencia culinaria?
         </motion.h3>
         <motion.p
-          className="text-xl mb-10 text-blue-100"
+          className="text-base sm:text-lg md:text-xl mb-8 sm:mb-10 text-blue-100 px-2"
           variants={fadeInUp}
           initial="initial"
           whileInView="animate"

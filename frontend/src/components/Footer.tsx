@@ -11,11 +11,11 @@ export default function Footer() {
       whileInView={{ opacity: 1 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.5 }}
-      className="bg-slate-900 dark:bg-black text-white py-16 px-4"
+      className="bg-slate-900 dark:bg-black text-white py-12 sm:py-16 px-4 sm:px-6"
     >
       <div className="max-w-7xl mx-auto">
         <motion.div
-          className="grid md:grid-cols-4 gap-10 mb-10"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 mb-8 sm:mb-10"
           variants={staggerContainer}
           initial="initial"
           whileInView="animate"

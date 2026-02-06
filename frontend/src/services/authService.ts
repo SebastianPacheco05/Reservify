@@ -1,67 +1,87 @@
 /**
- * Servicio de autenticación con renovación automática de tokens
+ * Servicio de autenticación con renovación automática de tokens.
+ * - Renovación proactiva: refresca el token antes de que expire sin sacar de la página.
+ * - Renovación reactiva: si una petición devuelve 401, intenta refresh y reintenta.
  */
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://10.5.213.111:1106";
+/** Access token dura 30 min; refrescamos cada 25 min para no llegar al 401 */
+const PROACTIVE_REFRESH_INTERVAL_MS = 25 * 60 * 1000;
+
 let isRefreshing = false;
 let refreshSubscribers: Array<(token: string) => void> = [];
+let proactiveRefreshTimerId: ReturnType<typeof setInterval> | null = null;
 
-/**
- * Agrega un callback a la cola de espera para cuando se renueve el token
- */
 function subscribeTokenRefresh(callback: (token: string) => void) {
   refreshSubscribers.push(callback);
 }
 
-/**
- * Notifica a todos los callbacks en espera que el token se renovó
- */
 function onTokenRefreshed(token: string) {
   refreshSubscribers.forEach((callback) => callback(token));
   refreshSubscribers = [];
 }
 
 /**
- * Renueva el access token usando el refresh token
+ * Renueva el access token usando el refresh_token. No redirige a login;
+ * solo devuelve null si falla (el llamador decide si sacar al usuario).
  */
 async function refreshAccessToken(): Promise<string | null> {
   const refreshToken = localStorage.getItem("refresh_token");
-  
-  if (!refreshToken) {
-    console.error("No hay refresh token disponible");
-    return null;
-  }
+  if (!refreshToken) return null;
 
   try {
     const response = await fetch(`${API_BASE_URL}/credenciales/refresh`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refresh_token: refreshToken }),
     });
 
     if (!response.ok) {
-      // Si el refresh token también expiró, redirigir al login
-      console.error("Refresh token inválido o expirado");
-      localStorage.clear();
-      window.location.href = "/login";
       return null;
     }
 
     const data = await response.json();
     const newAccessToken = data.access_token;
-    
-    // Guardar el nuevo access token
-    localStorage.setItem("access_token", newAccessToken);
-    
+    if (newAccessToken) {
+      localStorage.setItem("access_token", newAccessToken);
+    }
     return newAccessToken;
-  } catch (error) {
-    console.error("Error al renovar token:", error);
-    localStorage.clear();
-    window.location.href = "/login";
+  } catch {
     return null;
   }
+}
+
+/**
+ * Refresco proactivo: se ejecuta en intervalo para renovar el token sin que
+ * el usuario reciba 401. Solo redirige a login si el refresh falla (token revocado/expirado).
+ */
+async function runProactiveRefresh(): Promise<void> {
+  if (!localStorage.getItem("refresh_token")) return;
+  const newToken = await refreshAccessToken();
+  if (newToken) return;
+  // Refresh falló: sesión inválida o expirada; solo entonces sacar de la página
+  clearProactiveRefresh();
+  localStorage.clear();
+  window.location.href = "/Login";
+}
+
+function clearProactiveRefresh(): void {
+  if (proactiveRefreshTimerId !== null) {
+    clearInterval(proactiveRefreshTimerId);
+    proactiveRefreshTimerId = null;
+  }
+}
+
+/**
+ * Activa el refresco proactivo si hay sesión. Llamar al cargar la app o tras login.
+ * El token se renovará cada 25 min sin salir de la página.
+ */
+export function startProactiveRefresh(): void {
+  if (!localStorage.getItem("refresh_token") || !localStorage.getItem("access_token")) {
+    return;
+  }
+  if (proactiveRefreshTimerId !== null) return;
+  proactiveRefreshTimerId = setInterval(runProactiveRefresh, PROACTIVE_REFRESH_INTERVAL_MS);
 }
 
 /**
@@ -107,14 +127,13 @@ export async function authFetch(url: string, options: RequestInit = {}): Promise
       isRefreshing = false;
 
       if (newToken) {
-        // Notificar a todas las solicitudes en espera
         onTokenRefreshed(newToken);
-        
-        // Reintentar la solicitud original con el nuevo token
         headers.Authorization = `Bearer ${newToken}`;
         response = await fetch(url, { ...options, headers });
       } else {
-        // Si no se pudo renovar, redirigir al login
+        clearProactiveRefresh();
+        localStorage.clear();
+        window.location.href = "/Login";
         throw new Error("Sesión expirada. Por favor, inicia sesión nuevamente.");
       }
     }
@@ -124,14 +143,15 @@ export async function authFetch(url: string, options: RequestInit = {}): Promise
 }
 
 /**
- * Cierra la sesión del usuario
+ * Cierra la sesión del usuario y detiene el refresco proactivo
  */
 export function logout() {
+  clearProactiveRefresh();
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
   localStorage.removeItem("token_type");
   localStorage.removeItem("tipo_usuario");
-  window.location.href = "/login";
+  window.location.href = "/Login";
 }
 
 /**

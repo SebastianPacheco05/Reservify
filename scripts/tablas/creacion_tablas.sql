@@ -13,6 +13,7 @@ DROP TABLE IF EXISTS "Comentarios";
 DROP TABLE IF EXISTS "Cliente";
 DROP TABLE IF EXISTS "Mesas";
 DROP TABLE IF EXISTS "Calculos_mensuales";
+DROP TABLE IF EXISTS "MAPA";
 DROP TABLE IF EXISTS "Restaurante";
 DROP TABLE IF EXISTS "Dueno";
 DROP TABLE IF EXISTS "Roles";
@@ -70,6 +71,14 @@ CREATE TABLE "Restaurante" (
     foreign key (id_categoria) references "Categorias" (id_categoria) ON DELETE CASCADE,
     FOREIGN KEY (documento) REFERENCES "Dueno" (documento) ON DELETE CASCADE,
     CHECK (horario_apertura < horario_cierre)  -- Validación de horarios
+);
+
+-- Tabla MAPA: coordenadas GPS para mostrar cada restaurante en el mapa
+CREATE TABLE "MAPA" (
+    nit DECIMAL(10, 0) NOT NULL PRIMARY KEY,
+    lat DOUBLE PRECISION NOT NULL,
+    lng DOUBLE PRECISION NOT NULL,
+    FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
 );
 
 -- Tabla Mesas: Almacena información de las mesas de cada restaurante
@@ -168,18 +177,22 @@ CREATE TABLE "Comentarios" (
     FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
 );
 
--- Tabla JWT_Tokens: Almacena tokens JWT (generalmente de refresco) para autenticación segura
+-- Tabla JWT_Tokens: Una fila por sesión. token = access token, refresh_token = token de refresco.
+-- Permite renovar el access token sin cerrar sesión buscando por refresh_token.
 CREATE TABLE "jwt_tokens" (
-    id SERIAL PRIMARY KEY NOT NULL,  -- Identificador único del token
-    id_credencial INT NOT NULL,  -- Referencia a la tabla de credenciales
-    token TEXT NOT NULL,  -- Token JWT (por ejemplo, token de refresco)
-    issued_at TIMESTAMP NOT NULL DEFAULT NOW(),  -- Fecha de emisión del token
-    expires_at TIMESTAMP NOT NULL,  -- Fecha de expiración
-    revoked BOOLEAN NOT NULL DEFAULT FALSE,  -- Si el token fue revocado antes de expirar
-    user_agent TEXT,  -- (Opcional) Información del navegador o dispositivo
-    ip_address TEXT,  -- (Opcional) Dirección IP del usuario
-    created_at TIMESTAMP DEFAULT NOW(),  -- Registro de creación
-    updated_at TIMESTAMP DEFAULT NOW(),  -- Última modificación
+    id SERIAL PRIMARY KEY NOT NULL,
+    id_credencial INT NOT NULL,
+    token TEXT NOT NULL,  -- Access token (se actualiza en cada refresh)
+    refresh_token TEXT NOT NULL UNIQUE,  -- Token de refresco; búsqueda por este valor al renovar
+    issued_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    expires_at TIMESTAMP NOT NULL,  -- Expiración del access token
+    refresh_expires_at TIMESTAMP NOT NULL,  -- Expiración del refresh token
+    revoked BOOLEAN NOT NULL DEFAULT FALSE,
+    user_agent TEXT,
+    ip_address TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
 );
+CREATE UNIQUE INDEX idx_jwt_tokens_refresh_token ON "jwt_tokens" (refresh_token);
 

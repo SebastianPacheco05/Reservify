@@ -42,15 +42,17 @@ def login_usuario(db: Session, email: str, password: str, request: Request):
         # Generar refresh token (7 días)
         refresh_token, refresh_expires_at = crear_refresh_token(token_data)
 
-        # Insertar access token en BD
+        # Una fila por sesión: access token + refresh_token (permite renovar sin cerrar sesión)
         db.execute(
             text(
                 """
                 INSERT INTO jwt_tokens (
                     id_credencial,
                     token,
+                    refresh_token,
                     issued_at,
                     expires_at,
+                    refresh_expires_at,
                     revoked,
                     user_agent,
                     ip_address,
@@ -59,8 +61,10 @@ def login_usuario(db: Session, email: str, password: str, request: Request):
                 ) VALUES (
                     :id_credencial,
                     :token,
+                    :refresh_token,
                     :issued_at,
                     :expires_at,
+                    :refresh_expires_at,
                     FALSE,
                     :user_agent,
                     :ip_address,
@@ -72,45 +76,10 @@ def login_usuario(db: Session, email: str, password: str, request: Request):
             {
                 "id_credencial": id_credencial,
                 "token": token,
+                "refresh_token": refresh_token,
                 "issued_at": issued_at,
                 "expires_at": expires_at,
-                "user_agent": request.headers.get("user-agent"),
-                "ip_address": request.client.host,
-            },
-        )
-        
-        # Insertar refresh token en BD
-        db.execute(
-            text(
-                """
-                INSERT INTO jwt_tokens (
-                    id_credencial,
-                    token,
-                    issued_at,
-                    expires_at,
-                    revoked,
-                    user_agent,
-                    ip_address,
-                    created_at,
-                    updated_at
-                ) VALUES (
-                    :id_credencial,
-                    :token,
-                    :issued_at,
-                    :expires_at,
-                    FALSE,
-                    :user_agent,
-                    :ip_address,
-                    NOW(),
-                    NOW()
-                )
-            """
-            ),
-            {
-                "id_credencial": id_credencial,
-                "token": refresh_token,
-                "issued_at": issued_at,
-                "expires_at": refresh_expires_at,
+                "refresh_expires_at": refresh_expires_at,
                 "user_agent": request.headers.get("user-agent"),
                 "ip_address": request.client.host,
             },
@@ -163,14 +132,14 @@ def login_usuario(db: Session, email: str, password: str, request: Request):
 
 def renovar_token(db: Session, refresh_token: str, request: Request):
     """
-    Renueva el access token usando un refresh token válido
+    Renueva el access token usando el refresh_token. Busca la sesión por refresh_token,
+    valida que no esté revocada ni expirada, y actualiza la misma fila con el nuevo access token.
+    El usuario no pierde la sesión (no sale de la página).
     """
     try:
-        # Decodificar el refresh token
         from funciones.auth.jwt_config import SECRET_KEY, ALGORITHM
         payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
         
-        # Verificar que sea un refresh token
         if payload.get("type") != "refresh":
             raise HTTPException(status_code=401, detail="Token inválido: no es un refresh token")
         
@@ -180,20 +149,21 @@ def renovar_token(db: Session, refresh_token: str, request: Request):
         if not email or not id_credencial:
             raise HTTPException(status_code=401, detail="Token inválido: datos incompletos")
         
-        # Verificar que el refresh token existe en la BD y no está revocado
-        result = db.execute(
-            text("SELECT revoked, expires_at FROM jwt_tokens WHERE token = :token"),
-            {"token": refresh_token}
+        # Buscar sesión por refresh_token (columna dedicada)
+        row = db.execute(
+            text(
+                "SELECT id_credencial, revoked, refresh_expires_at FROM jwt_tokens WHERE refresh_token = :refresh_token"
+            ),
+            {"refresh_token": refresh_token},
         ).fetchone()
         
-        if not result:
+        if not row:
             raise HTTPException(status_code=401, detail="Refresh token no encontrado")
         
-        if result[0]:  # revoked
+        if row[1]:  # revoked
             raise HTTPException(status_code=401, detail="Refresh token revocado")
         
-        # Verificar que no haya expirado
-        if result[1] < datetime.utcnow():
+        if row[2] < datetime.utcnow():  # refresh_expires_at
             raise HTTPException(status_code=401, detail="Refresh token expirado")
         
         # Generar nuevo access token
@@ -201,40 +171,20 @@ def renovar_token(db: Session, refresh_token: str, request: Request):
         new_token, expires_at = crear_token(token_data, timedelta(minutes=30))
         issued_at = datetime.utcnow()
         
-        # Insertar nuevo access token en BD
+        # Actualizar la misma fila: nuevo token y expires_at (no insertar nueva fila)
         db.execute(
             text(
                 """
-                INSERT INTO jwt_tokens (
-                    id_credencial,
-                    token,
-                    issued_at,
-                    expires_at,
-                    revoked,
-                    user_agent,
-                    ip_address,
-                    created_at,
-                    updated_at
-                ) VALUES (
-                    :id_credencial,
-                    :token,
-                    :issued_at,
-                    :expires_at,
-                    FALSE,
-                    :user_agent,
-                    :ip_address,
-                    NOW(),
-                    NOW()
-                )
-            """
+                UPDATE jwt_tokens
+                SET token = :new_token, expires_at = :expires_at, issued_at = :issued_at, updated_at = NOW()
+                WHERE refresh_token = :refresh_token
+                """
             ),
             {
-                "id_credencial": id_credencial,
-                "token": new_token,
-                "issued_at": issued_at,
+                "new_token": new_token,
                 "expires_at": expires_at,
-                "user_agent": request.headers.get("user-agent"),
-                "ip_address": request.client.host,
+                "issued_at": issued_at,
+                "refresh_token": refresh_token,
             },
         )
         
@@ -242,7 +192,7 @@ def renovar_token(db: Session, refresh_token: str, request: Request):
         
         return {
             "access_token": new_token,
-            "token_type": "bearer"
+            "token_type": "bearer",
         }
         
     except JWTError as e:
