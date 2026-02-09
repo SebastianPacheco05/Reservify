@@ -16,7 +16,7 @@ const DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://10.5.213.111:1106";
+import { API_BASE_URL } from "../config/api";
 
 const FALLBACK_CENTER = { lat: 4.6097, lng: -74.0817 }; // Bogotá
 

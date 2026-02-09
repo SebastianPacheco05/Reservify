@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { authFetch, isAuthenticated } from "../services/authService";
 import { useToastContext } from "./ToastProvider";
+import { getApiEndpoint } from "../config/api";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -28,7 +29,7 @@ export default function ProtectedRoute({
       try {
         // Obtener el rol del usuario actual
         const response = await authFetch(
-          `${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/credenciales/me/role`,
+          getApiEndpoint("/credenciales/me/role"),
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },

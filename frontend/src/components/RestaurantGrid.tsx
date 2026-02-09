@@ -7,12 +7,13 @@ import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import type { Restaurante } from "../types/restaurant.types";
 import { fadeInUp, staggerContainer, transitionNormal } from "../lib/animations";
+import { getApiEndpoint } from "../config/api";
 
 export default function RestaurantGrid() {
   const [restaurantes, setRestaurantes] = useState<Restaurante[]>([]);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/top`)
+    fetch(getApiEndpoint("/top"))
       .then((res) => res.json())
       .then((data: Restaurante[]) => setRestaurantes(data))
       .catch((err) => console.error(err));

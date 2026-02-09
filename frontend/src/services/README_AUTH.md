@@ -22,7 +22,7 @@ import { authFetch, logout, isAuthenticated } from '../services/authService';
 **Antes:**
 ```typescript
 const token = localStorage.getItem("access_token");
-const response = await fetch("http://10.5.213.111:1106/api/endpoint", {
+const response = await fetch("http://localhost:5080/api/endpoint", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
@@ -34,8 +34,12 @@ const response = await fetch("http://10.5.213.111:1106/api/endpoint", {
 
 **Después:**
 ```typescript
+import { getApiEndpoint } from '../config/api';
+import { authFetch } from '../services/authService';
+
 // authFetch agrega automáticamente el token de autorización
-const response = await authFetch("http://10.5.213.111:1106/api/endpoint", {
+// getApiEndpoint construye la URL desde VITE_API_URL del .env
+const response = await authFetch(getApiEndpoint("/api/endpoint"), {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
@@ -50,10 +54,11 @@ const response = await authFetch("http://10.5.213.111:1106/api/endpoint", {
 
 ```typescript
 import { authFetch } from '../services/authService';
+import { getApiEndpoint } from '../config/api';
 
 const fetchUserData = async () => {
   try {
-    const response = await authFetch("http://10.5.213.111:1106/usuarios/perfil");
+    const response = await authFetch(getApiEndpoint("/usuarios/perfil"));
     
     if (!response.ok) {
       throw new Error("Error al obtener datos del usuario");
@@ -71,10 +76,11 @@ const fetchUserData = async () => {
 
 ```typescript
 import { authFetch } from '../services/authService';
+import { getApiEndpoint } from '../config/api';
 
 const updateProfile = async (profileData) => {
   try {
-    const response = await authFetch("http://10.5.213.111:1106/editarcliente", {
+    const response = await authFetch(getApiEndpoint("/editarcliente"), {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"

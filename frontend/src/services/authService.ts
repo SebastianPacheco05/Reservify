@@ -4,7 +4,7 @@
  * - Renovación reactiva: si una petición devuelve 401, intenta refresh y reintenta.
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://10.5.213.111:1106";
+import { API_BASE_URL } from "../config/api";
 /** Access token dura 30 min; refrescamos cada 25 min para no llegar al 401 */
 const PROACTIVE_REFRESH_INTERVAL_MS = 25 * 60 * 1000;
 

@@ -23,6 +23,7 @@ import {
 } from "../components/ui/dialog";
 import { Loader2 } from "lucide-react";
 import { useToast } from "../hooks/useToast";
+import { getApiEndpoint } from "../config/api";
 
 interface Cliente {
   id_cliente: number;
@@ -79,7 +80,7 @@ export function EditProfileModal({
       setTelefono(cliente.telefono);
 
       // Cargar datos adicionales del cliente
-      fetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/listar_cliente`, {
+      fetch(getApiEndpoint("/listar_cliente"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id_cliente: cliente.id_cliente }),
@@ -104,7 +105,7 @@ export function EditProfileModal({
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/editarcliente`, {
+      const response = await fetch(getApiEndpoint("/editarcliente"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

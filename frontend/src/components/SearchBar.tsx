@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { getApiEndpoint } from "../config/api";
 
 interface SearchBarProps {
   searchQuery: string;
@@ -50,7 +51,7 @@ export default function SearchBar({
 
     const controller = new AbortController();
     const timer = setTimeout(() => {
-      fetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/buscar_restaurante`, {
+      fetch(getApiEndpoint("/buscar_restaurante"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombre_restaurante: searchQuery }),

@@ -39,6 +39,7 @@ import {
 import { useTheme } from "../components/theme-provider";
 import { useNavigate } from "react-router-dom";
 import { useToastContext } from "../components/ToastProvider";
+import { getApiEndpoint } from "../config/api";
 
 export default function Registrar() {
   const { toast } = useToastContext();
@@ -86,7 +87,7 @@ export default function Registrar() {
     };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/register/register`, {
+      const res = await fetch(getApiEndpoint("/register/register"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data2send),

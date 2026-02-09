@@ -5,6 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { Lock, Check, AlertCircle, ChevronRight } from "lucide-react"
 import { Card } from "@/components/ui/card"
+import { getApiEndpoint } from "../config/api"
 
 interface ReservationData {
   id_encab_fact: number
@@ -128,7 +129,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
         }
       }
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/wompi/crear_pago`, {
+      const response = await fetch(getApiEndpoint("/wompi/crear_pago"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

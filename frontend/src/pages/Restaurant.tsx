@@ -41,6 +41,7 @@ import {
 
 import { useRestaurantData } from "../hooks/useRestaurantData";
 import { useToastContext } from "../components/ToastProvider";
+import { getApiEndpoint } from "../config/api";
 
 export default function RestaurantPage() {
   const { toast } = useToastContext();
@@ -116,7 +117,7 @@ export default function RestaurantPage() {
       }
 
       // Usar authFetch que maneja automáticamente la renovación de tokens
-      const reservaResponse = await authFetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/facturas/reservar`, {
+      const reservaResponse = await authFetch(getApiEndpoint("/facturas/reservar"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

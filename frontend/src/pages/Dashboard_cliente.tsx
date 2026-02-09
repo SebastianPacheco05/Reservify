@@ -16,6 +16,7 @@ import { EditProfileModal } from "../components/edit_profile_modal";
 import { AllReservationsModal } from "../components/AllReservationsModal";
 import { User, Phone, FileText, Globe, Calendar, Clock, Users, UtensilsCrossed } from "lucide-react";
 import { authFetch } from "../services/authService";
+import { getApiEndpoint } from "../config/api";
 
 interface Cliente {
   id_cliente: number;
@@ -65,7 +66,7 @@ export default function ClientDashboard() {
     const fetchMetricas = async () => {
       try {
         setIsLoadingMetricas(true);
-        const response = await authFetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/data-owner/metricas`, {
+        const response = await authFetch(getApiEndpoint("/data-owner/metricas"), {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -91,7 +92,7 @@ export default function ClientDashboard() {
     const fetchReservas = async () => {
       try {
         setIsLoadingReservas(true);
-        const response = await authFetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/data-owner/reservas`, {
+        const response = await authFetch(getApiEndpoint("/data-owner/reservas"), {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -117,7 +118,7 @@ export default function ClientDashboard() {
     // Aquí normalmente obtendrías el ID del usuario actual desde el contexto de autenticación
     const currentUserId = 1; // Ejemplo
 
-    fetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/listar_cliente`, {
+    fetch(getApiEndpoint("/listar_cliente"), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id_cliente: currentUserId }),

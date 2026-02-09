@@ -19,6 +19,7 @@ import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
 import { useToastContext } from "../components/ToastProvider";
 import { startProactiveRefresh } from "../services/authService";
+import { getApiEndpoint } from "../config/api";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://10.5.213.111:1106"}/credenciales/login`, {
+      const res = await fetch(getApiEndpoint("/credenciales/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
