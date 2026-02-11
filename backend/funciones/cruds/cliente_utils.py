@@ -5,18 +5,18 @@ from fastapi import HTTPException
 
 def obtener_documento_por_email(db: Session, email: str) -> int:
     """
-    Obtiene el documento del cliente a partir de su email.
-    Esta función es segura ya que solo devuelve el documento si el email existe y pertenece a un cliente.
+    Obtiene el documento del usuario a partir de su email.
+    Solo devuelve el documento si el email existe y pertenece a un usuario (tabla Usuario).
     
     Args:
         db: Sesión de base de datos
-        email: Email del cliente
+        email: Email del usuario
         
     Returns:
-        int: Documento del cliente
+        int: Documento del usuario
         
     Raises:
-        HTTPException: Si el email no pertenece a un cliente
+        HTTPException: Si el email no pertenece a un usuario
     """
     try:
         resultado = db.execute(
@@ -27,13 +27,15 @@ def obtener_documento_por_email(db: Session, email: str) -> int:
         if resultado is None:
             raise HTTPException(
                 status_code=404, 
-                detail="No se encontró un cliente con este email"
+                detail="No se encontró un usuario con este email"
             )
         
         return int(resultado)
         
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, 
-            detail=f"Error al obtener documento del cliente: {str(e)}"
+            detail=f"Error al obtener documento del usuario: {str(e)}"
         )

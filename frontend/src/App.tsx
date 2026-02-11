@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Registrar from "./pages/registrar";
 import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import EmployeeDashboard from "./pages/employee-dashboard";
 import ClientDashboard from "./pages/Dashboard_cliente";
 import Restaurant from "./pages/Restaurant";
@@ -42,10 +43,18 @@ function App() {
         <Route path="/Login" element={<PageWrapper><Login /></PageWrapper>} />
         <Route path="/Registrar" element={<PageWrapper><Registrar /></PageWrapper>} />
         <Route 
-          path="/DuenoDashboard" 
+          path="/duenodashboard" 
           element={
             <ProtectedRoute requiredRole="dueño">
               <PageWrapper><Dashboard /></PageWrapper>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admindashboard" 
+          element={
+            <ProtectedRoute requiredRole="administrador">
+              <PageWrapper><AdminDashboard /></PageWrapper>
             </ProtectedRoute>
           } 
         />

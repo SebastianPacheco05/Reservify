@@ -23,92 +23,11 @@ def obtener_roles(db: Session):
     ]
 
 
-def obtener_dueno(db: Session, documento: str):
+def obtener_usuario(db: Session, documento: str):
+    """Obtiene un usuario por documento (tabla Usuario; aplica a cualquier rol)."""
     result = db.execute(
         text(
-            'SELECT nombre, apellido, id_rol, id_credencial FROM "Dueno" WHERE documento = :documento'
-        ),
-        {"documento": documento},
-    )
-    row = result.fetchone()
-    if row:
-        return {
-            "nombre": row[0],
-            "apellido": row[1],
-            "id_rol": row[2],
-            "id_credencial": row[3],
-        }
-    return None
-
-
-def obtener_duenos(db: Session):
-    result = db.execute(
-        text(
-            'SELECT documento, nombre, apellido, id_rol, id_credencial FROM "Dueno"'
-        )
-    )
-    rows = result.fetchall()
-    return [
-        {
-            "documento": row[0],
-            "nombre": row[1],
-            "apellido": row[2],
-            "id_rol": row[4],
-            "id_credencial": row[5],
-        }
-        for row in rows
-    ]
-
-
-def obtener_cliente(db: Session, documento: str):
-    result = db.execute(
-        text(
-            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol FROM "Cliente" WHERE documento = :documento'
-        ),
-        {"documento": documento},
-    )
-    row = result.fetchone()
-    if row:
-        return {
-            "id_credencial": row[0],
-            "nombre": row[1],
-            "apellido": row[2],
-            "tipo_documento": row[3],
-            "documento": row[4],
-            "nacionalidad": row[5],
-            "telefono": row[6],
-            "id_rol": row[7],
-        }
-    return None
-
-
-def obtener_clientes(db: Session):
-    result = db.execute(
-        text(
-            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol FROM "Cliente"'
-        )
-    )
-    rows = result.mappings().all()
-    return [
-        {
-            "id_credencial": row["id_credencial"],
-            "nombre": row["nombre"],
-            "apellido": row["apellido"],
-            "tipo_documento": row["tipo_documento"],
-            "documento": row["documento"],
-            "nacionalidad": row["nacionalidad"],
-            "telefono": row["telefono"],
-            "id_rol": row["id_rol"],
-        }
-        for row in rows
-    ]
-
-
-
-def obtener_empleado(db: Session, documento: str):
-    result = db.execute(
-        text(
-            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit FROM "Empleado" WHERE documento = :documento'
+            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit FROM "Usuario" WHERE documento = :documento'
         ),
         {"documento": documento},
     )
@@ -128,11 +47,37 @@ def obtener_empleado(db: Session, documento: str):
     return None
 
 
-def obtener_empleados(db: Session):
+def obtener_usuarios(db: Session):
+    """Lista todos los usuarios (tabla Usuario)."""
     result = db.execute(
         text(
-            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit FROM "Empleado"'
+            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit FROM "Usuario"'
         )
+    )
+    rows = result.mappings().all()
+    return [
+        {
+            "id_credencial": row["id_credencial"],
+            "nombre": row["nombre"],
+            "apellido": row["apellido"],
+            "tipo_documento": row["tipo_documento"],
+            "documento": row["documento"],
+            "nacionalidad": row["nacionalidad"],
+            "telefono": row["telefono"],
+            "id_rol": row["id_rol"],
+            "nit": row["nit"],
+        }
+        for row in rows
+    ]
+
+
+def obtener_usuarios_por_rol(db: Session, nombre_rol: str):
+    """Lista usuarios filtrados por nombre de rol (dueño, empleado, cliente)."""
+    result = db.execute(
+        text(
+            'SELECT u.id_credencial, u.nombre, u.apellido, u.tipo_documento, u.documento, u.nacionalidad, u.telefono, u.id_rol, u.nit FROM "Usuario" u JOIN "Roles" r ON u.id_rol = r.id_rol WHERE LOWER(TRIM(r.nombre_rol)) = LOWER(TRIM(:nombre_rol))'
+        ),
+        {"nombre_rol": nombre_rol.replace("dueño", "dueno")},
     )
     rows = result.fetchall()
     return [
@@ -144,8 +89,8 @@ def obtener_empleados(db: Session):
             "documento": row[4],
             "nacionalidad": row[5],
             "telefono": row[6],
-            "id_rol": row[8],
-            "nit": row[9],
+            "id_rol": row[7],
+            "nit": row[8],
         }
         for row in rows
     ]
@@ -197,15 +142,13 @@ def obtener_restaurantes(db: Session):
 def obtener_restaurantes_para_mapa(db: Session, lat_usuario: float = 4.6097, lng_usuario: float = -74.0817):
     """
     Devuelve restaurantes con coordenadas para el mapa.
-    Si existe la tabla MAPA y tiene filas, se usan lat/lng reales; si no, se generan coordenadas cercanas al usuario.
-    Si la tabla MAPA no existe (migración no ejecutada), se usa solo Restaurante y coordenadas generadas.
+    Usa Restaurante.lat/lng cuando existen; si no, genera coordenadas cercanas al usuario.
     """
     try:
         result = db.execute(
             text("""
-                SELECT r.nit, r.nombre_restaurante, r.direccion, m.lat, m.lng
+                SELECT r.nit, r.nombre_restaurante, r.direccion, r.lat, r.lng
                 FROM "Restaurante" r
-                LEFT JOIN "MAPA" m ON r.nit = m.nit
                 ORDER BY r.nit
             """)
         )
@@ -248,18 +191,20 @@ def obtener_restaurantes_para_mapa(db: Session, lat_usuario: float = 4.6097, lng
     return out
 
 
-def upsert_mapa(db: Session, nit: int, lat: float, lng: float):
+def actualizar_coordenadas_restaurante(db: Session, nit: int, lat: float, lng: float):
     """
-    Inserta o actualiza las coordenadas de un restaurante en la tabla MAPA.
+    Actualiza las coordenadas (lat/lng) del restaurante.
     """
-    db.execute(
+    result = db.execute(
         text("""
-            INSERT INTO "MAPA" (nit, lat, lng)
-            VALUES (:nit, :lat, :lng)
-            ON CONFLICT (nit) DO UPDATE SET lat = :lat, lng = :lng
+            UPDATE "Restaurante"
+            SET lat = :lat, lng = :lng
+            WHERE nit = :nit
         """),
         {"nit": nit, "lat": lat, "lng": lng},
     )
+    if getattr(result, "rowcount", 0) == 0:
+        raise ValueError(f"No existe restaurante con nit={nit}")
     db.commit()
 
 

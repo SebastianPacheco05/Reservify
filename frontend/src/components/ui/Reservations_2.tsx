@@ -2,9 +2,14 @@ import { Card, CardContent } from "../ui/card"
 import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
 import { Phone, Clock, Users, MessageSquare } from "lucide-react"
-import { todayReservations, tables } from "../../data/employeeData"
+import type { Reservation, Table } from "../../types/employee"
+
+const emptyReservations: Reservation[] = []
+const emptyTables: Table[] = []
 
 export function Reservations() {
+  const todayReservations = emptyReservations
+  const tables = emptyTables
   const getStatusBadge = (status: string) => {
     const variants = {
       pending: { variant: "secondary" as const, label: "Pendiente" },
@@ -111,7 +116,12 @@ export function Reservations() {
       </div>
 
       <div className="space-y-4">
-        {sortedReservations.map((reservation) => (
+        {sortedReservations.length === 0 ? (
+          <div className="rounded-xl border border-border bg-card p-8 text-center">
+            <p className="text-muted-foreground">No hay reservas de hoy.</p>
+          </div>
+        ) : (
+        sortedReservations.map((reservation) => (
           <Card key={reservation.id} className="border-border/80 bg-card shadow-sm">
             <CardContent className="p-6">
               <div className="flex flex-col lg:flex-row gap-4">
@@ -158,7 +168,8 @@ export function Reservations() {
               </div>
             </CardContent>
           </Card>
-        ))}
+        ))
+        )}
       </div>
     </div>
   )

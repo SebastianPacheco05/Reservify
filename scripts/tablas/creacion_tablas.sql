@@ -8,14 +8,11 @@
 -- para evitar problemas de dependencias
 DROP TABLE IF EXISTS "Reserva";
 DROP TABLE IF EXISTS "Encabezado_Factura";
-DROP TABLE IF EXISTS "Empleado";
 DROP TABLE IF EXISTS "Comentarios";
-DROP TABLE IF EXISTS "Cliente";
 DROP TABLE IF EXISTS "Mesas";
 DROP TABLE IF EXISTS "Calculos_mensuales";
-DROP TABLE IF EXISTS "MAPA";
 DROP TABLE IF EXISTS "Restaurante";
-DROP TABLE IF EXISTS "Dueno";
+DROP TABLE IF EXISTS "Usuario";
 DROP TABLE IF EXISTS "Roles";
 DROP TABLE IF EXISTS "jwt_tokens";
 DROP TABLE IF EXISTS "Credenciales";
@@ -36,14 +33,19 @@ CREATE TABLE "Roles" (
     descripcion VARCHAR(100) NOT NULL  -- Descripción del rol
 );
 
--- Tabla Dueno: Almacena información de los dueños de restaurantes
-CREATE TABLE "Dueno" (
-    documento DECIMAL(10, 0) PRIMARY KEY NOT NULL,  -- Documento de identidad único
-    tipo_documento VARCHAR(15) NOT NULL CHECK (tipo_documento IN ('CC', 'CE', 'TI', 'Pasaporte')),  -- Tipo de documento con validación
-    nombre VARCHAR(50) NOT NULL,  -- Primer nombre
-    apellido VARCHAR(50) NOT NULL,  -- Primer apellido
-    id_rol INT NOT NULL,  -- Referencia al rol
-    id_credencial INT NOT NULL UNIQUE,  -- Referencia a credenciales únicas
+-- Tabla Usuario: Almacena todos los usuarios del sistema (cliente, dueño, empleado) según id_rol
+-- Dueño: vinculado a restaurantes por Restaurante.documento = Usuario.documento
+-- Empleado: vinculado a un restaurante por Usuario.nit (restaurante donde trabaja)
+CREATE TABLE "Usuario" (
+    documento DECIMAL(10, 0) PRIMARY KEY NOT NULL CHECK (documento > 0),
+    tipo_documento VARCHAR(15) NOT NULL CHECK (tipo_documento IN ('CC', 'CE', 'TI', 'Pasaporte')),
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL,
+    id_rol INT NOT NULL,
+    id_credencial INT NOT NULL UNIQUE,
+    nacionalidad VARCHAR(20),
+    telefono VARCHAR(10) CHECK (telefono IS NULL OR telefono ~ '^[0-9]{10}$'),
+    nit DECIMAL(10, 0) NULL,  -- Solo para rol empleado: restaurante donde trabaja; dueño se vincula por Restaurante.documento
     FOREIGN KEY (id_rol) REFERENCES "Roles" (id_rol) ON DELETE CASCADE,
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
 );
@@ -68,18 +70,16 @@ CREATE TABLE "Restaurante" (
     documento DECIMAL(10, 0) NOT NULL,  -- Referencia al dueño
     id_categoria INT not null,  -- Referencia a la categoría
     url_image VARCHAR NOT NULL,  -- URL de la imagen del restaurante
+    lat DOUBLE PRECISION,  -- Latitud para mostrar el restaurante en el mapa
+    lng DOUBLE PRECISION,  -- Longitud para mostrar el restaurante en el mapa
     foreign key (id_categoria) references "Categorias" (id_categoria) ON DELETE CASCADE,
-    FOREIGN KEY (documento) REFERENCES "Dueno" (documento) ON DELETE CASCADE,
+    FOREIGN KEY (documento) REFERENCES "Usuario" (documento) ON DELETE CASCADE,
     CHECK (horario_apertura < horario_cierre)  -- Validación de horarios
 );
 
--- Tabla MAPA: coordenadas GPS para mostrar cada restaurante en el mapa
-CREATE TABLE "MAPA" (
-    nit DECIMAL(10, 0) NOT NULL PRIMARY KEY,
-    lat DOUBLE PRECISION NOT NULL,
-    lng DOUBLE PRECISION NOT NULL,
-    FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
-);
+-- FK de Usuario.nit a Restaurante (después de crear Restaurante para evitar dependencia circular)
+ALTER TABLE "Usuario" ADD CONSTRAINT fk_usuario_nit_restaurante
+    FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE SET NULL;
 
 -- Tabla Mesas: Almacena información de las mesas de cada restaurante
 CREATE TABLE "Mesas" (
@@ -89,36 +89,6 @@ CREATE TABLE "Mesas" (
     nit DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
     precio DECIMAL(10, 2) NOT NULL CHECK (precio >= 0),  -- Precio de la mesa
     FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
-);
-
--- Tabla Cliente: Almacena información de los clientes
-CREATE TABLE "Cliente" (
-    id_credencial INT NOT NULL UNIQUE,  -- Referencia a credenciales únicas
-    nombre VARCHAR(50) NOT NULL,  -- Primer nombre
-    apellido VARCHAR(50) NOT NULL,  -- Primer apellido
-    tipo_documento VARCHAR(15) NOT NULL CHECK (tipo_documento IN ('CC', 'CE', 'TI', 'Pasaporte')),  -- Tipo de documento con validación
-    documento DECIMAL(10, 0) PRIMARY KEY NOT NULL CHECK (documento > 0),  -- Número de documento único
-    nacionalidad VARCHAR(20) NOT NULL,  -- Nacionalidad
-    telefono VARCHAR(10) NOT NULL CHECK (telefono ~ '^[0-9]{10}$'),  -- Teléfono con validación de formato
-    id_rol INT NOT NULL,  -- Referencia al rol
-    FOREIGN KEY (id_rol) REFERENCES "Roles" (id_rol) ON DELETE CASCADE,
-    FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
-);
-
--- Tabla Empleado: Almacena información de los empleados
-CREATE TABLE "Empleado" (
-    id_credencial INT NOT NULL UNIQUE,  -- Referencia a credenciales únicas
-    nombre VARCHAR(50) NOT NULL,  -- Primer nombre
-    apellido VARCHAR(50) NOT NULL,  -- Primer apellido
-    tipo_documento VARCHAR(15) NOT NULL CHECK (tipo_documento IN ('CC', 'CE', 'TI', 'Pasaporte')),  -- Tipo de documento con validación
-    documento DECIMAL(10, 0) PRIMARY KEY NOT NULL CHECK (documento > 0),  -- Número de documento único
-    nacionalidad VARCHAR(20) NOT NULL,  -- Nacionalidad
-    telefono VARCHAR(10) NOT NULL CHECK (telefono ~ '^[0-9]{10}$'),  -- Teléfono con validación de formato
-    id_rol INT NOT NULL,  -- Referencia al rol
-    nit DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
-    FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE,
-    FOREIGN KEY (id_rol) REFERENCES "Roles" (id_rol) ON DELETE CASCADE,
-    FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
 );
 
 -- Tabla Encabezado_Factura: Almacena la información principal de las facturas
@@ -133,7 +103,7 @@ CREATE TABLE "Encabezado_Factura" (
     forma_pago VARCHAR(50) NOT NULL CHECK (forma_pago IN ('Efectivo', 'Tarjeta', 'Transferencia', 'Otro', 'Pendiente')),  -- Forma de pago con validación
     precio_total DECIMAL(10, 2) NOT NULL,  -- Precio total
     FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE,
-    FOREIGN KEY (documento) REFERENCES "Cliente" (documento) ON DELETE CASCADE
+    FOREIGN KEY (documento) REFERENCES "Usuario" (documento) ON DELETE CASCADE
 );
 
 -- Tabla Reserva: Almacena las reservas de mesas
@@ -151,7 +121,7 @@ CREATE TABLE "Reserva" (
     fecha DATE NOT NULL CHECK (fecha >= CURRENT_DATE),  -- Fecha de la reserva
     UNIQUE (id_mesa, fecha, horario),  -- Restricción de unicidad para evitar reservas duplicadas
     FOREIGN KEY (id_mesa) REFERENCES "Mesas" (id_mesa) ON DELETE CASCADE,
-    FOREIGN KEY (documento) REFERENCES "Cliente" (documento) ON DELETE CASCADE,
+    FOREIGN KEY (documento) REFERENCES "Usuario" (documento) ON DELETE CASCADE,
     FOREIGN KEY (id_encab_fact) REFERENCES "Encabezado_Factura" (id_encab_fact) ON DELETE CASCADE
 );
 
@@ -173,7 +143,7 @@ CREATE TABLE "Comentarios" (
     comentario TEXT NOT NULL,  -- Comentario del cliente
     fecha TIMESTAMP NOT NULL DEFAULT NOW(),  -- Fecha del comentario
     calificacion INT CHECK (calificacion >= 1 AND calificacion <= 5),  -- Calificación del 1 al 5
-    FOREIGN KEY (documento) REFERENCES "Cliente" (documento) ON DELETE CASCADE,
+    FOREIGN KEY (documento) REFERENCES "Usuario" (documento) ON DELETE CASCADE,
     FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
 );
 

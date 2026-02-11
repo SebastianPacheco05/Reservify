@@ -151,6 +151,7 @@ export function logout() {
   localStorage.removeItem("refresh_token");
   localStorage.removeItem("token_type");
   localStorage.removeItem("tipo_usuario");
+  localStorage.removeItem("documento");
   window.location.href = "/Login";
 }
 

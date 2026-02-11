@@ -18,7 +18,7 @@ def login_usuario(db: Session, email: str, password: str, request: Request):
     try:
         resultado = (
             db.execute(
-                text('SELECT * FROM "Credenciales" WHERE email = :email'),
+                text('SELECT id_credencial, email, password FROM "Credenciales" WHERE email = :email'),
                 {"email": email},
             )
             .mappings()
@@ -85,43 +85,52 @@ def login_usuario(db: Session, email: str, password: str, request: Request):
             },
         )
 
-        # Verificar en qué tabla está el usuario (Dueno, Empleado o Cliente)
-        es_dueno = db.execute(
-            text('SELECT 1 FROM "Dueno" WHERE id_credencial = :id_credencial'),
-            {"id_credencial": id_credencial},
-        ).fetchone()
-
-        es_empleado = db.execute(
-            text('SELECT 1 FROM "Empleado" WHERE id_credencial = :id_credencial'),
-            {"id_credencial": id_credencial},
-        ).fetchone()
-
-        es_cliente = db.execute(
-            text('SELECT 1 FROM "Cliente" WHERE id_credencial = :id_credencial'),
+        # Obtener usuario y rol desde tabla Usuario (un solo lugar por id_credencial)
+        usuario_rol = db.execute(
+            text('''
+                SELECT u.documento, r.nombre_rol
+                FROM "Usuario" u
+                JOIN "Roles" r ON u.id_rol = r.id_rol
+                WHERE u.id_credencial = :id_credencial
+            '''),
             {"id_credencial": id_credencial},
         ).fetchone()
 
         db.commit()
 
-        # Determinar el tipo de usuario y la ruta de redirección
-        if es_dueno:
+        if not usuario_rol:
+            raise HTTPException(status_code=404, detail="No se encontró el usuario")
+
+        documento_usuario = usuario_rol[0]
+        nombre_rol = (usuario_rol[1] or "").strip().lower()
+
+        # Normalizar "dueño" a "dueno" para la API
+        if nombre_rol == "dueño":
+            nombre_rol = "dueno"
+
+        if nombre_rol == "dueno":
             tipo_usuario = "dueno"
-            redirect_to = "/DuenoDashboard"
-        elif es_empleado:
+            redirect_to = "/duenodashboard"
+        elif nombre_rol == "administrador":
+            tipo_usuario = "administrador"
+            redirect_to = "/admindashboard"
+        elif nombre_rol == "empleado":
             tipo_usuario = "empleado"
             redirect_to = "/EmpleadoDashboard"
-        elif es_cliente:
+        elif nombre_rol == "cliente":
             tipo_usuario = "cliente"
             redirect_to = "/"
         else:
-            raise HTTPException(status_code=404, detail="No se encontró el usuario en ninguna tabla")
+            tipo_usuario = nombre_rol or "cliente"
+            redirect_to = "/"
 
-        # 🔑 Devolver access token + refresh token + tipo de usuario y ruta de redirección
+        # 🔑 Devolver access token + refresh token + tipo de usuario, documento y ruta de redirección
         return {
             "access_token": token,
             "refresh_token": refresh_token,
             "token_type": "bearer",
             "tipo_usuario": tipo_usuario,
+            "documento": int(documento_usuario),
             "redirect_to": redirect_to
         }
 

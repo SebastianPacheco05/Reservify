@@ -14,11 +14,14 @@ def insertar_restaurante(
     horario_cierre: str,
     documento: int,
     id_categoria: int,
+    url_imagen: str = "",
+    imagenes_referencia: list = None,
 ):
     try:
+        # Función con 9 parámetros: incluye url_imagen e inserta rating, reviews, availableToday en la tabla
         db.execute(
             text(
-                "SELECT insertar_restaurante(:nit, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :documento, :id_categoria)"
+                "SELECT insertar_restaurante(:nit, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :documento, :id_categoria, :url_imagen)"
             ),
             {
                 "nit": nit,
@@ -29,12 +32,27 @@ def insertar_restaurante(
                 "horario_cierre": horario_cierre,
                 "documento": documento,
                 "id_categoria": id_categoria,
+                "url_imagen": url_imagen or "",
             },
         )
         db.commit()
+        # Imágenes de referencia (opcional: si la tabla/función no existe, no fallar la petición)
+        if imagenes_referencia:
+            try:
+                for orden, url in enumerate(imagenes_referencia[:15]):
+                    if url and str(url).strip():
+                        db.execute(
+                            text("SELECT insertar_imagen_referencia_restaurante(:nit, :url_imagen, :orden)"),
+                            {"nit": nit, "url_imagen": url.strip(), "orden": orden},
+                        )
+                db.commit()
+            except SQLAlchemyError:
+                db.rollback()
         raise HTTPException(
             status_code=201, detail="Restaurante insertado correctamente"
         )
+    except HTTPException:
+        raise
     except IntegrityError as e:
         db.rollback()
         raise HTTPException(

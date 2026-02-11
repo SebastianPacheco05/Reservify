@@ -2,10 +2,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
 import { Users, Clock, MapPin } from "lucide-react"
-import { tables } from "../../data/employeeData"
 import { cn } from "../../lib/utils"
+import type { Table } from "../../types/employee"
+
+const emptyTables: Table[] = []
 
 export function Tables() {
+  const tables = emptyTables
   const getStatusColor = (status: string) => {
     switch (status) {
       case "available":
@@ -94,7 +97,7 @@ export function Tables() {
       acc[table.section].push(table)
       return acc
     },
-    {} as Record<string, typeof tables>,
+    {} as Record<string, Table[]>,
   )
 
   return (
@@ -114,7 +117,12 @@ export function Tables() {
       </div>
 
       {/* Mesas agrupadas por sección */}
-      {Object.entries(groupedTables).map(([section, sectionTables]) => (
+      {Object.keys(groupedTables).length === 0 ? (
+        <div className="rounded-xl border border-border bg-card p-8 text-center">
+          <p className="text-muted-foreground">No hay mesas cargadas.</p>
+        </div>
+      ) : (
+      Object.entries(groupedTables).map(([section, sectionTables]) => (
         <div key={section}>
           <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
             <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -164,7 +172,8 @@ export function Tables() {
             ))}
           </div>
         </div>
-      ))}
+      ))
+      )}
     </div>
   )
 }

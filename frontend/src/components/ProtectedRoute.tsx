@@ -6,7 +6,7 @@ import { getApiEndpoint } from "../config/api";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: string | string[]; // "dueño", "cliente", "empleado" o array de roles
+  requiredRole?: string | string[]; // "dueño", "cliente", "empleado", "administrador" o array de roles
 }
 
 export default function ProtectedRoute({ 
@@ -44,7 +44,7 @@ export default function ProtectedRoute({
         const userRole = roleData.nombre_rol?.toLowerCase() || "";
 
         // Verificar si el usuario tiene el rol requerido
-        // Los roles en la DB son: "dueño", "cliente", "empleado"
+        // Los roles en la DB son: "dueño", "cliente", "empleado", "administrador"
         // Cada usuario solo puede acceder a su propio dashboard
         const requiredRoles = Array.isArray(requiredRole) 
           ? requiredRole.map(r => r.toLowerCase())
@@ -59,6 +59,8 @@ export default function ProtectedRoute({
           // Mensaje personalizado según el dashboard intentado
           const dashboardName = requiredRoles.includes("dueño") 
             ? "Dashboard de Dueño" 
+            : requiredRoles.includes("administrador")
+            ? "Dashboard de Administrador"
             : requiredRoles.includes("empleado")
             ? "Dashboard de Empleado"
             : "Dashboard de Cliente";

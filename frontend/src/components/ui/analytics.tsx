@@ -1,8 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
-import { monthlyFlow } from "../../data/mockData"
+import type { MonthlyFlow } from "@/types/dashboard"
 
-export function Analytics() {
-  const maxVisitors = Math.max(...monthlyFlow.map((m) => m.visitors))
+interface AnalyticsProps {
+  data?: MonthlyFlow[];
+}
+
+export function Analytics({ data = [] }: AnalyticsProps) {
+  const monthlyFlow = data
+  const maxVisitors = monthlyFlow.length ? Math.max(...monthlyFlow.map((m) => m.visitors)) : 0
 
   return (
     <div className="space-y-6">
@@ -18,19 +23,23 @@ export function Analytics() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {monthlyFlow.map((data) => (
-              <div key={data.month} className="flex items-center gap-4">
-                <div className="w-12 text-sm font-medium">{data.month}</div>
-                <div className="flex-1 bg-gray-200 rounded-full h-6 relative">
-                  <div
-                    className="bg-blue-500 h-6 rounded-full flex items-center justify-end pr-2"
-                    style={{ width: `${(data.visitors / maxVisitors) * 100}%` }}
-                  >
-                    <span className="text-white text-xs font-medium">{data.visitors}</span>
+            {monthlyFlow.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4">No hay datos de flujo mensual.</p>
+            ) : (
+              monthlyFlow.map((item) => (
+                <div key={item.month} className="flex items-center gap-4">
+                  <div className="w-12 text-sm font-medium">{item.month}</div>
+                  <div className="flex-1 bg-gray-200 rounded-full h-6 relative">
+                    <div
+                      className="bg-blue-500 h-6 rounded-full flex items-center justify-end pr-2"
+                      style={{ width: `${maxVisitors ? (item.visitors / maxVisitors) * 100 : 0}%` }}
+                    >
+                      <span className="text-white text-xs font-medium">{item.visitors}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </CardContent>
       </Card>

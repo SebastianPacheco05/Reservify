@@ -8,11 +8,10 @@ import asyncio
 # Importacion de los routers
 from routes.credenciales import router as credenciales_router
 from routes.roles import protected_router as roles_router
-from routes.dueno import router as dueno_router
+from routes.usuario import router as usuario_router
 from routes.restaurante import router as restaurante_router
 from routes.mesas import router as mesas_router
 from routes.cliente import router as cliente_router
-from routes.empleado import router as empleado_router
 from routes.enc_fac import router as enc_fac_router
 from routes.det_fac import router as det_fac_router
 from routes.categorias import router as categorias_router
@@ -58,11 +57,10 @@ app.add_middleware(
 # Routers protegidos (requieren autenticación)
 app.include_router(credenciales_router, prefix="/credenciales")
 app.include_router(roles_router)
-app.include_router(dueno_router)
+app.include_router(usuario_router)
 app.include_router(restaurante_router)
 app.include_router(mesas_router)
 app.include_router(cliente_router)
-app.include_router(empleado_router)
 app.include_router(enc_fac_router)
 app.include_router(det_fac_router)
 app.include_router(comentarios_router)

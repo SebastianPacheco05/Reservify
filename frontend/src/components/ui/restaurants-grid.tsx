@@ -21,6 +21,12 @@ export function RestaurantsGrid({ restaurants }: RestaurantsGridProps) {
               src={restaurant.image || "/placeholder.svg"}
               alt={restaurant.name}
               className="h-full w-full object-cover"
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                const el = e.target as HTMLImageElement;
+                el.onerror = null;
+                el.src = "/vite.svg";
+              }}
             />
             <Badge
               className={`absolute top-3 right-3 ${

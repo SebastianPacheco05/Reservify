@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Sidebar } from "../components/ui/sidebar";
 import { MetricCards } from "../components/ui/metric-cards";
@@ -8,9 +8,12 @@ import { RestaurantsGrid } from "../components/ui/restaurants-grid";
 import { MonthlyChart } from "../components/ui/monthly-chart";
 import { InvoicesTable } from "../components/ui/invoices-table";
 import { Skeleton } from "../components/ui/skeleton";
-import { restaurants, reservations, monthlyFlow, invoices } from "../data/mockData";
 import { Button } from "../components/ui/button";
+import type { Restaurant, Reservation, MonthlyFlow, Invoice } from "../types/dashboard";
 import { OwnerMetricsService, type OwnerMetrics } from "../services/OwnerMetricsService";
+import { AddRestaurantModal } from "../components/AddRestaurantModal";
+import { authFetch } from "../services/authService";
+import { getApiEndpoint } from "../config/api";
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -39,7 +42,41 @@ export default function Dashboard() {
     reservas_activas: 0,
     revenue_mes: 0,
   });
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [monthlyFlow, setMonthlyFlow] = useState<MonthlyFlow[]>([]);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isLoadingMetrics, setIsLoadingMetrics] = useState(true);
+  const [isAddRestaurantOpen, setIsAddRestaurantOpen] = useState(false);
+  const [isLoadingRestaurants, setIsLoadingRestaurants] = useState(false);
+
+  const loadRestaurants = useCallback(async () => {
+    setIsLoadingRestaurants(true);
+    try {
+      const res = await authFetch(getApiEndpoint("/data-owner/restaurantes"), {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+      const list = data.restaurantes || [];
+      setRestaurants(
+        list.map((r: { nit: number; nombre_restaurante: string; url_image?: string; rating?: number }) => ({
+          id: String(r.nit),
+          name: r.nombre_restaurante,
+          location: "",
+          cuisine: "",
+          rating: r.rating ?? 0,
+          totalTables: 0,
+          status: "active" as const,
+          image: r.url_image?.trim() || "/vite.svg",
+        }))
+      );
+    } catch (error) {
+      console.error("Error al cargar restaurantes:", error);
+    } finally {
+      setIsLoadingRestaurants(false);
+    }
+  }, []);
 
   useEffect(() => {
     const loadMetrics = async () => {
@@ -55,6 +92,10 @@ export default function Dashboard() {
     };
     loadMetrics();
   }, []);
+
+  useEffect(() => {
+    loadRestaurants();
+  }, [loadRestaurants]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -75,13 +116,15 @@ export default function Dashboard() {
               />
             )}
             <div className="grid gap-6 lg:grid-cols-2">
-              <MonthlyChart data={monthlyFlow.slice(-6)} />
+              <MonthlyChart data={monthlyFlow.length ? monthlyFlow.slice(-6) : []} />
               <div className="rounded-xl border bg-card p-6 shadow-sm">
                 <h3 className="text-sm font-semibold text-foreground mb-4">Acciones rápidas</h3>
                 <div className="flex flex-wrap gap-3">
                   <Button size="sm" variant="default">Ver reservas de hoy</Button>
                   <Button size="sm" variant="outline">Exportar informe</Button>
-                  <Button size="sm" variant="outline">Añadir restaurante</Button>
+                  <Button size="sm" variant="outline" onClick={() => setIsAddRestaurantOpen(true)}>
+                    Añadir restaurante
+                  </Button>
                 </div>
               </div>
             </div>
@@ -95,9 +138,19 @@ export default function Dashboard() {
               <p className="text-sm text-muted-foreground">
                 {restaurants.length} restaurante{restaurants.length !== 1 ? "s" : ""} administrado{restaurants.length !== 1 ? "s" : ""}
               </p>
-              <Button size="sm" variant="add">Agregar restaurante</Button>
+              <Button size="sm" variant="add" onClick={() => setIsAddRestaurantOpen(true)}>
+                Agregar restaurante
+              </Button>
             </div>
-            <RestaurantsGrid restaurants={restaurants} />
+            {isLoadingRestaurants ? (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-[240px] rounded-xl" />
+                ))}
+              </div>
+            ) : (
+              <RestaurantsGrid restaurants={restaurants} />
+            )}
           </div>
         );
 
@@ -129,7 +182,7 @@ export default function Dashboard() {
                 monthlyRevenue={metrics.revenue_mes}
               />
             )}
-            <MonthlyChart data={monthlyFlow} />
+            <MonthlyChart data={monthlyFlow.length ? monthlyFlow : []} />
           </div>
         );
 
@@ -176,6 +229,12 @@ export default function Dashboard() {
           {renderContent()}
         </motion.div>
       </main>
+
+      <AddRestaurantModal
+        isOpen={isAddRestaurantOpen}
+        onClose={() => setIsAddRestaurantOpen(false)}
+        onSuccess={loadRestaurants}
+      />
     </div>
   );
 }

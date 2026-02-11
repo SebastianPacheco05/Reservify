@@ -24,6 +24,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { useToast } from "../hooks/useToast";
 import { getApiEndpoint } from "../config/api";
+import { authFetch } from "../services/authService";
 
 interface Cliente {
   id_cliente: number;
@@ -79,11 +80,11 @@ export function EditProfileModal({
       setNumero_documento(cliente.numero_documento);
       setTelefono(cliente.telefono);
 
-      // Cargar datos adicionales del cliente
-      fetch(getApiEndpoint("/listar_cliente"), {
-        method: "PUT",
+      // Cargar datos adicionales del usuario (documento = id_cliente en la UI)
+      const doc = cliente.id_cliente;
+      authFetch(getApiEndpoint("/cliente/listar_cliente") + "?documento=" + encodeURIComponent(doc), {
+        method: "GET",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_cliente: cliente.id_cliente }),
       })
         .then((res) => res.json())
         .then((data) => {
@@ -105,16 +106,13 @@ export function EditProfileModal({
     setIsLoading(true);
 
     try {
-      const response = await fetch(getApiEndpoint("/editarcliente"), {
+      const response = await authFetch(getApiEndpoint("/cliente/editarcliente"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          id_cliente: Number(idCliente),
           id_credencial: Number(idCredencial),
-          nombre1,
-          nombre2,
-          apellido1,
-          apellido2,
+          nombre: [nombre1, nombre2].filter(Boolean).join(" "),
+          apellido: [apellido1, apellido2].filter(Boolean).join(" "),
           tipo_documento,
           documento: Number(numero_documento),
           nacionalidad,

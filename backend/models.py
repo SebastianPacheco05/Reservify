@@ -59,6 +59,8 @@ class RestauranteBase(BaseModel):
     horario_cierre: str
     documento: int
     id_categoria: int
+    url_imagen: Optional[str] = ""
+    imagenes_referencia: Optional[List[str]] = None  # Máximo 15 URLs (Cloudinary)
 
 
 class RestauranteUpdate(BaseModel):
@@ -92,7 +94,32 @@ class MesaDelete(BaseModel):
     id_mesa: int
 
 
-# Cliente
+# Usuario (reemplaza Cliente/Dueno/Empleado; el rol define el tipo)
+class UsuarioBase(BaseModel):
+    id_credencial: int
+    nombre: str
+    apellido: str
+    tipo_documento: str
+    documento: int
+    nacionalidad: Optional[str] = None
+    telefono: Optional[str] = None
+    id_rol: int
+    nit: Optional[int] = None  # Solo empleado: restaurante donde trabaja
+
+
+class UsuarioUpdate(UsuarioBase):
+    pass
+
+
+class UsuarioDelete(BaseModel):
+    documento: int
+
+
+class ListarUsuarios(BaseModel):
+    documento: int
+
+
+# Cliente (compatibilidad: mismo esquema que Usuario para rutas /cliente)
 class ClienteBase(BaseModel):
     id_credencial: int
     nombre: str
@@ -102,6 +129,7 @@ class ClienteBase(BaseModel):
     nacionalidad: str
     telefono: str
     id_rol: int
+    nit: Optional[int] = None
 
 
 class ClienteUpdate(ClienteBase):
@@ -308,6 +336,7 @@ class RegistrarCliente(BaseModel):
     nacionalidad: str
     telefono: str
     id_rol: int
+    nit: Optional[int] = None  # Solo para rol empleado: restaurante donde trabaja
     
     
 # Search Box

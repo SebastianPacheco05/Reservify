@@ -3,9 +3,12 @@ import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
 import { Receipt, Clock, CheckCircle, AlertCircle } from "lucide-react"
-import { bills } from "../../data/employeeData"
+import type { Bill } from "../../types/employee"
+
+const emptyBills: Bill[] = []
 
 export function Bills() {
+  const bills = emptyBills
   const getStatusBadge = (status: string) => {
     const variants = {
       open: { variant: "secondary" as const, label: "Abierta", icon: Clock },
@@ -118,7 +121,12 @@ export function Bills() {
       </div>
 
       <div className="space-y-4">
-        {bills.map((bill) => (
+        {bills.length === 0 ? (
+          <div className="rounded-xl border border-border bg-card p-8 text-center">
+            <p className="text-muted-foreground">No hay cuentas cargadas.</p>
+          </div>
+        ) : (
+        bills.map((bill) => (
           <Card key={bill.id} className="border-border/80 bg-card shadow-sm">
             <CardHeader>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
@@ -182,7 +190,8 @@ export function Bills() {
               </div>
             </CardContent>
           </Card>
-        ))}
+        ))
+        )}
       </div>
     </div>
   )

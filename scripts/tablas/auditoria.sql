@@ -8,10 +8,6 @@ DROP TRIGGER IF EXISTS "auditoria_insert_roles" ON "Roles";
 DROP TRIGGER IF EXISTS "auditoria_update_roles" ON "Roles";
 DROP TRIGGER IF EXISTS "auditoria_delete_roles" ON "Roles";
 
-DROP TRIGGER IF EXISTS "auditoria_insert_dueno" ON "Dueno";
-DROP TRIGGER IF EXISTS "auditoria_update_dueno" ON "Dueno";
-DROP TRIGGER IF EXISTS "auditoria_delete_dueno" ON "Dueno";
-
 DROP TRIGGER IF EXISTS "auditoria_insert_restaurante" ON "Restaurante";
 DROP TRIGGER IF EXISTS "auditoria_update_restaurante" ON "Restaurante";
 DROP TRIGGER IF EXISTS "auditoria_delete_restaurante" ON "Restaurante";
@@ -20,13 +16,9 @@ DROP TRIGGER IF EXISTS "auditoria_insert_mesas" ON "Mesas";
 DROP TRIGGER IF EXISTS "auditoria_update_mesas" ON "Mesas";
 DROP TRIGGER IF EXISTS "auditoria_delete_mesas" ON "Mesas";
 
-DROP TRIGGER IF EXISTS "auditoria_insert_cliente" ON "Cliente";
-DROP TRIGGER IF EXISTS "auditoria_update_cliente" ON "Cliente";
-DROP TRIGGER IF EXISTS "auditoria_delete_cliente" ON "Cliente";
-
-DROP TRIGGER IF EXISTS "auditoria_insert_empleado" ON "Empleado";
-DROP TRIGGER IF EXISTS "auditoria_update_empleado" ON "Empleado";
-DROP TRIGGER IF EXISTS "auditoria_delete_empleado" ON "Empleado";
+DROP TRIGGER IF EXISTS "auditoria_insert_usuario" ON "Usuario";
+DROP TRIGGER IF EXISTS "auditoria_update_usuario" ON "Usuario";
+DROP TRIGGER IF EXISTS "auditoria_delete_usuario" ON "Usuario";
 
 DROP TRIGGER IF EXISTS "auditoria_insert_encabezado_factura" ON "Encabezado_Factura";
 DROP TRIGGER IF EXISTS "auditoria_update_encabezado_factura" ON "Encabezado_Factura";
@@ -152,21 +144,6 @@ BEFORE DELETE ON "Roles"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
-CREATE TRIGGER "auditoria_insert_dueno"
-AFTER INSERT ON "Dueno"
-FOR EACH ROW
-EXECUTE PROCEDURE "auditoria_insert_trigger"();    
-
-CREATE TRIGGER "auditoria_update_dueno"
-AFTER UPDATE ON "Dueno"
-FOR EACH ROW
-EXECUTE PROCEDURE "auditoria_update_trigger"();
-
-CREATE TRIGGER "auditoria_delete_dueno"
-BEFORE DELETE ON "Dueno"
-FOR EACH ROW
-EXECUTE PROCEDURE "auditoria_delete_trigger"();
-
 CREATE TRIGGER "auditoria_insert_restaurante"
 AFTER INSERT ON "Restaurante"
 FOR EACH ROW
@@ -197,33 +174,18 @@ BEFORE DELETE ON "Mesas"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
-CREATE TRIGGER "auditoria_insert_cliente"
-AFTER INSERT ON "Cliente"
+CREATE TRIGGER "auditoria_insert_usuario"
+AFTER INSERT ON "Usuario"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_insert_trigger"();
 
-CREATE TRIGGER "auditoria_update_cliente"
-AFTER UPDATE ON "Cliente"
+CREATE TRIGGER "auditoria_update_usuario"
+AFTER UPDATE ON "Usuario"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_update_trigger"();
 
-CREATE TRIGGER "auditoria_delete_cliente"
-BEFORE DELETE ON "Cliente"
-FOR EACH ROW
-EXECUTE PROCEDURE "auditoria_delete_trigger"();
-
-CREATE TRIGGER "auditoria_insert_empleado"
-AFTER INSERT ON "Empleado"
-FOR EACH ROW
-EXECUTE PROCEDURE "auditoria_insert_trigger"();
-
-CREATE TRIGGER "auditoria_update_empleado"
-AFTER UPDATE ON "Empleado"
-FOR EACH ROW
-EXECUTE PROCEDURE "auditoria_update_trigger"();
-
-CREATE TRIGGER "auditoria_delete_empleado"
-BEFORE DELETE ON "Empleado"
+CREATE TRIGGER "auditoria_delete_usuario"
+BEFORE DELETE ON "Usuario"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 

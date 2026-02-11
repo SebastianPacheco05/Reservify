@@ -1,9 +1,19 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card" 
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Badge } from "../ui/badge"
 import { Users, Calendar, Clock, DollarSign, Grid3X3 } from "lucide-react"
-import { restaurant, tables, todayReservations, bills } from "../../data/employeeData" 
+import type { Restaurant, Table, Reservation, Bill } from "../../types/employee"
+
+const emptyRestaurant: Restaurant | null = null
+const emptyTables: Table[] = []
+const emptyReservations: Reservation[] = []
+const emptyBills: Bill[] = []
 
 export function Overview() {
+  const restaurant = emptyRestaurant
+  const tables = emptyTables
+  const todayReservations = emptyReservations
+  const bills = emptyBills
+
   const availableTables = tables.filter((t) => t.status === "available").length
   const occupiedTables = tables.filter((t) => t.status === "occupied").length
   const pendingReservations = todayReservations.filter((r) => r.status === "pending" || r.status === "confirmed").length
@@ -14,22 +24,29 @@ export function Overview() {
     <div className="space-y-8">
       {/* Header del restaurante */}
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-        <div className="flex flex-col md:flex-row gap-4">
-          <img
-            src={restaurant.image || "/placeholder.svg"}
-            alt={restaurant.name}
-            className="w-full md:w-32 h-32 object-cover rounded-lg"
-          />
-          <div className="flex-1">
-            <h2 className="text-xl md:text-2xl font-bold text-foreground">{restaurant.name}</h2>
-            <p className="text-muted-foreground mt-1">{restaurant.address}</p>
-            <p className="text-muted-foreground">{restaurant.phone}</p>
-            <div className="flex items-center gap-3 mt-2 flex-wrap">
-              <Badge variant="secondary">Horario: {restaurant.openTime} - {restaurant.closeTime}</Badge>
-              <Badge variant="default">Hora actual: {currentTime}</Badge>
+        {restaurant ? (
+          <div className="flex flex-col md:flex-row gap-4">
+            <img
+              src={restaurant.image || "/placeholder.svg"}
+              alt={restaurant.name}
+              className="w-full md:w-32 h-32 object-cover rounded-lg"
+            />
+            <div className="flex-1">
+              <h2 className="text-xl md:text-2xl font-bold text-foreground">{restaurant.name}</h2>
+              <p className="text-muted-foreground mt-1">{restaurant.address}</p>
+              <p className="text-muted-foreground">{restaurant.phone}</p>
+              <div className="flex items-center gap-3 mt-2 flex-wrap">
+                <Badge variant="secondary">Horario: {restaurant.openTime} - {restaurant.closeTime}</Badge>
+                <Badge variant="default">Hora actual: {currentTime}</Badge>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-center py-6">
+            <p className="text-muted-foreground">No hay datos del restaurante.</p>
+            <Badge variant="default" className="mt-2">Hora actual: {currentTime}</Badge>
+          </div>
+        )}
       </div>
 
       {/* Métricas principales */}
@@ -95,7 +112,10 @@ export function Overview() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {todayReservations
+            {todayReservations.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4">No hay reservas próximas.</p>
+            ) : (
+              todayReservations
               .filter((r) => r.status === "pending" || r.status === "confirmed")
               .slice(0, 3)
               .map((reservation) => (
@@ -120,7 +140,8 @@ export function Overview() {
                     <span className="text-sm text-muted-foreground">{reservation.estimatedDuration} min</span>
                   </div>
                 </div>
-              ))}
+              ))
+            )}
           </div>
         </CardContent>
       </Card>

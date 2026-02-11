@@ -1,8 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { dailyFlow } from "../../data/employeeData"
+import type { DailyFlow as DailyFlowType } from "../../types/employee"
+
+const emptyDailyFlow: DailyFlowType[] = []
 
 export function DailyFlow() {
-  const maxCustomers = Math.max(...dailyFlow.map((d) => d.customers))
+  const dailyFlow = emptyDailyFlow
+  const maxCustomers = dailyFlow.length ? Math.max(...dailyFlow.map((d) => d.customers)) : 0
   const totalCustomers = dailyFlow.reduce((acc, curr) => acc + curr.customers, 0)
   const totalReservations = dailyFlow.reduce((acc, curr) => acc + curr.reservations, 0)
   const totalWalkIns = dailyFlow.reduce((acc, curr) => acc + curr.walkIns, 0)
@@ -58,7 +61,10 @@ export function DailyFlow() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {dailyFlow.map((data) => {
+            {dailyFlow.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4">No hay datos de flujo diario.</p>
+            ) : (
+            dailyFlow.map((data) => {
               const isCurrentHour = Number.parseInt(data.hour.split(":")[0]) === currentHour
               return (
                 <div
@@ -80,7 +86,7 @@ export function DailyFlow() {
                     <div className="flex-1 bg-muted rounded-full h-6 relative overflow-hidden">
                       <div
                         className="bg-primary h-full flex items-center justify-end pr-2 transition-all duration-500 min-w-[2rem]"
-                        style={{ width: `${(data.customers / maxCustomers) * 100}%` }}
+                        style={{ width: `${maxCustomers ? (data.customers / maxCustomers) * 100 : 0}%` }}
                       >
                         <span className="text-primary-foreground text-xs font-medium">{data.customers}</span>
                       </div>
@@ -99,7 +105,8 @@ export function DailyFlow() {
                   </div>
                 </div>
               )
-            })}
+            })
+            )}
           </div>
         </CardContent>
       </Card>

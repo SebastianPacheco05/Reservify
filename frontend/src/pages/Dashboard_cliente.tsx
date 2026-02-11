@@ -113,30 +113,31 @@ export default function ClientDashboard() {
     fetchReservas();
   }, []);
 
-  // Simular carga de datos del usuario actual
+  // Cargar datos del usuario actual (documento desde login)
   useEffect(() => {
-    // Aquí normalmente obtendrías el ID del usuario actual desde el contexto de autenticación
-    const currentUserId = 1; // Ejemplo
-
-    fetch(getApiEndpoint("/listar_cliente"), {
-      method: "PUT",
+    const documento = localStorage.getItem("documento");
+    if (!documento) {
+      setIsLoading(false);
+      return;
+    }
+    authFetch(getApiEndpoint("/cliente/listar_cliente") + "?documento=" + encodeURIComponent(documento), {
+      method: "GET",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id_cliente: currentUserId }),
     })
       .then((res) => res.json())
       .then((data) => {
         const clienteData = data.respuesta;
         if (clienteData) {
           setCliente({
-            id_cliente: clienteData.id_cliente,
-            nombre1: clienteData.nombre1,
-            nombre2: clienteData.nombre2,
-            apellido1: clienteData.apellido1,
-            apellido2: clienteData.apellido2,
-            nacionalidad: clienteData.nacionalidad,
-            tipo_documento: clienteData.tipo_documento,
-            numero_documento: clienteData.documento,
-            telefono: clienteData.telefono,
+            id_cliente: Number(clienteData.documento),
+            nombre1: clienteData.nombre ?? "",
+            nombre2: "",
+            apellido1: clienteData.apellido ?? "",
+            apellido2: "",
+            nacionalidad: clienteData.nacionalidad ?? "",
+            tipo_documento: clienteData.tipo_documento ?? "",
+            numero_documento: String(clienteData.documento ?? ""),
+            telefono: clienteData.telefono ?? "",
           });
         }
         setIsLoading(false);
