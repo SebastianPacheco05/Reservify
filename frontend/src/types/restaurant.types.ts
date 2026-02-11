@@ -127,4 +127,6 @@ export interface ComentarioFromDB {
   comentario: string;
   fecha: string; // Solo año/mes/día
   calificacion: number;
+  nombre?: string;
+  apellido?: string;
 }
