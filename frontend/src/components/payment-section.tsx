@@ -61,22 +61,22 @@ export function PaymentSection({ customerData, reservationData, onSuccess, onBac
     }
 
     return (
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">Método de Pago</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Método de Pago</h2>
 
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-semibold text-gray-900 mb-2">Información del Cliente</h3>
-                <p className="text-sm text-gray-600">
+            <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Información del Cliente</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                     {customerData.nombre_completo}
                 </p>
-                <p className="text-sm text-gray-600">{customerData.email}</p>
-                <p className="text-sm text-gray-600">{customerData.telefono}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{customerData.email}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{customerData.telefono}</p>
             </div>
 
             {/* Formulario de Pago */}
             <div className="space-y-4 mb-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Número de Tarjeta
                     </label>
                     <input
@@ -86,13 +86,13 @@ export function PaymentSection({ customerData, reservationData, onSuccess, onBac
                         onChange={(e) => setPaymentData({ ...paymentData, numero_tarjeta: formatCardNumber(e.target.value) })}
                         placeholder="1234 5678 9012 3456"
                         maxLength={19}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Fecha de Vencimiento
                         </label>
                         <input
@@ -102,11 +102,11 @@ export function PaymentSection({ customerData, reservationData, onSuccess, onBac
                             onChange={(e) => setPaymentData({ ...paymentData, fecha_vencimiento: formatExpiryDate(e.target.value) })}
                             placeholder="MM/YY"
                             maxLength={5}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             CVC
                         </label>
                         <input
@@ -116,13 +116,13 @@ export function PaymentSection({ customerData, reservationData, onSuccess, onBac
                             onChange={(e) => setPaymentData({ ...paymentData, cvc: e.target.value.replace(/\D/g, '') })}
                             placeholder="123"
                             maxLength={4}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Nombre del Titular
                     </label>
                     <input
@@ -131,24 +131,24 @@ export function PaymentSection({ customerData, reservationData, onSuccess, onBac
                         value={paymentData.nombre_titular}
                         onChange={(e) => setPaymentData({ ...paymentData, nombre_titular: e.target.value.toUpperCase() })}
                         placeholder="NOMBRE COMO APARECE EN LA TARJETA"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                 </div>
             </div>
 
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg">
                 <div className="flex items-center gap-2">
                     <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
                         <span className="text-white text-xs">✓</span>
                     </div>
-                    <p className="text-sm text-green-700 font-medium">Pago 100% seguro con encriptación SSL</p>
+                    <p className="text-sm text-green-700 dark:text-green-300 font-medium">Pago 100% seguro con encriptación SSL</p>
                 </div>
             </div>
 
             <div className="flex gap-3">
                 <button
                     onClick={onBack}
-                    className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-md font-medium hover:bg-gray-50 transition-colors"
+                    className="flex-1 px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                     Volver
                 </button>

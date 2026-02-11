@@ -81,21 +81,21 @@ export default function CheckoutPage({ reservationData: propReservationData }: C
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Reservify</h1>
-                    <p className="text-gray-600">Completa tu reserva de forma segura</p>
+                    <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">Reservify</h1>
+                    <p className="text-gray-600 dark:text-gray-400">Completa tu reserva de forma segura</p>
                 </div>
 
                 {/* Progress Steps */}
                 <div className="max-w-3xl mx-auto mb-12">
                     <div className="flex items-center justify-center gap-4">
                         <StepIndicator number={1} label="Información" active={step === "form"} completed={step !== "form"} />
-                        <div className="h-[2px] w-16 bg-gray-300" />
+                        <div className="h-[2px] w-16 bg-gray-300 dark:bg-gray-600" />
                         <StepIndicator number={2} label="Pago" active={step === "payment"} completed={step === "success"} />
-                        <div className="h-[2px] w-16 bg-gray-300" />
+                        <div className="h-[2px] w-16 bg-gray-300 dark:bg-gray-600" />
                         <StepIndicator number={3} label="Confirmación" active={step === "success"} completed={false} />
                     </div>
                 </div>
@@ -116,17 +116,17 @@ export default function CheckoutPage({ reservationData: propReservationData }: C
                         )}
 
                         {step === "success" && (
-                            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+                            <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm border border-gray-200 dark:border-gray-700">
                                 <div className="text-center">
-                                    <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-                                        <CheckCircle2 className="w-8 h-8 text-green-600" />
+                                    <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/40 rounded-full mb-4">
+                                        <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
                                     </div>
-                                    <h2 className="text-2xl font-bold text-gray-900 mb-2">¡Pago Exitoso!</h2>
-                                    <p className="text-gray-600 mb-6">
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">¡Pago Exitoso!</h2>
+                                    <p className="text-gray-600 dark:text-gray-400 mb-6">
                                         Tu reserva ha sido confirmada. Recibirás un correo con los detalles.
                                     </p>
-                                    <div className="bg-blue-50 rounded-lg p-4 mb-6">
-                                        <p className="text-sm text-gray-600 mb-1">Número de confirmación</p>
+                                    <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 mb-6">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Número de confirmación</p>
                                         <p className="text-xl font-bold text-blue-600">
                                             RSV-{Math.random().toString(36).substr(2, 9).toUpperCase()}
                                         </p>
@@ -170,13 +170,13 @@ function StepIndicator({
                         ? "bg-blue-600 text-white"
                         : active
                             ? "bg-blue-600 text-white"
-                            : "bg-white border-2 border-gray-300 text-gray-500"
+                            : "bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400"
                 }`}
             >
                 {completed ? "✓" : number}
             </div>
             <span
-                className={`text-xs font-medium ${active ? "text-blue-600" : "text-gray-500"}`}
+                className={`text-xs font-medium ${active ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"}`}
             >
                 {label}
             </span>

@@ -80,13 +80,13 @@ export function AllReservationsModal({ isOpen, onClose }: AllReservationsModalPr
     switch (estado?.toLowerCase()) {
       case "confirmada":
       case "completada":
-        return "bg-green-50 text-green-700 border-green-200";
+        return "bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-300 border-green-200 dark:border-green-700";
       case "pendiente":
-        return "bg-yellow-50 text-yellow-700 border-yellow-200";
+        return "bg-yellow-50 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-700";
       case "cancelada":
-        return "bg-red-50 text-red-700 border-red-200";
+        return "bg-red-50 dark:bg-red-900/40 text-red-700 dark:text-red-300 border-red-200 dark:border-red-700";
       default:
-        return "bg-gray-50 text-gray-700 border-gray-200";
+        return "bg-gray-50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600";
     }
   };
 
@@ -126,14 +126,14 @@ export function AllReservationsModal({ isOpen, onClose }: AllReservationsModalPr
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-12">
             <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
-            <p className="mt-4 text-gray-600">Cargando todas las reservas...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-300">Cargando todas las reservas...</p>
           </div>
         ) : (
           <div className="flex flex-col gap-4 flex-1 overflow-hidden">
             {/* Barra de búsqueda y filtros */}
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
                 <Input
                   placeholder="Buscar por cliente, restaurante, teléfono o ID..."
                   value={searchQuery}
@@ -143,7 +143,7 @@ export function AllReservationsModal({ isOpen, onClose }: AllReservationsModalPr
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -177,7 +177,7 @@ export function AllReservationsModal({ isOpen, onClose }: AllReservationsModalPr
             <div className="flex-1 overflow-y-auto space-y-3 pr-2">
               {filteredReservas.length === 0 ? (
                 <div className="text-center py-12">
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-400">
                     {searchQuery || estadoFilter !== "todos"
                       ? "No se encontraron reservas con los filtros aplicados"
                       : "No hay reservas disponibles"}
@@ -187,7 +187,7 @@ export function AllReservationsModal({ isOpen, onClose }: AllReservationsModalPr
                 filteredReservas.map((reserva) => (
                   <div
                     key={reserva.id_reserva}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                   >
                     <div className="flex items-center space-x-4 flex-1">
                       <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -195,14 +195,14 @@ export function AllReservationsModal({ isOpen, onClose }: AllReservationsModalPr
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <p className="font-medium text-gray-900 truncate">
+                          <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
                             {reserva.nombre_restaurante}
                           </p>
                           <Badge variant="outline" className="text-xs">
                             #{reserva.id_reserva}
                           </Badge>
                         </div>
-                        <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-600">
+                        <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-600 dark:text-gray-400">
                           <div className="flex items-center gap-1">
                             <User className="h-3.5 w-3.5 flex-shrink-0" />
                             <span className="truncate">{reserva.cliente_nombre}</span>

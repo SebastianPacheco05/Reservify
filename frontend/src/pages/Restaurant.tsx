@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -37,11 +37,16 @@ import {
   Calendar,
   Users,
   CreditCard,
+  UserCircle,
+  ArrowLeft,
 } from "lucide-react";
 
 import { useRestaurantData } from "../hooks/useRestaurantData";
 import { useToastContext } from "../components/ToastProvider";
 import { getApiEndpoint } from "../config/api";
+import RestaurantMap from "../components/RestaurantMap";
+import ReviewForm from "../components/ReviewForm";
+import { ModeToggle } from "../components/mode-toggle";
 
 export default function RestaurantPage() {
   const { toast } = useToastContext();
@@ -59,6 +64,12 @@ export default function RestaurantPage() {
     mesaId: "",
   });
 
+  // Promedio de reseñas: si hay comentarios se calcula desde ellos; si no, se usa el rating del backend
+  const ratingPromedio =
+    comentarios.length > 0
+      ? comentarios.reduce((acc, c) => acc + c.calificacion, 0) / comentarios.length
+      : (restaurantInfo?.rating ?? 0);
+
   const handleDateChange = async (date: string) => {
     setReservationData({ ...reservationData, date });
     if (date) {
@@ -70,11 +81,16 @@ export default function RestaurantPage() {
   const handlePaymentReservation = async () => {
     try {
       // Validar que todos los campos estén completos
-      if (!reservationData.date || !reservationData.time || !reservationData.guests || !reservationData.mesaId) {
+      if (
+        !reservationData.date ||
+        !reservationData.time ||
+        !reservationData.guests ||
+        !reservationData.mesaId
+      ) {
         toast({
           title: "Campos incompletos",
           description: "Por favor completa todos los campos de la reserva",
-          variant: "warning"
+          variant: "warning",
         });
         return;
       }
@@ -84,18 +100,20 @@ export default function RestaurantPage() {
         toast({
           title: "Sesión requerida",
           description: "Debes iniciar sesión para hacer una reserva",
-          variant: "warning"
+          variant: "warning",
         });
         return;
       }
 
       // Obtener el precio de la mesa seleccionada
-      const mesaSeleccionada = mesas.find(m => m.id_mesa.toString() === reservationData.mesaId);
+      const mesaSeleccionada = mesas.find(
+        (m) => m.id_mesa.toString() === reservationData.mesaId,
+      );
       if (!mesaSeleccionada) {
         toast({
           title: "Error de selección",
           description: "Mesa no encontrada",
-          variant: "destructive"
+          variant: "destructive",
         });
         return;
       }
@@ -103,40 +121,43 @@ export default function RestaurantPage() {
       // Obtener el email del cliente desde el token JWT
       const token = localStorage.getItem("access_token");
       if (!token) return;
-      
-      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+
+      const tokenPayload = JSON.parse(atob(token.split(".")[1]));
       const emailCliente = tokenPayload.sub;
 
       if (!emailCliente) {
         toast({
           title: "Error de autenticación",
           description: "No se pudo obtener la información del cliente",
-          variant: "destructive"
+          variant: "destructive",
         });
         return;
       }
 
       // Usar authFetch que maneja automáticamente la renovación de tokens
-      const reservaResponse = await authFetch(getApiEndpoint("/facturas/reservar"), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-          // El header Authorization se agrega automáticamente
+      const reservaResponse = await authFetch(
+        getApiEndpoint("/facturas/reservar"),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // El header Authorization se agrega automáticamente
+          },
+          body: JSON.stringify({
+            p_nit: restaurantNIT,
+            p_nombre_restaurante: restaurantInfo?.nombre_restaurante || "",
+            p_direccion: restaurantInfo?.direccion || "",
+            p_ciudad: "Bogotá",
+            p_email_cliente: emailCliente,
+            p_id_mesa: parseInt(reservationData.mesaId),
+            p_num_comensales: parseInt(reservationData.guests),
+            p_horario: reservationData.time,
+            p_fecha: reservationData.date,
+            p_forma_pago: "Pendiente",
+            p_precio_total: mesaSeleccionada.precio,
+          }),
         },
-        body: JSON.stringify({
-          p_nit: restaurantNIT,
-          p_nombre_restaurante: restaurantInfo?.nombre_restaurante || "",
-          p_direccion: restaurantInfo?.direccion || "",
-          p_ciudad: "Bogotá",
-          p_email_cliente: emailCliente,
-          p_id_mesa: parseInt(reservationData.mesaId),
-          p_num_comensales: parseInt(reservationData.guests),
-          p_horario: reservationData.time,
-          p_fecha: reservationData.date,
-          p_forma_pago: "Pendiente",
-          p_precio_total: mesaSeleccionada.precio
-        })
-      });
+      );
 
       if (!reservaResponse.ok) {
         const errorData = await reservaResponse.json();
@@ -152,7 +173,7 @@ export default function RestaurantPage() {
         mesa: mesaSeleccionada,
         guests: parseInt(reservationData.guests),
         fecha: reservationData.date,
-        horario: reservationData.time
+        horario: reservationData.time,
       };
 
       sessionStorage.setItem("pendingReservation", JSON.stringify(paymentData));
@@ -160,13 +181,14 @@ export default function RestaurantPage() {
       // Redirigir a la pasarela de pagos
       window.location.href = "/Pasarela_pagos";
       setIsModalOpen(false);
-
     } catch (error) {
       console.error("Error al procesar la reserva:", error);
       toast({
         title: "Error en la reserva",
-        description: (error as { message?: string })?.message || "Error al procesar la reserva. Inténtalo de nuevo.",
-        variant: "destructive"
+        description:
+          (error as { message?: string })?.message ||
+          "Error al procesar la reserva. Inténtalo de nuevo.",
+        variant: "destructive",
       });
     }
   };
@@ -175,24 +197,35 @@ export default function RestaurantPage() {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
         key={i}
-        className={`h-4 w-4 ${i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-          }`}
+        className={`h-4 w-4 ${
+          i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300 dark:text-gray-500"
+        }`}
       />
     ));
   };
 
   if (loading.info) {
     return (
-      <div className="max-w-7xl mx-auto p-4 space-y-8">
-        <Skeleton className="h-96 w-full rounded-xl" />
-        <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-40 w-full" />
-            <Skeleton className="h-60 w-full" />
+      <div className="min-h-screen bg-background transition-colors duration-300">
+        <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+          <div className="max-w-7xl mx-auto flex h-14 items-center justify-between px-4">
+            <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="h-5 w-5" /> Volver
+            </Link>
+            <ModeToggle />
           </div>
-          <div className="space-y-6">
-            <Skeleton className="h-80 w-full" />
+        </header>
+        <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-8">
+          <Skeleton className="h-[28rem] w-full rounded-2xl" />
+          <div className="grid lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-6">
+              <Skeleton className="h-24 w-full rounded-xl" />
+              <Skeleton className="h-40 w-full rounded-xl" />
+              <Skeleton className="h-64 w-full rounded-xl" />
+            </div>
+            <div className="space-y-6">
+              <Skeleton className="h-80 w-full rounded-xl" />
+            </div>
           </div>
         </div>
       </div>
@@ -200,81 +233,100 @@ export default function RestaurantPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-4 space-y-8">
-      {/* Imagen del Restaurante */}
-      <div className="relative h-96 rounded-xl overflow-hidden group">
-        {restaurantInfo && (
-          <img
-            src={restaurantInfo.url_image || "/placeholder.svg"}
-            alt={restaurantInfo.nombre_restaurante}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        )}
-        <div className="absolute inset-0 bg-black/20" />
-      </div>
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      {/* Barra superior: navegación + cambio de tema */}
+      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-sm">
+        <div className="max-w-7xl mx-auto flex h-14 sm:h-16 items-center justify-between px-4 sm:px-6">
+          <Link
+            to="/"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-medium rounded-lg px-3 py-2 hover:bg-accent/50"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            <span className="hidden sm:inline">Volver al inicio</span>
+            <span className="sm:hidden">Volver</span>
+          </Link>
+          <div className="flex items-center gap-2">
+            <img src="/logoreservify.png" alt="Reservify" className="h-8 dark:invert" />
+            <ModeToggle />
+          </div>
+        </div>
+      </header>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        {/* Información Principal */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Título y Descripción */}
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8 lg:space-y-10">
+        {/* Hero imagen */}
+        <div className="relative h-72 sm:h-80 md:h-96 rounded-2xl overflow-hidden group shadow-xl ring-1 ring-border/50">
           {restaurantInfo && (
-            <div className="space-y-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h1 className="text-4xl font-bold text-gray-900">
-                    {restaurantInfo.nombre_restaurante}
-                  </h1>
-                  <div className="flex items-center space-x-2 mt-2">
-                    <div className="flex items-center">
-                      {renderStars(Math.floor(restaurantInfo.rating))}
-                      <span className="ml-2 text-sm text-gray-600">
-                        {restaurantInfo.rating} ({restaurantInfo.reviews}{" "}
-                        reseñas)
-                      </span>
-                    </div>
-                    <Badge variant="secondary">
-                      {restaurantInfo.nombre_categoria}
-                    </Badge>
-                  </div>
+            <img
+              src={restaurantInfo.url_image || "/placeholder.svg"}
+              alt={restaurantInfo.nombre_restaurante}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+          {restaurantInfo && (
+            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white">
+              <h1 className="text-3xl sm:text-4xl font-bold drop-shadow-lg">
+                {restaurantInfo.nombre_restaurante}
+              </h1>
+              <div className="flex items-center gap-3 mt-2 flex-wrap">
+                <div className="flex items-center gap-1.5">
+                  {renderStars(Math.round(ratingPromedio))}
+                  <span className="text-sm font-medium text-white/95">{ratingPromedio.toFixed(1)}</span>
                 </div>
-              </div>
-
-              <p className="text-lg text-gray-600 leading-relaxed">
-                {restaurantInfo.descripcion_restaurante}
-              </p>
-
-              <div className="flex items-center space-x-4">
-                <Badge variant={restaurantInfo.availabletoday ? "default" : "secondary"}>
-                  {restaurantInfo.availabletoday ? "Disponible Hoy" : "No Disponible"}
+                <Badge className="bg-white/20 text-white border-0 backdrop-blur">
+                  {restaurantInfo.nombre_categoria}
+                </Badge>
+                <Badge
+                  variant={restaurantInfo.availabletoday ? "default" : "secondary"}
+                  className={restaurantInfo.availabletoday ? "bg-emerald-500/90 text-white border-0" : "bg-white/20 text-white border-0"}
+                >
+                  {restaurantInfo.availabletoday ? "Disponible hoy" : "No disponible"}
                 </Badge>
               </div>
             </div>
           )}
+        </div>
+
+      <div className="grid lg:grid-cols-3 gap-8 lg:gap-10">
+        {/* Información Principal */}
+        <div className="lg:col-span-2 space-y-6 lg:space-y-8">
+          {/* Descripción */}
+          {restaurantInfo && (
+            <Card className="border-border bg-card shadow-sm overflow-hidden">
+              <CardContent className="pt-6">
+                <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+                  {restaurantInfo.descripcion_restaurante}
+                </p>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Información de Contacto */}
           {restaurantInfo && (
-            <Card>
+            <Card className="border-border bg-card shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <MapPin className="h-5 w-5" />
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <MapPin className="h-5 w-5 text-primary" />
                   <span>Información del Restaurante</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div className="flex items-center space-x-3">
-                    <MapPin className="h-5 w-5 text-red-600" />
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                    <MapPin className="h-5 w-5 text-red-500 dark:text-red-400 shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-medium">Dirección</p>
-                      <p className="text-gray-600">{restaurantInfo.direccion}</p>
+                      <p className="font-medium text-foreground">Dirección</p>
+                      <p className="text-muted-foreground text-sm mt-0.5">
+                        {restaurantInfo.direccion}
+                      </p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <Clock className="h-5 w-5 text-green-600" />
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                    <Clock className="h-5 w-5 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-medium">Horarios</p>
-                      <p className="text-gray-600">
-                        {restaurantInfo.horario_apertura} - {restaurantInfo.horario_cierre}
+                      <p className="font-medium text-foreground">Horarios</p>
+                      <p className="text-muted-foreground text-sm mt-0.5">
+                        {restaurantInfo.horario_apertura} – {restaurantInfo.horario_cierre}
                       </p>
                     </div>
                   </div>
@@ -283,12 +335,30 @@ export default function RestaurantPage() {
             </Card>
           )}
 
+          {/* Mapa del Restaurante (solo este NIT) */}
+          {restaurantInfo && (
+            <Card className="border-border bg-card shadow-sm overflow-hidden">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <MapPin className="h-5 w-5 text-primary" />
+                  <span>Ubicación en el mapa</span>
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Visualiza la ubicación exacta de este restaurante.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <RestaurantMap onlyNit={restaurantInfo.nit} />
+              </CardContent>
+            </Card>
+          )}
+
           {/* Mesas Disponibles */}
           {!loading.mesas && mesas.length > 0 && (
-            <Card>
+            <Card className="border-border bg-card shadow-sm">
               <CardHeader>
-                <CardTitle>Mesas Disponibles</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-foreground">Mesas Disponibles</CardTitle>
+                <CardDescription className="text-muted-foreground">
                   Seleccione una mesa para su reserva
                 </CardDescription>
               </CardHeader>
@@ -299,21 +369,23 @@ export default function RestaurantPage() {
                     .map((mesa) => (
                       <div
                         key={mesa.id_mesa}
-                        className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                        className="border border-border rounded-xl p-4 hover:shadow-md hover:border-primary/30 bg-card transition-all duration-200 cursor-pointer"
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold">Mesa #{mesa.id_mesa}</h4>
+                          <h4 className="font-semibold text-foreground">
+                            Mesa #{mesa.id_mesa}
+                          </h4>
                           <Badge variant="secondary" className="text-xs">
                             Disponible
                           </Badge>
                         </div>
-                        <div className="flex items-center space-x-2 mb-2">
-                          <Users className="h-4 w-4 text-gray-600" />
-                          <span className="text-sm text-gray-600">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">
                             {mesa.cant_personas} personas
                           </span>
                         </div>
-                        <p className="font-bold text-lg text-green-600">
+                        <p className="font-bold text-lg text-emerald-600 dark:text-emerald-400">
                           ${mesa.precio.toFixed(2)}
                         </p>
                       </div>
@@ -323,35 +395,158 @@ export default function RestaurantPage() {
             </Card>
           )}
 
-          {/* Comentarios */}
+          {/* Formulario de Reseña */}
+          <ReviewForm 
+            restaurantNIT={restaurantNIT} 
+            onReviewSubmitted={() => {
+              // Recargar comentarios después de enviar reseña
+              window.location.reload();
+            }}
+          />
+
+          {/* Reseñas */}
           {!loading.comentarios && comentarios.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Star className="h-5 w-5 text-yellow-500" />
-                  <span>Comentarios de Clientes</span>
-                </CardTitle>
-                <CardDescription>
-                  Lo que dicen nuestros clientes
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {comentarios.map((comentario) => (
-                  <div
-                    key={comentario.id_comentario}
-                    className="border-b pb-4 last:border-b-0"
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center mb-2">
-                        {renderStars(comentario.calificacion)}
-                      </div>
-                      <span className="text-sm text-gray-500">
-                        {new Date(comentario.fecha).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <p className="text-gray-600">{comentario.comentario}</p>
+            <Card className="overflow-hidden border-border bg-card shadow-sm">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-muted/80 dark:to-muted/50 border-b border-border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
+                      <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
+                      <span>Reseñas de Clientes</span>
+                    </CardTitle>
+                    <CardDescription className="mt-2 text-base text-muted-foreground">
+                      {comentarios.length}{" "}
+                      {comentarios.length === 1 ? "reseña" : "reseñas"} de
+                      nuestros clientes
+                    </CardDescription>
                   </div>
-                ))}
+                  <div className="text-right">
+                    <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                      {ratingPromedio.toFixed(1)}
+                    </div>
+                    <div className="flex items-center justify-end mt-1">
+                      {renderStars(Math.round(ratingPromedio))}
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  {comentarios.map((comentario, index) => {
+                    const fecha = new Date(comentario.fecha);
+                    const fechaFormateada = fecha.toLocaleDateString("es-ES", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    });
+                    const tiempoRelativo = (() => {
+                      const ahora = new Date();
+                      const diffMs = ahora.getTime() - fecha.getTime();
+                      const diffDias = Math.floor(
+                        diffMs / (1000 * 60 * 60 * 24),
+                      );
+                      if (diffDias === 0) return "Hoy";
+                      if (diffDias === 1) return "Ayer";
+                      if (diffDias < 7) return `Hace ${diffDias} días`;
+                      if (diffDias < 30)
+                        return `Hace ${Math.floor(diffDias / 7)} semanas`;
+                      if (diffDias < 365)
+                        return `Hace ${Math.floor(diffDias / 30)} meses`;
+                      return `Hace ${Math.floor(diffDias / 365)} años`;
+                    })();
+
+                    return (
+                      <div
+                        key={comentario.id_comentario}
+                        className="group relative bg-card rounded-xl border border-border p-5 hover:shadow-lg hover:border-primary/30 transition-all duration-300"
+                      >
+                        <div className="flex items-start space-x-4">
+                          {/* Avatar */}
+                          <div className="flex-shrink-0">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-lg shadow-md">
+                              <UserCircle className="w-10 h-10" />
+                            </div>
+                          </div>
+
+                          {/* Contenido */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <div className="flex items-center space-x-2 mb-1">
+                                  <h4 className="font-semibold text-foreground">
+                                    Cliente {index + 1}
+                                  </h4>
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
+                                  >
+                                    Verificado
+                                  </Badge>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <div className="flex items-center">
+                                    {renderStars(comentario.calificacion)}
+                                  </div>
+                                  <span className="text-sm font-medium text-muted-foreground">
+                                    {comentario.calificacion}.0
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="text-right flex-shrink-0">
+                                <div className="text-sm font-medium text-foreground">
+                                  {tiempoRelativo}
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  {fechaFormateada}
+                                </div>
+                              </div>
+                            </div>
+
+                            <p className="text-muted-foreground leading-relaxed mt-3">
+                              {comentario.comentario}
+                            </p>
+
+                            {/* Indicador de calificación */}
+                            <div className="mt-4 pt-4 border-t border-border">
+                              <div className="flex items-center space-x-2">
+                                <div
+                                  className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                    comentario.calificacion >= 4
+                                      ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                                      : comentario.calificacion >= 3
+                                        ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
+                                        : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
+                                  }`}
+                                >
+                                  {comentario.calificacion >= 4
+                                    ? "Excelente"
+                                    : comentario.calificacion >= 3
+                                      ? "Bueno"
+                                      : "Regular"}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Mensaje cuando no hay comentarios */}
+          {!loading.comentarios && comentarios.length === 0 && (
+            <Card className="border-border bg-card shadow-sm">
+              <CardContent className="py-12 text-center">
+                <Star className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  Aún no hay reseñas
+                </h3>
+                <p className="text-muted-foreground">
+                  Sé el primero en dejar una reseña sobre este restaurante
+                </p>
               </CardContent>
             </Card>
           )}
@@ -359,13 +554,13 @@ export default function RestaurantPage() {
 
         {/* Formulario de Reserva */}
         <div className="space-y-6">
-          <Card className="sticky top-4">
+          <Card className="sticky top-24 border-border bg-card shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Calendar className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-foreground">
+                <Calendar className="h-5 w-5 text-primary" />
                 <span>Hacer Reserva</span>
               </CardTitle>
-              <CardDescription>Reserve su mesa ahora</CardDescription>
+              <CardDescription className="text-muted-foreground">Reserve su mesa ahora</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -438,8 +633,8 @@ export default function RestaurantPage() {
                           key={mesa.id_mesa}
                           value={mesa.id_mesa.toString()}
                         >
-                          Mesa #{mesa.id_mesa} - {mesa.cant_personas} personas
-                          - ${mesa.precio}
+                          Mesa #{mesa.id_mesa} - {mesa.cant_personas} personas -
+                          ${mesa.precio}
                         </SelectItem>
                       ))}
                   </SelectContent>
@@ -463,57 +658,68 @@ export default function RestaurantPage() {
                   </DialogHeader>
                   <div className="space-y-4 py-4">
                     {/* Resumen de Reserva */}
-                    <div className="rounded-lg border p-4 space-y-3">
-                      <h3 className="font-semibold text-lg">
+                    <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
+                      <h3 className="font-semibold text-lg text-foreground">
                         Resumen de Reserva
                       </h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Restaurante:</span>
+                          <span className="text-muted-foreground">Restaurante:</span>
                           <span className="font-medium">
-                            {restaurantInfo?.nombre_restaurante || "No disponible"}
+                            {restaurantInfo?.nombre_restaurante ||
+                              "No disponible"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Fecha:</span>
-                          <span className="font-medium">
-                            {reservationData.date ? new Date(reservationData.date).toLocaleDateString('es-ES') : "No seleccionada"}
+                          <span className="text-muted-foreground">Fecha:</span>
+                          <span className="font-medium text-foreground">
+                            {reservationData.date
+                              ? new Date(
+                                  reservationData.date,
+                                ).toLocaleDateString("es-ES")
+                              : "No seleccionada"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Hora:</span>
-                          <span className="font-medium">
+                          <span className="text-muted-foreground">Hora:</span>
+                          <span className="font-medium text-foreground">
                             {reservationData.time || "No seleccionada"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Comensales:</span>
-                          <span className="font-medium">
+                          <span className="text-muted-foreground">Comensales:</span>
+                          <span className="font-medium text-foreground">
                             {reservationData.guests || "0"} personas
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Mesa:</span>
-                          <span className="font-medium">
-                            Mesa #{reservationData.mesaId || "No seleccionada"} - {mesas.find(m => m.id_mesa.toString() === reservationData.mesaId)?.cant_personas || 0} personas
+                          <span className="text-muted-foreground">Mesa:</span>
+                          <span className="font-medium text-foreground">
+                            Mesa #{reservationData.mesaId || "No seleccionada"}{" "}
+                            –{" "}
+                            {mesas.find(
+                              (m) =>
+                                m.id_mesa.toString() === reservationData.mesaId,
+                            )?.cant_personas || 0}{" "}
+                            personas
                           </span>
                         </div>
                       </div>
-                      <div className="pt-3 border-t">
+                      <div className="pt-3 border-t border-border">
                         <div className="flex justify-between items-center">
-                          <span className="font-semibold">Total a Pagar:</span>
-                          <span className="text-2xl font-bold text-green-600">
+                          <span className="font-semibold text-foreground">Total a Pagar:</span>
+                          <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                             $
                             {mesas
                               .find(
                                 (m) =>
                                   m.id_mesa.toString() ===
-                                  reservationData.mesaId
+                                  reservationData.mesaId,
                               )
                               ?.precio.toFixed(2) || "0.00"}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           * El pago se procesará en la siguiente pantalla
                         </p>
                       </div>
@@ -542,11 +748,11 @@ export default function RestaurantPage() {
           </Card>
 
           {/* Información Adicional */}
-          <Card>
+          <Card className="border-border bg-card shadow-sm">
             <CardHeader>
-              <CardTitle>Información Importante</CardTitle>
+              <CardTitle className="text-foreground">Información Importante</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-gray-600">
+            <CardContent className="space-y-3 text-sm text-muted-foreground">
               <p>• Las reservas se confirman tras el pago</p>
               <p>• Cancelaciones gratuitas hasta 2 horas antes</p>
               <p>• Mesa reservada por 2 horas máximo</p>
@@ -554,6 +760,7 @@ export default function RestaurantPage() {
             </CardContent>
           </Card>
         </div>
+      </div>
       </div>
     </div>
   );

@@ -161,7 +161,7 @@ export default function ClientDashboard() {
       case "cancelada":
         return "bg-red-50 text-red-700 border-red-200";
       default:
-        return "bg-gray-50 text-gray-700 border-gray-200";
+        return "bg-gray-50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600";
     }
   };
 
@@ -177,10 +177,10 @@ export default function ClientDashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando perfil...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">Cargando perfil...</p>
         </div>
       </div>
     );
@@ -188,10 +188,10 @@ export default function ClientDashboard() {
 
   if (!cliente) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 text-center">
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-300">
               No se pudo cargar la información del perfil
             </p>
           </CardContent>
@@ -224,8 +224,8 @@ export default function ClientDashboard() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                <p className="text-gray-600">Bienvenido, {cliente.nombre1}</p>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+                <p className="text-gray-600 dark:text-gray-300">Bienvenido, {cliente.nombre1}</p>
               </div>
             </div>
             <Button
@@ -266,32 +266,32 @@ export default function ClientDashboard() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <FileText className="h-5 w-5 text-gray-400" />
+                  <FileText className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {cliente.tipo_documento}
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       {cliente.numero_documento}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Phone className="h-5 w-5 text-gray-400" />
+                  <Phone className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       Teléfono
                     </p>
-                    <p className="text-sm text-gray-600">{cliente.telefono}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{cliente.telefono}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Globe className="h-5 w-5 text-gray-400" />
+                  <Globe className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       Nacionalidad
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       {cliente.nacionalidad}
                     </p>
                   </div>
@@ -318,31 +318,31 @@ export default function ClientDashboard() {
                 {isLoadingMetricas ? (
                   <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Cargando estadísticas...</p>
+                    <p className="mt-4 text-gray-600 dark:text-gray-300">Cargando estadísticas...</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">
+                    <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                         {metricas?.total_restaurantes || 0}
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-gray-600 dark:text-gray-400">
                         Total Restaurantes
                       </div>
                     </div>
-                    <div className="text-center p-4 bg-green-50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">
+                    <div className="text-center p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                         {metricas?.reservas_activas || 0}
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-gray-600 dark:text-gray-400">
                         Reservas Activas
                       </div>
                     </div>
-                    <div className="text-center p-4 bg-purple-50 rounded-lg">
-                      <div className="text-2xl font-bold text-purple-600">
+                    <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
+                      <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                         ${metricas?.revenue_mes?.toFixed(2) || "0.00"}
                       </div>
-                      <div className="text-sm text-gray-600">Ingresos del Mes</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Ingresos del Mes</div>
                     </div>
                   </div>
                 )}
@@ -370,18 +370,18 @@ export default function ClientDashboard() {
                 {isLoadingReservas ? (
                   <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Cargando reservas...</p>
+                    <p className="mt-4 text-gray-600 dark:text-gray-300">Cargando reservas...</p>
                   </div>
                 ) : reservas.length === 0 ? (
                   <div className="text-center py-8">
-                    <p className="text-gray-600">No hay reservas disponibles</p>
+                    <p className="text-gray-600 dark:text-gray-300">No hay reservas disponibles</p>
                   </div>
                 ) : (
                   <div className="space-y-3 max-h-[600px] overflow-y-auto">
                     {reservas.map((reserva) => (
                       <div
                         key={reserva.id_reserva}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                        className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                       >
                         <div className="flex items-center space-x-4 flex-1">
                           <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -389,14 +389,14 @@ export default function ClientDashboard() {
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <p className="font-medium text-gray-900">
+                              <p className="font-medium text-gray-900 dark:text-gray-100">
                                 {reserva.nombre_restaurante}
                               </p>
                               <Badge variant="outline" className="text-xs">
                                 #{reserva.id_reserva}
                               </Badge>
                             </div>
-                            <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-600">
+                            <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-600 dark:text-gray-400">
                               <div className="flex items-center gap-1">
                                 <User className="h-3.5 w-3.5" />
                                 <span>{reserva.cliente_nombre}</span>

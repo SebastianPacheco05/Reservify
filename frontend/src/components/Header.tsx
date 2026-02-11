@@ -2,15 +2,13 @@ import { Link } from "react-router-dom";
 import { X, MenuIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./ui/button";
-import { ThemeToggle } from "./theme-toggle";
+import { ModeToggle } from "./mode-toggle";
 import { fadeInDown, transitionNormal } from "../lib/animations";
 
 interface HeaderProps {
   isMenuOpen: boolean;
   setIsMenuOpen: (isOpen: boolean) => void;
   isLoggedIn: boolean;
-  isDarkMode: boolean;
-  toggleDarkMode: () => void;
   onLogout: () => void;
 }
 
@@ -18,8 +16,6 @@ export default function Header({
   isMenuOpen,
   setIsMenuOpen,
   isLoggedIn,
-  isDarkMode,
-  toggleDarkMode,
   onLogout,
 }: HeaderProps) {
   return (
@@ -58,8 +54,8 @@ export default function Header({
             Restaurantes
           </motion.a>
 
-          {/* Botón de cambio de tema */}
-          <ThemeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
+          {/* Botón de cambio de tema (Light / Dark / System) */}
+          <ModeToggle />
 
           {isLoggedIn ? (
             <Button
@@ -132,7 +128,7 @@ export default function Header({
           {/* Botón de cambio de tema en móvil */}
           <div className="flex items-center justify-between py-2 border-t border-blue-100 dark:border-gray-700">
             <span className="text-black dark:text-white font-medium">Tema</span>
-            <ThemeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
+            <ModeToggle />
           </div>
 
           {isLoggedIn ? (

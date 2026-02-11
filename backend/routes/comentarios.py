@@ -3,7 +3,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from config import get_db
 from funciones.cruds import comentarios, list as comentarios_queries
-from models import ComentarioBase, ComentarioUpdate, ComentarioDelete, ListarComentarios
+from funciones.cruds.cliente_utils import obtener_documento_por_email
+from funciones.auth.dependencies import verificar_token
+from models import ComentarioBase, ComentarioUpdate, ComentarioDelete, ListarComentarios, ComentarioCreate
 
 # Router público (sin autenticación)
 router = APIRouter(
@@ -44,10 +46,71 @@ async def obtener_comentarios_por_restaurante(nit: int, db: Session = Depends(ge
         raise HTTPException(status_code=500, detail=f"Error al obtener comentarios: {str(e)}")
 
 
-# Insertar comentario
+# Verificar si el usuario ya tiene un comentario para un restaurante
+@router.get("/verificar/{nit}")
+async def verificar_comentario_existente(
+    nit: int,
+    db: Session = Depends(get_db),
+    usuario_actual: dict = Depends(verificar_token),
+):
+    """Verifica si el usuario autenticado ya tiene un comentario para este restaurante"""
+    try:
+        documento = obtener_documento_por_email(db, usuario_actual["email"])
+        existe = comentarios.verificar_comentario_existente(db, documento, nit)
+        return {"ya_tiene_comentario": existe}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error al verificar comentario: {str(e)}",
+        )
+
+
+# Insertar comentario (requiere autenticación)
+@router.post("/crear")
+async def crear_comentario(
+    data: ComentarioCreate,
+    db: Session = Depends(get_db),
+    usuario_actual: dict = Depends(verificar_token),
+):
+    """Crea un nuevo comentario con calificación. Requiere autenticación."""
+    try:
+        # Validar calificación
+        if data.calificacion < 1 or data.calificacion > 5:
+            raise HTTPException(
+                status_code=400,
+                detail="La calificación debe estar entre 1 y 5",
+            )
+        
+        # Obtener documento del usuario
+        documento = obtener_documento_por_email(db, usuario_actual["email"])
+        
+        # Verificar si ya tiene un comentario
+        if comentarios.verificar_comentario_existente(db, documento, data.nit):
+            raise HTTPException(
+                status_code=400,
+                detail="Ya has dejado una reseña para este restaurante. Solo puedes dejar una reseña por restaurante.",
+            )
+        
+        # Insertar comentario
+        resultado = comentarios.insertar_comentario(
+            db, documento, data.nit, data.comentario, data.calificacion
+        )
+        return resultado
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error al crear comentario: {str(e)}",
+        )
+
+
+# Insertar comentario (endpoint antiguo, mantener para compatibilidad)
 @router.post("/insertarcomentario")
 async def insertar(data: ComentarioBase, db: Session = Depends(get_db)):
-    comentarios.insertar_comentario(db, data.documento, data.nit, data.comentario)
+    comentarios.insertar_comentario(db, data.documento, data.nit, data.comentario, getattr(data, 'calificacion', 5))
 
 
 # Editar comentario

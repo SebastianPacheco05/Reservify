@@ -186,12 +186,12 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
   const isCardFormValid = cardNumber && cvc && expMonth && expYear && cardHolder && Object.keys(errors).length === 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-950 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Completa tu reserva</h1>
-          <p className="text-slate-600 mt-2">Revisa los detalles y elige tu método de pago</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Completa tu reserva</h1>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">Revisa los detalles y elige tu método de pago</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
@@ -200,36 +200,36 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
             {/* Reservation Summary Card */}
             <Card className="overflow-hidden border-0 shadow-lg">
               <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-emerald-100 p-6">
-                <h2 className="text-lg font-semibold text-slate-900">Resumen de tu reserva</h2>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Resumen de tu reserva</h2>
               </div>
               <div className="p-6 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-slate-500 font-medium">Restaurante</p>
-                    <p className="text-base font-semibold text-slate-900 mt-1">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Restaurante</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-slate-100 mt-1">
                       {reservationData.restaurant?.nombre_restaurante}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-slate-500 font-medium">Mesa</p>
-                    <p className="text-base font-semibold text-slate-900 mt-1">#{reservationData.mesa?.id_mesa}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Mesa</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-slate-100 mt-1">#{reservationData.mesa?.id_mesa}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-slate-500 font-medium">Fecha</p>
-                    <p className="text-base font-semibold text-slate-900 mt-1">{reservationData.fecha}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Fecha</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-slate-100 mt-1">{reservationData.fecha}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-slate-500 font-medium">Hora</p>
-                    <p className="text-base font-semibold text-slate-900 mt-1">{reservationData.horario}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Hora</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-slate-100 mt-1">{reservationData.horario}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-slate-500 font-medium">Comensales</p>
-                    <p className="text-base font-semibold text-slate-900 mt-1">{reservationData.guests} personas</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Comensales</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-slate-100 mt-1">{reservationData.guests} personas</p>
                   </div>
                 </div>
-                <div className="border-t border-slate-200 pt-4">
+                <div className="border-t border-slate-200 dark:border-slate-600 pt-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-600 font-medium">Total a pagar:</span>
+                    <span className="text-slate-600 dark:text-slate-400 font-medium">Total a pagar:</span>
                     <span className="text-2xl font-bold text-emerald-600">
                       ${reservationData.mesa?.precio?.toLocaleString()} COP
                     </span>
@@ -241,7 +241,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
             {/* Payment Method Selection */}
             <Card className="border-0 shadow-lg overflow-hidden">
               <div className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200 p-6">
-                <h2 className="text-lg font-semibold text-slate-900">Método de pago</h2>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Método de pago</h2>
               </div>
               <div className="p-6 space-y-3">
                 {/* Card Payment Option */}
@@ -252,14 +252,14 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                   }}
                   className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                     paymentType === "CARD"
-                      ? "border-emerald-500 bg-emerald-50"
-                      : "border-slate-200 bg-slate-50 hover:border-slate-300"
+                      ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30"
+                      : "border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 hover:border-slate-300 dark:hover:border-slate-500"
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-semibold text-slate-900">Tarjeta de crédito o débito</p>
-                      <p className="text-sm text-slate-600 mt-1">Visa, Mastercard, Amex</p>
+                      <p className="font-semibold text-slate-900 dark:text-slate-100">Tarjeta de crédito o débito</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Visa, Mastercard, Amex</p>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
@@ -279,14 +279,14 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                   }}
                   className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                     paymentType === "BANCOLOMBIA_TRANSFER"
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-slate-200 bg-slate-50 hover:border-slate-300"
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30"
+                      : "border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 hover:border-slate-300 dark:hover:border-slate-500"
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-semibold text-slate-900">Botón Bancolombia</p>
-                      <p className="text-sm text-slate-600 mt-1">Transferencia bancaria segura</p>
+                      <p className="font-semibold text-slate-900 dark:text-slate-100">Botón Bancolombia</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Transferencia bancaria segura</p>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
@@ -304,12 +304,12 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
             {paymentType === "CARD" && (
               <Card className="border-0 shadow-lg overflow-hidden">
                 <div className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200 p-6">
-                  <h2 className="text-lg font-semibold text-slate-900">Información de la tarjeta</h2>
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Información de la tarjeta</h2>
                 </div>
                 <div className="p-6 space-y-4">
                   {/* Card Number */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Número de tarjeta</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Número de tarjeta</label>
                     <div className="relative">
                       <input
                         type="text"
@@ -335,7 +335,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
 
                   {/* Card Holder */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Nombre del titular</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Nombre del titular</label>
                     <input
                       type="text"
                       placeholder="JUAN PEREZ"
@@ -362,7 +362,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                   {/* Expiry and CVC */}
                   <div className="grid grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Mes</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Mes</label>
                       <input
                         type="text"
                         placeholder="MM"
@@ -385,7 +385,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                       )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Año</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Año</label>
                       <input
                         type="text"
                         placeholder="YYYY"
@@ -408,7 +408,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                       )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">CVC</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">CVC</label>
                       <input
                         type="text"
                         placeholder="CVC"
@@ -430,9 +430,9 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                     </div>
                   </div>
 
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
-                    <Lock className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-blue-900">Tu información de pago está encriptada y es 100% segura</p>
+                  <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-3 flex items-start gap-2">
+                    <Lock className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-blue-900 dark:text-blue-100">Tu información de pago está encriptada y es 100% segura</p>
                   </div>
                 </div>
               </Card>
@@ -447,8 +447,8 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                       <Check className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
-                      <p className="font-semibold text-slate-900">Serás redirigido a Bancolombia</p>
-                      <p className="text-sm text-slate-600 mt-2">
+                      <p className="font-semibold text-slate-900 dark:text-slate-100">Serás redirigido a Bancolombia</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
                         Completarás el pago de forma segura en la plataforma de Bancolombia. No compartes tus datos
                         bancarios con nosotros.
                       </p>
@@ -472,7 +472,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                   disabled={loading || !emailCliente || (paymentType === "CARD" && !isCardFormValid)}
                   className={`w-full py-3 px-4 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all ${
                     loading || !emailCliente || (paymentType === "CARD" && !isCardFormValid)
-                      ? "bg-slate-300 text-slate-500 cursor-not-allowed"
+                      ? "bg-slate-300 dark:bg-slate-600 text-slate-500 dark:text-slate-400 cursor-not-allowed"
                       : "bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95"
                   }`}
                 >
@@ -489,15 +489,15 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                   )}
                 </button>
 
-                <div className="text-xs text-slate-500 text-center">
+                <div className="text-xs text-slate-500 dark:text-slate-400 text-center">
                   <Lock className="w-3 h-3 inline mr-1" />
                   Pagos seguros con encriptación
                 </div>
 
                 {paymentType === "CARD" && (
-                  <div className="pt-4 border-t border-slate-200 space-y-2">
-                    <p className="text-xs font-medium text-slate-700">Estado del formulario:</p>
-                    <div className="space-y-1 text-xs text-slate-600">
+                  <div className="pt-4 border-t border-slate-200 dark:border-slate-600 space-y-2">
+                    <p className="text-xs font-medium text-slate-700 dark:text-slate-300">Estado del formulario:</p>
+                    <div className="space-y-1 text-xs text-slate-600 dark:text-slate-400">
                       <div className="flex items-center gap-2">
                         {cardNumber && touched.cardNumber && !errors.cardNumber ? (
                           <Check className="w-3 h-3 text-emerald-600" />

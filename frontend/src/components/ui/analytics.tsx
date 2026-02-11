@@ -12,8 +12,8 @@ export function Analytics({ data = [] }: AnalyticsProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Análisis</h1>
-        <p className="text-gray-600">Flujo de personas y métricas mensuales</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Análisis</h1>
+        <p className="text-gray-600 dark:text-gray-400">Flujo de personas y métricas mensuales</p>
       </div>
 
       {/* Gráfico de barras simple */}
@@ -51,10 +51,10 @@ export function Analytics({ data = [] }: AnalyticsProps) {
             <CardTitle>Total Visitantes</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">
+            <div className="text-3xl font-bold text-foreground">
               {monthlyFlow.reduce((acc, curr) => acc + curr.visitors, 0).toLocaleString()}
             </div>
-            <p className="text-sm text-gray-600">Últimos 6 meses</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Últimos 6 meses</p>
           </CardContent>
         </Card>
 
@@ -63,8 +63,8 @@ export function Analytics({ data = [] }: AnalyticsProps) {
             <CardTitle>Total Reservas</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{monthlyFlow.reduce((acc, curr) => acc + curr.reservations, 0)}</div>
-            <p className="text-sm text-gray-600">Últimos 6 meses</p>
+            <div className="text-3xl font-bold text-foreground">{monthlyFlow.reduce((acc, curr) => acc + curr.reservations, 0)}</div>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Últimos 6 meses</p>
           </CardContent>
         </Card>
 
@@ -73,10 +73,10 @@ export function Analytics({ data = [] }: AnalyticsProps) {
             <CardTitle>Ingresos Totales</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">
+            <div className="text-3xl font-bold text-foreground">
               ${monthlyFlow.reduce((acc, curr) => acc + curr.revenue, 0).toLocaleString()}
             </div>
-            <p className="text-sm text-gray-600">Últimos 6 meses</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Últimos 6 meses</p>
           </CardContent>
         </Card>
       </div>

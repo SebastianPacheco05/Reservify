@@ -1,5 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
-import { MapContainer, TileLayer, Marker, Popup, CircleMarker, useMap } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  CircleMarker,
+  useMap,
+} from "react-leaflet";
 import L from "leaflet";
 import { Link } from "react-router-dom";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -35,6 +42,11 @@ interface UserCoords {
 
 type LocationStatus = "idle" | "asking" | "granted" | "denied" | "unsupported";
 
+interface RestaurantMapProps {
+  /** Si se pasa, el mapa solo mostrará ese restaurante (por NIT) */
+  onlyNit?: number;
+}
+
 /** Ajusta el mapa al centro cuando cambian las coordenadas del usuario */
 function MapCenterController({ center }: { center: UserCoords | null }) {
   const map = useMap();
@@ -46,8 +58,13 @@ function MapCenterController({ center }: { center: UserCoords | null }) {
   return null;
 }
 
-export default function RestaurantMap() {
-  const [userCoords, setUserCoords] = useState<UserCoords | null>(FALLBACK_CENTER);
+export default function RestaurantMap({ onlyNit }: RestaurantMapProps) {
+  const [userCoords, setUserCoords] = useState<UserCoords | null>(
+    FALLBACK_CENTER,
+  );
+  const [mapCenter, setMapCenter] = useState<UserCoords | null>(
+    FALLBACK_CENTER,
+  );
   const [locationStatus, setLocationStatus] = useState<LocationStatus>("idle");
   const [restaurantes, setRestaurantes] = useState<RestauranteMapItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,18 +86,20 @@ export default function RestaurantMap() {
           lng: position.coords.longitude,
         };
         setUserCoords(coords);
+        setMapCenter(coords);
         setLocationStatus("granted");
       },
-      (err) => {
+      () => {
         setLocationStatus("denied");
-        const isSecure = typeof window !== "undefined" && window.isSecureContext;
+        const isSecure =
+          typeof window !== "undefined" && window.isSecureContext;
         const msg = !isSecure
           ? "La ubicación suele requerir HTTPS en el celular. Prueba abrir la app con https:// o desde un enlace seguro."
           : "No se pudo obtener tu ubicación. Revisa que hayas permitido el acceso en el navegador.";
         setError(msg);
         setUserCoords(FALLBACK_CENTER);
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
     );
   }, []);
 
@@ -93,7 +112,9 @@ export default function RestaurantMap() {
 
     const controller = new AbortController();
     setLoading(true);
-    if (error && error.includes("cargar restaurantes")) setError(null);
+    if (error && error.includes("cargar restaurantes")) {
+      setError(null);
+    }
 
     fetch(`${API_BASE_URL}/restaurantes?lat=${lat}&lng=${lng}`, {
       signal: controller.signal,
@@ -102,52 +123,77 @@ export default function RestaurantMap() {
         if (!res.ok) throw new Error("Error al cargar restaurantes");
         return res.json();
       })
-      .then((data: RestauranteMapItem[] | { respuesta?: RestauranteMapItem[] }) => {
-        const list = Array.isArray(data) ? data : data?.respuesta ?? [];
-        if (list.length && typeof list[0]?.lat === "undefined") {
-          setRestaurantes(
-            list.map((r: RestauranteMapItem & { lat?: number; lng?: number }, i: number) => ({
-              ...r,
-              lat: (r.lat ?? lat) + (i * 0.002) * Math.cos(i),
-              lng: (r.lng ?? lng) + (i * 0.002) * Math.sin(i),
-            }))
-          );
-        } else {
-          setRestaurantes(list as RestauranteMapItem[]);
-        }
-      })
+      .then(
+        (data: RestauranteMapItem[] | { respuesta?: RestauranteMapItem[] }) => {
+          const list = Array.isArray(data) ? data : (data?.respuesta ?? []);
+          if (list.length && typeof list[0]?.lat === "undefined") {
+            setRestaurantes(
+              list.map(
+                (
+                  r: RestauranteMapItem & { lat?: number; lng?: number },
+                  i: number,
+                ) => ({
+                  ...r,
+                  lat: (r.lat ?? lat) + i * 0.002 * Math.cos(i),
+                  lng: (r.lng ?? lng) + i * 0.002 * Math.sin(i),
+                }),
+              ),
+            );
+          } else {
+            setRestaurantes(list as RestauranteMapItem[]);
+          }
+        },
+      )
       .catch((e) => {
-        if (e.name !== "AbortError") setError(e.message || "Error al cargar restaurantes");
+        if (e.name !== "AbortError") {
+          setError(e.message || "Error al cargar restaurantes");
+        }
       })
       .finally(() => setLoading(false));
 
     return () => controller.abort();
-  }, [userCoords?.lat, userCoords?.lng]);
+  }, [userCoords?.lat, userCoords?.lng, error]);
 
-  const center = userCoords ?? FALLBACK_CENTER;
+  const displayedRestaurantes = onlyNit
+    ? restaurantes.filter((r) => r.nit === onlyNit)
+    : restaurantes;
+
+  useEffect(() => {
+    if (onlyNit && displayedRestaurantes.length > 0) {
+      const r = displayedRestaurantes[0];
+      setMapCenter({ lat: r.lat, lng: r.lng });
+    }
+  }, [onlyNit, displayedRestaurantes]);
+
+  const center = mapCenter ?? FALLBACK_CENTER;
   const isSecure = typeof window !== "undefined" && window.isSecureContext;
 
   return (
-    <div className="w-full rounded-lg overflow-hidden border border-border">
+    <div className="w-full rounded-4xl overflow-hidden ">
       {locationStatus === "idle" && (
-        <div className="bg-primary/10 text-foreground px-4 py-3 text-sm flex flex-col gap-2">
-          <p className="font-medium">Para centrar el mapa en tu ubicación (GPS)</p>
+        <div className="dark:bg-neutral-800 bg-neutral-200 text-foreground px-4 py-3 text-sm flex flex-col gap-2">
+          <p className="font-medium dark:text-white ">
+            Para centrar el mapa en tu ubicación
+          </p>
           <p className="text-muted-foreground text-xs">
-            Toca el botón de abajo. El navegador te pedirá permiso para usar tu ubicación.
-            {!isSecure && " En el celular suele ser necesario usar la página con HTTPS."}
+            Toca el botón de abajo. El navegador te pedirá permiso para usar tu
+            ubicación.
+            {!isSecure &&
+              " En el celular suele ser necesario usar la página con HTTPS."}
           </p>
           <button
             type="button"
             onClick={requestLocation}
-            className="self-start rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 touch-manipulation"
+            className="self-start rounded-lg dark:bg-neutral-50 bg-primary dark:text-black px-4 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 touch-manipulation"
           >
             Usar mi ubicación
           </button>
         </div>
       )}
       {locationStatus === "asking" && (
-        <div className="bg-muted/50 text-muted-foreground px-4 py-2 text-sm">
-          Solicitando acceso a tu ubicación… Acepta el permiso en tu navegador o celular.
+        <div className="bg-muted/ text-muted-foreground px-4 py-2 text-sm">
+          Solicitando acceso a tu ubicación… Acepta el permiso en tu navegador o
+          celular.
         </div>
       )}
       {locationStatus === "denied" || locationStatus === "unsupported" ? (
@@ -155,7 +201,8 @@ export default function RestaurantMap() {
           <span>
             {locationStatus === "unsupported"
               ? "Tu navegador no soporta GPS."
-              : error || "Ubicación no permitida. El mapa usa una ubicación por defecto."}
+              : error ||
+                "Ubicación no permitida. El mapa usa una ubicación por defecto."}
           </span>
           <button
             type="button"
@@ -166,11 +213,13 @@ export default function RestaurantMap() {
           </button>
         </div>
       ) : null}
-      {error && locationStatus !== "denied" && locationStatus !== "unsupported" && (
-        <div className="bg-destructive/10 text-destructive px-4 py-2 text-sm">
-          {error}
-        </div>
-      )}
+      {error &&
+        locationStatus !== "denied" &&
+        locationStatus !== "unsupported" && (
+          <div className="bg-destructive/10 text-destructive px-4 py-2 text-sm">
+            {error}
+          </div>
+        )}
       {loading && (
         <div className="absolute inset-0 z-[1000] flex items-center justify-center bg-background/80">
           <span className="text-muted-foreground">Cargando mapa...</span>
@@ -183,7 +232,7 @@ export default function RestaurantMap() {
           className="h-full w-full"
           scrollWheelZoom
         >
-          <MapCenterController center={userCoords} />
+          <MapCenterController center={mapCenter} />
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -202,15 +251,22 @@ export default function RestaurantMap() {
               <Popup>Tu ubicación (GPS)</Popup>
             </CircleMarker>
           )}
-          {restaurantes.map((r) => (
+          {displayedRestaurantes.map((r) => (
             <Marker key={r.nit} position={[r.lat, r.lng]}>
               <Popup>
                 <div className="min-w-[180px]">
-                  <p className="font-bold text-foreground">{r.nombre_restaurante}</p>
+                  <p className="font-bold text-foreground">
+                    {r.nombre_restaurante}
+                  </p>
                   {userCoords && locationStatus === "granted" && (
                     <p className="text-muted-foreground text-sm mt-1">
                       {formatDistance(
-                        haversineDistanceMeters(userCoords.lat, userCoords.lng, r.lat, r.lng)
+                        haversineDistanceMeters(
+                          userCoords.lat,
+                          userCoords.lng,
+                          r.lat,
+                          r.lng,
+                        ),
                       )}
                     </p>
                   )}

@@ -21,20 +21,27 @@ def registrar_usuario(db: Session, email: str, password: str, nombre: str, apell
         # Hashear contraseña
         hashed_password = hash_password(password)
 
-        # Ejecutar procedimiento almacenado (tabla Usuario)
+        # Misma lógica que scripts/funciones/registrar.sql pero en Python (no depende de que exista la función en la BD)
+        r = db.execute(
+            text('INSERT INTO "Credenciales" (email, password) VALUES (:email, :password) RETURNING id_credencial'),
+            {"email": email, "password": hashed_password},
+        )
+        id_credencial = r.scalar()
+
+        nacionalidad_val = (nacionalidad or "").strip() or None
+        telefono_val = (telefono or "").strip() or None
+
         db.execute(
-            text("""SELECT registrar_usuario(:email, :password, :nombre, :apellido, 
-                                             :tipo_documento, :documento, :nacionalidad, 
-                                             :telefono, :id_rol, :nit)"""),
+            text("""INSERT INTO "Usuario" (id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit)
+                    VALUES (:id_credencial, :nombre, :apellido, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol, :nit)"""),
             {
-                "email": email,
-                "password": hashed_password,
+                "id_credencial": id_credencial,
                 "nombre": nombre,
                 "apellido": apellido,
                 "tipo_documento": tipo_documento,
                 "documento": documento,
-                "nacionalidad": nacionalidad or None,
-                "telefono": telefono or None,
+                "nacionalidad": nacionalidad_val,
+                "telefono": telefono_val,
                 "id_rol": id_rol,
                 "nit": nit,
             },

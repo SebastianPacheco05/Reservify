@@ -20,9 +20,9 @@ export function Tables() {
       case "cleaning":
         return "bg-yellow-100 border-yellow-300 text-yellow-800"
       case "out_of_service":
-        return "bg-gray-100 border-gray-300 text-gray-800"
+        return "bg-gray-100 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200"
       default:
-        return "bg-gray-100 border-gray-300 text-gray-800"
+        return "bg-gray-100 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200"
     }
   }
 

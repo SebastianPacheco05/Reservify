@@ -313,6 +313,13 @@ class ComentarioBase(BaseModel):
     documento: int
     nit: int
     comentario: str
+    calificacion: int  # 1-5
+
+
+class ComentarioCreate(BaseModel):
+    nit: int
+    comentario: str
+    calificacion: int  # 1-5
 
 
 class ComentarioUpdate(ComentarioBase):

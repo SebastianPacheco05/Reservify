@@ -19,8 +19,11 @@ def obtener_documento_por_email(db: Session, email: str) -> int:
         HTTPException: Si el email no pertenece a un usuario
     """
     try:
+        # Consulta directa a Usuario + Credenciales (no depende de la función get_documento_by_email en la BD)
         resultado = db.execute(
-            text("SELECT get_documento_by_email(:email)"),
+            text("""SELECT u.documento FROM "Usuario" u
+                    INNER JOIN "Credenciales" cred ON u.id_credencial = cred.id_credencial
+                    WHERE cred.email = :email"""),
             {"email": email}
         ).scalar()
         

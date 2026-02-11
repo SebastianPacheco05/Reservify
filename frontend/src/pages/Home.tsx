@@ -20,20 +20,11 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredCuisines, setFilteredCuisines] = useState<string[]>([]);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [showMapByLocation, setShowMapByLocation] = useState(false);
-
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     setIsLoggedIn(!!token);
-
-    // Verificar si hay un tema guardado en localStorage
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-      setIsDarkMode(true);
-      document.documentElement.classList.add("dark");
-    }
   }, []);
 
 
@@ -104,19 +95,6 @@ export default function Home() {
     }
   };
 
-  const toggleDarkMode = () => {
-    const newDarkMode = !isDarkMode;
-    setIsDarkMode(newDarkMode);
-
-    if (newDarkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  };
-
   const handleUseMyLocation = () => {
     setShowMapByLocation(true);
     setTimeout(() => {
@@ -141,8 +119,6 @@ export default function Home() {
         isMenuOpen={isMenuOpen}
         setIsMenuOpen={setIsMenuOpen}
         isLoggedIn={isLoggedIn}
-        isDarkMode={isDarkMode}
-        toggleDarkMode={toggleDarkMode}
         onLogout={handleLogout}
       />
 
@@ -163,7 +139,7 @@ export default function Home() {
             <h2 className="text-2xl font-bold text-center mb-6 text-slate-800 dark:text-slate-100">
               Restaurantes cerca de ti
             </h2>
-            <Suspense fallback={<div className="min-h-[300px] flex items-center justify-center text-slate-500">Cargando mapa…</div>}>
+            <Suspense fallback={<div className="min-h-[300px] flex items-center justify-center text-slate-500 dark:text-slate-400">Cargando mapa…</div>}>
               <RestaurantMap />
             </Suspense>
           </div>
