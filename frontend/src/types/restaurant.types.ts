@@ -113,6 +113,9 @@ export interface RestaurantDetailFromDB {
   url_image: string;
   nombre_categoria: string;
   imagenes_referencia?: string[];
+  /** Coordenadas del restaurante para el mapa (opcionales) */
+  lat?: number | null;
+  lng?: number | null;
 }
 
 export interface MesaFromDB {

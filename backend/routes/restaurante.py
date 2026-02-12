@@ -28,7 +28,9 @@ async def obtener_restaurante_publico(nit: int, db: Session = Depends(get_db)):
                 r.horario_apertura,
                 r.horario_cierre,
                 r.url_image,
-                c.nombre_categoria
+                c.nombre_categoria,
+                r.lat,
+                r.lng
             FROM "Restaurante" r
             LEFT JOIN "Categorias" c ON r.id_categoria = c.id_categoria
             WHERE r.nit = :nit
@@ -39,16 +41,23 @@ async def obtener_restaurante_publico(nit: int, db: Session = Depends(get_db)):
         if not row:
             raise HTTPException(status_code=404, detail="Restaurante no encontrado")
 
-        # Obtener imágenes de referencia ordenadas por orden
-        imagenes_ref_query = text('''
-            SELECT url_imagen
-            FROM "Imagen_referencia_restaurante"
-            WHERE nit = :nit
-            ORDER BY orden ASC
-        ''')
-        imagenes_ref_result = db.execute(imagenes_ref_query, {"nit": nit})
-        imagenes_referencia = [row[0] for row in imagenes_ref_result.fetchall()]
+        # Obtener imágenes de referencia ordenadas por orden (si la tabla existe)
+        imagenes_referencia = []
+        try:
+            imagenes_ref_query = text('''
+                SELECT url_imagen
+                FROM "Imagen_referencia_restaurante"
+                WHERE nit = :nit
+                ORDER BY orden ASC
+            ''')
+            imagenes_ref_result = db.execute(imagenes_ref_query, {"nit": nit})
+            imagenes_referencia = [row[0] for row in imagenes_ref_result.fetchall()]
+        except Exception:
+            # Si la tabla no existe, simplemente retornar lista vacía
+            imagenes_referencia = []
 
+        lat_val = float(row[11]) if row[11] is not None else None
+        lng_val = float(row[12]) if row[12] is not None else None
         return {
             "nit": row[0],
             "direccion": row[1],
@@ -61,7 +70,9 @@ async def obtener_restaurante_publico(nit: int, db: Session = Depends(get_db)):
             "horario_cierre": str(row[8]),
             "url_image": row[9],
             "nombre_categoria": row[10],
-            "imagenes_referencia": imagenes_referencia
+            "imagenes_referencia": imagenes_referencia,
+            "lat": lat_val,
+            "lng": lng_val,
         }
     except HTTPException:
         raise

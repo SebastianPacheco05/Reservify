@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, MapPin } from "lucide-react";
 
 const DefaultIcon = L.icon({
   iconUrl: markerIcon,
@@ -76,13 +76,17 @@ export function AddressMapPicker({ isOpen, onClose, onSelect }: AddressMapPicker
   const [error, setError] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
+  const [settingMyLocation, setSettingMyLocation] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
     setUserLocation(null);
+    setLocationError(null);
     setLocationLoading(true);
     if (!navigator.geolocation) {
       setLocationLoading(false);
+      setLocationError("Tu navegador no soporta geolocalización.");
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -114,6 +118,34 @@ export function AddressMapPicker({ isOpen, onClose, onSelect }: AddressMapPicker
     }
   }, []);
 
+  const handleSetMyLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setLocationError("Tu navegador no soporta geolocalización.");
+      return;
+    }
+    setSettingMyLocation(true);
+    setLocationError(null);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const coords: [number, number] = [lat, lng];
+        setUserLocation(coords);
+        setSettingMyLocation(false);
+        handleMapClick(lat, lng);
+      },
+      (err) => {
+        setSettingMyLocation(false);
+        setLocationError(
+          err.code === 1
+            ? "Permiso de ubicación denegado. Activa la ubicación en tu navegador o dispositivo."
+            : "No se pudo obtener tu ubicación. Revisa la conexión e intenta de nuevo."
+        );
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  }, [handleMapClick]);
+
   const handleConfirm = () => {
     if (address) {
       onSelect(address);
@@ -128,6 +160,7 @@ export function AddressMapPicker({ isOpen, onClose, onSelect }: AddressMapPicker
     setAddress(null);
     setError(null);
     setUserLocation(null);
+    setLocationError(null);
     onClose();
   };
 
@@ -158,12 +191,27 @@ export function AddressMapPicker({ isOpen, onClose, onSelect }: AddressMapPicker
               <Marker position={marker} icon={DefaultIcon} />
             )}
           </MapContainer>
-          {(locationLoading || loading) && (
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            className="absolute bottom-3 left-3 z-[500] bg-background/95 hover:bg-background shadow-md border"
+            onClick={handleSetMyLocation}
+            disabled={settingMyLocation || locationLoading}
+          >
+            {settingMyLocation ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            ) : (
+              <MapPin className="h-4 w-4 mr-2" />
+            )}
+            Establecer mi ubicación
+          </Button>
+          {(locationLoading || settingMyLocation || loading) && (
             <div className="absolute inset-0 z-[1000] flex items-center justify-center bg-background/70">
               <div className="flex flex-col items-center gap-2">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 <span className="text-sm text-muted-foreground">
-                  {locationLoading ? "Obteniendo tu ubicación…" : "Obteniendo la dirección…"}
+                  {locationLoading ? "Obteniendo tu ubicación…" : settingMyLocation ? "Estableciendo mi ubicación…" : "Obteniendo la dirección…"}
                 </span>
               </div>
             </div>
@@ -171,6 +219,9 @@ export function AddressMapPicker({ isOpen, onClose, onSelect }: AddressMapPicker
         </div>
 
         <div className="px-6 py-3 border-t bg-muted/30">
+          {locationError && (
+            <p className="text-sm text-amber-600 dark:text-amber-400 mb-2">{locationError}</p>
+          )}
           {error && (
             <p className="text-sm text-amber-600 dark:text-amber-400 mb-2">{error}</p>
           )}

@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS "Encabezado_Factura";
 DROP TABLE IF EXISTS "Comentarios";
 DROP TABLE IF EXISTS "Mesas";
 DROP TABLE IF EXISTS "Calculos_mensuales";
+DROP TABLE IF EXISTS "Imagen_referencia_restaurante";
 DROP TABLE IF EXISTS "Restaurante";
 DROP TABLE IF EXISTS "Usuario";
 DROP TABLE IF EXISTS "Roles";
@@ -83,6 +84,48 @@ CREATE TABLE "Restaurante" (
 -- FK de Usuario.nit a Restaurante (después de crear Restaurante para evitar dependencia circular)
 ALTER TABLE "Usuario" ADD CONSTRAINT fk_usuario_nit_restaurante
     FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE SET NULL;
+
+-- Tabla Imagen_referencia_restaurante: Almacena imágenes de referencia de restaurantes (máximo 15 por NIT)
+CREATE TABLE "Imagen_referencia_restaurante" (
+    nit DECIMAL(10, 0) NOT NULL,
+    url_imagen VARCHAR NOT NULL,
+    orden INT NOT NULL DEFAULT 0 CHECK (orden >= 0 AND orden < 15),
+    PRIMARY KEY (nit, orden),
+    FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
+);
+
+-- Crear índice para búsquedas rápidas por NIT
+CREATE INDEX idx_imagen_ref_nit ON "Imagen_referencia_restaurante" (nit);
+
+-- Trigger para limitar a 15 imágenes por restaurante
+CREATE OR REPLACE FUNCTION verificar_max_imagenes_referencia()
+RETURNS TRIGGER AS $$
+DECLARE
+    total_imagenes INT;
+BEGIN
+    SELECT COUNT(*) INTO total_imagenes
+    FROM "Imagen_referencia_restaurante"
+    WHERE nit = NEW.nit;
+    
+    IF total_imagenes >= 15 THEN
+        RAISE EXCEPTION 'Máximo 15 imágenes de referencia por restaurante';
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Crear trigger para limitar imágenes de referencia
+CREATE TRIGGER trigger_max_imagenes_ref
+    BEFORE INSERT ON "Imagen_referencia_restaurante"
+    FOR EACH ROW
+    EXECUTE FUNCTION verificar_max_imagenes_referencia();
+
+-- Comentarios para documentación
+COMMENT ON TABLE "Imagen_referencia_restaurante" IS 'Almacena imágenes de referencia de restaurantes (máximo 15 por NIT)';
+COMMENT ON COLUMN "Imagen_referencia_restaurante".nit IS 'NIT del restaurante';
+COMMENT ON COLUMN "Imagen_referencia_restaurante".url_imagen IS 'URL de la imagen (Cloudinary)';
+COMMENT ON COLUMN "Imagen_referencia_restaurante".orden IS 'Orden de la imagen (0-14)';
 
 -- Tabla Mesas: Almacena información de las mesas de cada restaurante
 CREATE TABLE "Mesas" (

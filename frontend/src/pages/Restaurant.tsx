@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   Card,
@@ -55,6 +55,13 @@ export default function RestaurantPage() {
   const { restaurantInfo, mesas, comentarios, loading, getAvailableSlots } =
     useRestaurantData(restaurantNIT);
 
+  // Asegurar que siempre que entremos/cambiemos de restaurante, el scroll vuelva al inicio
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }
+  }, [restaurantNIT]);
+
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reservationData, setReservationData] = useState({
@@ -63,7 +70,6 @@ export default function RestaurantPage() {
     guests: "",
     mesaId: "",
   });
-
   // Promedio de reseñas: si hay comentarios se calcula desde ellos; si no, se usa el rating del backend
   const ratingPromedio =
     comentarios.length > 0
@@ -232,6 +238,39 @@ export default function RestaurantPage() {
     );
   }
 
+  // Si no hay información del restaurante después de cargar
+  if (!loading.info && !restaurantInfo) {
+    return (
+      <div className="min-h-screen bg-background transition-colors duration-300">
+        <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+          <div className="max-w-7xl mx-auto flex h-14 items-center justify-between px-4">
+            <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="h-5 w-5" /> Volver
+            </Link>
+            <ModeToggle />
+          </div>
+        </header>
+        <div className="max-w-7xl mx-auto p-4 sm:p-6">
+          <Card className="border-border bg-card shadow-sm">
+            <CardContent className="pt-12 pb-12 text-center">
+              <MapPin className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-foreground mb-2">Restaurante no encontrado</h2>
+              <p className="text-muted-foreground mb-6">
+                No se pudo cargar la información del restaurante. Verifica que el NIT sea correcto.
+              </p>
+              <Link to="/">
+                <Button>
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Volver al inicio
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       {/* Barra superior: navegación + cambio de tema */}
@@ -254,16 +293,29 @@ export default function RestaurantPage() {
 
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8 lg:space-y-10">
         {/* Hero imagen */}
-        <div className="relative h-72 sm:h-80 md:h-96 rounded-2xl overflow-hidden group shadow-xl ring-1 ring-border/50">
-          {restaurantInfo && (
-            <img
-              src={restaurantInfo.url_image || "/placeholder.svg"}
-              alt={restaurantInfo.nombre_restaurante}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-          {restaurantInfo && (
+        {restaurantInfo && (
+          <div className="relative h-72 sm:h-80 md:h-96 rounded-2xl overflow-hidden group shadow-xl ring-1 ring-border/50">
+            {restaurantInfo.url_image && restaurantInfo.url_image.trim() ? (
+              <img
+                src={restaurantInfo.url_image}
+                alt={restaurantInfo.nombre_restaurante}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  const t = e.target as HTMLImageElement;
+                  t.onerror = null;
+                  t.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400' viewBox='0 0 800 400'%3E%3Crect fill='%23e5e7eb' width='800' height='400'/%3E%3Ctext x='400' y='200' fill='%23999' text-anchor='middle' dy='.3em' font-size='24'%3EImagen no disponible%3C/text%3E%3C/svg%3E";
+                }}
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
+                <div className="text-center text-muted-foreground">
+                  <MapPin className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                  <p className="text-lg font-medium">Sin imagen principal</p>
+                </div>
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white">
               <h1 className="text-3xl sm:text-4xl font-bold drop-shadow-lg">
                 {restaurantInfo.nombre_restaurante}
@@ -284,8 +336,8 @@ export default function RestaurantPage() {
                 </Badge>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
       <div className="grid lg:grid-cols-3 gap-8 lg:gap-10">
         {/* Información Principal */}
@@ -293,7 +345,7 @@ export default function RestaurantPage() {
           {/* Descripción */}
           {restaurantInfo && (
             <Card className="border-border bg-card shadow-sm overflow-hidden">
-              <CardContent className="pt-6">
+              <CardContent className="">
                 <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
                   {restaurantInfo.descripcion_restaurante}
                 </p>
@@ -301,40 +353,46 @@ export default function RestaurantPage() {
             </Card>
           )}
 
-          {/* Imágenes de Referencia */}
-          {restaurantInfo && restaurantInfo.imagenes_referencia && restaurantInfo.imagenes_referencia.length > 0 && (
+          {/* Galería de Imágenes de Referencia */}
+          {restaurantInfo && (
             <Card className="border-border bg-card shadow-sm overflow-hidden">
               <CardHeader>
                 <CardTitle className="text-foreground">Galería de Imágenes</CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  Explora las imágenes de nuestro restaurante
+                  {restaurantInfo.imagenes_referencia?.length
+                    ? `${restaurantInfo.imagenes_referencia.length} ${restaurantInfo.imagenes_referencia.length === 1 ? "imagen" : "imágenes"} de referencia`
+                    : "Imágenes de referencia del restaurante"}
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-                  {restaurantInfo.imagenes_referencia.map((url, index) => (
-                    <div
-                      key={`${url}-${index}`}
-                      className="relative group rounded-lg border border-border overflow-hidden bg-muted aspect-square hover:shadow-lg transition-all duration-300 cursor-pointer"
-                    >
-                      <img
-                        src={url}
-                        alt={`Imagen de referencia ${index + 1} - ${restaurantInfo.nombre_restaurante}`}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                        referrerPolicy="no-referrer"
-                        onError={(e) => {
-                          const t = e.target as HTMLImageElement;
-                          t.onerror = null;
-                          t.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3Ctext x='50' y='50' fill='%23999' text-anchor='middle' dy='.3em' font-size='12'%3EError%3C/text%3E%3C/svg%3E";
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-                      <span className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        {index + 1}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                {restaurantInfo.imagenes_referencia && restaurantInfo.imagenes_referencia.length > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3">
+                    {restaurantInfo.imagenes_referencia.map((url, index) => (
+                      <div
+                        key={`${url}-${index}`}
+                        className="aspect-square rounded-lg overflow-hidden bg-muted border border-border"
+                      >
+                        <img
+                          src={url}
+                          alt={`Imagen de referencia ${index + 1} - ${restaurantInfo.nombre_restaurante}`}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            const t = e.target as HTMLImageElement;
+                            t.onerror = null;
+                            t.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect fill='%23e5e7eb' width='200' height='200'/%3E%3Ctext x='100' y='100' fill='%23999' text-anchor='middle' dy='.3em' font-size='14'%3EImagen no disponible%3C/text%3E%3C/svg%3E";
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-lg border border-dashed border-muted-foreground/30 bg-muted/30 aspect-video flex items-center justify-center min-h-[200px]">
+                    <p className="text-muted-foreground text-center px-4">
+                      Este restaurante aún no tiene imágenes de referencia.
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}
@@ -386,7 +444,14 @@ export default function RestaurantPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                <RestaurantMap onlyNit={restaurantInfo.nit} />
+                <RestaurantMap
+                  onlyNit={restaurantInfo.nit}
+                  initialCenter={
+                    restaurantInfo.lat != null && restaurantInfo.lng != null
+                      ? { lat: restaurantInfo.lat, lng: restaurantInfo.lng }
+                      : undefined
+                  }
+                />
               </CardContent>
             </Card>
           )}

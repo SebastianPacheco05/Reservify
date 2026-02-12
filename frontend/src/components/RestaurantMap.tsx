@@ -45,6 +45,8 @@ type LocationStatus = "idle" | "asking" | "granted" | "denied" | "unsupported";
 interface RestaurantMapProps {
   /** Si se pasa, el mapa solo mostrará ese restaurante (por NIT) */
   onlyNit?: number;
+  /** Centro inicial del mapa (ej. coordenadas del restaurante). Si no se pasa, se usa Bogotá hasta que el usuario use "Usar mi ubicación". */
+  initialCenter?: { lat: number; lng: number } | null;
 }
 
 /** Ajusta el mapa al centro cuando cambian las coordenadas del usuario */
@@ -58,13 +60,12 @@ function MapCenterController({ center }: { center: UserCoords | null }) {
   return null;
 }
 
-export default function RestaurantMap({ onlyNit }: RestaurantMapProps) {
-  const [userCoords, setUserCoords] = useState<UserCoords | null>(
-    FALLBACK_CENTER,
-  );
-  const [mapCenter, setMapCenter] = useState<UserCoords | null>(
-    FALLBACK_CENTER,
-  );
+export default function RestaurantMap({ onlyNit, initialCenter }: RestaurantMapProps) {
+  const defaultCenter = initialCenter && typeof initialCenter.lat === "number" && typeof initialCenter.lng === "number"
+    ? initialCenter
+    : FALLBACK_CENTER;
+  const [userCoords, setUserCoords] = useState<UserCoords | null>(null);
+  const [mapCenter, setMapCenter] = useState<UserCoords | null>(defaultCenter);
   const [locationStatus, setLocationStatus] = useState<LocationStatus>("idle");
   const [restaurantes, setRestaurantes] = useState<RestauranteMapItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -107,8 +108,8 @@ export default function RestaurantMap({ onlyNit }: RestaurantMapProps) {
   // Así el navegador muestra el diálogo de permisos cuando tocan "Usar mi ubicación".
 
   useEffect(() => {
-    const lat = userCoords?.lat ?? FALLBACK_CENTER.lat;
-    const lng = userCoords?.lng ?? FALLBACK_CENTER.lng;
+    const lat = userCoords?.lat ?? defaultCenter.lat;
+    const lng = userCoords?.lng ?? defaultCenter.lng;
 
     const controller = new AbortController();
     setLoading(true);
@@ -152,7 +153,7 @@ export default function RestaurantMap({ onlyNit }: RestaurantMapProps) {
       .finally(() => setLoading(false));
 
     return () => controller.abort();
-  }, [userCoords?.lat, userCoords?.lng, error]);
+  }, [userCoords?.lat, userCoords?.lng, defaultCenter.lat, defaultCenter.lng, error]);
 
   const displayedRestaurantes = onlyNit
     ? restaurantes.filter((r) => r.nit === onlyNit)
