@@ -12,7 +12,12 @@ router = APIRouter(
 )
 
 @router.post("/insertarempleado")
-async def insertar(data: EmpleadoBase, db: Session = Depends(get_db)):
+async def insertar(
+    data: EmpleadoBase,
+    db: Session = Depends(get_db),
+    usuario_actual: dict = Depends(verificar_token),
+):
+    # Solo el dueño puede crear empleados
     empleado.insertar_empleado(
         db,
         data.id_credencial,
@@ -24,6 +29,7 @@ async def insertar(data: EmpleadoBase, db: Session = Depends(get_db)):
         data.telefono,
         data.id_rol,
         data.nit,
+        usuario_actual["id"],  # id_credencial del dueño
     )
 
 @router.get("/listar_empleado")
@@ -37,7 +43,12 @@ async def listar_empleados(db: Session = Depends(get_db)):
     return {"respuesta": respuesta}
 
 @router.put("/editarempleado")
-async def editar(data: EmpleadoUpdate, db: Session = Depends(get_db)):
+async def editar(
+    data: EmpleadoUpdate,
+    db: Session = Depends(get_db),
+    usuario_actual: dict = Depends(verificar_token),
+):
+    # Solo el dueño puede editar empleados
     empleado.editar_empleado(
         db,
         data.id_credencial,
@@ -49,6 +60,7 @@ async def editar(data: EmpleadoUpdate, db: Session = Depends(get_db)):
         data.telefono,
         data.id_rol,
         data.nit,
+        usuario_actual["id"],  # id_credencial del dueño
     )
 
 @router.delete("/borrarempleado")

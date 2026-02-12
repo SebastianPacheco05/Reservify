@@ -301,6 +301,44 @@ export default function RestaurantPage() {
             </Card>
           )}
 
+          {/* Imágenes de Referencia */}
+          {restaurantInfo && restaurantInfo.imagenes_referencia && restaurantInfo.imagenes_referencia.length > 0 && (
+            <Card className="border-border bg-card shadow-sm overflow-hidden">
+              <CardHeader>
+                <CardTitle className="text-foreground">Galería de Imágenes</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Explora las imágenes de nuestro restaurante
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                  {restaurantInfo.imagenes_referencia.map((url, index) => (
+                    <div
+                      key={`${url}-${index}`}
+                      className="relative group rounded-lg border border-border overflow-hidden bg-muted aspect-square hover:shadow-lg transition-all duration-300 cursor-pointer"
+                    >
+                      <img
+                        src={url}
+                        alt={`Imagen de referencia ${index + 1} - ${restaurantInfo.nombre_restaurante}`}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          const t = e.target as HTMLImageElement;
+                          t.onerror = null;
+                          t.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3Ctext x='50' y='50' fill='%23999' text-anchor='middle' dy='.3em' font-size='12'%3EError%3C/text%3E%3C/svg%3E";
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+                      <span className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        {index + 1}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Información de Contacto */}
           {restaurantInfo && (
             <Card className="border-border bg-card shadow-sm">

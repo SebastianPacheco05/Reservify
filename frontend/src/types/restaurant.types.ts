@@ -112,6 +112,7 @@ export interface RestaurantDetailFromDB {
   horario_cierre: string;
   url_image: string;
   nombre_categoria: string;
+  imagenes_referencia?: string[];
 }
 
 export interface MesaFromDB {

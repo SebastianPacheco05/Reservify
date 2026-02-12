@@ -22,7 +22,10 @@ DROP TABLE IF EXISTS "Categorias";
 -- Tabla Credenciales: Almacena la información de autenticación de usuarios
 CREATE TABLE "Credenciales" (
     id_credencial SERIAL NOT NULL PRIMARY KEY,  -- Identificador único autoincremental
-    email VARCHAR(100) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),  -- Email único con validación de formato
+    email VARCHAR(100) NOT NULL UNIQUE CHECK (
+        email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$' AND 
+        length(email) <= 100
+    ),  -- Email único con validación de formato (solo caracteres ASCII, sin Unicode)
     password VARCHAR(255) NOT NULL  -- Contraseña encriptada
 );
 
@@ -165,4 +168,32 @@ CREATE TABLE "jwt_tokens" (
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX idx_jwt_tokens_refresh_token ON "jwt_tokens" (refresh_token);
+
+-- Función y trigger: Validar que los administradores siempre tengan un restaurante asignado (nit NOT NULL)
+CREATE OR REPLACE FUNCTION validar_admin_tiene_restaurante()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_nombre_rol VARCHAR(15);
+BEGIN
+    -- Obtener el nombre del rol
+    SELECT nombre_rol INTO v_nombre_rol
+    FROM "Roles"
+    WHERE id_rol = NEW.id_rol;
+    
+    -- Si es administrador, nit debe ser NOT NULL
+    IF LOWER(TRIM(v_nombre_rol)) = 'administrador' AND NEW.nit IS NULL THEN
+        RAISE EXCEPTION 'Un administrador debe estar vinculado a un restaurante (nit no puede ser NULL)';
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Crear trigger antes de INSERT o UPDATE en Usuario
+CREATE TRIGGER trigger_validar_admin_restaurante
+    BEFORE INSERT OR UPDATE ON "Usuario"
+    FOR EACH ROW
+    EXECUTE FUNCTION validar_admin_tiene_restaurante();
+
+COMMENT ON FUNCTION validar_admin_tiene_restaurante() IS 'Valida que los administradores siempre tengan un restaurante asignado (nit NOT NULL)';
 

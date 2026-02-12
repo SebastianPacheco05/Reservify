@@ -39,6 +39,16 @@ async def obtener_restaurante_publico(nit: int, db: Session = Depends(get_db)):
         if not row:
             raise HTTPException(status_code=404, detail="Restaurante no encontrado")
 
+        # Obtener imágenes de referencia ordenadas por orden
+        imagenes_ref_query = text('''
+            SELECT url_imagen
+            FROM "Imagen_referencia_restaurante"
+            WHERE nit = :nit
+            ORDER BY orden ASC
+        ''')
+        imagenes_ref_result = db.execute(imagenes_ref_query, {"nit": nit})
+        imagenes_referencia = [row[0] for row in imagenes_ref_result.fetchall()]
+
         return {
             "nit": row[0],
             "direccion": row[1],
@@ -50,7 +60,8 @@ async def obtener_restaurante_publico(nit: int, db: Session = Depends(get_db)):
             "horario_apertura": str(row[7]),
             "horario_cierre": str(row[8]),
             "url_image": row[9],
-            "nombre_categoria": row[10]
+            "nombre_categoria": row[10],
+            "imagenes_referencia": imagenes_referencia
         }
     except HTTPException:
         raise
