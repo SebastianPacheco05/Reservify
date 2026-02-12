@@ -474,7 +474,7 @@ export default function RestaurantPage() {
                               <div>
                                 <div className="flex items-center space-x-2 mb-1">
                                   <h4 className="font-semibold text-foreground">
-                                    Cliente {index + 1}
+                                    {[comentario.nombre, comentario.apellido].filter(Boolean).join(" ") || `Cliente ${index + 1}`}
                                   </h4>
                                   <Badge
                                     variant="secondary"

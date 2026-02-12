@@ -19,13 +19,16 @@ async def obtener_comentarios_por_restaurante(nit: int, db: Session = Depends(ge
     try:
         query = text('''
             SELECT 
-                id_comentario,
-                comentario,
-                TO_CHAR(fecha, 'YYYY-MM-DD') as fecha,
-                calificacion
-            FROM "Comentarios"
-            WHERE "nit" = :nit
-            ORDER BY fecha DESC
+                c.id_comentario,
+                c.comentario,
+                TO_CHAR(c.fecha, 'YYYY-MM-DD') as fecha,
+                c.calificacion,
+                u.nombre,
+                u.apellido
+            FROM "Comentarios" c
+            LEFT JOIN "Usuario" u ON c.documento = u.documento
+            WHERE c.nit = :nit
+            ORDER BY c.fecha DESC
         ''')
         result = db.execute(query, {"nit": nit})
         rows = result.fetchall()
@@ -35,7 +38,9 @@ async def obtener_comentarios_por_restaurante(nit: int, db: Session = Depends(ge
                 "id_comentario": row[0],
                 "comentario": row[1],
                 "fecha": row[2],
-                "calificacion": row[3]
+                "calificacion": row[3],
+                "nombre": row[4] or "",
+                "apellido": row[5] or "",
             }
             for row in rows
         ]
