@@ -2,26 +2,11 @@ import { useEffect, useState, useCallback } from "react";
 import {
   MapContainer,
   TileLayer,
-  Marker,
   Popup,
   CircleMarker,
   useMap,
 } from "react-leaflet";
-import L from "leaflet";
-import { Link } from "react-router-dom";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import { haversineDistanceMeters, formatDistance } from "../lib/haversine";
 import "leaflet/dist/leaflet.css";
-
-/* Fix: iconos de Leaflet en Vite (rutas de imágenes en compilación) */
-const DefaultIcon = L.icon({
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
-L.Marker.prototype.options.icon = DefaultIcon;
 
 import { API_BASE_URL } from "../config/api";
 
@@ -252,35 +237,6 @@ export default function RestaurantMap({ onlyNit, initialCenter }: RestaurantMapP
               <Popup>Tu ubicación (GPS)</Popup>
             </CircleMarker>
           )}
-          {displayedRestaurantes.map((r) => (
-            <Marker key={r.nit} position={[r.lat, r.lng]}>
-              <Popup>
-                <div className="min-w-[180px]">
-                  <p className="font-bold text-foreground">
-                    {r.nombre_restaurante}
-                  </p>
-                  {userCoords && locationStatus === "granted" && (
-                    <p className="text-muted-foreground text-sm mt-1">
-                      {formatDistance(
-                        haversineDistanceMeters(
-                          userCoords.lat,
-                          userCoords.lng,
-                          r.lat,
-                          r.lng,
-                        ),
-                      )}
-                    </p>
-                  )}
-                  <Link
-                    to={`/Restaurant?nit=${r.nit}`}
-                    className="mt-2 inline-block w-full rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-blue-700"
-                  >
-                    Ver disponibilidad
-                  </Link>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
         </MapContainer>
         <div className="absolute bottom-6 right-4 z-[1000]">
           <button
