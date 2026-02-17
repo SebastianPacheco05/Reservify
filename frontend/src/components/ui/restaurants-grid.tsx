@@ -6,9 +6,11 @@ import type { Restaurant } from "@/types/dashboard";
 
 interface RestaurantsGridProps {
   restaurants: Restaurant[];
+  onVerReservas?: (restaurant: Restaurant) => void;
+  onConfigRestaurant?: (restaurant: Restaurant) => void;
 }
 
-export function RestaurantsGrid({ restaurants }: RestaurantsGridProps) {
+export function RestaurantsGrid({ restaurants, onVerReservas, onConfigRestaurant }: RestaurantsGridProps) {
   return (
     <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
       {restaurants.map((restaurant) => (
@@ -65,10 +67,19 @@ export function RestaurantsGrid({ restaurants }: RestaurantsGridProps) {
             </div>
 
             <div className="flex gap-2 pt-1">
-              <Button size="sm" className="flex-1">
+              <Button
+                size="sm"
+                className="flex-1"
+                onClick={() => onVerReservas?.(restaurant)}
+              >
                 Ver reservas
               </Button>
-              <Button size="sm" variant="outline" aria-label="Configuración">
+              <Button
+                size="sm"
+                variant="outline"
+                aria-label="Configuración"
+                onClick={() => onConfigRestaurant?.(restaurant)}
+              >
                 <Settings className="h-4 w-4" />
               </Button>
             </div>

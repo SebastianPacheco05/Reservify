@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from config import get_db
-from funciones.auth.dependencies import verificar_token
-from funciones.cruds import det_fac, list as det_fac_queries
+from functions.auth.dependencies import verificar_token
+from functions.cruds import det_fac, list as det_fac_queries
 from models import Detalle_facturaBase, Detalle_facturaUpdate, Detalle_facturaDelete, ListarDetalleFactura
 
 router = APIRouter(

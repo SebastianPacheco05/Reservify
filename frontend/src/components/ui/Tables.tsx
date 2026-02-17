@@ -3,12 +3,16 @@ import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
 import { Users, Clock, MapPin } from "lucide-react"
 import { cn } from "../../lib/utils"
+import { Skeleton } from "./skeleton"
 import type { Table } from "../../types/employee"
 
-const emptyTables: Table[] = []
+interface TablesProps {
+  tables?: Table[]
+  isLoading?: boolean
+  readOnly?: boolean
+}
 
-export function Tables() {
-  const tables = emptyTables
+export function Tables({ tables = [], isLoading = false, readOnly = false }: TablesProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "available":
@@ -43,47 +47,32 @@ export function Tables() {
     }
   }
 
-  const getStatusActions = (table: any) => {
+  const getStatusActions = (table: Table) => {
+    if (readOnly) return null
     switch (table.status) {
       case "available":
         return (
           <div className="flex gap-2">
-            <Button size="sm" variant="outline">
-              Asignar
-            </Button>
-            <Button size="sm" variant="outline">
-              Reservar
-            </Button>
+            <Button size="sm" variant="outline" disabled>Asignar</Button>
+            <Button size="sm" variant="outline" disabled>Reservar</Button>
           </div>
         )
       case "occupied":
         return (
           <div className="flex gap-2">
-            <Button size="sm" variant="outline">
-              Ver Cuenta
-            </Button>
-            <Button size="sm" variant="outline">
-              Liberar
-            </Button>
+            <Button size="sm" variant="outline" disabled>Ver Cuenta</Button>
+            <Button size="sm" variant="outline" disabled>Liberar</Button>
           </div>
         )
       case "reserved":
         return (
           <div className="flex gap-2">
-            <Button size="sm" variant="default">
-              Cliente Llegó
-            </Button>
-            <Button size="sm" variant="outline">
-              Cancelar
-            </Button>
+            <Button size="sm" variant="default" disabled>Cliente Llegó</Button>
+            <Button size="sm" variant="outline" disabled>Cancelar</Button>
           </div>
         )
       case "cleaning":
-        return (
-          <Button size="sm" variant="outline">
-            Marcar Limpia
-          </Button>
-        )
+        return <Button size="sm" variant="outline" disabled>Marcar Limpia</Button>
       default:
         return null
     }
@@ -117,7 +106,13 @@ export function Tables() {
       </div>
 
       {/* Mesas agrupadas por sección */}
-      {Object.keys(groupedTables).length === 0 ? (
+      {isLoading ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-[140px] rounded-xl" />
+          ))}
+        </div>
+      ) : Object.keys(groupedTables).length === 0 ? (
         <div className="rounded-xl border border-border bg-card p-8 text-center">
           <p className="text-muted-foreground">No hay mesas cargadas.</p>
         </div>

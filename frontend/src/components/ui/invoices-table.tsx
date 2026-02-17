@@ -10,10 +10,13 @@ import { Badge } from "./badge";
 import { Button } from "./button";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
 import { Download, Eye, Send } from "lucide-react";
-import type { Invoice } from "@/types/dashboard";
+import type { Invoice } from "../../types/dashboard";
 
 interface InvoicesTableProps {
   invoices: Invoice[];
+  onView?: (invoice: Invoice) => void;
+  onDownload?: (invoice: Invoice) => void;
+  onSend?: (invoice: Invoice) => void;
 }
 
 const statusConfig = {
@@ -22,7 +25,7 @@ const statusConfig = {
   overdue: { label: "Vencida", className: "bg-red-500/10 text-red-700 dark:text-red-400 border-0" },
 };
 
-export function InvoicesTable({ invoices }: InvoicesTableProps) {
+export function InvoicesTable({ invoices, onView, onDownload, onSend }: InvoicesTableProps) {
   return (
     <Card className="border-border/80 bg-card shadow-sm overflow-hidden">
       <CardHeader className="pb-4">
@@ -65,14 +68,32 @@ export function InvoicesTable({ invoices }: InvoicesTableProps) {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
-                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0" aria-label="Ver">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0"
+                          aria-label="Ver"
+                          onClick={() => onView?.(invoice)}
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0" aria-label="Descargar">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0"
+                          aria-label="Descargar"
+                          onClick={() => onDownload?.(invoice)}
+                        >
                           <Download className="h-4 w-4" />
                         </Button>
                         {invoice.status === "pending" && (
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0" aria-label="Enviar">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0"
+                            aria-label="Enviar"
+                            onClick={() => onSend?.(invoice)}
+                          >
                             <Send className="h-4 w-4" />
                           </Button>
                         )}

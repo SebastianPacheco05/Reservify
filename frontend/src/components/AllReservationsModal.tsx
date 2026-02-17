@@ -17,26 +17,30 @@ import { OwnerReservationsService, type Reserva } from "../services/OwnerReserva
 interface AllReservationsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** Filtro inicial por fecha (YYYY-MM-DD). Si se proporciona, solo se muestran reservas de ese día. */
+  fechaInicial?: string;
 }
 
-export function AllReservationsModal({ isOpen, onClose }: AllReservationsModalProps) {
+export function AllReservationsModal({ isOpen, onClose, fechaInicial }: AllReservationsModalProps) {
   const [reservas, setReservas] = useState<Reserva[]>([]);
   const [filteredReservas, setFilteredReservas] = useState<Reserva[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [estadoFilter, setEstadoFilter] = useState<string>("todos");
+  const [fechaFilter, setFechaFilter] = useState<string>(fechaInicial ?? "");
 
   // Cargar todas las reservas cuando se abre el modal
   useEffect(() => {
     if (isOpen) {
       loadAllReservations();
+      setFechaFilter(fechaInicial ?? "");
     }
-  }, [isOpen]);
+  }, [isOpen, fechaInicial]);
 
-  // Filtrar reservas cuando cambia el searchQuery o estadoFilter
+  // Filtrar reservas cuando cambia el searchQuery, estadoFilter, fechaFilter o reservas
   useEffect(() => {
     filterReservations();
-  }, [searchQuery, estadoFilter, reservas]);
+  }, [searchQuery, estadoFilter, fechaFilter, reservas]);
 
   const loadAllReservations = async () => {
     setIsLoading(true);
@@ -52,6 +56,11 @@ export function AllReservationsModal({ isOpen, onClose }: AllReservationsModalPr
 
   const filterReservations = () => {
     let filtered = [...reservas];
+
+    // Filtrar por fecha (YYYY-MM-DD)
+    if (fechaFilter) {
+      filtered = filtered.filter((reserva) => reserva.fecha === fechaFilter);
+    }
 
     // Filtrar por texto de búsqueda
     if (searchQuery) {

@@ -5,7 +5,7 @@ import traceback
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from config import get_db
-from funciones.wompi.wompi_service import crear_transaccion, tokenizar_tarjeta, confirmar_reserva_por_pago
+from functions.wompi.wompi_service import crear_transaccion, tokenizar_tarjeta, confirmar_reserva_por_pago
 from models import PagoRequest
 
 load_dotenv()

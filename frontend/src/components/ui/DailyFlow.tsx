@@ -1,10 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import type { DailyFlow as DailyFlowType } from "../../types/employee"
+import type { DailyFlow as DailyFlowType } from "../../types/dashboard"
 
-const emptyDailyFlow: DailyFlowType[] = []
+interface DailyFlowProps {
+  data?: DailyFlowType[]
+}
 
-export function DailyFlow() {
-  const dailyFlow = emptyDailyFlow
+export function DailyFlow({ data }: DailyFlowProps) {
+  const dailyFlow = data ?? []
   const maxCustomers = dailyFlow.length ? Math.max(...dailyFlow.map((d) => d.customers)) : 0
   const totalCustomers = dailyFlow.reduce((acc, curr) => acc + curr.customers, 0)
   const totalReservations = dailyFlow.reduce((acc, curr) => acc + curr.reservations, 0)

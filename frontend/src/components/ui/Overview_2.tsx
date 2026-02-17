@@ -1,24 +1,44 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Badge } from "../ui/badge"
-import { Users, Calendar, Clock, DollarSign, Grid3X3 } from "lucide-react"
-import type { Restaurant, Table, Reservation, Bill } from "../../types/employee"
+import { Users, Calendar, Clock, DollarSign, Grid3X3, Wallet } from "lucide-react"
+import type { Restaurant, Table, Reservation } from "../../types/employee"
+import type { MiBalanceResponse } from "../../types/dashboard"
 
-const emptyRestaurant: Restaurant | null = null
-const emptyTables: Table[] = []
-const emptyReservations: Reservation[] = []
-const emptyBills: Bill[] = []
+interface OverviewProps {
+  restaurant?: Restaurant | null
+  tables?: Table[]
+  todayReservations?: Reservation[]
+  ventasDia?: number
+  miBalance?: MiBalanceResponse
+  isLoading?: boolean
+}
 
-export function Overview() {
-  const restaurant = emptyRestaurant
-  const tables = emptyTables
-  const todayReservations = emptyReservations
-  const bills = emptyBills
-
+export function Overview({
+  restaurant = null,
+  tables = [],
+  todayReservations = [],
+  ventasDia = 0,
+  miBalance = { total: 0, facturas: [] },
+  isLoading = false,
+}: OverviewProps) {
   const availableTables = tables.filter((t) => t.status === "available").length
   const occupiedTables = tables.filter((t) => t.status === "occupied").length
   const pendingReservations = todayReservations.filter((r) => r.status === "pending" || r.status === "confirmed").length
-  const totalBills = bills.reduce((acc, bill) => acc + bill.total, 0)
   const currentTime = new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })
+
+  if (isLoading && !restaurant) {
+    return (
+      <div className="space-y-8">
+        <div className="h-36 rounded-xl border bg-muted/50 animate-pulse" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-24 rounded-xl border bg-muted/50 animate-pulse" />
+          ))}
+        </div>
+        <div className="h-48 rounded-xl border bg-muted/50 animate-pulse" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">
@@ -98,8 +118,21 @@ export function Overview() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold tracking-tight text-foreground">€{totalBills.toFixed(2)}</div>
+            <div className="text-2xl font-bold tracking-tight text-foreground">${ventasDia.toLocaleString("es-CO", { minimumFractionDigits: 0 })}</div>
             <p className="text-xs text-muted-foreground">hasta ahora</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/80 bg-card shadow-sm transition-shadow hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Mi balance</CardTitle>
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+              <Wallet className="h-4 w-4" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold tracking-tight text-foreground">${(miBalance?.total ?? 0).toLocaleString("es-CO", { minimumFractionDigits: 0 })}</div>
+            <p className="text-xs text-muted-foreground">total facturado</p>
           </CardContent>
         </Card>
       </div>

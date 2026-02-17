@@ -14,8 +14,8 @@ load_dotenv(ENV_FILE)
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Configuración de host y puerto del backend desde .env
-BACKEND_HOST = os.getenv("BACKEND_PORT", "0.0.0.0")  # BACKEND_PORT en .env contiene el host
-BACKEND_PORT = int(os.getenv("BACKEND_HOST", "8000"))  # BACKEND_HOST en .env contiene el puerto
+BACKEND_HOST = os.getenv("BACKEND_HOST", "0.0.0.0")
+BACKEND_PORT = int(os.getenv("BACKEND_PORT", "8000"))
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

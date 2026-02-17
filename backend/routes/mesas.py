@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from config import get_db
-from funciones.cruds import mesas, list as mesas_queries
+from functions.cruds import mesas, list as mesas_queries
 from models import MesaBase, MesaUpdate, MesaDelete, ListarMesas
 
 router = APIRouter(

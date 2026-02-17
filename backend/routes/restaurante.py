@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from config import get_db
-from funciones.cruds import restaurante, list as restaurante_queries
-from funciones.auth.dependencies import verificar_token
-from funciones.cloudinary_upload import upload_image
+from functions.cruds import restaurante, list as restaurante_queries
+from functions.auth.dependencies import verificar_token
+from functions.cloudinary_upload import upload_image
 from models import RestauranteBase, RestauranteUpdate, RestauranteDelete, ListarRestaurantes
 
 router = APIRouter(

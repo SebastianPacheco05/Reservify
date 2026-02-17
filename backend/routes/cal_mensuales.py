@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from config import get_db
-from funciones.auth.dependencies import verificar_token
-from funciones.cruds import cal_mensuales, list as cal_mensuales_queries
+from functions.auth.dependencies import verificar_token
+from functions.cruds import cal_mensuales, list as cal_mensuales_queries
 from models import CalculoMensualBase, CalculoMensualUpdate, CalculoMensualDelete, ListarCalculoMensual
 
 router = APIRouter(

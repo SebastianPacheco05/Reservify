@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 from config import get_db
 from models import RegistrarCliente
-from funciones.register.register import registrar_usuario
+from functions.register.register import registrar_usuario
 
 router = APIRouter(
     prefix="/register",

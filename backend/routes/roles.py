@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from config import get_db
 from models import RolBase, RolUpdate, RolDelete, ListarRoles
-from funciones.auth.dependencies import verificar_token
-from funciones.cruds import roles, list as roles_queries
+from functions.auth.dependencies import verificar_token
+from functions.cruds import roles, list as roles_queries
 
 protected_router = APIRouter(
     prefix="/admin",

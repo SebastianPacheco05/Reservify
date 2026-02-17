@@ -218,7 +218,56 @@ class ReservaDelete(BaseModel):
     id_reserva: int
 
 
-class login(BaseModel):
+class ActualizarEstadoReservaSchema(BaseModel):
+    """Body para PATCH estado de reserva (dueño/admin/empleado)."""
+    nuevo_estado: str  # confirmada | cancelada
+    motivo_cancelacion: str | None = None  # obligatorio si nuevo_estado es cancelada
+
+
+class SMTPConfigSchema(BaseModel):
+    """Configuración SMTP (solo admin/dueño/empleado en dashboard)."""
+    host: str
+    port: int
+    usuario: str
+    password_encrypted: str | None = None
+    from_email: str
+    consentimiento_archivo: bool | None = None  # obligatorio True la primera vez (modal)
+
+
+class IMAPConfigSchema(BaseModel):
+    """Configuración IMAP (solo admin/dueño/empleado en dashboard)."""
+    host: str
+    port: int
+    usuario: str
+    password_encrypted: str | None = None
+    consentimiento_archivo: bool | None = None  # obligatorio True la primera vez (modal)
+
+
+class AsignarAdministradorSchema(BaseModel):
+    id_credencial: int  # Credencial del usuario a asignar como administrador del restaurante
+
+
+class BuscarEmailSchema(BaseModel):
+    email: str
+
+
+class AsignarEmpleadoSchema(BaseModel):
+    id_credencial: int
+
+
+class CrearEmpleadoSchema(BaseModel):
+    email: str
+
+
+class ResponderCorreoSchema(BaseModel):
+    """Body para enviar respuesta a un correo (desde dashboard)."""
+    to_email: str
+    subject: str
+    body: str
+
+
+class LoginSchema(BaseModel):
+    """Schema para login de credenciales."""
     email: str
     password: str
 

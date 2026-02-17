@@ -29,6 +29,43 @@ export interface MonthlyFlow {
   revenue: number
 }
 
+export interface DailyFlow {
+  hour: string
+  customers: number
+  reservations: number
+  walkIns: number
+}
+
+export interface ClienteGestor {
+  documento: number
+  nombre: string
+  email: string
+  total_reservas: number
+  ultima_visita: string
+}
+
+export interface MiBalanceFactura {
+  id_encab_fact: number
+  nit: number
+  nombre_restaurante: string
+  precio_total: number
+  fecha: string
+}
+
+export interface MiBalanceResponse {
+  total: number
+  facturas: MiBalanceFactura[]
+}
+
+export interface MiRestauranteInfo {
+  nit: number
+  nombre_restaurante: string
+  direccion: string
+  horario_apertura: string
+  horario_cierre: string
+  url_image: string
+}
+
 export interface Invoice {
   id: string
   restaurantId: string

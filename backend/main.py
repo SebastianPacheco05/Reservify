@@ -1,11 +1,19 @@
-# Importacion del FastAPI
-from fastapi import FastAPI, HTTPException , Request
-from fastapi.middleware.cors import CORSMiddleware
+"""
+Reservify - API Principal
+Sistema de reservas para restaurantes.
+"""
 from contextlib import asynccontextmanager
 import asyncio
 
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
-# Importacion de los routers
+from config import BACKEND_HOST, BACKEND_PORT
+from models import EmailSchema
+from functions.email_sender.timer_reserv import tarea_programada
+from functions.email_sender.email_utils import send_email
+
+# Routers
 from routes.credenciales import router as credenciales_router
 from routes.roles import protected_router as roles_router
 from routes.usuario import router as usuario_router
@@ -26,35 +34,24 @@ from routes.wompi import router as wompi_router
 from routes.restaurantes_map import router as restaurantes_map_router
 
 
-
-# Importacion de los esquemas
-from models import *
-
-# Importacion de las funciones de envio de correos
-from funciones.email_sender.timer_reserv import tarea_programada
-from funciones.email_sender.email_utils import send_email
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Iniciar tarea programada
+    """Ciclo de vida: inicia tarea de emails programados."""
     asyncio.create_task(tarea_programada())
     yield
-    # Shutdown: Aquí puedes agregar código de limpieza si es necesario
 
 
-app = FastAPI(lifespan=lifespan)
-
+app = FastAPI(title="Reservify API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Cambia al dominio de tu frontend
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # O especifica ["POST"]
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Routers protegidos (requieren autenticación)
+# Routers (restaurante y mesas tienen rutas mixtas público/protegido)
 app.include_router(credenciales_router, prefix="/credenciales")
 app.include_router(roles_router)
 app.include_router(usuario_router)
@@ -68,34 +65,22 @@ app.include_router(cal_mensuales_router)
 app.include_router(data_owner_router, prefix="/data-owner")
 app.include_router(enc_fac_reserva_router)
 app.include_router(wompi_router)
-
-
-# Routers públicos (sin autenticación)
 app.include_router(categorias_router)
-app.include_router(restaurante_router)
-app.include_router(mesas_router)
 app.include_router(register_router)
 app.include_router(top_router)
 app.include_router(searchBox_router)
 app.include_router(restaurantes_map_router)
 
-# Contactanos
-@app.post("/contactanos")
-async def enviar_correo(data: EmailSchema):
-    enviado = send_email(data.to, data.subject, data.message)
-    if enviado:
-        return {"mensaje": "Correo enviado correctamente"}
-    else:
-        raise HTTPException(status_code=500, detail="No se pudo enviar el correo")
 
-# Ejecutar servidor cuando se ejecute directamente con python3 main.py
+@app.post("/contactanos")
+async def enviar_correo_contacto(data: EmailSchema):
+    """Envía correo desde formulario de contacto."""
+    enviado = send_email(data.to, data.subject, data.message)
+    if not enviado:
+        raise HTTPException(status_code=500, detail="No se pudo enviar el correo")
+    return {"mensaje": "Correo enviado correctamente"}
+
+
 if __name__ == "__main__":
     import uvicorn
-    from config import BACKEND_HOST, BACKEND_PORT
-    
-    uvicorn.run(
-        "main:app",
-        host=BACKEND_HOST,
-        port=BACKEND_PORT,
-        reload=True
-    )
+    uvicorn.run("main:app", host=BACKEND_HOST, port=BACKEND_PORT, reload=True)
