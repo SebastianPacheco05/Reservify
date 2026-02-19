@@ -2,14 +2,25 @@ import { Card, CardContent } from "../ui/card"
 import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
 import { Phone, Clock, Users, MessageSquare } from "lucide-react"
+import { Skeleton } from "./skeleton"
 import type { Reservation, Table } from "../../types/employee"
 
-const emptyReservations: Reservation[] = []
-const emptyTables: Table[] = []
+interface ReservationsProps {
+  reservations?: Reservation[]
+  tables?: Table[]
+  onConfirm?: (id: string) => void
+  onCancel?: (id: string) => void
+  isLoading?: boolean
+}
 
-export function Reservations() {
-  const todayReservations = emptyReservations
-  const tables = emptyTables
+export function Reservations({
+  reservations = [],
+  tables = [],
+  onConfirm,
+  onCancel,
+  isLoading = false,
+}: ReservationsProps) {
+  const todayReservations = reservations
   const getStatusBadge = (status: string) => {
     const variants = {
       pending: { variant: "secondary" as const, label: "Pendiente" },
@@ -25,46 +36,20 @@ export function Reservations() {
     return <Badge variant={config.variant}>{config.label}</Badge>
   }
 
-  const getStatusActions = (reservation: any) => {
+  const getStatusActions = (reservation: Reservation) => {
     switch (reservation.status) {
       case "pending":
         return (
           <div className="flex gap-2">
-            <Button size="sm" variant="default">
-              Confirmar
-            </Button>
-            <Button size="sm" variant="outline">
-              Cancelar
-            </Button>
+            <Button size="sm" variant="default" onClick={() => onConfirm?.(reservation.id)}>Confirmar</Button>
+            <Button size="sm" variant="outline" onClick={() => onCancel?.(reservation.id)}>Cancelar</Button>
           </div>
         )
       case "confirmed":
         return (
           <div className="flex gap-2">
-            <Button size="sm" variant="default">
-              Cliente Llegó
-            </Button>
-            <Button size="sm" variant="outline">
-              Llamar
-            </Button>
+            <Button size="sm" variant="outline" onClick={() => onCancel?.(reservation.id)}>Cancelar</Button>
           </div>
-        )
-      case "arrived":
-        return (
-          <div className="flex gap-2">
-            <Button size="sm" variant="default">
-              Sentar
-            </Button>
-            <Button size="sm" variant="outline">
-              Asignar Mesa
-            </Button>
-          </div>
-        )
-      case "seated":
-        return (
-          <Button size="sm" variant="outline">
-            Ver Mesa
-          </Button>
         )
       default:
         return null
@@ -72,6 +57,23 @@ export function Reservations() {
   }
 
   const sortedReservations = [...todayReservations].sort((a, b) => a.time.localeCompare(b.time))
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground">Reservas de hoy</h2>
+          <p className="text-sm text-muted-foreground mt-0.5">Gestiona todas las reservas del día</p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-[80px] rounded-xl" />
+          ))}
+        </div>
+        <Skeleton className="h-[200px] rounded-xl" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">

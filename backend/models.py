@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import List, Optional
 from datetime import time, date
 
@@ -9,8 +9,10 @@ class CredencialBase(BaseModel):
     password: str
 
 
-class CredencialUpdate(CredencialBase):
+class CredencialUpdate(BaseModel):
     id_credencial: int
+    email: str
+    password: Optional[str] = None  # Si viene vacío, no se actualiza
 
 
 class CredencialDelete(BaseModel):
@@ -218,7 +220,56 @@ class ReservaDelete(BaseModel):
     id_reserva: int
 
 
-class login(BaseModel):
+class ActualizarEstadoReservaSchema(BaseModel):
+    """Body para PATCH estado de reserva (dueño/admin/empleado)."""
+    nuevo_estado: str  # confirmada | cancelada
+    motivo_cancelacion: str | None = Field(None, max_length=250)  # obligatorio si nuevo_estado es cancelada; máx 250 caracteres
+
+
+class SMTPConfigSchema(BaseModel):
+    """Configuración SMTP (solo admin/dueño/empleado en dashboard)."""
+    host: str
+    port: int
+    usuario: str
+    password_encrypted: str | None = None
+    from_email: str
+    consentimiento_archivo: bool | None = None  # obligatorio True la primera vez (modal)
+
+
+class IMAPConfigSchema(BaseModel):
+    """Configuración IMAP (solo admin/dueño/empleado en dashboard)."""
+    host: str
+    port: int
+    usuario: str
+    password_encrypted: str | None = None
+    consentimiento_archivo: bool | None = None  # obligatorio True la primera vez (modal)
+
+
+class AsignarAdministradorSchema(BaseModel):
+    id_credencial: int  # Credencial del usuario a asignar como administrador del restaurante
+
+
+class BuscarEmailSchema(BaseModel):
+    email: str
+
+
+class AsignarEmpleadoSchema(BaseModel):
+    id_credencial: int
+
+
+class CrearEmpleadoSchema(BaseModel):
+    email: str
+
+
+class ResponderCorreoSchema(BaseModel):
+    """Body para enviar respuesta a un correo (desde dashboard)."""
+    to_email: str
+    subject: str
+    body: str
+
+
+class LoginSchema(BaseModel):
+    """Schema para login de credenciales."""
     email: str
     password: str
 
@@ -383,6 +434,36 @@ class PagoRequest(BaseModel):
     referencia: str
     correo_cliente: str
     payment_method: PaymentMethod
+
+
+# Modelos para Webhook de Wompi
+class TransactionData(BaseModel):
+    id: str
+    reference: str
+    status: str
+    amount_in_cents: int
+    currency: str
+    customer_email: Optional[str] = None
+    payment_method_type: Optional[str] = None
+    status_message: Optional[str] = None
+    created_at: Optional[str] = None
+
+
+class SignatureData(BaseModel):
+    checksum: str
+    properties: list[str]
+
+
+class WebhookEventData(BaseModel):
+    transaction: TransactionData
+
+
+class WebhookEvent(BaseModel):
+    event: str
+    data: WebhookEventData
+    signature: Optional[SignatureData] = None
+    timestamp: Optional[int] = None
+    environment: Optional[str] = None
 
 # Confirmar Reserva y Crear Detalle de Factura
 class ConfirmarReservaDetalleSchema(BaseModel):

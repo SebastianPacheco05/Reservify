@@ -1,8 +1,14 @@
 import { Link } from "react-router-dom";
-import { X, MenuIcon } from "lucide-react";
+import { X, MenuIcon, User, LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./ui/button";
 import { ModeToggle } from "./mode-toggle";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 import { fadeInDown, transitionNormal } from "../lib/animations";
 
 interface HeaderProps {
@@ -10,6 +16,7 @@ interface HeaderProps {
   setIsMenuOpen: (isOpen: boolean) => void;
   isLoggedIn: boolean;
   onLogout: () => void;
+  onOpenProfile?: () => void;
 }
 
 export default function Header({
@@ -17,6 +24,7 @@ export default function Header({
   setIsMenuOpen,
   isLoggedIn,
   onLogout,
+  onOpenProfile,
 }: HeaderProps) {
   return (
     <motion.header
@@ -24,7 +32,7 @@ export default function Header({
       animate="animate"
       variants={fadeInDown}
       transition={transitionNormal}
-      className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl fixed top-0 w-full z-50 shadow-lg border-b border-slate-200/80 dark:border-gray-700/80 transition-colors duration-300"
+      className="bg-background/95 backdrop-blur-xl fixed top-0 w-full z-50 shadow-lg border-b border-border transition-colors duration-300"
     >
       <div className="max-w-7xl mx-auto flex justify-between items-center px-3 sm:px-4 h-14 sm:h-16 gap-2">
         <motion.div
@@ -46,7 +54,7 @@ export default function Header({
         <nav className="hidden md:flex items-center space-x-4 lg:space-x-8 shrink-0">
           <motion.a
             href="#restaurantes"
-            className="text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+            className="text-foreground hover:text-primary font-medium"
             whileHover={{ scale: 1.05, y: -1 }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -58,18 +66,33 @@ export default function Header({
           <ModeToggle />
 
           {isLoggedIn ? (
-            <Button
-              onClick={onLogout}
-              className="text-white bg-red-600 hover:bg-red-700 transition-all duration-300 hover:scale-105 transform"
-              size="sm"
-            >
-              Cerrar Sesión
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-9 h-9 rounded-full bg-muted hover:bg-muted-foreground/20 text-foreground p-0"
+                >
+                  <User className="h-5 w-5" />
+                  <span className="sr-only">Abrir menú de perfil</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={onOpenProfile}>
+                  <User className="mr-2 h-4 w-4" />
+                  Perfil
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onLogout} variant="destructive">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Cerrar Sesión
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <>
               <Link to="/Login">
                 <Button
-                  className="text-white bg-black hover:bg-blue-600 transition-all duration-300 hover:scale-105 transform"
+                  className="text-background bg-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105 transform"
                   size="sm"
                 >
                   Iniciar Sesión
@@ -77,7 +100,7 @@ export default function Header({
               </Link>
               <Link to="/Registrar">
                 <Button
-                  className="text-white bg-red-600 hover:bg-blue-600 transition-all duration-300 hover:scale-105 transform"
+                  className="text-secondary-foreground bg-secondary hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105 transform"
                   size="sm"
                 >
                   Registrarse
@@ -91,13 +114,13 @@ export default function Header({
         <Button
           variant="ghost"
           size="sm"
-          className="md:hidden hover:bg-blue-100 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-110"
+          className="md:hidden hover:bg-muted transition-all duration-300 hover:scale-110"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           {isMenuOpen ? (
-            <X className="w-5 h-5 text-black dark:text-white" />
+            <X className="w-5 h-5 text-foreground" />
           ) : (
-            <MenuIcon className="w-5 h-5 text-black dark:text-white" />
+            <MenuIcon className="w-5 h-5 text-foreground" />
           )}
         </Button>
       </div>
@@ -110,34 +133,47 @@ export default function Header({
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
-          className="md:hidden bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-gray-700 px-4 py-4 space-y-4 overflow-hidden"
+          className="md:hidden bg-background border-t border-border px-4 py-4 space-y-4 overflow-hidden"
         >
           <a
             href="#"
-            className="block text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300"
+            className="block text-foreground hover:text-primary font-medium transition-colors duration-300"
           >
             Restaurantes
           </a>
           <a
             href="#"
-            className="block text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300"
+            className="block text-foreground hover:text-primary font-medium transition-colors duration-300"
           >
             Ofertas
           </a>
 
           {/* Botón de cambio de tema en móvil */}
-          <div className="flex items-center justify-between py-2 border-t border-blue-100 dark:border-gray-700">
-            <span className="text-black dark:text-white font-medium">Tema</span>
+          <div className="flex items-center justify-between py-2 border-t border-border">
+            <span className="text-foreground font-medium">Tema</span>
             <ModeToggle />
           </div>
 
           {isLoggedIn ? (
-            <div className="pt-2">
+            <div className="pt-2 space-y-2">
+              <Button
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onOpenProfile?.();
+                }}
+                size="sm"
+                variant="outline"
+                className="w-full"
+              >
+                <User className="mr-2 h-4 w-4" />
+                Perfil
+              </Button>
               <Button
                 onClick={onLogout}
                 size="sm"
-                className="w-full bg-red-600 hover:bg-red-700 transition-all duration-300"
+                className="w-full bg-destructive hover:bg-destructive/90 transition-all duration-300"
               >
+                <LogOut className="mr-2 h-4 w-4" />
                 Cerrar Sesión
               </Button>
             </div>
@@ -147,7 +183,7 @@ export default function Header({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 border-black dark:border-white text-black dark:text-white hover:bg-blue-50 dark:hover:bg-gray-800 bg-transparent transition-all duration-300"
+                  className="flex-1 border-foreground text-foreground hover:bg-muted bg-transparent transition-all duration-300"
                 >
                   Iniciar Sesión
                 </Button>
@@ -155,7 +191,7 @@ export default function Header({
               <Link to="/Registrar">
                 <Button
                   size="sm"
-                  className="flex-1 bg-red-600 hover:bg-blue-600 transition-all duration-300"
+                  className="flex-1 bg-secondary hover:bg-primary transition-all duration-300"
                 >
                   Registrarse
                 </Button>

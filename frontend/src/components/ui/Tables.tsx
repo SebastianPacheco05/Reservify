@@ -3,26 +3,30 @@ import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
 import { Users, Clock, MapPin } from "lucide-react"
 import { cn } from "../../lib/utils"
+import { Skeleton } from "./skeleton"
 import type { Table } from "../../types/employee"
 
-const emptyTables: Table[] = []
+interface TablesProps {
+  tables?: Table[]
+  isLoading?: boolean
+  readOnly?: boolean
+}
 
-export function Tables() {
-  const tables = emptyTables
+export function Tables({ tables = [], isLoading = false, readOnly = false }: TablesProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "available":
-        return "bg-green-100 border-green-300 text-green-800"
+        return "bg-primary/10 border-primary/30 text-primary"
       case "occupied":
-        return "bg-red-100 border-red-300 text-red-800"
+        return "bg-destructive/10 border-destructive/30 text-destructive"
       case "reserved":
-        return "bg-blue-100 border-blue-300 text-blue-800"
+        return "bg-secondary/10 border-secondary/30 text-secondary"
       case "cleaning":
-        return "bg-yellow-100 border-yellow-300 text-yellow-800"
+        return "bg-accent/20 border-accent/30 text-accent-foreground"
       case "out_of_service":
-        return "bg-gray-100 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200"
+        return "bg-muted border-border text-muted-foreground"
       default:
-        return "bg-gray-100 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200"
+        return "bg-muted border-border text-muted-foreground"
     }
   }
 
@@ -43,47 +47,32 @@ export function Tables() {
     }
   }
 
-  const getStatusActions = (table: any) => {
+  const getStatusActions = (table: Table) => {
+    if (readOnly) return null
     switch (table.status) {
       case "available":
         return (
           <div className="flex gap-2">
-            <Button size="sm" variant="outline">
-              Asignar
-            </Button>
-            <Button size="sm" variant="outline">
-              Reservar
-            </Button>
+            <Button size="sm" variant="outline" disabled>Asignar</Button>
+            <Button size="sm" variant="outline" disabled>Reservar</Button>
           </div>
         )
       case "occupied":
         return (
           <div className="flex gap-2">
-            <Button size="sm" variant="outline">
-              Ver Cuenta
-            </Button>
-            <Button size="sm" variant="outline">
-              Liberar
-            </Button>
+            <Button size="sm" variant="outline" disabled>Ver Cuenta</Button>
+            <Button size="sm" variant="outline" disabled>Liberar</Button>
           </div>
         )
       case "reserved":
         return (
           <div className="flex gap-2">
-            <Button size="sm" variant="default">
-              Cliente Llegó
-            </Button>
-            <Button size="sm" variant="outline">
-              Cancelar
-            </Button>
+            <Button size="sm" variant="default" disabled>Cliente Llegó</Button>
+            <Button size="sm" variant="outline" disabled>Cancelar</Button>
           </div>
         )
       case "cleaning":
-        return (
-          <Button size="sm" variant="outline">
-            Marcar Limpia
-          </Button>
-        )
+        return <Button size="sm" variant="outline" disabled>Marcar Limpia</Button>
       default:
         return null
     }
@@ -109,15 +98,21 @@ export function Tables() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-0">Disponible</Badge>
-          <Badge variant="secondary" className="bg-red-500/10 text-red-700 dark:text-red-400 border-0">Ocupada</Badge>
-          <Badge variant="secondary" className="bg-blue-500/10 text-blue-700 dark:text-blue-400 border-0">Reservada</Badge>
+          <Badge variant="secondary" className="bg-primary/10 text-primary border-0">Disponible</Badge>
+          <Badge variant="secondary" className="bg-destructive/10 text-destructive border-0">Ocupada</Badge>
+          <Badge variant="secondary" className="bg-secondary/10 text-secondary border-0">Reservada</Badge>
           <Badge variant="secondary" className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-0">Limpieza</Badge>
         </div>
       </div>
 
       {/* Mesas agrupadas por sección */}
-      {Object.keys(groupedTables).length === 0 ? (
+      {isLoading ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-[140px] rounded-xl" />
+          ))}
+        </div>
+      ) : Object.keys(groupedTables).length === 0 ? (
         <div className="rounded-xl border border-border bg-card p-8 text-center">
           <p className="text-muted-foreground">No hay mesas cargadas.</p>
         </div>

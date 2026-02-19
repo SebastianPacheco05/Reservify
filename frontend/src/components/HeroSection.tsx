@@ -24,7 +24,7 @@ export default function HeroSection({
   onUseMyLocation,
 }: HeroSectionProps) {
   return (
-    <section className="relative min-h-[100dvh] sm:min-h-screen flex flex-col justify-center pt-20 pb-16 sm:pt-24 sm:pb-24 px-4 sm:px-6 md:px-8 overflow-hidden bg-gradient-to-b from-blue-50/40 via-white to-emerald-50/40 dark:from-blue-950/20 dark:via-transparent dark:to-emerald-950/20">
+    <section className="relative min-h-[100dvh] sm:min-h-screen flex flex-col justify-center pt-20 pb-16 sm:pt-24 sm:pb-24 px-4 sm:px-6 md:px-8 overflow-hidden bg-gradient-to-b from-primary/10 via-background to-accent/20 dark:from-primary/10 dark:via-transparent dark:to-accent/10">
       {/* Fondo de estrellas: contenido decorativo, no bloquea LCP */}
       <div className="absolute inset-0 pointer-events-none z-0" aria-hidden="true">
         {[...Array(12)].map((_, i) => (
@@ -40,7 +40,7 @@ export default function HeroSection({
       <div className="relative z-10 max-w-4xl mx-auto text-center w-full space-y-8 sm:space-y-12 md:space-y-16 min-w-0">
         <div className="space-y-4">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight tracking-tight break-words">
-            <span className="text-blue-600 dark:text-blue-400 bg-gradient-to-r from-blue-600 to-emerald-600 dark:from-blue-400 dark:to-emerald-400 bg-clip-text text-transparent">
+            <span className="text-primary bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Reserva en tu restaurante favorito
             </span>
           </h2>
@@ -48,7 +48,7 @@ export default function HeroSection({
 
         <p
           id="buscar"
-          className="text-base sm:text-xl md:text-2xl text-slate-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed px-0 sm:px-2"
+          className="text-base sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed px-0 sm:px-2"
         >
           Desde comida gourmet hasta cocina casera, encuentra el lugar ideal
           para cada ocasión
@@ -69,7 +69,7 @@ export default function HeroSection({
           <motion.button
             type="button"
             onClick={onUseMyLocation}
-            className="flex items-center justify-center gap-2 text-slate-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors border-0 bg-transparent p-0"
+            className="flex items-center justify-center gap-2 text-muted-foreground hover:text-primary cursor-pointer transition-colors border-0 bg-transparent p-0"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
             aria-label="Ver restaurantes cerca de mi ubicación actual"

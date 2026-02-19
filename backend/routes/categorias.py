@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from config import get_db
-from funciones.auth.dependencies import verificar_token
-from funciones.cruds import categorias, list as categorias_queries
+from functions.auth.dependencies import verificar_token
+from functions.cruds import categorias, list as categorias_queries
 from models import insertarCategorias, editarCategorias, borrarCategorias, ListarCategorias
 
 router = APIRouter(

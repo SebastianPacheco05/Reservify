@@ -13,6 +13,8 @@ export interface Reserva {
   cliente_nombre: string;
   cliente_telefono: string;
   cliente_documento: number;
+  motivo_cancelacion?: string | null;
+  ajuste?: string | null;
 }
 
 export interface ReservasResponse {
@@ -83,6 +85,70 @@ export class OwnerReservationsService {
       console.error("Error al obtener todas las reservas:", error);
       return { reservas: [], total: 0 };
     }
+  }
+
+  /**
+   * Obtiene las reservas de un restaurante por NIT (para el modal "Ver reservas" de la card).
+   * @param nit - NIT del restaurante
+   * @param fecha - Opcional: YYYY-MM-DD para filtrar reservas del día
+   */
+  public static async getReservationsByRestaurant(
+    nit: number,
+    fecha?: string
+  ): Promise<ReservasResponse> {
+    try {
+      const token = localStorage.getItem("access_token");
+      if (!token) throw new Error("No se encontró token de autenticación");
+
+      const url = fecha
+        ? `${API_BASE_URL}/data-owner/restaurantes/${nit}/reservas?fecha=${encodeURIComponent(fecha)}`
+        : `${API_BASE_URL}/data-owner/restaurantes/${nit}/reservas`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error(`Error al obtener reservas: ${response.status}`);
+      const data: ReservasResponse = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error al obtener reservas del restaurante:", error);
+      return { reservas: [], total: 0 };
+    }
+  }
+
+  /**
+   * Actualiza el estado de una reserva (confirmada o cancelada).
+   * Si nuevo_estado es "cancelada", motivo_cancelacion es obligatorio.
+   */
+  public static async updateReservationStatus(
+    id_reserva: number,
+    nuevo_estado: "confirmada" | "cancelada",
+    motivo_cancelacion?: string
+  ): Promise<{ ok: boolean; id_reserva: number; nuevo_estado: string }> {
+    const token = localStorage.getItem("access_token");
+    if (!token) throw new Error("No se encontró token de autenticación");
+
+    const response = await fetch(`${API_BASE_URL}/data-owner/reservas/${id_reserva}/estado`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nuevo_estado,
+        motivo_cancelacion: motivo_cancelacion ?? null,
+      }),
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.detail || `Error ${response.status}`);
+    }
+    return response.json();
   }
 }
 

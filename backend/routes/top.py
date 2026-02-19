@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from config import get_db
-from funciones.auth.dependencies import verificar_token
-from funciones.top.top import obtener_top_restaurantes
+from functions.auth.dependencies import verificar_token
+from functions.top.top import obtener_top_restaurantes
 
 app = APIRouter()
 

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from config import get_db
-from funciones.auth.dependencies import verificar_token
-from funciones.cruds import enc_fac, list as enc_fac_queries
+from functions.auth.dependencies import verificar_token
+from functions.cruds import enc_fac, list as enc_fac_queries
 from models import Encabezado_facturaBase, Encabezado_facturaUpdate, Encabezado_facturaDelete, ListarEncabezadoFactura
 
 router = APIRouter(
@@ -13,7 +13,7 @@ router = APIRouter(
 
 @router.post("/insertarencabezadofactura")
 async def insertar(data: Encabezado_facturaBase, db: Session = Depends(get_db), current_user: dict = Depends(verificar_token)):
-    from funciones.cruds.cliente_utils import obtener_documento_por_email
+    from functions.cruds.cliente_utils import obtener_documento_por_email
     
     # Obtener el documento del usuario autenticado usando su email
     documento_cliente = obtener_documento_por_email(db, current_user["email"])

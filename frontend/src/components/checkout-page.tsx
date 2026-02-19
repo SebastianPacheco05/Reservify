@@ -81,21 +81,21 @@ export default function CheckoutPage({ reservationData: propReservationData }: C
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">Reservify</h1>
-                    <p className="text-gray-600 dark:text-gray-400">Completa tu reserva de forma segura</p>
+                    <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">Reservify</h1>
+                    <p className="text-muted-foreground">Completa tu reserva de forma segura</p>
                 </div>
 
                 {/* Progress Steps */}
                 <div className="max-w-3xl mx-auto mb-12">
                     <div className="flex items-center justify-center gap-4">
                         <StepIndicator number={1} label="Información" active={step === "form"} completed={step !== "form"} />
-                        <div className="h-[2px] w-16 bg-gray-300 dark:bg-gray-600" />
+                        <div className="h-[2px] w-16 bg-border" />
                         <StepIndicator number={2} label="Pago" active={step === "payment"} completed={step === "success"} />
-                        <div className="h-[2px] w-16 bg-gray-300 dark:bg-gray-600" />
+                        <div className="h-[2px] w-16 bg-border" />
                         <StepIndicator number={3} label="Confirmación" active={step === "success"} completed={false} />
                     </div>
                 </div>
@@ -116,18 +116,18 @@ export default function CheckoutPage({ reservationData: propReservationData }: C
                         )}
 
                         {step === "success" && (
-                            <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm border border-gray-200 dark:border-gray-700">
+                            <div className="bg-card rounded-xl p-8 shadow-sm border border-border">
                                 <div className="text-center">
-                                    <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/40 rounded-full mb-4">
-                                        <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
+                                    <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
+                                        <CheckCircle2 className="w-8 h-8 text-primary" />
                                     </div>
-                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">¡Pago Exitoso!</h2>
-                                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                                    <h2 className="text-2xl font-bold text-foreground mb-2">¡Pago Exitoso!</h2>
+                                    <p className="text-muted-foreground mb-6">
                                         Tu reserva ha sido confirmada. Recibirás un correo con los detalles.
                                     </p>
-                                    <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 mb-6">
-                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Número de confirmación</p>
-                                        <p className="text-xl font-bold text-blue-600">
+                                    <div className="bg-primary/10 rounded-lg p-4 mb-6">
+                                        <p className="text-sm text-muted-foreground mb-1">Número de confirmación</p>
+                                        <p className="text-xl font-bold text-primary">
                                             RSV-{Math.random().toString(36).substr(2, 9).toUpperCase()}
                                         </p>
                                     </div>
@@ -137,7 +137,7 @@ export default function CheckoutPage({ reservationData: propReservationData }: C
                                             sessionStorage.removeItem("pendingReservation")
                                             window.location.href = "/"
                                         }}
-                                        className="px-6 py-3 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors"
+                                        className="px-6 py-3 bg-primary text-primary-foreground rounded-md font-medium hover:bg-primary/90 transition-colors"
                                     >
                                         Volver al Inicio
                                     </button>
@@ -167,16 +167,16 @@ function StepIndicator({
             <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-colors ${
                     completed
-                        ? "bg-blue-600 text-white"
+                        ? "bg-primary text-primary-foreground"
                         : active
-                            ? "bg-blue-600 text-white"
-                            : "bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-card border-2 border-border text-muted-foreground"
                 }`}
             >
                 {completed ? "✓" : number}
             </div>
             <span
-                className={`text-xs font-medium ${active ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"}`}
+                className={`text-xs font-medium ${active ? "text-primary" : "text-muted-foreground"}`}
             >
                 {label}
             </span>

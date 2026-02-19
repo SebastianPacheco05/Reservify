@@ -8,22 +8,22 @@ const features = [
     icon: Clock,
     title: "Reserva Instantánea",
     description: "Confirma tu mesa en segundos, sin esperas ni llamadas",
-    bgColor: "bg-blue-100 dark:bg-blue-900/30",
-    iconColor: "text-blue-600 dark:text-blue-400",
+    bgColor: "bg-primary/20",
+    iconColor: "text-primary",
   },
   {
     icon: Users,
     title: "Para Todos",
     description: "Desde cenas románticas hasta eventos familiares",
-    bgColor: "bg-emerald-100 dark:bg-emerald-900/30",
-    iconColor: "text-emerald-600 dark:text-emerald-400",
+    bgColor: "bg-accent/20",
+    iconColor: "text-accent",
   },
   {
     icon: Star,
     title: "Los Mejores",
     description: "Solo restaurantes verificados y con excelentes reseñas",
-    bgColor: "bg-amber-100 dark:bg-amber-900/30",
-    iconColor: "text-amber-600 dark:text-amber-400",
+    bgColor: "bg-secondary/20",
+    iconColor: "text-secondary",
   },
 ];
 
@@ -31,7 +31,7 @@ export default function FeaturesSection() {
   return (
     <section
       id="acerca_de"
-      className="py-16 sm:py-20 md:py-24 px-4 sm:px-6 bg-gradient-to-r from-slate-50 via-blue-50/50 to-emerald-50 dark:from-gray-800 dark:via-gray-850 dark:to-gray-900 transition-colors duration-300"
+      className="py-16 sm:py-20 md:py-24 px-4 sm:px-6 bg-gradient-to-r from-muted via-background to-accent/20 dark:from-muted dark:via-background dark:to-secondary/20 transition-colors duration-300"
     >
       <div className="max-w-7xl mx-auto">
         <motion.div
@@ -41,10 +41,10 @@ export default function FeaturesSection() {
           viewport={{ once: true }}
           transition={transitionNormal}
         >
-          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black dark:text-white mb-4">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4">
             ¿Por qué elegir Reservify?
           </h3>
-          <p className="text-slate-600 dark:text-gray-300 text-lg max-w-xl mx-auto">
+          <p className="text-muted-foreground text-lg max-w-xl mx-auto">
             La forma más fácil de reservar mesa
           </p>
         </motion.div>
@@ -73,10 +73,10 @@ export default function FeaturesSection() {
                 >
                   <IconComponent className={`w-10 h-10 ${feature.iconColor}`} />
                 </motion.div>
-                <h4 className="text-xl font-semibold mb-2 text-black dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                <h4 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors duration-300">
                   {feature.title}
                 </h4>
-                <p className="text-slate-600 dark:text-gray-300 leading-relaxed max-w-sm mx-auto">
+                <p className="text-muted-foreground leading-relaxed max-w-sm mx-auto">
                   {feature.description}
                 </p>
               </motion.div>

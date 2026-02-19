@@ -81,7 +81,7 @@ export default function Login() {
 
   return (
     <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/40 to-emerald-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-800 flex items-center justify-center p-4 transition-colors duration-500">
+      <div className="min-h-screen bg-gradient-to-br from-muted via-background to-accent/20 dark:from-background dark:via-muted dark:to-secondary/20 flex items-center justify-center p-4 transition-colors duration-500">
         <div className="w-full max-w-md">
           <motion.div
             className="flex justify-between items-center mb-6"
@@ -93,7 +93,7 @@ export default function Login() {
               onClick={handleBackToHome}
               variant="outline"
               size="sm"
-              className="border-blue-200 hover:bg-blue-50 dark:border-gray-600 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-all duration-200 bg-transparent"
+              className="border-border hover:bg-muted text-primary transition-all duration-200 bg-transparent"
             >
               <Home className="w-4 h-4 mr-2" />
               Volver al inicio
@@ -102,7 +102,7 @@ export default function Login() {
               onClick={() => setIsDarkMode(!isDarkMode)}
               variant="outline"
               size="sm"
-              className="border-blue-200 hover:bg-blue-50 dark:border-gray-600 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-all duration-200"
+              className="border-border hover:bg-muted text-primary transition-all duration-200"
             >
               {isDarkMode ? "☀️" : "🌙"}
             </Button>
@@ -116,16 +116,16 @@ export default function Login() {
             transition={{ delay: 0.1, duration: 0.4 }}
           >
             <motion.div
-              className="w-16 h-16 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-xl"
+              className="w-16 h-16 bg-gradient-to-r from-primary to-accent rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-xl"
               whileHover={{ scale: 1.05, rotate: 2 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
               <Lock className="w-8 h-8 text-white" />
             </motion.div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
+            <h1 className="text-2xl font-bold text-foreground transition-colors duration-300">
               Bienvenido a Reservify
             </h1>
-            <p className="text-slate-600 dark:text-gray-300 mt-2">
+            <p className="text-muted-foreground mt-2">
               Inicia sesión en tu cuenta
             </p>
           </motion.div>
@@ -135,12 +135,12 @@ export default function Login() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
           >
-          <Card className="shadow-xl border-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl border border-slate-200/50 dark:border-gray-700/50">
+          <Card className="shadow-xl border-0 bg-card/90 backdrop-blur-md rounded-2xl border border-border">
             <CardHeader className="space-y-1 pb-6">
-              <CardTitle className="text-xl text-center text-gray-900 dark:text-white transition-colors duration-300">
+              <CardTitle className="text-xl text-center text-foreground transition-colors duration-300">
                 Iniciar Sesión
               </CardTitle>
-              <CardDescription className="text-center text-gray-600 dark:text-gray-300 transition-colors duration-300">
+              <CardDescription className="text-center text-muted-foreground transition-colors duration-300">
                 Ingresa tus credenciales para acceder
               </CardDescription>
             </CardHeader>
@@ -151,19 +151,19 @@ export default function Login() {
                 <div className="space-y-2">
                   <Label
                     htmlFor="email"
-                    className="text-sm font-medium text-gray-900 dark:text-white transition-colors duration-300"
+                    className="text-sm font-medium text-foreground transition-colors duration-300"
                   >
                     Correo electrónico
                   </Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4 transition-colors duration-300" />
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 transition-colors duration-300" />
                     <Input
                       id="email"
                       type="email"
                       placeholder="tu@ejemplo.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500 transition-colors duration-300"
+                      className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-colors duration-300"
                       required
                     />
                   </div>
@@ -173,25 +173,25 @@ export default function Login() {
                 <div className="space-y-2">
                   <Label
                     htmlFor="password"
-                    className="text-sm font-medium text-gray-900 dark:text-white transition-colors duration-300"
+                    className="text-sm font-medium text-foreground transition-colors duration-300"
                   >
                     Contraseña
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4 transition-colors duration-300" />
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 transition-colors duration-300" />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500 transition-colors duration-300"
+                      className="pl-10 pr-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-colors duration-300"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-0.5 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors bg-transparent border-none p-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+                      className="absolute right-0.5 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors bg-transparent border-none p-0 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
                     >
                       {showPassword ? (
                         <EyeOff className="w-4 h-4" />
@@ -207,7 +207,7 @@ export default function Login() {
                   <div className="flex items-center space-x-2"></div>
                   <button
                     type="button"
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-green-600 dark:hover:text-green-400 font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+                    className="text-sm text-primary hover:text-accent font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
                   >
                     ¿Olvidaste tu contraseña?
                   </button>
@@ -216,7 +216,7 @@ export default function Login() {
                 {/* Login Button */}
                 <Button
                   type="submit"
-                  className="w-full h-11 bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
+                  className="w-full h-11 bg-primary hover:opacity-90 text-primary-foreground font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -235,9 +235,9 @@ export default function Login() {
 
               {/* Divider */}
               <div className="relative">
-                <Separator className="bg-gray-200 dark:bg-gray-600 transition-colors duration-300" />
+                <Separator className="bg-border transition-colors duration-300" />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="bg-white dark:bg-gray-800 px-2 text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300">
+                  <span className="bg-background px-2 text-xs text-muted-foreground transition-colors duration-300">
                     O continúa con
                   </span>
                 </div>
@@ -247,7 +247,7 @@ export default function Login() {
               <div className="grid grid-cols-1 gap-3">
                 <Button
                   variant="outline"
-                  className="h-11 w-full border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500"
+                  className="h-11 w-full border-input hover:bg-muted transition-colors bg-background text-foreground focus:ring-2 focus:ring-primary"
                   type="button"
                 >
                   <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -274,10 +274,10 @@ export default function Login() {
 
               {/* Sign Up Link */}
               <div className="text-center pt-4">
-                <p className="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300">
+                <p className="text-sm text-muted-foreground transition-colors duration-300">
                   ¿No tienes una cuenta?{" "}
                   <Link to="/Registrar">
-                    <button className="text-blue-600 dark:text-blue-400 hover:text-green-600 dark:hover:text-green-400 font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded">
+                    <button className="text-primary hover:text-accent font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded">
                       Regístrate aquí
                     </button>
                   </Link>
@@ -288,14 +288,14 @@ export default function Login() {
           </motion.div>
 
           {/* Footer */}
-          <div className="text-center mt-8 text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300">
+          <div className="text-center mt-8 text-xs text-muted-foreground transition-colors duration-300">
             <p>Al iniciar sesión, aceptas nuestros</p>
             <div className="space-x-4 mt-1">
-              <button className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-gray-400 rounded">
+              <button className="hover:text-foreground transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded">
                 Términos de Servicio
               </button>
               <span>•</span>
-              <button className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-gray-400 rounded">
+              <button className="hover:text-foreground transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded">
                 Política de Privacidad
               </button>
             </div>

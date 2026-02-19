@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from config import get_db
-from funciones.cruds import comentarios, list as comentarios_queries
-from funciones.cruds.cliente_utils import obtener_documento_por_email
-from funciones.auth.dependencies import verificar_token
+from functions.cruds import comentarios, list as comentarios_queries
+from functions.cruds.cliente_utils import obtener_documento_por_email
+from functions.auth.dependencies import verificar_token
 from models import ComentarioBase, ComentarioUpdate, ComentarioDelete, ListarComentarios, ComentarioCreate
 
 # Router público (sin autenticación)

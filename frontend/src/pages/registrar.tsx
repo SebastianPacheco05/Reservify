@@ -151,7 +151,7 @@ export default function Registrar() {
       variants={fadeIn}
       transition={transitionNormal}
     >
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-black flex items-center justify-center p-4 transition-colors duration-300">
+      <div className="min-h-screen bg-gradient-to-br from-muted/50 via-background to-accent/20 dark:from-background dark:via-muted/30 dark:to-background flex items-center justify-center p-4 transition-colors duration-300">
         <motion.div
           className="w-full max-w-max"
           variants={staggerContainer}
@@ -166,7 +166,7 @@ export default function Registrar() {
             <Button
               onClick={() => (window.location.href = "/")}
               variant="outline"
-              className="flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 border-blue-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-all duration-200"
+              className="flex items-center gap-2 bg-card/80 border-border hover:bg-muted text-primary transition-all duration-200"
             >
               <Home className="w-4 h-4" />
               Volver al inicio
@@ -176,7 +176,7 @@ export default function Registrar() {
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               variant="outline"
               size="icon"
-              className="bg-white/80 dark:bg-gray-800/80 border-blue-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-all duration-200"
+              className="bg-card/80 border-border hover:bg-muted text-primary transition-all duration-200"
             >
               {theme === "dark" ? (
                 <Sun className="w-4 h-4" />
@@ -193,16 +193,16 @@ export default function Registrar() {
             transition={transitionNormal}
           >
             <motion.div
-              className="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg"
+              className="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg"
               whileHover={{ scale: 1.05 }}
               transition={transitionNormal}
             >
               <Lock className="w-8 h-8 text-white" />
             </motion.div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
+            <h1 className="text-2xl font-bold text-foreground transition-colors duration-300">
               Bienvenido a Reservify
             </h1>
-            <p className="text-gray-600 dark:text-gray-300 mt-2 transition-colors duration-300">
+            <p className="text-muted-foreground mt-2 transition-colors duration-300">
               Registra tu cuenta de Reservify
             </p>
           </motion.div>
@@ -220,13 +220,13 @@ export default function Registrar() {
                   className="flex justify-center"
                 >
             <Card
-              className="shadow-xl w-[23rem] border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-300"
+              className="shadow-xl w-[23rem] border-0 bg-card/80 backdrop-blur-sm transition-all duration-300"
             >
               <CardHeader className="space-y-0.5 pb-3">
-                <CardTitle className="text-xl text-center text-gray-900 dark:text-white transition-colors duration-300">
+                <CardTitle className="text-xl text-center text-foreground transition-colors duration-300">
                   Crea tu cuenta
                 </CardTitle>
-                <CardDescription className="text-center text-gray-600 dark:text-gray-300 transition-colors duration-300">
+                <CardDescription className="text-center text-muted-foreground transition-colors duration-300">
                   Ingresa tus datos para crear tu cuenta
                 </CardDescription>
               </CardHeader>
@@ -237,19 +237,19 @@ export default function Registrar() {
                   <div className="space-y-2">
                     <Label
                       htmlFor="email"
-                      className="text-sm font-medium text-gray-900 dark:text-white transition-colors duration-300"
+                      className="text-sm font-medium text-foreground transition-colors duration-300"
                     >
                       Correo electrónico
                     </Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                       <Input
                         id="email"
                         type="email"
                         placeholder="tu@ejemplo.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
+                        className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
                         required
                       />
                     </div>
@@ -259,30 +259,30 @@ export default function Registrar() {
                   <div className="space-y-2">
                     <Label
                       htmlFor="password"
-                      className="text-sm font-medium text-gray-900 dark:text-white transition-colors duration-300"
+                      className="text-sm font-medium text-foreground transition-colors duration-300"
                     >
                       Contraseña
                     </Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
+                        className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
                         required
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-0.5 top-1/2 transform -translate-y-1/2 p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-colors duration-200"
+                        className="absolute right-0.5 top-1/2 transform -translate-y-1/2 p-2 hover:bg-muted rounded transition-colors duration-200"
                       >
                         {showPassword ? (
-                          <EyeOff className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                          <EyeOff className="w-4 h-4 text-muted-foreground" />
                         ) : (
-                          <Eye className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                          <Eye className="w-4 h-4 text-muted-foreground" />
                         )}
                       </button>
                     </div>
@@ -292,30 +292,30 @@ export default function Registrar() {
                   <div className="space-y-2">
                     <Label
                       htmlFor="confirm-password"
-                      className="text-sm font-medium text-gray-900 dark:text-white transition-colors duration-300"
+                      className="text-sm font-medium text-foreground transition-colors duration-300"
                     >
                       Confirmar contraseña
                     </Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                       <Input
                         id="confirm-password"
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
+                        className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
                         required
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-0.5 top-1/2 transform -translate-y-1/2 p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-colors duration-200"
+                        className="absolute right-0.5 top-1/2 transform -translate-y-1/2 p-2 hover:bg-muted rounded transition-colors duration-200"
                       >
                         {showPassword ? (
-                          <EyeOff className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                          <EyeOff className="w-4 h-4 text-muted-foreground" />
                         ) : (
-                          <Eye className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                          <Eye className="w-4 h-4 text-muted-foreground" />
                         )}
                       </button>
                     </div>
@@ -326,7 +326,7 @@ export default function Registrar() {
                     <div className="flex items-center space-x-2"></div>
                     <button
                       type="button"
-                      className="text-sm text-blue-600 dark:text-blue-400 hover:text-green-600 dark:hover:text-green-400 font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+                      className="text-sm text-primary hover:text-secondary font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
                     >
                       ¿Olvidaste tu contraseña?
                     </button>
@@ -335,7 +335,7 @@ export default function Registrar() {
                   <Button
                     type="button"
                     onClick={handleContinue} // 👈 en lugar de setShowCard(false)
-                    className="w-full h-11 bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
+                    className="w-full h-11 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
                   >
                     <span>Continuar</span>
                     <ArrowRight className="w-4 h-4" />
@@ -344,9 +344,9 @@ export default function Registrar() {
 
                 {/* Divider */}
                 <div className="relative">
-                  <Separator className="bg-gray-200 dark:bg-gray-600" />
+                  <Separator className="bg-border" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="bg-white dark:bg-gray-800 px-2 text-xs text-gray-500 dark:text-gray-400">
+                    <span className="bg-card px-2 text-xs text-muted-foreground">
                       O continúa con
                     </span>
                   </div>
@@ -356,7 +356,7 @@ export default function Registrar() {
                 <div className="grid grid-cols-1 gap-3">
                   <Button
                     variant="outline"
-                    className="h-11 w-full border-gray-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500"
+                    className="h-11 w-full border-border hover:bg-muted transition-colors bg-card text-foreground focus:ring-2 focus:ring-primary"
                     type="button"
                   >
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -377,7 +377,7 @@ export default function Registrar() {
                         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                       />
                     </svg>
-                    <span className="text-gray-700 dark:text-gray-300 font-medium transition-all duration-200 transform hover:scale-[1.02]">
+                    <span className="text-foreground font-medium transition-all duration-200 transform hover:scale-[1.02]">
                       Google
                     </span>
                   </Button>
@@ -395,16 +395,16 @@ export default function Registrar() {
                   className="justify-center items-center w-full max-w-2xl"
                 >
             <Card
-              className="shadow-xl w-full border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-300"
+              className="shadow-xl w-full border-0 bg-card/80 backdrop-blur-sm transition-all duration-300"
             >
               <CardHeader
                 className="space-y-1 pb-6 cursor-pointer"
                 onClick={() => setShowCard(true)}
               >
-                <CardTitle className="text-xl text-center text-gray-900 dark:text-white transition-colors duration-300">
+                <CardTitle className="text-xl text-center text-foreground transition-colors duration-300">
                   Ingresa tus datos personales
                 </CardTitle>
-                <CardDescription className="text-center text-gray-600 dark:text-gray-300 transition-colors duration-300">
+                <CardDescription className="text-center text-muted-foreground transition-colors duration-300">
                   Ingresa tus datos para crear tu cuenta
                 </CardDescription>
               </CardHeader>
@@ -420,7 +420,7 @@ export default function Registrar() {
                     <div className="space-y-2">
                       <Label
                         htmlFor="tipo_documento"
-                        className="text-sm font-medium text-gray-900 dark:text-white transition-colors duration-300"
+                        className="text-sm font-medium text-foreground transition-colors duration-300"
                       >
                         Tipo de documento
                       </Label>
@@ -439,7 +439,7 @@ export default function Registrar() {
                               fontWeight: "400",
                               color: "#667085",
                             }}
-                            className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
+                            className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
                           >
                             {/* <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" /> */}
 
@@ -494,19 +494,19 @@ export default function Registrar() {
                     <div className="space-y-2">
                       <Label
                         htmlFor="numero_documento"
-                        className="text-sm font-medium text-gray-900 dark:text-white transition-colors duration-300"
+                        className="text-sm font-medium text-foreground transition-colors duration-300"
                       >
                         Numero de documento
                       </Label>
                       <div className="relative">
-                        <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                        <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                         <Input
                           id="numero_documento"
                           type="text"
                           placeholder="tu numero de documento"
                           value={documento}
                           onChange={(e) => setDocumento(e.target.value)}
-                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
+                          className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
                           required
                         />
                       </div>
@@ -515,19 +515,19 @@ export default function Registrar() {
                     <div className="space-y-2">
                       <Label
                         htmlFor="telefono"
-                        className="text-sm font-medium text-gray-900 dark:text-white transition-colors duration-300"
+                        className="text-sm font-medium text-foreground transition-colors duration-300"
                       >
                         Numero de telefono
                       </Label>
                       <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                         <Input
                           id="telefono"
                           type="tel"
                           placeholder="tu numero de telefono"
                           value={telefono}
                           onChange={(e) => setTelefono(e.target.value)}
-                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
+                          className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
                           required
                         />
                       </div>
@@ -539,19 +539,19 @@ export default function Registrar() {
                     <div className="space-y-2">
                       <Label
                         htmlFor="nombre1"
-                        className="text-sm font-medium text-gray-900 dark:text-white transition-colors duration-300"
+                        className="text-sm font-medium text-foreground transition-colors duration-300"
                       >
                         Nombre
                       </Label>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                         <Input
                           id="nombre"
                           type="text"
                           placeholder="Tu nombre"
                           value={nombre}
                           onChange={(e) => setNombre(e.target.value)}
-                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
+                          className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
                           required
                         />
                       </div>
@@ -560,19 +560,19 @@ export default function Registrar() {
                     <div className="space-y-2">
                       <Label
                         htmlFor="apellido1"
-                        className="text-sm font-medium text-gray-900 dark:text-white transition-colors duration-300"
+                        className="text-sm font-medium text-foreground transition-colors duration-300"
                       >
                         Apellido
                       </Label>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                         <Input
                           id="apellidos"
                           type="text"
                           placeholder="Tu apellido"
                           value={apellido}
                           onChange={(e) => setApellido(e.target.value)}
-                          className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200"
+                          className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
                           required
                         />
                       </div>
@@ -581,17 +581,17 @@ export default function Registrar() {
                     <div className="space-y-2">
                       <Label
                         htmlFor="nacionalidad"
-                        className="text-sm font-medium text-gray-900 dark:text-white transition-colors duration-300"
+                        className="text-sm font-medium text-foreground transition-colors duration-300"
                       >
                         Nacionalidad
                       </Label>
                       <div className="relative">
-  <Flag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
+  <Flag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
   <select
     id="nacionalidad"
     value={nacionalidad}
     onChange={(e) => setNacionalidad(e.target.value)}
-    className="pl-10 h-11 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 transition-all duration-200 w-full rounded-md"
+    className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200 w-full rounded-md"
     required
   >
     <option value="">Selecciona tu nacionalidad</option>
@@ -637,7 +637,7 @@ export default function Registrar() {
 
                     <Button
                       type="submit"
-                      className="w-full h-11 bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
+                      className="w-full h-11 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
                       disabled={isLoading}
                     >
                       {isLoading ? (
@@ -663,7 +663,7 @@ export default function Registrar() {
 
           {/* Footer */}
           <motion.div
-            className="text-center mt-8 text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300"
+            className="text-center mt-8 text-xs text-muted-foreground transition-colors duration-300"
             variants={fadeInUp}
             initial="initial"
             animate="animate"
@@ -671,11 +671,11 @@ export default function Registrar() {
           >
             <p>Al registrarte, aceptas nuestros</p>
             <div className="space-x-4 mt-1">
-              <button className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-blue-400 rounded">
+              <button className="hover:text-primary transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded">
                 Términos de Servicio
               </button>
               <span>•</span>
-              <button className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-blue-400 rounded">
+              <button className="hover:text-primary transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded">
                 Política de Privacidad
               </button>
             </div>

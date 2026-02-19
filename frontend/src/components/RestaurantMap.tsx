@@ -237,6 +237,38 @@ export default function RestaurantMap({ onlyNit, initialCenter }: RestaurantMapP
               <Popup>Tu ubicación (GPS)</Popup>
             </CircleMarker>
           )}
+<<<<<<< HEAD
+=======
+          {displayedRestaurantes.map((r) => (
+            <Marker key={r.nit} position={[r.lat, r.lng]}>
+              <Popup>
+                <div className="min-w-[180px]">
+                  <p className="font-bold text-foreground">
+                    {r.nombre_restaurante}
+                  </p>
+                  {userCoords && locationStatus === "granted" && (
+                    <p className="text-muted-foreground text-sm mt-1">
+                      {formatDistance(
+                        haversineDistanceMeters(
+                          userCoords.lat,
+                          userCoords.lng,
+                          r.lat,
+                          r.lng,
+                        ),
+                      )}
+                    </p>
+                  )}
+                  <Link
+                    to={`/Restaurant?nit=${r.nit}`}
+                    className="mt-2 inline-block w-full rounded-md bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                  >
+                    Ver disponibilidad
+                  </Link>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+>>>>>>> fbbdf198dcd0107e5505d0c3945ec1b05d6b8a52
         </MapContainer>
         <div className="absolute bottom-6 right-4 z-[1000]">
           <button

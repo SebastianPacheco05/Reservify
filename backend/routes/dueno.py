@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from config import get_db
-from funciones.auth.dependencies import verificar_token
-from funciones.cruds import dueno, list as dueno_queries
+from functions.auth.dependencies import verificar_token
+from functions.cruds import dueno, list as dueno_queries
 from models import DuenoBase, DuenoUpdate, DuenoDelete, ListarDuenos
 
 router = APIRouter(

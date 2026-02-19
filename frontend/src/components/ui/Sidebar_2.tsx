@@ -2,13 +2,12 @@
 
 import { useState } from "react";
 import {
-  BarChart3,
   Calendar,
   Grid3X3,
   Home,
   LogOut,
+  Mail,
   Menu,
-  Receipt,
   Settings,
   X,
 } from "lucide-react";
@@ -34,15 +33,11 @@ const navGroups = [
     ],
   },
   {
-    title: "Sala",
-    items: [
-      { id: "flow", label: "Flujo diario", icon: BarChart3 },
-      { id: "bills", label: "Cuentas", icon: Receipt },
-    ],
-  },
-  {
     title: "Administración",
-    items: [{ id: "settings", label: "Configuración", icon: Settings }],
+    items: [
+      { id: "correos", label: "Correos", icon: Mail },
+      { id: "settings", label: "Configuración", icon: Settings },
+    ],
   },
 ];
 

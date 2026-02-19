@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from config import get_db
-from funciones.auth.dependencies import verificar_token
-from funciones.cruds import usuario as usuario_crud, list as list_queries
+from functions.auth.dependencies import verificar_token
+from functions.cruds import usuario as usuario_crud, list as list_queries
 from models import ClienteUpdate, ClienteDelete, ListarClientes
 
 router = APIRouter(
@@ -10,6 +10,39 @@ router = APIRouter(
     tags=["Cliente"],
     dependencies=[Depends(verificar_token)]
 )
+
+
+@router.get("/mi-perfil")
+async def mi_perfil(
+    usuario_actual: dict = Depends(verificar_token),
+    db: Session = Depends(get_db),
+):
+    """Perfil completo del usuario autenticado (nombre, apellido, email, etc.)."""
+    id_credencial = usuario_actual.get("id")
+    if not id_credencial:
+        raise HTTPException(status_code=401, detail="Token inválido")
+    perfil = list_queries.obtener_usuario_por_id_credencial(db, id_credencial)
+    if not perfil:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return {"respuesta": perfil}
+
+
+@router.get("/mis-reservas")
+async def mis_reservas(
+    usuario_actual: dict = Depends(verificar_token),
+    db: Session = Depends(get_db),
+):
+    """Reservas del usuario autenticado (cliente)."""
+    id_credencial = usuario_actual.get("id")
+    if not id_credencial:
+        raise HTTPException(status_code=401, detail="Token inválido")
+    perfil = list_queries.obtener_usuario_por_id_credencial(db, id_credencial)
+    if not perfil:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    documento = perfil["documento"]
+    reservas = list_queries.obtener_reservas_por_documento(db, int(documento))
+    return {"reservas": reservas}
+
 
 @router.get("/listar_cliente")
 async def listar_cliente(

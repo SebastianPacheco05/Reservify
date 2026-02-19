@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from config import get_db
-from funciones.reservar.enc_fac_reserva import registrar_factura_y_reserva
+from functions.reservar.enc_fac_reserva import registrar_factura_y_reserva
 from models import FacturaReservaSchema
-from funciones.auth.dependencies import verificar_token
+from functions.auth.dependencies import verificar_token
 
 router = APIRouter(prefix="/facturas", tags=["Facturas y Reservas"], dependencies=[Depends(verificar_token)])
 

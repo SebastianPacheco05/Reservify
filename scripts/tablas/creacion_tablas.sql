@@ -6,6 +6,8 @@
 
 -- Primero se eliminan todas las tablas existentes en orden inverso a su creación
 -- para evitar problemas de dependencias
+DROP TABLE IF EXISTS "SMTP_config";
+DROP TABLE IF EXISTS "IMAP_config";
 DROP TABLE IF EXISTS "Reserva";
 DROP TABLE IF EXISTS "Encabezado_Factura";
 DROP TABLE IF EXISTS "Comentarios";
@@ -141,9 +143,9 @@ CREATE TABLE "Mesas" (
 CREATE TABLE "Encabezado_Factura" (
     id_encab_fact SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     nit DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
-    nombre_restaurante VARCHAR(50) NOT NULL,  -- Nombre del restaurante
-    direccion VARCHAR(50) NOT NULL,  -- Dirección del restaurante
-    ciudad VARCHAR(20) NOT NULL,  -- Ciudad
+    nombre_restaurante VARCHAR(255) NOT NULL,  -- Nombre del restaurante
+    direccion VARCHAR(255) NOT NULL,  -- Dirección del restaurante (ej. Nominatim)
+    ciudad VARCHAR(255) NOT NULL,  -- Ciudad
     fecha DATE NOT NULL CHECK (fecha = CURRENT_DATE),  -- Fecha de la factura
     documento DECIMAL(10, 0) NOT NULL,  -- Referencia al cliente
     forma_pago VARCHAR(50) NOT NULL CHECK (forma_pago IN ('Efectivo', 'Tarjeta', 'Transferencia', 'Otro', 'Pendiente')),  -- Forma de pago con validación
@@ -165,11 +167,16 @@ CREATE TABLE "Reserva" (
     num_comensales INT NOT NULL DEFAULT 1,  -- numero de personas
     horario TIME NOT NULL,  -- Horario de la reserva
     fecha DATE NOT NULL CHECK (fecha >= CURRENT_DATE),  -- Fecha de la reserva
+    motivo_cancelacion VARCHAR(250),  -- Motivo indicado al cancelar (máx 250 caracteres); se envía al cliente por correo
+    ajuste TEXT,  -- Observaciones o ajuste solicitado por el cliente en la reserva
     UNIQUE (id_mesa, fecha, horario),  -- Restricción de unicidad para evitar reservas duplicadas
     FOREIGN KEY (id_mesa) REFERENCES "Mesas" (id_mesa) ON DELETE CASCADE,
     FOREIGN KEY (documento) REFERENCES "Usuario" (documento) ON DELETE CASCADE,
     FOREIGN KEY (id_encab_fact) REFERENCES "Encabezado_Factura" (id_encab_fact) ON DELETE CASCADE
 );
+
+COMMENT ON COLUMN "Reserva".motivo_cancelacion IS 'Motivo indicado al cancelar (máx 250 caracteres); se envía al cliente por correo';
+COMMENT ON COLUMN "Reserva".ajuste IS 'Observaciones o ajuste solicitado por el cliente en la reserva';
 
 CREATE TABLE "Calculos_mensuales" (
     id_calculo SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
@@ -211,6 +218,85 @@ CREATE TABLE "jwt_tokens" (
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX idx_jwt_tokens_refresh_token ON "jwt_tokens" (refresh_token);
+
+-- Tabla SMTP_config: Configuración por usuario para envío de correos (cada usuario su correo/contraseña)
+CREATE TABLE "SMTP_config" (
+    id SERIAL PRIMARY KEY NOT NULL,
+    id_credencial INT NOT NULL REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE,
+    host VARCHAR(255) NOT NULL,
+    port INT NOT NULL CHECK (port > 0 AND port <= 65535),
+    usuario VARCHAR(255) NOT NULL,
+    password_encrypted VARCHAR(512),
+    from_email VARCHAR(255) NOT NULL,
+    consentimiento_archivo BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE (id_credencial)
+);
+COMMENT ON TABLE "SMTP_config" IS 'Configuración SMTP por usuario; cada dueño/admin/empleado tiene su propio correo y contraseña';
+
+-- Tabla IMAP_config: Configuración por usuario para lectura de correos (cada usuario su correo/contraseña)
+CREATE TABLE "IMAP_config" (
+    id SERIAL PRIMARY KEY NOT NULL,
+    id_credencial INT NOT NULL REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE,
+    host VARCHAR(255) NOT NULL,
+    port INT NOT NULL CHECK (port > 0 AND port <= 65535),
+    usuario VARCHAR(255) NOT NULL,
+    password_encrypted VARCHAR(512),
+    consentimiento_archivo BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE (id_credencial)
+);
+COMMENT ON TABLE "IMAP_config" IS 'Configuración IMAP por usuario; cada dueño/admin/empleado tiene su propio correo y contraseña';
+
+-- Tabla Mails: correos archivados desde IMAP (id_credencial = usuario al que le llega el correo)
+CREATE TABLE "Mails" (
+    id SERIAL PRIMARY KEY NOT NULL,
+    id_credencial INT NOT NULL REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE,
+    imap_uid INT NOT NULL,
+    from_email VARCHAR(512) NOT NULL,
+    to_email VARCHAR(512),
+    subject VARCHAR(1024) NOT NULL,
+    snippet VARCHAR(1024),
+    body_text TEXT,
+    body_html TEXT,
+    date_received TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+CREATE UNIQUE INDEX idx_mails_credencial_uid ON "Mails" (id_credencial, imap_uid);
+CREATE INDEX idx_mails_id_credencial_date ON "Mails" (id_credencial, date_received DESC);
+CREATE INDEX idx_mails_date_received ON "Mails" (date_received DESC);
+CREATE INDEX idx_mails_created_at ON "Mails" (created_at DESC);
+COMMENT ON TABLE "Mails" IS 'Correos electrónicos archivados desde la bandeja IMAP configurada';
+
+-- Función y trigger: actualizar updated_at en SMTP_config
+CREATE OR REPLACE FUNCTION actualizar_updated_at_smtp()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_smtp_updated_at
+    BEFORE UPDATE ON "SMTP_config"
+    FOR EACH ROW
+    EXECUTE FUNCTION actualizar_updated_at_smtp();
+
+-- Función y trigger: actualizar updated_at en IMAP_config
+CREATE OR REPLACE FUNCTION actualizar_updated_at_imap()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_imap_updated_at
+    BEFORE UPDATE ON "IMAP_config"
+    FOR EACH ROW
+    EXECUTE FUNCTION actualizar_updated_at_imap();
 
 -- Función y trigger: Validar que los administradores siempre tengan un restaurante asignado (nit NOT NULL)
 CREATE OR REPLACE FUNCTION validar_admin_tiene_restaurante()

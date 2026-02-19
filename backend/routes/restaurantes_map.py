@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from config import get_db
-from funciones.cruds import list as restaurante_queries
+from functions.cruds import list as restaurante_queries
 
 router = APIRouter(tags=["Restaurantes (mapa)"])
 

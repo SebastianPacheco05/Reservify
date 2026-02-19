@@ -12,8 +12,8 @@ export function Analytics({ data = [] }: AnalyticsProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Análisis</h1>
-        <p className="text-gray-600 dark:text-gray-400">Flujo de personas y métricas mensuales</p>
+        <h1 className="text-3xl font-bold text-foreground">Análisis</h1>
+        <p className="text-muted-foreground">Flujo de personas y métricas mensuales</p>
       </div>
 
       {/* Gráfico de barras simple */}
@@ -29,9 +29,9 @@ export function Analytics({ data = [] }: AnalyticsProps) {
               monthlyFlow.map((item) => (
                 <div key={item.month} className="flex items-center gap-4">
                   <div className="w-12 text-sm font-medium">{item.month}</div>
-                  <div className="flex-1 bg-gray-200 rounded-full h-6 relative">
+                  <div className="flex-1 bg-muted rounded-full h-6 relative">
                     <div
-                      className="bg-blue-500 h-6 rounded-full flex items-center justify-end pr-2"
+                      className="bg-primary h-6 rounded-full flex items-center justify-end pr-2"
                       style={{ width: `${maxVisitors ? (item.visitors / maxVisitors) * 100 : 0}%` }}
                     >
                       <span className="text-white text-xs font-medium">{item.visitors}</span>
@@ -54,7 +54,7 @@ export function Analytics({ data = [] }: AnalyticsProps) {
             <div className="text-3xl font-bold text-foreground">
               {monthlyFlow.reduce((acc, curr) => acc + curr.visitors, 0).toLocaleString()}
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Últimos 6 meses</p>
+            <p className="text-sm text-muted-foreground">Últimos 6 meses</p>
           </CardContent>
         </Card>
 
@@ -64,7 +64,7 @@ export function Analytics({ data = [] }: AnalyticsProps) {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{monthlyFlow.reduce((acc, curr) => acc + curr.reservations, 0)}</div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Últimos 6 meses</p>
+            <p className="text-sm text-muted-foreground">Últimos 6 meses</p>
           </CardContent>
         </Card>
 
@@ -76,7 +76,7 @@ export function Analytics({ data = [] }: AnalyticsProps) {
             <div className="text-3xl font-bold text-foreground">
               ${monthlyFlow.reduce((acc, curr) => acc + curr.revenue, 0).toLocaleString()}
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Últimos 6 meses</p>
+            <p className="text-sm text-muted-foreground">Últimos 6 meses</p>
           </CardContent>
         </Card>
       </div>

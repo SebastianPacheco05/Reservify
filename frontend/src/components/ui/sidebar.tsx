@@ -7,9 +7,11 @@ import {
   FileText,
   Home,
   LogOut,
+  Mail,
   Menu,
   MenuIcon as Restaurant,
   Settings,
+  UserCheck,
   Users,
   X,
 } from "lucide-react";
@@ -17,12 +19,16 @@ import { Button } from "./button";
 import { cn } from "@/lib/utils";
 import { logout } from "@/services/authService";
 
+export type SidebarUserRole = "dueño" | "administrador";
+
 interface SidebarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  /** Rol del usuario actual: dueño ve todo (restaurantes, empleados, etc.); administrador solo su contexto. */
+  userRole?: SidebarUserRole;
 }
 
-const navGroups = [
+const navGroupsDueño = [
   {
     title: "Principal",
     items: [
@@ -39,14 +45,47 @@ const navGroups = [
   {
     title: "Finanzas",
     items: [
-      { id: "analytics", label: "Análisis", icon: BarChart3 },
       { id: "invoices", label: "Facturas", icon: FileText },
+      { id: "flow", label: "Flujo diario", icon: BarChart3 },
+    ],
+  },
+  {
+    title: "Administración",
+    items: [
+      { id: "empleados", label: "Empleados", icon: UserCheck },
+      { id: "customers", label: "Clientes", icon: Users },
+      { id: "correos", label: "Correos", icon: Mail },
+      { id: "settings", label: "Configuración", icon: Settings },
+    ],
+  },
+];
+
+const navGroupsAdministrador = [
+  {
+    title: "Principal",
+    items: [
+      { id: "overview", label: "Resumen", icon: Home },
+    ],
+  },
+  {
+    title: "Operaciones",
+    items: [
+      { id: "restaurants", label: "Mi Restaurante", icon: Restaurant },
+      { id: "reservations", label: "Reservas", icon: Calendar },
+    ],
+  },
+  {
+    title: "Finanzas",
+    items: [
+      { id: "invoices", label: "Facturas", icon: FileText },
+      { id: "flow", label: "Flujo diario", icon: BarChart3 },
     ],
   },
   {
     title: "Administración",
     items: [
       { id: "customers", label: "Clientes", icon: Users },
+      { id: "correos", label: "Correos", icon: Mail },
       { id: "settings", label: "Configuración", icon: Settings },
     ],
   },
@@ -65,9 +104,11 @@ function getUserDisplay() {
   }
 }
 
-export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
+export function Sidebar({ activeTab, onTabChange, userRole = "dueño" }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const user = getUserDisplay();
+  const navGroups = userRole === "administrador" ? navGroupsAdministrador : navGroupsDueño;
+  const subtitle = userRole === "administrador" ? "Panel del administrador" : "Panel de administración";
 
   return (
     <>
@@ -105,7 +146,7 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             </div>
             <div>
               <h2 className="text-lg font-semibold tracking-tight text-foreground">Reservify</h2>
-              <p className="text-xs text-muted-foreground">Panel de administración</p>
+              <p className="text-xs text-muted-foreground">{subtitle}</p>
             </div>
           </div>
         </div>

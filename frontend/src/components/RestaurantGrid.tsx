@@ -74,7 +74,7 @@ export default function RestaurantGrid() {
   return (
     <section
       id="restaurantes"
-      className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm py-16 sm:py-20 md:py-24 px-4 sm:px-6 transition-colors duration-300"
+      className="bg-background/80 backdrop-blur-sm py-16 sm:py-20 md:py-24 px-4 sm:px-6 transition-colors duration-300"
     >
       <div className="max-w-7xl mx-auto">
         <motion.div
@@ -84,18 +84,18 @@ export default function RestaurantGrid() {
           viewport={{ once: true }}
           transition={transitionNormal}
         >
-          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black dark:text-white mb-4">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4">
             Restaurantes Destacados
           </h3>
-          <p className="text-slate-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Los favoritos de nuestra comunidad
           </p>
         </motion.div>
 
         {loading && (
           <div className="flex flex-col items-center justify-center py-16">
-            <Loader2 className="h-12 w-12 animate-spin text-blue-600 dark:text-blue-400 mb-4" />
-            <p className="text-gray-600 dark:text-gray-400">
+            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+            <p className="text-muted-foreground">
               Cargando restaurantes destacados...
             </p>
           </div>
@@ -103,11 +103,11 @@ export default function RestaurantGrid() {
 
         {error && (
           <div className="flex flex-col items-center justify-center py-16">
-            <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
-            <p className="text-red-600 dark:text-red-400 font-medium mb-2">
+            <AlertCircle className="h-12 w-12 text-destructive mb-4" />
+            <p className="text-destructive font-medium mb-2">
               Error al cargar restaurantes
             </p>
-            <p className="text-gray-600 dark:text-gray-400 text-sm text-center max-w-md">
+            <p className="text-muted-foreground text-sm text-center max-w-md">
               {error}
             </p>
             <Button
@@ -122,7 +122,7 @@ export default function RestaurantGrid() {
 
         {!loading && !error && restaurantes.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16">
-            <p className="text-gray-600 dark:text-gray-400 text-lg">
+            <p className="text-muted-foreground text-lg">
               No hay restaurantes destacados disponibles en este momento.
             </p>
           </div>
@@ -144,7 +144,7 @@ export default function RestaurantGrid() {
                 whileHover={{ y: -6 }}
                 className="h-full"
               >
-                <Card className="overflow-hidden hover:shadow-2xl transition-all duration-500 group cursor-pointer border-2 border-slate-200 hover:border-blue-300 dark:bg-gray-800 dark:border-gray-700 dark:hover:border-blue-600 rounded-2xl h-full">
+                <Card className="overflow-hidden hover:shadow-2xl transition-all duration-500 group cursor-pointer border-2 border-border hover:border-primary rounded-2xl h-full">
                   <div className="relative">
                     <img
                       src={restaurant.url_image}
@@ -158,8 +158,8 @@ export default function RestaurantGrid() {
                         }
                         className={`${
                           restaurant.availabletoday
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground"
                         } transition-all duration-300 group-hover:scale-105`}
                       >
                         {restaurant.availabletoday
@@ -171,37 +171,37 @@ export default function RestaurantGrid() {
 
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-2">
-                      <h4 className="text-xl font-bold text-black dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                      <h4 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
                         {restaurant.nombre_restaurante}
                       </h4>
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-300">
+                      <span className="text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300">
                         {restaurant.priceRange ?? "$$"}
                       </span>
                     </div>
 
-                    <p className="text-gray-600 dark:text-gray-300 mb-3 group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors duration-300 line-clamp-2 sm:line-clamp-3">
+                    <p className="text-muted-foreground mb-3 group-hover:text-foreground transition-colors duration-300 line-clamp-2 sm:line-clamp-3">
                       {restaurant.descripcion_restaurante ?? "Sin descripción"}
                     </p>
 
                     <div className="flex items-center mb-3">
-                      <Star className="w-4 h-4 text-blue-500 fill-current group-hover:scale-110 transition-transform duration-300" />
-                      <span className="ml-1 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                      <Star className="w-4 h-4 text-primary fill-current group-hover:scale-110 transition-transform duration-300" />
+                      <span className="ml-1 font-medium group-hover:text-primary transition-colors duration-300">
                         {restaurant.rating}
                       </span>
-                      <span className="ml-1 text-gray-500 dark:text-gray-400">
+                      <span className="ml-1 text-muted-foreground">
                         ({restaurant.reviews} reseñas)
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                      <span className="text-sm text-muted-foreground">
                         {restaurant.horario_apertura} -{" "}
                         {restaurant.horario_cierre}
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-300">
+                      <div className="flex items-center text-muted-foreground group-hover:text-foreground transition-colors duration-300">
                         <MapPin className="w-4 h-4 mr-1" />
                         <span
                           className="text-sm truncate max-w-[180px] sm:max-w-none"
@@ -212,14 +212,14 @@ export default function RestaurantGrid() {
                       </div>
                       <Badge
                         variant="outline"
-                        className="border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-400 group-hover:border-blue-500 dark:group-hover:border-blue-400 group-hover:text-blue-800 dark:group-hover:text-blue-300 transition-all duration-300"
+                        className="border-primary/50 text-primary group-hover:border-primary group-hover:text-primary transition-all duration-300"
                       >
                         {restaurant.nombre_categoria}
                       </Badge>
                     </div>
 
                     <Link to={`/Restaurant?nit=${restaurant.nit}`}>
-                      <Button className="w-full mt-4 text-white bg-blue-600 hover:bg-emerald-600 transition-all duration-300 rounded-xl">
+                      <Button className="w-full mt-4 text-primary-foreground bg-primary hover:bg-accent hover:text-accent-foreground transition-all duration-300 rounded-xl">
                         Ver disponibilidad
                       </Button>
                     </Link>
