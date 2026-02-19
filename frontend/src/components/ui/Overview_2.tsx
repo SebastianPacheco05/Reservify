@@ -74,7 +74,7 @@ export function Overview({
         <Card className="border-border/80 bg-card shadow-sm transition-shadow hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Mesas disponibles</CardTitle>
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <Grid3X3 className="h-4 w-4" />
             </div>
           </CardHeader>
@@ -87,7 +87,7 @@ export function Overview({
         <Card className="border-border/80 bg-card shadow-sm transition-shadow hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Mesas ocupadas</CardTitle>
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-500/10 text-red-600 dark:text-red-400">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
               <Users className="h-4 w-4" />
             </div>
           </CardHeader>
@@ -126,7 +126,7 @@ export function Overview({
         <Card className="border-border/80 bg-card shadow-sm transition-shadow hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Mi balance</CardTitle>
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
               <Wallet className="h-4 w-4" />
             </div>
           </CardHeader>

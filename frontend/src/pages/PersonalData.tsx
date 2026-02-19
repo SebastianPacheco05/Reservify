@@ -45,7 +45,7 @@ export default function PersonalData() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-2 sm:p-4">
+    <div className="min-h-screen bg-gradient-to-br from-muted/50 via-background to-accent/20 flex items-center justify-center p-2 sm:p-4">
       <div className="w-full max-w-md sm:max-w-2xl md:max-w-3xl"></div>
     </div>
   );

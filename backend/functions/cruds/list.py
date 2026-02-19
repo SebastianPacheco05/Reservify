@@ -47,6 +47,66 @@ def obtener_usuario(db: Session, documento: str):
     return None
 
 
+def obtener_usuario_por_id_credencial(db: Session, id_credencial: int):
+    """Obtiene usuario + email por id_credencial (para mi-perfil)."""
+    result = db.execute(
+        text("""
+            SELECT u.id_credencial, u.nombre, u.apellido, u.tipo_documento, u.documento,
+                   u.nacionalidad, u.telefono, u.id_rol, u.nit, c.email
+            FROM "Usuario" u
+            JOIN "Credenciales" c ON u.id_credencial = c.id_credencial
+            WHERE u.id_credencial = :id_credencial
+        """),
+        {"id_credencial": id_credencial},
+    )
+    row = result.fetchone()
+    if row:
+        return {
+            "id_credencial": row[0],
+            "nombre": row[1],
+            "apellido": row[2],
+            "tipo_documento": row[3],
+            "documento": row[4],
+            "nacionalidad": row[5] or "",
+            "telefono": row[6] or "",
+            "id_rol": row[7],
+            "nit": row[8],
+            "email": row[9],
+        }
+    return None
+
+
+def obtener_reservas_por_documento(db: Session, documento: int, limit: int = 100):
+    """Reservas del cliente por documento. Incluye nombre restaurante y motivo_cancelacion."""
+    result = db.execute(
+        text("""
+            SELECT r.id_reserva, r.horario::text, r.fecha::text, r.estado_reserva,
+                   r.num_comensales, r.motivo_cancelacion, rest.nombre_restaurante, rest.nit
+            FROM "Reserva" r
+            JOIN "Mesas" m ON r.id_mesa = m.id_mesa
+            JOIN "Restaurante" rest ON m.nit = rest.nit
+            WHERE r.documento = :documento
+            ORDER BY r.fecha DESC, r.horario DESC
+            LIMIT :limit_val
+        """),
+        {"documento": documento, "limit_val": limit},
+    )
+    rows = result.fetchall()
+    return [
+        {
+            "id_reserva": row[0],
+            "horario": row[1],
+            "fecha": row[2],
+            "estado_reserva": row[3],
+            "num_comensales": row[4],
+            "motivo_cancelacion": row[5],
+            "nombre_restaurante": row[6],
+            "nit": row[7],
+        }
+        for row in rows
+    ]
+
+
 def obtener_usuarios(db: Session):
     """Lista todos los usuarios (tabla Usuario)."""
     result = db.execute(

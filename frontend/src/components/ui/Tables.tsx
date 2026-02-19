@@ -16,17 +16,17 @@ export function Tables({ tables = [], isLoading = false, readOnly = false }: Tab
   const getStatusColor = (status: string) => {
     switch (status) {
       case "available":
-        return "bg-green-100 border-green-300 text-green-800"
+        return "bg-primary/10 border-primary/30 text-primary"
       case "occupied":
-        return "bg-red-100 border-red-300 text-red-800"
+        return "bg-destructive/10 border-destructive/30 text-destructive"
       case "reserved":
-        return "bg-blue-100 border-blue-300 text-blue-800"
+        return "bg-secondary/10 border-secondary/30 text-secondary"
       case "cleaning":
-        return "bg-yellow-100 border-yellow-300 text-yellow-800"
+        return "bg-accent/20 border-accent/30 text-accent-foreground"
       case "out_of_service":
-        return "bg-gray-100 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200"
+        return "bg-muted border-border text-muted-foreground"
       default:
-        return "bg-gray-100 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200"
+        return "bg-muted border-border text-muted-foreground"
     }
   }
 
@@ -98,9 +98,9 @@ export function Tables({ tables = [], isLoading = false, readOnly = false }: Tab
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-0">Disponible</Badge>
-          <Badge variant="secondary" className="bg-red-500/10 text-red-700 dark:text-red-400 border-0">Ocupada</Badge>
-          <Badge variant="secondary" className="bg-blue-500/10 text-blue-700 dark:text-blue-400 border-0">Reservada</Badge>
+          <Badge variant="secondary" className="bg-primary/10 text-primary border-0">Disponible</Badge>
+          <Badge variant="secondary" className="bg-destructive/10 text-destructive border-0">Ocupada</Badge>
+          <Badge variant="secondary" className="bg-secondary/10 text-secondary border-0">Reservada</Badge>
           <Badge variant="secondary" className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-0">Limpieza</Badge>
         </div>
       </div>

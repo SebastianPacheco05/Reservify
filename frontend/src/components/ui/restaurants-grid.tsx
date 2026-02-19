@@ -33,7 +33,7 @@ export function RestaurantsGrid({ restaurants, onVerReservas, onConfigRestaurant
             <Badge
               className={`absolute top-3 right-3 ${
                 restaurant.status === "active"
-                  ? "bg-emerald-500/90 text-white border-0 hover:bg-emerald-600"
+                  ? "bg-primary text-primary-foreground border-0 hover:bg-primary/90"
                   : "bg-muted-foreground/80 text-white border-0"
               }`}
             >

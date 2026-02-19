@@ -273,7 +273,7 @@ export default function RestaurantMap({ onlyNit, initialCenter }: RestaurantMapP
                   )}
                   <Link
                     to={`/Restaurant?nit=${r.nit}`}
-                    className="mt-2 inline-block w-full rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-blue-700"
+                    className="mt-2 inline-block w-full rounded-md bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground hover:bg-primary/90"
                   >
                     Ver disponibilidad
                   </Link>

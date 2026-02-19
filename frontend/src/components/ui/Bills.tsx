@@ -94,7 +94,7 @@ export function Bills() {
         <Card className="border-border/80 bg-card shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Pendientes de pago</CardTitle>
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <AlertCircle className="h-4 w-4" />
             </div>
           </CardHeader>
@@ -109,7 +109,7 @@ export function Bills() {
         <Card className="border-border/80 bg-card shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Pagadas hoy</CardTitle>
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
               <CheckCircle className="h-4 w-4" />
             </div>
           </CardHeader>

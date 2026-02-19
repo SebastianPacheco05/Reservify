@@ -204,7 +204,7 @@ export default function RestaurantPage() {
       <Star
         key={i}
         className={`h-4 w-4 ${
-          i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300 dark:text-gray-500"
+          i < rating ? "fill-primary text-primary" : "text-muted-foreground/50"
         }`}
       />
     ));
@@ -308,7 +308,7 @@ export default function RestaurantPage() {
                 }}
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
+              <div className="w-full h-full bg-gradient-to-br from-muted to-muted/80 flex items-center justify-center">
                 <div className="text-center text-muted-foreground">
                   <MapPin className="h-16 w-16 mx-auto mb-4 opacity-50" />
                   <p className="text-lg font-medium">Sin imagen principal</p>
@@ -330,7 +330,7 @@ export default function RestaurantPage() {
                 </Badge>
                 <Badge
                   variant={restaurantInfo.availabletoday ? "default" : "secondary"}
-                  className={restaurantInfo.availabletoday ? "bg-emerald-500/90 text-white border-0" : "bg-white/20 text-white border-0"}
+                  className={restaurantInfo.availabletoday ? "bg-primary text-primary-foreground border-0" : "bg-white/20 text-white border-0"}
                 >
                   {restaurantInfo.availabletoday ? "Disponible hoy" : "No disponible"}
                 </Badge>
@@ -409,7 +409,7 @@ export default function RestaurantPage() {
               <CardContent className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                    <MapPin className="h-5 w-5 text-red-500 dark:text-red-400 shrink-0 mt-0.5" />
+                    <MapPin className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
                     <div>
                       <p className="font-medium text-foreground">Dirección</p>
                       <p className="text-muted-foreground text-sm mt-0.5">
@@ -418,7 +418,7 @@ export default function RestaurantPage() {
                     </div>
                   </div>
                   <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                    <Clock className="h-5 w-5 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
+                    <Clock className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                     <div>
                       <p className="font-medium text-foreground">Horarios</p>
                       <p className="text-muted-foreground text-sm mt-0.5">
@@ -488,7 +488,7 @@ export default function RestaurantPage() {
                             {mesa.cant_personas} personas
                           </span>
                         </div>
-                        <p className="font-bold text-lg text-emerald-600 dark:text-emerald-400">
+                        <p className="font-bold text-lg text-primary">
                           ${mesa.precio.toFixed(2)}
                         </p>
                       </div>
@@ -510,11 +510,11 @@ export default function RestaurantPage() {
           {/* Reseñas */}
           {!loading.comentarios && comentarios.length > 0 && (
             <Card className="overflow-hidden border-border bg-card shadow-sm">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-muted/80 dark:to-muted/50 border-b border-border">
+              <CardHeader className="bg-gradient-to-r from-primary/10 to-accent/10 border-b border-border">
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
-                      <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
+                      <Star className="h-6 w-6 text-primary fill-primary" />
                       <span>Reseñas de Clientes</span>
                     </CardTitle>
                     <CardDescription className="mt-2 text-base text-muted-foreground">
@@ -524,7 +524,7 @@ export default function RestaurantPage() {
                     </CardDescription>
                   </div>
                   <div className="text-right">
-                    <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                    <div className="text-3xl font-bold text-primary">
                       {ratingPromedio.toFixed(1)}
                     </div>
                     <div className="flex items-center justify-end mt-1">
@@ -566,7 +566,7 @@ export default function RestaurantPage() {
                         <div className="flex items-start space-x-4">
                           {/* Avatar */}
                           <div className="flex-shrink-0">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-lg shadow-md">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground font-semibold text-lg shadow-md">
                               <UserCircle className="w-10 h-10" />
                             </div>
                           </div>
@@ -581,7 +581,7 @@ export default function RestaurantPage() {
                                   </h4>
                                   <Badge
                                     variant="secondary"
-                                    className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
+                                    className="text-xs bg-primary/10 text-primary"
                                   >
                                     Verificado
                                   </Badge>
@@ -615,10 +615,10 @@ export default function RestaurantPage() {
                                 <div
                                   className={`px-3 py-1 rounded-full text-xs font-medium ${
                                     comentario.calificacion >= 4
-                                      ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                                      ? "bg-primary/10 text-primary"
                                       : comentario.calificacion >= 3
-                                        ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
-                                        : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
+                                        ? "bg-accent/20 text-accent-foreground"
+                                        : "bg-destructive/10 text-destructive"
                                   }`}
                                 >
                                   {comentario.calificacion >= 4
@@ -811,7 +811,7 @@ export default function RestaurantPage() {
                       <div className="pt-3 border-t border-border">
                         <div className="flex justify-between items-center">
                           <span className="font-semibold text-foreground">Total a Pagar:</span>
-                          <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                          <span className="text-2xl font-bold text-primary">
                             $
                             {mesas
                               .find(

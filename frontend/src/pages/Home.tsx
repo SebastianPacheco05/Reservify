@@ -4,6 +4,7 @@ import type React from "react";
 import { useState, useEffect, lazy, Suspense } from "react";
 import Header from "../components/Header";
 import HeroSection from "../components/HeroSection";
+import { ProfileModal } from "../components/ProfileModal";
 
 const CuisineCarousel = lazy(() => import("../components/CuisineCarousel"));
 const RestaurantGrid = lazy(() => import("../components/RestaurantGrid"));
@@ -17,6 +18,7 @@ const Footer = lazy(() => import("../components/Footer"));
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredCuisines, setFilteredCuisines] = useState<string[]>([]);
@@ -114,13 +116,21 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-gradient-to-br from-blue-50 to-green-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+    <main className="min-h-screen overflow-x-hidden bg-gradient-to-br from-muted/80 to-accent/20 dark:from-background dark:to-muted transition-colors duration-300">
       <Header
         isMenuOpen={isMenuOpen}
         setIsMenuOpen={setIsMenuOpen}
         isLoggedIn={isLoggedIn}
         onLogout={handleLogout}
+        onOpenProfile={() => setIsProfileModalOpen(true)}
       />
+
+      {isLoggedIn && (
+        <ProfileModal
+          isOpen={isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+        />
+      )}
 
       <HeroSection
         searchQuery={searchQuery}
@@ -136,10 +146,10 @@ export default function Home() {
       {showMapByLocation && (
         <section id="mapa-ubicacion" className="scroll-mt-20 px-4 sm:px-6 md:px-8 py-12">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-2xl font-bold text-center mb-6 text-slate-800 dark:text-slate-100">
+            <h2 className="text-2xl font-bold text-center mb-6 text-foreground">
               Restaurantes cerca de ti
             </h2>
-            <Suspense fallback={<div className="min-h-[300px] flex items-center justify-center text-slate-500 dark:text-slate-400">Cargando mapa…</div>}>
+            <Suspense fallback={<div className="min-h-[300px] flex items-center justify-center text-muted-foreground">Cargando mapa…</div>}>
               <RestaurantMap />
             </Suspense>
           </div>
@@ -162,7 +172,7 @@ export default function Home() {
         <CTASection />
       </Suspense>
 
-      <Suspense fallback={<footer className="min-h-[200px] bg-slate-100 dark:bg-slate-800" aria-hidden="true" />}>
+      <Suspense fallback={<footer className="min-h-[200px] bg-muted" aria-hidden="true" />}>
         <Footer />
       </Suspense>
     </main>

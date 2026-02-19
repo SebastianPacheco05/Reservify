@@ -167,7 +167,7 @@ CREATE TABLE "Reserva" (
     num_comensales INT NOT NULL DEFAULT 1,  -- numero de personas
     horario TIME NOT NULL,  -- Horario de la reserva
     fecha DATE NOT NULL CHECK (fecha >= CURRENT_DATE),  -- Fecha de la reserva
-    motivo_cancelacion TEXT,  -- Motivo indicado al cancelar; se envía al cliente por correo
+    motivo_cancelacion VARCHAR(250),  -- Motivo indicado al cancelar (máx 250 caracteres); se envía al cliente por correo
     ajuste TEXT,  -- Observaciones o ajuste solicitado por el cliente en la reserva
     UNIQUE (id_mesa, fecha, horario),  -- Restricción de unicidad para evitar reservas duplicadas
     FOREIGN KEY (id_mesa) REFERENCES "Mesas" (id_mesa) ON DELETE CASCADE,
@@ -175,7 +175,7 @@ CREATE TABLE "Reserva" (
     FOREIGN KEY (id_encab_fact) REFERENCES "Encabezado_Factura" (id_encab_fact) ON DELETE CASCADE
 );
 
-COMMENT ON COLUMN "Reserva".motivo_cancelacion IS 'Motivo indicado al cancelar; se envía al cliente por correo';
+COMMENT ON COLUMN "Reserva".motivo_cancelacion IS 'Motivo indicado al cancelar (máx 250 caracteres); se envía al cliente por correo';
 COMMENT ON COLUMN "Reserva".ajuste IS 'Observaciones o ajuste solicitado por el cliente en la reserva';
 
 CREATE TABLE "Calculos_mensuales" (

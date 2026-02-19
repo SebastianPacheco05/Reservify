@@ -20,9 +20,9 @@ interface InvoicesTableProps {
 }
 
 const statusConfig = {
-  paid: { label: "Pagada", className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-0" },
+  paid: { label: "Pagada", className: "bg-primary/10 text-primary border-0" },
   pending: { label: "Pendiente", className: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-0" },
-  overdue: { label: "Vencida", className: "bg-red-500/10 text-red-700 dark:text-red-400 border-0" },
+  overdue: { label: "Vencida", className: "bg-destructive/10 text-destructive border-0" },
 };
 
 export function InvoicesTable({ invoices, onView, onDownload, onSend }: InvoicesTableProps) {

@@ -125,9 +125,15 @@ export function RestaurantReservationsModal({
     setShowCancelDialog(true);
   };
 
+  const MAX_MOTIVO = 250;
+
   const handleCancelarConfirm = async () => {
     if (!selectedReserva || !motivoCancelacion.trim()) {
       alert("Escribe el motivo de la cancelación.");
+      return;
+    }
+    if (motivoCancelacion.length > MAX_MOTIVO) {
+      alert(`El motivo no puede superar los ${MAX_MOTIVO} caracteres.`);
       return;
     }
     setCancelando(true);
@@ -311,7 +317,7 @@ export function RestaurantReservationsModal({
               <DialogHeader>
                 <DialogTitle>Motivo de la cancelación</DialogTitle>
                 <DialogDescription>
-                  Este motivo se guardará y se enviará por correo al cliente. Es obligatorio.
+                  Indica el motivo de la cancelación (obligatorio, máx. 250 caracteres). Se guardará y se enviará por correo al cliente.
                 </DialogDescription>
               </DialogHeader>
               <Textarea
@@ -320,7 +326,11 @@ export function RestaurantReservationsModal({
                 onChange={(e) => setMotivoCancelacion(e.target.value)}
                 rows={4}
                 className="resize-none"
+                maxLength={MAX_MOTIVO}
               />
+              <p className="text-xs text-muted-foreground text-right">
+                {motivoCancelacion.length}/{MAX_MOTIVO}
+              </p>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setShowCancelDialog(false)}>
                   Volver
@@ -328,7 +338,7 @@ export function RestaurantReservationsModal({
                 <Button
                   variant="destructive"
                   onClick={handleCancelarConfirm}
-                  disabled={!motivoCancelacion.trim() || cancelando}
+                  disabled={!motivoCancelacion.trim() || cancelando || motivoCancelacion.length > MAX_MOTIVO}
                 >
                   {cancelando ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirmar cancelación"}
                 </Button>

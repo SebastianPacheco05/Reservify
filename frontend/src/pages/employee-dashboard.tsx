@@ -8,6 +8,16 @@ import { Tables } from "../components/ui/Tables";
 import { Reservations } from "../components/ui/Reservations_2";
 import { EmailConfigSection } from "../components/EmailConfigSection";
 import { EmailsSection } from "../components/EmailsSection";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../components/ui/dialog";
+import { Button } from "../components/ui/button";
+import { Textarea } from "../components/ui/textarea";
+import { Loader2 } from "lucide-react";
 import { authFetch } from "../services/authService";
 import { getApiEndpoint } from "../config/api";
 import { EmployeeRestaurantService } from "../services/EmployeeRestaurantService";
@@ -79,7 +89,11 @@ export default function EmployeeDashboard() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [miBalance, setMiBalance] = useState<MiBalanceResponse>({ total: 0, facturas: [] });
   const [isLoading, setIsLoading] = useState(true);
+  const [cancelReservaId, setCancelReservaId] = useState<string | null>(null);
+  const [motivoCancelacion, setMotivoCancelacion] = useState("");
+  const [cancelando, setCancelando] = useState(false);
 
+  const MAX_MOTIVO = 250;
   const nit = restaurant?.nit;
 
   const loadData = useCallback(async () => {
@@ -129,14 +143,38 @@ export default function EmployeeDashboard() {
     }
   }, [refreshReservations]);
 
-  const handleCancelReservation = useCallback(async (id: string) => {
+  const handleCancelReservationClick = useCallback((id: string) => {
+    setCancelReservaId(id);
+    setMotivoCancelacion("");
+  }, []);
+
+  const handleCancelReservationConfirm = useCallback(async () => {
+    if (!cancelReservaId || !motivoCancelacion.trim()) return;
+    if (motivoCancelacion.length > MAX_MOTIVO) return;
+    setCancelando(true);
     try {
-      await OwnerReservationsService.updateReservationStatus(parseInt(id, 10), "cancelada", "Cancelada por el empleado");
+      await OwnerReservationsService.updateReservationStatus(
+        parseInt(cancelReservaId, 10),
+        "cancelada",
+        motivoCancelacion.trim()
+      );
       await refreshReservations();
+      setCancelReservaId(null);
+      setMotivoCancelacion("");
     } catch (e) {
       console.error("Error al cancelar reserva:", e);
+      alert((e as Error).message || "Error al cancelar la reserva");
+    } finally {
+      setCancelando(false);
     }
-  }, [refreshReservations]);
+  }, [cancelReservaId, motivoCancelacion, refreshReservations]);
+
+  const handleCloseCancelModal = useCallback(() => {
+    if (!cancelando) {
+      setCancelReservaId(null);
+      setMotivoCancelacion("");
+    }
+  }, [cancelando]);
 
   const ventasDia = (miBalance?.facturas ?? [])
     .filter((f) => f.fecha === todayISO())
@@ -176,7 +214,7 @@ export default function EmployeeDashboard() {
             reservations={reservations}
             tables={tables}
             onConfirm={handleConfirmReservation}
-            onCancel={handleCancelReservation}
+            onCancel={handleCancelReservationClick}
             isLoading={isLoading}
           />
         );
@@ -215,6 +253,41 @@ export default function EmployeeDashboard() {
           {renderContent()}
         </motion.div>
       </main>
+
+      {/* Modal motivo cancelación (empleado) */}
+      <Dialog open={!!cancelReservaId} onOpenChange={(open) => !open && handleCloseCancelModal()}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Motivo de la cancelación</DialogTitle>
+            <DialogDescription>
+              Indica el motivo de la cancelación (obligatorio, máx. 250 caracteres). Se guardará en la reserva y se enviará por correo al cliente.
+            </DialogDescription>
+          </DialogHeader>
+          <Textarea
+            placeholder="Ej: Mesa no disponible, cambio de horario..."
+            value={motivoCancelacion}
+            onChange={(e) => setMotivoCancelacion(e.target.value)}
+            rows={4}
+            className="resize-none"
+            maxLength={MAX_MOTIVO}
+          />
+          <p className="text-xs text-muted-foreground text-right">
+            {motivoCancelacion.length}/{MAX_MOTIVO}
+          </p>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={handleCloseCancelModal} disabled={cancelando}>
+              Volver
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleCancelReservationConfirm}
+              disabled={!motivoCancelacion.trim() || cancelando || motivoCancelacion.length > MAX_MOTIVO}
+            >
+              {cancelando ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirmar cancelación"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

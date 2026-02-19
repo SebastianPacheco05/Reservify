@@ -10,6 +10,7 @@ import Restaurant from "../pages/Restaurant";
 import NotFound from "../pages/NotFound";
 import PersonalData from "../pages/PersonalData";
 import PaymentGateway from "../pages/PaymentGateway";
+import PagoExitoso from "../pages/PagoExitoso";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 export const ROUTES = {
@@ -24,6 +25,7 @@ export const ROUTES = {
   RESTAURANT: "/Restaurant",
   PERSONAL_DATA: "/Datos_personales",
   PAYMENT_GATEWAY: "/Pasarela_pagos",
+  PAGO_EXITOSO: "/pago-exitoso",
 } as const;
 
 export const ROLE_REDIRECTS: Record<string, string> = {
@@ -83,5 +85,6 @@ export const getPublicRoutes = (PageWrapper: React.FC<{ children: React.ReactNod
   { path: ROUTES.RESTAURANT, element: <PageWrapper><Restaurant /></PageWrapper> },
   { path: ROUTES.PERSONAL_DATA, element: <PageWrapper><PersonalData /></PageWrapper> },
   { path: ROUTES.PAYMENT_GATEWAY, element: <PageWrapper><PaymentGateway /></PageWrapper> },
+  { path: ROUTES.PAGO_EXITOSO, element: <PageWrapper><PagoExitoso /></PageWrapper> },
   { path: "*", element: <PageWrapper><NotFound /></PageWrapper> },
 ];

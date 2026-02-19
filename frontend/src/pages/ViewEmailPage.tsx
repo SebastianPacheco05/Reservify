@@ -216,7 +216,7 @@ export default function ViewEmailPage() {
               <div
                 className={`rounded-lg border p-3 text-sm ${
                   replyMessage.type === "ok"
-                    ? "border-green-500/50 bg-green-500/10 text-green-700 dark:text-green-300"
+                    ? "border-primary/50 bg-primary/10 text-primary"
                     : "border-destructive/50 bg-destructive/10 text-destructive"
                 }`}
               >

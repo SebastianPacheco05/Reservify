@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import List, Optional
 from datetime import time, date
 
@@ -9,8 +9,10 @@ class CredencialBase(BaseModel):
     password: str
 
 
-class CredencialUpdate(CredencialBase):
+class CredencialUpdate(BaseModel):
     id_credencial: int
+    email: str
+    password: Optional[str] = None  # Si viene vacío, no se actualiza
 
 
 class CredencialDelete(BaseModel):
@@ -221,7 +223,7 @@ class ReservaDelete(BaseModel):
 class ActualizarEstadoReservaSchema(BaseModel):
     """Body para PATCH estado de reserva (dueño/admin/empleado)."""
     nuevo_estado: str  # confirmada | cancelada
-    motivo_cancelacion: str | None = None  # obligatorio si nuevo_estado es cancelada
+    motivo_cancelacion: str | None = Field(None, max_length=250)  # obligatorio si nuevo_estado es cancelada; máx 250 caracteres
 
 
 class SMTPConfigSchema(BaseModel):
@@ -432,6 +434,36 @@ class PagoRequest(BaseModel):
     referencia: str
     correo_cliente: str
     payment_method: PaymentMethod
+
+
+# Modelos para Webhook de Wompi
+class TransactionData(BaseModel):
+    id: str
+    reference: str
+    status: str
+    amount_in_cents: int
+    currency: str
+    customer_email: Optional[str] = None
+    payment_method_type: Optional[str] = None
+    status_message: Optional[str] = None
+    created_at: Optional[str] = None
+
+
+class SignatureData(BaseModel):
+    checksum: str
+    properties: list[str]
+
+
+class WebhookEventData(BaseModel):
+    transaction: TransactionData
+
+
+class WebhookEvent(BaseModel):
+    event: str
+    data: WebhookEventData
+    signature: Optional[SignatureData] = None
+    timestamp: Optional[int] = None
+    environment: Optional[str] = None
 
 # Confirmar Reserva y Crear Detalle de Factura
 class ConfirmarReservaDetalleSchema(BaseModel):

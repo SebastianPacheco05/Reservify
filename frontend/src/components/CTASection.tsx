@@ -6,7 +6,7 @@ import { fadeInUp, transitionNormal } from "../lib/animations";
 export default function CTASection() {
   return (
     <motion.section
-      className="bg-gradient-to-r from-blue-600 via-blue-500 to-emerald-600 text-white py-16 sm:py-20 md:py-24 px-4 sm:px-6 relative overflow-hidden"
+      className="bg-gradient-to-r from-primary via-secondary to-accent text-primary-foreground py-16 sm:py-20 md:py-24 px-4 sm:px-6 relative overflow-hidden"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
@@ -25,7 +25,7 @@ export default function CTASection() {
           ¿Listo para tu próxima experiencia culinaria?
         </motion.h3>
         <motion.p
-          className="text-base sm:text-lg md:text-xl mb-8 sm:mb-10 text-blue-100 px-2"
+          className="text-base sm:text-lg md:text-xl mb-8 sm:mb-10 opacity-90 px-2"
           variants={fadeInUp}
           initial="initial"
           whileInView="animate"
@@ -45,7 +45,7 @@ export default function CTASection() {
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
             <Button
               size="lg"
-              className="border-2 border-white bg-white text-blue-700 hover:bg-blue-50 hover:border-blue-100 font-semibold rounded-xl px-8 py-6 text-lg transition-all duration-300 shadow-xl"
+              className="border-2 border-background bg-background text-foreground hover:bg-muted hover:border-primary font-semibold rounded-xl px-8 py-6 text-lg transition-all duration-300 shadow-xl"
             >
               Descargar app
             </Button>

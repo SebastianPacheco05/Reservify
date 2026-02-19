@@ -601,6 +601,11 @@ def actualizar_estado_reserva_gestor(
                 status_code=400,
                 detail="El motivo de cancelación es obligatorio al cancelar una reserva"
             )
+        if nuevo_estado == "cancelada" and len(motivo) > 250:
+            raise HTTPException(
+                status_code=400,
+                detail="El motivo de cancelación no puede superar los 250 caracteres"
+            )
 
         # Obtener estado actual de la reserva
         from sqlalchemy import text

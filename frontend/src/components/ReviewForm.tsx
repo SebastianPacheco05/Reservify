@@ -136,7 +136,7 @@ export default function ReviewForm({ restaurantNIT, onReviewSubmitted }: ReviewF
     return (
       <Card>
         <CardContent className="py-8 flex items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
         </CardContent>
       </Card>
     );
@@ -147,7 +147,7 @@ export default function ReviewForm({ restaurantNIT, onReviewSubmitted }: ReviewF
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Star className="h-5 w-5 text-yellow-500" />
+            <Star className="h-5 w-5 text-primary" />
             <span>Deja tu Reseña</span>
           </CardTitle>
           <CardDescription>
@@ -168,15 +168,15 @@ export default function ReviewForm({ restaurantNIT, onReviewSubmitted }: ReviewF
 
   if (alreadyReviewed) {
     return (
-      <Card className="border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20">
+      <Card className="border-primary/30 bg-primary/10">
         <CardContent className="py-6">
           <div className="flex items-center space-x-3">
-            <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400 flex-shrink-0" />
+            <CheckCircle2 className="h-6 w-6 text-primary flex-shrink-0" />
             <div>
-              <p className="font-semibold text-green-900 dark:text-green-100">
+              <p className="font-semibold text-foreground">
                 Ya has dejado una reseña
               </p>
-              <p className="text-sm text-green-700 dark:text-green-300">
+              <p className="text-sm text-muted-foreground">
                 Solo puedes dejar una reseña por restaurante. Gracias por tu opinión.
               </p>
             </div>
@@ -188,15 +188,15 @@ export default function ReviewForm({ restaurantNIT, onReviewSubmitted }: ReviewF
 
   if (submitted) {
     return (
-      <Card className="border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20">
+      <Card className="border-primary/30 bg-primary/10">
         <CardContent className="py-6">
           <div className="flex items-center space-x-3">
-            <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400 flex-shrink-0" />
+            <CheckCircle2 className="h-6 w-6 text-primary flex-shrink-0" />
             <div>
-              <p className="font-semibold text-green-900 dark:text-green-100">
+              <p className="font-semibold text-foreground">
                 ¡Reseña enviada exitosamente!
               </p>
-              <p className="text-sm text-green-700 dark:text-green-300">
+              <p className="text-sm text-muted-foreground">
                 Tu reseña será visible en breve.
               </p>
             </div>
@@ -210,7 +210,7 @@ export default function ReviewForm({ restaurantNIT, onReviewSubmitted }: ReviewF
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
-          <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+          <Star className="h-5 w-5 text-primary fill-primary" />
           <span>Deja tu Reseña</span>
         </CardTitle>
         <CardDescription>
@@ -221,7 +221,7 @@ export default function ReviewForm({ restaurantNIT, onReviewSubmitted }: ReviewF
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Selector de Estrellas */}
           <div>
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+            <label className="text-sm font-medium text-foreground mb-2 block">
               Calificación *
             </label>
             <div className="flex items-center space-x-2">
@@ -238,20 +238,20 @@ export default function ReviewForm({ restaurantNIT, onReviewSubmitted }: ReviewF
                   <Star
                     className={`h-8 w-8 transition-colors ${
                       star <= (hoveredRating || rating)
-                        ? "text-yellow-500 fill-yellow-500"
-                        : "text-gray-300 dark:text-gray-600"
+                        ? "text-primary fill-primary"
+                        : "text-muted-foreground/50"
                     }`}
                   />
                 </button>
               ))}
               {rating > 0 && (
-                <span className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <span className="ml-2 text-sm font-medium text-foreground">
                   {rating} {rating === 1 ? "estrella" : "estrellas"}
                 </span>
               )}
             </div>
             {rating === 0 && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Selecciona de 1 a 5 estrellas
               </p>
             )}
@@ -261,7 +261,7 @@ export default function ReviewForm({ restaurantNIT, onReviewSubmitted }: ReviewF
           <div>
             <label
               htmlFor="comment"
-              className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block"
+              className="text-sm font-medium text-foreground mb-2 block"
             >
               Tu Comentario *
             </label>
@@ -275,10 +275,10 @@ export default function ReviewForm({ restaurantNIT, onReviewSubmitted }: ReviewF
               maxLength={500}
             />
             <div className="flex items-center justify-between mt-1">
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-muted-foreground">
                 Mínimo 10 caracteres
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-muted-foreground">
                 {comment.length}/500
               </p>
             </div>
@@ -304,7 +304,7 @@ export default function ReviewForm({ restaurantNIT, onReviewSubmitted }: ReviewF
             )}
           </Button>
 
-          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+          <p className="text-xs text-muted-foreground text-center">
             Al enviar tu reseña, aceptas que solo puedes dejar una reseña por restaurante
           </p>
         </form>
