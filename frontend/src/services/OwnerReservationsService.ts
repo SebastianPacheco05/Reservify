@@ -121,12 +121,13 @@ export class OwnerReservationsService {
   }
 
   /**
-   * Actualiza el estado de una reserva (confirmada o cancelada).
+   * Actualiza el estado de una reserva.
+   * "activa" es alias de "confirmada" (lo normaliza el backend).
    * Si nuevo_estado es "cancelada", motivo_cancelacion es obligatorio.
    */
   public static async updateReservationStatus(
     id_reserva: number,
-    nuevo_estado: "confirmada" | "cancelada",
+    nuevo_estado: "activa" | "confirmada" | "cancelada",
     motivo_cancelacion?: string
   ): Promise<{ ok: boolean; id_reserva: number; nuevo_estado: string }> {
     const token = localStorage.getItem("access_token");

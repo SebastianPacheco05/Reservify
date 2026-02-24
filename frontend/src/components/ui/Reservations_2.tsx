@@ -41,7 +41,7 @@ export function Reservations({
       case "pending":
         return (
           <div className="flex gap-2">
-            <Button size="sm" variant="default" onClick={() => onConfirm?.(reservation.id)}>Confirmar</Button>
+            <Button size="sm" variant="default" onClick={() => onConfirm?.(reservation.id)}>Pasar a activa</Button>
             <Button size="sm" variant="outline" onClick={() => onCancel?.(reservation.id)}>Cancelar</Button>
           </div>
         )

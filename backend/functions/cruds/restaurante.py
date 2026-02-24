@@ -16,6 +16,7 @@ def insertar_restaurante(
     id_categoria: int,
     url_imagen: str = "",
     imagenes_referencia: list = None,
+    min_anticipacion_horas: int = 0,
 ):
     try:
         # Función con 9 parámetros: incluye url_imagen e inserta rating, reviews, availableToday en la tabla

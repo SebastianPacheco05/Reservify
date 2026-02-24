@@ -299,6 +299,18 @@ def put_restaurante_config(
             body.documento,
             body.id_categoria,
         )
+        # Actualizar la antelación mínima directamente (no rompemos la función SQL existente).
+        from sqlalchemy import text as sql_text
+        db.execute(
+            sql_text(
+                'UPDATE "Restaurante" SET min_anticipacion_horas = :min_anticipacion WHERE nit = :nit'
+            ),
+            {
+                "min_anticipacion": max(0, int(getattr(body, "min_anticipacion_horas", 0) or 0)),
+                "nit": body.nit,
+            },
+        )
+        db.commit()
         return {"ok": True}
     except HTTPException:
         raise
@@ -593,7 +605,11 @@ def actualizar_estado_reserva_gestor(
         if not puede_acceder_restaurante(id_credencial, nit, db):
             raise HTTPException(status_code=403, detail="No tiene acceso a esta reserva")
 
+        # Normalizar estado recibido (frontend usa "activa" como alias)
         nuevo_estado = body.nuevo_estado.strip().lower()
+        if nuevo_estado == "activa":
+            # En DB el estado equivalente es "confirmada"
+            nuevo_estado = "confirmada"
         motivo = (body.motivo_cancelacion or "").strip()
 
         if nuevo_estado == "cancelada" and not motivo:

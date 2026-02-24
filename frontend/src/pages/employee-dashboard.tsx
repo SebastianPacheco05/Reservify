@@ -136,7 +136,7 @@ export default function EmployeeDashboard() {
 
   const handleConfirmReservation = useCallback(async (id: string) => {
     try {
-      await OwnerReservationsService.updateReservationStatus(parseInt(id, 10), "confirmada");
+      await OwnerReservationsService.updateReservationStatus(parseInt(id, 10), "activa");
       await refreshReservations();
     } catch (e) {
       console.error("Error al confirmar reserva:", e);

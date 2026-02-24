@@ -1,9 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from config import get_db
 from functions.auth.dependencies import verificar_token
 from functions.cruds import usuario as usuario_crud, list as list_queries
-from models import ClienteUpdate, ClienteDelete, ListarClientes
+from functions.cruds.reservation_status import actualizar_estado_reserva
+from functions.data_owner.data_owner import actualizar_motivo_cancelacion
+from models import ClienteUpdate, ClienteDelete, ListarClientes, CancelarReservaClienteSchema
 
 router = APIRouter(
     prefix="/cliente",
@@ -42,6 +45,69 @@ async def mis_reservas(
     documento = perfil["documento"]
     reservas = list_queries.obtener_reservas_por_documento(db, int(documento))
     return {"reservas": reservas}
+
+
+@router.patch("/mis-reservas/{id_reserva}/cancelar")
+async def cancelar_mi_reserva(
+    id_reserva: int,
+    body: CancelarReservaClienteSchema,
+    usuario_actual: dict = Depends(verificar_token),
+    db: Session = Depends(get_db),
+):
+    """
+    Permite al cliente cancelar UNA de sus propias reservas.
+    Reglas:
+    - Solo si la reserva pertenece al cliente autenticado.
+    - Solo si el estado actual es pendiente, confirmada o en curso.
+    - Requiere motivo_cancelacion (máx. 250 caracteres).
+    """
+    id_credencial = usuario_actual.get("id")
+    if not id_credencial:
+        raise HTTPException(status_code=401, detail="Token inválido")
+
+    # Obtener documento del cliente autenticado
+    perfil = list_queries.obtener_usuario_por_id_credencial(db, id_credencial)
+    if not perfil:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    documento = int(perfil["documento"])
+
+    # Verificar que la reserva exista y pertenezca a este cliente
+    row = db.execute(
+        text('SELECT documento, estado_reserva FROM "Reserva" WHERE id_reserva = :id'),
+        {"id": id_reserva},
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Reserva no encontrada")
+
+    doc_reserva, estado_actual_raw = row[0], row[1]
+    if int(doc_reserva) != documento:
+        raise HTTPException(status_code=403, detail="No tienes permiso para cancelar esta reserva")
+
+    estado_actual = (estado_actual_raw or "").strip().lower()
+    # Cliente puede cancelar si la reserva aún no ha finalizado
+    if estado_actual not in ("pendiente", "confirmada", "en curso"):
+        raise HTTPException(
+            status_code=400,
+            detail="Solo puedes cancelar reservas pendientes o activas.",
+        )
+
+    motivo = (body.motivo_cancelacion or "").strip()
+    if not motivo:
+        raise HTTPException(
+            status_code=400,
+            detail="El motivo de cancelación es obligatorio",
+        )
+
+    try:
+        # Actualizar estado y motivo
+        actualizar_estado_reserva(db, id_reserva, "cancelada")
+        actualizar_motivo_cancelacion(db, id_reserva, motivo)
+        return {"ok": True, "id_reserva": id_reserva, "nuevo_estado": "cancelada"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/listar_cliente")

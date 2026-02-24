@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
+import { Textarea } from "./ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -28,6 +29,12 @@ export function AllReservationsModal({ isOpen, onClose, fechaInicial }: AllReser
   const [searchQuery, setSearchQuery] = useState("");
   const [estadoFilter, setEstadoFilter] = useState<string>("todos");
   const [fechaFilter, setFechaFilter] = useState<string>(fechaInicial ?? "");
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [cancelReserva, setCancelReserva] = useState<Reserva | null>(null);
+  const [motivoCancelacion, setMotivoCancelacion] = useState("");
+  const [cancelando, setCancelando] = useState(false);
+
+  const MAX_MOTIVO = 250;
 
   // Cargar todas las reservas cuando se abre el modal
   useEffect(() => {
@@ -51,6 +58,61 @@ export function AllReservationsModal({ isOpen, onClose, fechaInicial }: AllReser
       console.error("Error al cargar todas las reservas:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const puedeActivar = (r: Reserva) => {
+    const e = (r.estado_reserva || "").toLowerCase().trim();
+    return e === "pendiente" || e === "no presentada";
+  };
+
+  const puedeCancelar = (r: Reserva) => {
+    const e = (r.estado_reserva || "").toLowerCase().trim();
+    return ["pendiente", "no presentada", "confirmada", "en curso"].includes(e);
+  };
+
+  const handleActivar = async (r: Reserva) => {
+    setUpdatingId(r.id_reserva);
+    try {
+      await OwnerReservationsService.updateReservationStatus(r.id_reserva, "activa");
+      await loadAllReservations();
+    } catch (e) {
+      console.error("Error al activar reserva:", e);
+      alert((e as Error).message || "Error al activar la reserva");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleCancelarClick = (r: Reserva) => {
+    setCancelReserva(r);
+    setMotivoCancelacion("");
+  };
+
+  const handleCancelarConfirm = async () => {
+    if (!cancelReserva) return;
+    const motivo = motivoCancelacion.trim();
+    if (!motivo) {
+      alert("Escribe el motivo de la cancelación.");
+      return;
+    }
+    if (motivo.length > MAX_MOTIVO) {
+      alert(`El motivo no puede superar los ${MAX_MOTIVO} caracteres.`);
+      return;
+    }
+    setCancelando(true);
+    setUpdatingId(cancelReserva.id_reserva);
+    try {
+      await OwnerReservationsService.updateReservationStatus(cancelReserva.id_reserva, "cancelada", motivo);
+      await loadAllReservations();
+      setCancelReserva(null);
+      setMotivoCancelacion("");
+    } catch (e) {
+      console.error("Error al cancelar reserva:", e);
+      alert((e as Error).message || "Error al cancelar la reserva");
+    } finally {
+      setCancelando(false);
+      setUpdatingId(null);
     }
   };
 
@@ -235,17 +297,83 @@ export function AllReservationsModal({ isOpen, onClose, fechaInicial }: AllReser
                         </div>
                       </div>
                     </div>
-                    <Badge
-                      variant="outline"
-                      className={`${getEstadoBadge(reserva.estado_reserva)} ml-4 flex-shrink-0`}
-                    >
-                      {reserva.estado_reserva}
-                    </Badge>
+                    <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                      {puedeActivar(reserva) && (
+                        <Button
+                          size="sm"
+                          onClick={() => handleActivar(reserva)}
+                          disabled={updatingId === reserva.id_reserva}
+                        >
+                          {updatingId === reserva.id_reserva ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            "Pasar a activa"
+                          )}
+                        </Button>
+                      )}
+                      {puedeCancelar(reserva) && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleCancelarClick(reserva)}
+                          disabled={cancelando || updatingId === reserva.id_reserva}
+                        >
+                          Cancelar
+                        </Button>
+                      )}
+                      <Badge
+                        variant="outline"
+                        className={`${getEstadoBadge(reserva.estado_reserva)} flex-shrink-0`}
+                      >
+                        {reserva.estado_reserva}
+                      </Badge>
+                    </div>
                   </div>
                 ))
               )}
             </div>
           </div>
+        )}
+
+        {/* Diálogo motivo cancelación */}
+        {cancelReserva && (
+          <Dialog open={!!cancelReserva} onOpenChange={(open) => !open && !cancelando && setCancelReserva(null)}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Motivo de la cancelación</DialogTitle>
+                <DialogDescription>
+                  Indica el motivo de la cancelación (obligatorio, máx. 250 caracteres). Se guardará y se enviará por correo al cliente.
+                </DialogDescription>
+              </DialogHeader>
+              <Textarea
+                placeholder="Ej: No hay disponibilidad por mantenimiento..."
+                value={motivoCancelacion}
+                onChange={(e) => setMotivoCancelacion(e.target.value)}
+                rows={4}
+                className="resize-none"
+                maxLength={MAX_MOTIVO}
+              />
+              <p className="text-xs text-muted-foreground text-right">
+                {motivoCancelacion.length}/{MAX_MOTIVO}
+              </p>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setCancelReserva(null)}
+                  disabled={cancelando}
+                >
+                  Volver
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={handleCancelarConfirm}
+                  disabled={!motivoCancelacion.trim() || cancelando || motivoCancelacion.length > MAX_MOTIVO}
+                >
+                  {cancelando ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirmar cancelación"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         )}
 
         <div className="flex justify-end pt-4 border-t">

@@ -63,6 +63,8 @@ class RestauranteBase(BaseModel):
     id_categoria: int
     url_imagen: Optional[str] = ""
     imagenes_referencia: Optional[List[str]] = None  # Máximo 15 URLs (Cloudinary)
+    # Antelación mínima para reservar en este restaurante (en horas). 0 = sin restricción.
+    min_anticipacion_horas: int = 0
 
 
 class RestauranteUpdate(BaseModel):
@@ -74,6 +76,8 @@ class RestauranteUpdate(BaseModel):
     horario_cierre: str
     documento: int
     id_categoria: int
+    # Antelación mínima para reservar en este restaurante (en horas). 0 = sin restricción.
+    min_anticipacion_horas: int = 0
 
 
 class RestauranteDelete(BaseModel):
@@ -222,8 +226,13 @@ class ReservaDelete(BaseModel):
 
 class ActualizarEstadoReservaSchema(BaseModel):
     """Body para PATCH estado de reserva (dueño/admin/empleado)."""
-    nuevo_estado: str  # confirmada | cancelada
+    nuevo_estado: str  # activa (alias de confirmada) | confirmada | cancelada
     motivo_cancelacion: str | None = Field(None, max_length=250)  # obligatorio si nuevo_estado es cancelada; máx 250 caracteres
+
+
+class CancelarReservaClienteSchema(BaseModel):
+    """Body para que el cliente cancele su propia reserva."""
+    motivo_cancelacion: str = Field(..., max_length=250)
 
 
 class SMTPConfigSchema(BaseModel):

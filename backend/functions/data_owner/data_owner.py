@@ -504,7 +504,8 @@ def obtener_restaurante_completo_dueno(id_credencial: int, nit: int, db: Session
         text("""
             SELECT r.nit, r.direccion, r.nombre_restaurante, r.descripcion_restaurante,
                    r.horario_apertura, r.horario_cierre, r.documento, r.id_categoria,
-                   COALESCE(r.url_image, '') as url_image
+                   COALESCE(r.url_image, '') as url_image,
+                   COALESCE(r.min_anticipacion_horas, 0) AS min_anticipacion_horas
             FROM "Restaurante" r WHERE r.nit = :nit
         """),
         {"nit": nit},
@@ -530,6 +531,7 @@ def obtener_restaurante_completo_dueno(id_credencial: int, nit: int, db: Session
         "documento": row[6],
         "id_categoria": row[7],
         "url_image": row[8] or "",
+        "min_anticipacion_horas": int(row[9]) if row[9] is not None else 0,
         "imagenes_referencia": imagenes,
     }
 

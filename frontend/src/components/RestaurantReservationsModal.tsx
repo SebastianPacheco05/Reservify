@@ -110,7 +110,7 @@ export function RestaurantReservationsModal({
   const handleConfirmar = async (r: Reserva) => {
     setUpdatingId(r.id_reserva);
     try {
-      await OwnerReservationsService.updateReservationStatus(r.id_reserva, "confirmada");
+      await OwnerReservationsService.updateReservationStatus(r.id_reserva, "activa");
       await loadReservas();
       setSelectedReserva(null);
     } catch (e) {

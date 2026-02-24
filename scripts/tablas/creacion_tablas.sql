@@ -76,6 +76,9 @@ CREATE TABLE "Restaurante" (
     documento DECIMAL(10, 0) NOT NULL,  -- Referencia al dueño
     id_categoria INT not null,  -- Referencia a la categoría
     url_image VARCHAR NOT NULL,  -- URL de la imagen del restaurante
+    -- Antelación mínima en horas para crear una reserva (0 = sin restricción).
+    -- Ej: 24 = al menos 1 día antes, 2 = al menos 2 horas antes.
+    min_anticipacion_horas INT NOT NULL DEFAULT 0 CHECK (min_anticipacion_horas >= 0),
     lat DOUBLE PRECISION,  -- Latitud para mostrar el restaurante en el mapa
     lng DOUBLE PRECISION,  -- Longitud para mostrar el restaurante en el mapa
     foreign key (id_categoria) references "Categorias" (id_categoria) ON DELETE CASCADE,

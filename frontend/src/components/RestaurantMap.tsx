@@ -4,11 +4,14 @@ import {
   TileLayer,
   Popup,
   CircleMarker,
+  Marker,
   useMap,
 } from "react-leaflet";
+import { Link } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 
 import { API_BASE_URL } from "../config/api";
+import { formatDistance, haversineDistanceMeters } from "../lib/haversine";
 
 const FALLBACK_CENTER = { lat: 4.6097, lng: -74.0817 }; // Bogotá
 
@@ -188,7 +191,7 @@ export default function RestaurantMap({ onlyNit, initialCenter }: RestaurantMapP
             {locationStatus === "unsupported"
               ? "Tu navegador no soporta GPS."
               : error ||
-                "Ubicación no permitida. El mapa usa una ubicación por defecto."}
+              "Ubicación no permitida. El mapa usa una ubicación por defecto."}
           </span>
           <button
             type="button"
@@ -237,8 +240,6 @@ export default function RestaurantMap({ onlyNit, initialCenter }: RestaurantMapP
               <Popup>Tu ubicación (GPS)</Popup>
             </CircleMarker>
           )}
-<<<<<<< HEAD
-=======
           {displayedRestaurantes.map((r) => (
             <Marker key={r.nit} position={[r.lat, r.lng]}>
               <Popup>
@@ -268,7 +269,6 @@ export default function RestaurantMap({ onlyNit, initialCenter }: RestaurantMapP
               </Popup>
             </Marker>
           ))}
->>>>>>> fbbdf198dcd0107e5505d0c3945ec1b05d6b8a52
         </MapContainer>
         <div className="absolute bottom-6 right-4 z-[1000]">
           <button

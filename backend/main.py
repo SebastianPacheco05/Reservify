@@ -83,4 +83,5 @@ async def enviar_correo_contacto(data: EmailSchema):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host=BACKEND_HOST, port=BACKEND_PORT, reload=True)
+    uvicorn.run("main:app", host=BACKEND_HOST, port=BACKEND_PORT, reload=True,     reload_excludes=["venv"]
+)

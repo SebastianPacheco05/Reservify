@@ -17,6 +17,8 @@ export interface RestauranteConfig {
   id_categoria: number;
   url_image?: string;
   imagenes_referencia?: string[];
+  /** Antelación mínima para reservar (en horas). 0 = sin restricción. */
+  min_anticipacion_horas?: number;
 }
 
 export interface RestauranteUpdateBody {
@@ -28,6 +30,7 @@ export interface RestauranteUpdateBody {
   horario_cierre: string;
   documento: number;
   id_categoria: number;
+  min_anticipacion_horas: number;
 }
 
 export interface MesaConfig {

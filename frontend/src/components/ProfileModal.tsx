@@ -4,6 +4,7 @@ import { useState, useEffect, type FormEvent } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { Textarea } from "./ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -55,6 +56,9 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [estadoFilter, setEstadoFilter] = useState<string>("todos");
   const [cancelModalReserva, setCancelModalReserva] = useState<Reserva | null>(null);
+  const [cancelTarget, setCancelTarget] = useState<Reserva | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
+  const [isCancelling, setIsCancelling] = useState(false);
 
   // Form state
   const [nombre, setNombre] = useState("");
@@ -184,6 +188,61 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
         return "bg-gradient-to-r from-destructive to-destructive/80 text-destructive-foreground border-destructive shadow-lg shadow-destructive/50";
       default:
         return "bg-gradient-to-r from-muted to-accent text-foreground border-border shadow-lg shadow-muted/50";
+    }
+  };
+
+  const puedeCancelar = (reserva: Reserva) => {
+    const e = reserva.estado_reserva.toLowerCase();
+    return e === "pendiente" || e === "confirmada" || e === "en curso";
+  };
+
+  const handleCancelarClick = (reserva: Reserva) => {
+    if (!puedeCancelar(reserva)) return;
+    setCancelTarget(reserva);
+    setCancelReason("");
+  };
+
+  const handleConfirmCancelar = async () => {
+    if (!cancelTarget) return;
+    const motivo = cancelReason.trim();
+    if (!motivo) {
+      toast({ title: "Motivo requerido", description: "Debes indicar el motivo de la cancelación.", variant: "destructive" });
+      return;
+    }
+    if (motivo.length > 250) {
+      toast({
+        title: "Motivo demasiado largo",
+        description: "El motivo no puede superar los 250 caracteres.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsCancelling(true);
+    try {
+      const res = await authFetch(
+        getApiEndpoint(`/cliente/mis-reservas/${cancelTarget.id_reserva}/cancelar`),
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ motivo_cancelacion: motivo }),
+        }
+      );
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail ?? "Error al cancelar la reserva");
+      }
+      toast({ title: "Reserva cancelada", description: "Tu reserva ha sido cancelada correctamente." });
+      setCancelTarget(null);
+      setCancelReason("");
+      await loadReservas();
+    } catch (err: unknown) {
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "No se pudo cancelar la reserva",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -364,10 +423,6 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                             ? "cursor-pointer hover:scale-[1.02] border-destructive/50 hover:border-destructive"
                             : "border-border hover:border-primary"
                         }`}
-                        onClick={() =>
-                          reserva.estado_reserva.toLowerCase() === "cancelada" &&
-                          setCancelModalReserva(reserva)
-                        }
                       >
                         <div className="flex justify-between items-start gap-4">
                           <div className="space-y-3 flex-1">
@@ -396,11 +451,25 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                             {reserva.estado_reserva}
                           </Badge>
                         </div>
-                        {reserva.estado_reserva.toLowerCase() === "cancelada" && (
-                          <p className="text-sm text-destructive mt-4 font-medium italic flex items-center gap-2">
-                            <span>👆</span> Clic para ver motivo de cancelación
-                          </p>
-                        )}
+                        <div className="mt-4 flex flex-wrap gap-3 items-center justify-between">
+                          {reserva.estado_reserva.toLowerCase() === "cancelada" ? (
+                            <p className="text-sm text-destructive font-medium italic flex items-center gap-2 cursor-pointer"
+                               onClick={() => setCancelModalReserva(reserva)}>
+                              <span>👆</span> Clic para ver motivo de cancelación
+                            </p>
+                          ) : (
+                            puedeCancelar(reserva) && (
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => handleCancelarClick(reserva)}
+                                disabled={isCancelling}
+                              >
+                                Cancelar reserva
+                              </Button>
+                            )
+                          )}
+                        </div>
                       </div>
                     ))
                   )}
@@ -411,7 +480,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Modal de motivo de cancelación */}
+      {/* Modal de motivo de cancelación (ver detalle) */}
       <Dialog open={!!cancelModalReserva} onOpenChange={(open) => !open && setCancelModalReserva(null)}>
         <DialogContent className="sm:max-w-lg bg-gradient-to-br from-muted via-background to-destructive/10 dark:from-background dark:via-muted dark:to-destructive/20 border-2 border-destructive/50 shadow-2xl">
           <div className="bg-gradient-to-r from-destructive via-secondary to-destructive p-6 text-background rounded-t-lg -m-6 mb-4">
@@ -431,6 +500,53 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                   {cancelModalReserva.motivo_cancelacion?.trim() ||
                     "No se especificó un motivo de cancelación."}
                 </DialogDescription>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal para cancelar mi reserva */}
+      <Dialog open={!!cancelTarget} onOpenChange={(open) => !open && !isCancelling && setCancelTarget(null)}>
+        <DialogContent className="sm:max-w-lg bg-card border border-border shadow-xl">
+          <DialogHeader>
+            <DialogTitle>Cancelar reserva</DialogTitle>
+            <DialogDescription>
+              Indica el motivo de la cancelación (obligatorio, máx. 250 caracteres). Se guardará en el sistema.
+            </DialogDescription>
+          </DialogHeader>
+          {cancelTarget && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Reserva #{cancelTarget.id_reserva} en{" "}
+                <span className="font-semibold text-foreground">{cancelTarget.nombre_restaurante}</span>
+              </p>
+              <Textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                rows={4}
+                maxLength={250}
+                placeholder="Ej: No podré asistir a la hora reservada..."
+                className="resize-none"
+              />
+              <p className="text-xs text-muted-foreground text-right">
+                {cancelReason.length}/250
+              </p>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setCancelTarget(null)}
+                  disabled={isCancelling}
+                >
+                  Volver
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={handleConfirmCancelar}
+                  disabled={isCancelling || !cancelReason.trim() || cancelReason.length > 250}
+                >
+                  {isCancelling ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirmar cancelación"}
+                </Button>
               </div>
             </div>
           )}

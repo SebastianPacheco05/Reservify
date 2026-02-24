@@ -75,6 +75,7 @@ export function RestaurantConfigModal({
     horario_cierre: "",
     id_categoria: 0,
     documento: 0,
+    min_anticipacion_horas: 0,
   });
   const [isMapPickerOpen, setIsMapPickerOpen] = useState(false);
 
@@ -139,6 +140,7 @@ export function RestaurantConfigModal({
           horario_cierre: hC,
           id_categoria: configRes.id_categoria ?? 0,
           documento: configRes.documento ?? 0,
+          min_anticipacion_horas: configRes.min_anticipacion_horas ?? 0,
         });
       }
       if (adminRes) setSelectedAdminId(String(adminRes.id_credencial));
@@ -172,6 +174,7 @@ export function RestaurantConfigModal({
         horario_cierre: form.horario_cierre.length === 5 ? form.horario_cierre + ":00" : form.horario_cierre,
         documento: form.documento,
         id_categoria: form.id_categoria,
+        min_anticipacion_horas: Math.max(0, Number.isFinite(form.min_anticipacion_horas) ? form.min_anticipacion_horas : 0),
       };
       await OwnerRestaurantConfigService.putRestauranteConfig(nit, body);
       toast({ title: "Guardado", description: "Datos del restaurante actualizados." });
@@ -433,6 +436,29 @@ export function RestaurantConfigModal({
                         onChange={(e) => setForm((p) => ({ ...p, horario_cierre: e.target.value }))}
                       />
                     </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Antelación mínima para reservar</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        min={0}
+                        value={form.min_anticipacion_horas}
+                        onChange={(e) =>
+                          setForm((p) => ({
+                            ...p,
+                            min_anticipacion_horas: Number.parseInt(e.target.value, 10) || 0,
+                          }))
+                        }
+                        className="w-24"
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        horas (ej: 24 = 1 día de antelación)
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Establece cuántas horas antes debe hacerse la reserva como mínimo para dar tiempo a organizar las mesas.
+                    </p>
                   </div>
                   <div className="grid gap-2">
                     <Label>Categoría</Label>

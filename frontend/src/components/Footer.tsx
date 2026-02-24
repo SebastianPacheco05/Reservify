@@ -1,10 +1,10 @@
-import type React from "react";
 import { Utensils } from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer, transitionNormal } from "../lib/animations";
 
 export default function Footer() {
   const linkClass = "hover:text-accent transition-colors duration-200";
+  const mutedTextClass = "text-background/75 dark:text-muted-foreground";
   return (
     <motion.footer
       initial={{ opacity: 0 }}
@@ -32,14 +32,14 @@ export default function Footer() {
               </motion.div>
               <h4 className="text-xl font-bold">Reservify</h4>
             </div>
-            <p className="text-muted-foreground text-sm leading-relaxed">
+            <p className={`${mutedTextClass} text-sm leading-relaxed`}>
               La plataforma líder en reservas de restaurantes
             </p>
           </motion.div>
 
           <motion.div variants={fadeInUp} transition={transitionNormal}>
             <h5 className="font-semibold mb-4">Restaurantes</h5>
-            <ul className="space-y-3 text-muted-foreground">
+            <ul className={`space-y-3 ${mutedTextClass}`}>
               <li><a href="#buscar" className={linkClass}>Buscar</a></li>
               <li><a href="#cocinas" className={linkClass}>Cocinas</a></li>
             </ul>
@@ -47,7 +47,7 @@ export default function Footer() {
 
           <motion.div variants={fadeInUp} transition={transitionNormal}>
             <h5 className="font-semibold mb-4">Empresa</h5>
-            <ul className="space-y-3 text-muted-foreground">
+            <ul className={`space-y-3 ${mutedTextClass}`}>
               <li><a href="#acerca_de" className={linkClass}>Acerca de</a></li>
               <li><a href="#" className={linkClass}>Contacto</a></li>
             </ul>
@@ -55,7 +55,7 @@ export default function Footer() {
 
           <motion.div variants={fadeInUp} transition={transitionNormal}>
             <h5 className="font-semibold mb-4">Soporte</h5>
-            <ul className="space-y-3 text-muted-foreground">
+            <ul className={`space-y-3 ${mutedTextClass}`}>
               <li><a href="#" className={linkClass}>Ayuda</a></li>
               <li><a href="#" className={linkClass}>Términos</a></li>
               <li><a href="#" className={linkClass}>Privacidad</a></li>
@@ -68,7 +68,7 @@ export default function Footer() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          className="border-t border-border pt-8 text-center text-muted-foreground text-sm"
+          className="border-t border-background/20 dark:border-border pt-8 text-center text-sm text-background/70 dark:text-muted-foreground"
         >
           <p>&copy; {new Date().getFullYear()} Reservify. Todos los derechos reservados.</p>
         </motion.div>

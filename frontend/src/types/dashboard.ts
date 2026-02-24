@@ -64,6 +64,8 @@ export interface MiRestauranteInfo {
   horario_apertura: string
   horario_cierre: string
   url_image: string
+  /** Antelación mínima para reservar (en horas). 0 = sin restricción. */
+  min_anticipacion_horas?: number
 }
 
 export interface Invoice {
