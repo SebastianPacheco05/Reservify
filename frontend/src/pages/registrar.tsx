@@ -83,7 +83,7 @@ export default function Registrar() {
       nombre,
       apellido,
       nacionalidad,
-      id_rol: 2,
+      id_rol: 4,
     };
 
     try {
@@ -219,171 +219,171 @@ export default function Registrar() {
                   transition={transitionNormal}
                   className="flex justify-center"
                 >
-            <Card
-              className="shadow-xl w-[23rem] border-0 bg-card/80 backdrop-blur-sm transition-all duration-300"
-            >
-              <CardHeader className="space-y-0.5 pb-3">
-                <CardTitle className="text-xl text-center text-foreground transition-colors duration-300">
-                  Crea tu cuenta
-                </CardTitle>
-                <CardDescription className="text-center text-muted-foreground transition-colors duration-300">
-                  Ingresa tus datos para crear tu cuenta
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent className="space-y-6">
-                <form className="space-y-4">
-                  {/* Email Field */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="email"
-                      className="text-sm font-medium text-foreground transition-colors duration-300"
-                    >
-                      Correo electrónico
-                    </Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="tu@ejemplo.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* Password Field */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="password"
-                      className="text-sm font-medium text-foreground transition-colors duration-300"
-                    >
-                      Contraseña
-                    </Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                      <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-0.5 top-1/2 transform -translate-y-1/2 p-2 hover:bg-muted rounded transition-colors duration-200"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-4 h-4 text-muted-foreground" />
-                        ) : (
-                          <Eye className="w-4 h-4 text-muted-foreground" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Confirm Password Field */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="confirm-password"
-                      className="text-sm font-medium text-foreground transition-colors duration-300"
-                    >
-                      Confirmar contraseña
-                    </Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                      <Input
-                        id="confirm-password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="••••••••"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-0.5 top-1/2 transform -translate-y-1/2 p-2 hover:bg-muted rounded transition-colors duration-200"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-4 h-4 text-muted-foreground" />
-                        ) : (
-                          <Eye className="w-4 h-4 text-muted-foreground" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Remember Me & Forgot Password */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2"></div>
-                    <button
-                      type="button"
-                      className="text-sm text-primary hover:text-secondary font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
-                    >
-                      ¿Olvidaste tu contraseña?
-                    </button>
-                  </div>
-
-                  <Button
-                    type="button"
-                    onClick={handleContinue} // 👈 en lugar de setShowCard(false)
-                    className="w-full h-11 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
+                  <Card
+                    className="shadow-xl w-[23rem] border-0 bg-card/80 backdrop-blur-sm transition-all duration-300"
                   >
-                    <span>Continuar</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
-                </form>
+                    <CardHeader className="space-y-0.5 pb-3">
+                      <CardTitle className="text-xl text-center text-foreground transition-colors duration-300">
+                        Crea tu cuenta
+                      </CardTitle>
+                      <CardDescription className="text-center text-muted-foreground transition-colors duration-300">
+                        Ingresa tus datos para crear tu cuenta
+                      </CardDescription>
+                    </CardHeader>
 
-                {/* Divider */}
-                <div className="relative">
-                  <Separator className="bg-border" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="bg-card px-2 text-xs text-muted-foreground">
-                      O continúa con
-                    </span>
-                  </div>
-                </div>
+                    <CardContent className="space-y-6">
+                      <form className="space-y-4">
+                        {/* Email Field */}
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="email"
+                            className="text-sm font-medium text-foreground transition-colors duration-300"
+                          >
+                            Correo electrónico
+                          </Label>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                            <Input
+                              id="email"
+                              type="email"
+                              placeholder="tu@ejemplo.com"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
+                              required
+                            />
+                          </div>
+                        </div>
 
-                {/* Social Login Buttons */}
-                <div className="grid grid-cols-1 gap-3">
-                  <Button
-                    variant="outline"
-                    className="h-11 w-full border-border hover:bg-muted transition-colors bg-card text-foreground focus:ring-2 focus:ring-primary"
-                    type="button"
-                  >
-                    <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                      <path
-                        fill="#4285F4"
-                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                      />
-                      <path
-                        fill="#34A853"
-                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                      />
-                      <path
-                        fill="#FBBC05"
-                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                      />
-                      <path
-                        fill="#EA4335"
-                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                      />
-                    </svg>
-                    <span className="text-foreground font-medium transition-all duration-200 transform hover:scale-[1.02]">
-                      Google
-                    </span>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                        {/* Password Field */}
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="password"
+                            className="text-sm font-medium text-foreground transition-colors duration-300"
+                          >
+                            Contraseña
+                          </Label>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                            <Input
+                              id="password"
+                              type={showPassword ? "text" : "password"}
+                              placeholder="••••••••"
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
+                              required
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-0.5 top-1/2 transform -translate-y-1/2 p-2 hover:bg-muted rounded transition-colors duration-200"
+                            >
+                              {showPassword ? (
+                                <EyeOff className="w-4 h-4 text-muted-foreground" />
+                              ) : (
+                                <Eye className="w-4 h-4 text-muted-foreground" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Confirm Password Field */}
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="confirm-password"
+                            className="text-sm font-medium text-foreground transition-colors duration-300"
+                          >
+                            Confirmar contraseña
+                          </Label>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                            <Input
+                              id="confirm-password"
+                              type={showPassword ? "text" : "password"}
+                              placeholder="••••••••"
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
+                              required
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-0.5 top-1/2 transform -translate-y-1/2 p-2 hover:bg-muted rounded transition-colors duration-200"
+                            >
+                              {showPassword ? (
+                                <EyeOff className="w-4 h-4 text-muted-foreground" />
+                              ) : (
+                                <Eye className="w-4 h-4 text-muted-foreground" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Remember Me & Forgot Password */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2"></div>
+                          <button
+                            type="button"
+                            className="text-sm text-primary hover:text-secondary font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+                          >
+                            ¿Olvidaste tu contraseña?
+                          </button>
+                        </div>
+
+                        <Button
+                          type="button"
+                          onClick={handleContinue} // 👈 en lugar de setShowCard(false)
+                          className="w-full h-11 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
+                        >
+                          <span>Continuar</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </Button>
+                      </form>
+
+                      {/* Divider */}
+                      <div className="relative">
+                        <Separator className="bg-border" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="bg-card px-2 text-xs text-muted-foreground">
+                            O continúa con
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Social Login Buttons */}
+                      <div className="grid grid-cols-1 gap-3">
+                        <Button
+                          variant="outline"
+                          className="h-11 w-full border-border hover:bg-muted transition-colors bg-card text-foreground focus:ring-2 focus:ring-primary"
+                          type="button"
+                        >
+                          <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                            <path
+                              fill="#4285F4"
+                              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                            />
+                            <path
+                              fill="#34A853"
+                              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                            />
+                            <path
+                              fill="#FBBC05"
+                              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                            />
+                            <path
+                              fill="#EA4335"
+                              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                            />
+                          </svg>
+                          <span className="text-foreground font-medium transition-all duration-200 transform hover:scale-[1.02]">
+                            Google
+                          </span>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </motion.div>
               ) : (
                 <motion.div
@@ -394,268 +394,268 @@ export default function Registrar() {
                   transition={transitionNormal}
                   className="justify-center items-center w-full max-w-2xl"
                 >
-            <Card
-              className="shadow-xl w-full border-0 bg-card/80 backdrop-blur-sm transition-all duration-300"
-            >
-              <CardHeader
-                className="space-y-1 pb-6 cursor-pointer"
-                onClick={() => setShowCard(true)}
-              >
-                <CardTitle className="text-xl text-center text-foreground transition-colors duration-300">
-                  Ingresa tus datos personales
-                </CardTitle>
-                <CardDescription className="text-center text-muted-foreground transition-colors duration-300">
-                  Ingresa tus datos para crear tu cuenta
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent className="space-y-6">
-                <form
-                  onSubmit={handleSubmit}
-                  action="/"
-                  className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                >
-                  {/* Columna Izquierda */}
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="tipo_documento"
-                        className="text-sm font-medium text-foreground transition-colors duration-300"
-                      >
-                        Tipo de documento
-                      </Label>
-                      <div className=" relative">
-                        <Select
-                          value={tipo_documento}
-                          onValueChange={setTipo_documento}
-                          required
-                        >
-                          <SelectTrigger
-                            style={{
-                              border: "1px solid",
-                              height: "44px",
-                              width: "100%",
-                              fontSize: "14px",
-                              fontWeight: "400",
-                              color: "#667085",
-                            }}
-                            className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
-                          >
-                            {/* <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" /> */}
-
-                            <SelectValue placeholder="Selecciona el tipo de documento" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem
-                              value="CC"
-                              style={{
-                                fontSize: "14px",
-                                fontWeight: "400",
-                                color: "#667085",
-                              }}
-                            >
-                              Cédula de Ciudadanía
-                            </SelectItem>
-                            <SelectItem
-                              value="CE"
-                              style={{
-                                fontSize: "14px",
-                                fontWeight: "400",
-                                color: "#667085",
-                              }}
-                            >
-                              Cédula de Extranjería
-                            </SelectItem>
-                            <SelectItem
-                              value="PP"
-                              style={{
-                                fontSize: "14px",
-                                fontWeight: "400",
-                                color: "#667085",
-                              }}
-                            >
-                              Pasaporte
-                            </SelectItem>
-                            <SelectItem
-                              value="TI"
-                              style={{
-                                fontSize: "14px",
-                                fontWeight: "400",
-                                color: "#667085",
-                              }}
-                            >
-                              Tarjeta de Identidad
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="numero_documento"
-                        className="text-sm font-medium text-foreground transition-colors duration-300"
-                      >
-                        Numero de documento
-                      </Label>
-                      <div className="relative">
-                        <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                        <Input
-                          id="numero_documento"
-                          type="text"
-                          placeholder="tu numero de documento"
-                          value={documento}
-                          onChange={(e) => setDocumento(e.target.value)}
-                          className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="telefono"
-                        className="text-sm font-medium text-foreground transition-colors duration-300"
-                      >
-                        Numero de telefono
-                      </Label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                        <Input
-                          id="telefono"
-                          type="tel"
-                          placeholder="tu numero de telefono"
-                          value={telefono}
-                          onChange={(e) => setTelefono(e.target.value)}
-                          className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Columna Derecha */}
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="nombre1"
-                        className="text-sm font-medium text-foreground transition-colors duration-300"
-                      >
-                        Nombre
-                      </Label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                        <Input
-                          id="nombre"
-                          type="text"
-                          placeholder="Tu nombre"
-                          value={nombre}
-                          onChange={(e) => setNombre(e.target.value)}
-                          className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="apellido1"
-                        className="text-sm font-medium text-foreground transition-colors duration-300"
-                      >
-                        Apellido
-                      </Label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                        <Input
-                          id="apellidos"
-                          type="text"
-                          placeholder="Tu apellido"
-                          value={apellido}
-                          onChange={(e) => setApellido(e.target.value)}
-                          className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="nacionalidad"
-                        className="text-sm font-medium text-foreground transition-colors duration-300"
-                      >
-                        Nacionalidad
-                      </Label>
-                      <div className="relative">
-  <Flag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-  <select
-    id="nacionalidad"
-    value={nacionalidad}
-    onChange={(e) => setNacionalidad(e.target.value)}
-    className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200 w-full rounded-md"
-    required
-  >
-    <option value="">Selecciona tu nacionalidad</option>
-    <option value="Argentina">Argentina</option>
-    <option value="Belice">Belice</option>
-    <option value="Bolivia">Bolivia</option>
-    <option value="Brasil">Brasil</option>
-    <option value="Canadá">Canadá</option>
-    <option value="Chile">Chile</option>
-    <option value="Colombia">Colombia</option>
-    <option value="Costa Rica">Costa Rica</option>
-    <option value="Cuba">Cuba</option>
-    <option value="Dominica">Dominica</option>
-    <option value="Ecuador">Ecuador</option>
-    <option value="El Salvador">El Salvador</option>
-    <option value="Estados Unidos">Estados Unidos</option>
-    <option value="Guatemala">Guatemala</option>
-    <option value="Guyana">Guyana</option>
-    <option value="Haití">Haití</option>
-    <option value="Honduras">Honduras</option>
-    <option value="Jamaica">Jamaica</option>
-    <option value="México">México</option>
-    <option value="Nicaragua">Nicaragua</option>
-    <option value="Panamá">Panamá</option>
-    <option value="Paraguay">Paraguay</option>
-    <option value="Perú">Perú</option>
-    <option value="República Dominicana">República Dominicana</option>
-    <option value="Surinam">Surinam</option>
-    <option value="Trinidad y Tobago">Trinidad y Tobago</option>
-    <option value="Uruguay">Uruguay</option>
-    <option value="Venezuela">Venezuela</option>
-  </select>
-</div>
-
-                    </div>
-                  </div>
-
-                  {/* Botón y resto del formulario */}
-                  <div className="col-span-1 md:col-span-2 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2"></div>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      className="w-full h-11 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
-                      disabled={isLoading}
+                  <Card
+                    className="shadow-xl w-full border-0 bg-card/80 backdrop-blur-sm transition-all duration-300"
+                  >
+                    <CardHeader
+                      className="space-y-1 pb-6 cursor-pointer"
+                      onClick={() => setShowCard(true)}
                     >
-                      {isLoading ? (
-                        <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          <span>Cargando...</span>
+                      <CardTitle className="text-xl text-center text-foreground transition-colors duration-300">
+                        Ingresa tus datos personales
+                      </CardTitle>
+                      <CardDescription className="text-center text-muted-foreground transition-colors duration-300">
+                        Ingresa tus datos para crear tu cuenta
+                      </CardDescription>
+                    </CardHeader>
+
+                    <CardContent className="space-y-6">
+                      <form
+                        onSubmit={handleSubmit}
+                        action="/"
+                        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                      >
+                        {/* Columna Izquierda */}
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label
+                              htmlFor="tipo_documento"
+                              className="text-sm font-medium text-foreground transition-colors duration-300"
+                            >
+                              Tipo de documento
+                            </Label>
+                            <div className=" relative">
+                              <Select
+                                value={tipo_documento}
+                                onValueChange={setTipo_documento}
+                                required
+                              >
+                                <SelectTrigger
+                                  style={{
+                                    border: "1px solid",
+                                    height: "44px",
+                                    width: "100%",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                    color: "#667085",
+                                  }}
+                                  className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
+                                >
+                                  {/* <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" /> */}
+
+                                  <SelectValue placeholder="Selecciona el tipo de documento" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem
+                                    value="CC"
+                                    style={{
+                                      fontSize: "14px",
+                                      fontWeight: "400",
+                                      color: "#667085",
+                                    }}
+                                  >
+                                    Cédula de Ciudadanía
+                                  </SelectItem>
+                                  <SelectItem
+                                    value="CE"
+                                    style={{
+                                      fontSize: "14px",
+                                      fontWeight: "400",
+                                      color: "#667085",
+                                    }}
+                                  >
+                                    Cédula de Extranjería
+                                  </SelectItem>
+                                  <SelectItem
+                                    value="PP"
+                                    style={{
+                                      fontSize: "14px",
+                                      fontWeight: "400",
+                                      color: "#667085",
+                                    }}
+                                  >
+                                    Pasaporte
+                                  </SelectItem>
+                                  <SelectItem
+                                    value="TI"
+                                    style={{
+                                      fontSize: "14px",
+                                      fontWeight: "400",
+                                      color: "#667085",
+                                    }}
+                                  >
+                                    Tarjeta de Identidad
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label
+                              htmlFor="numero_documento"
+                              className="text-sm font-medium text-foreground transition-colors duration-300"
+                            >
+                              Numero de documento
+                            </Label>
+                            <div className="relative">
+                              <IdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                              <Input
+                                id="numero_documento"
+                                type="text"
+                                placeholder="tu numero de documento"
+                                value={documento}
+                                onChange={(e) => setDocumento(e.target.value)}
+                                className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
+                                required
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label
+                              htmlFor="telefono"
+                              className="text-sm font-medium text-foreground transition-colors duration-300"
+                            >
+                              Numero de telefono
+                            </Label>
+                            <div className="relative">
+                              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                              <Input
+                                id="telefono"
+                                type="tel"
+                                placeholder="tu numero de telefono"
+                                value={telefono}
+                                onChange={(e) => setTelefono(e.target.value)}
+                                className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
+                                required
+                              />
+                            </div>
+                          </div>
                         </div>
-                      ) : (
-                        <div className="flex items-center space-x-2">
-                          <span>Registrate</span>
-                          <ArrowRight className="w-4 h-4" />
+
+                        {/* Columna Derecha */}
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label
+                              htmlFor="nombre1"
+                              className="text-sm font-medium text-foreground transition-colors duration-300"
+                            >
+                              Nombre
+                            </Label>
+                            <div className="relative">
+                              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                              <Input
+                                id="nombre"
+                                type="text"
+                                placeholder="Tu nombre"
+                                value={nombre}
+                                onChange={(e) => setNombre(e.target.value)}
+                                className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
+                                required
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label
+                              htmlFor="apellido1"
+                              className="text-sm font-medium text-foreground transition-colors duration-300"
+                            >
+                              Apellido
+                            </Label>
+                            <div className="relative">
+                              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                              <Input
+                                id="apellidos"
+                                type="text"
+                                placeholder="Tu apellido"
+                                value={apellido}
+                                onChange={(e) => setApellido(e.target.value)}
+                                className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200"
+                                required
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label
+                              htmlFor="nacionalidad"
+                              className="text-sm font-medium text-foreground transition-colors duration-300"
+                            >
+                              Nacionalidad
+                            </Label>
+                            <div className="relative">
+                              <Flag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                              <select
+                                id="nacionalidad"
+                                value={nacionalidad}
+                                onChange={(e) => setNacionalidad(e.target.value)}
+                                className="pl-10 h-11 border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary transition-all duration-200 w-full rounded-md"
+                                required
+                              >
+                                <option value="">Selecciona tu nacionalidad</option>
+                                <option value="Argentina">Argentina</option>
+                                <option value="Belice">Belice</option>
+                                <option value="Bolivia">Bolivia</option>
+                                <option value="Brasil">Brasil</option>
+                                <option value="Canadá">Canadá</option>
+                                <option value="Chile">Chile</option>
+                                <option value="Colombia">Colombia</option>
+                                <option value="Costa Rica">Costa Rica</option>
+                                <option value="Cuba">Cuba</option>
+                                <option value="Dominica">Dominica</option>
+                                <option value="Ecuador">Ecuador</option>
+                                <option value="El Salvador">El Salvador</option>
+                                <option value="Estados Unidos">Estados Unidos</option>
+                                <option value="Guatemala">Guatemala</option>
+                                <option value="Guyana">Guyana</option>
+                                <option value="Haití">Haití</option>
+                                <option value="Honduras">Honduras</option>
+                                <option value="Jamaica">Jamaica</option>
+                                <option value="México">México</option>
+                                <option value="Nicaragua">Nicaragua</option>
+                                <option value="Panamá">Panamá</option>
+                                <option value="Paraguay">Paraguay</option>
+                                <option value="Perú">Perú</option>
+                                <option value="República Dominicana">República Dominicana</option>
+                                <option value="Surinam">Surinam</option>
+                                <option value="Trinidad y Tobago">Trinidad y Tobago</option>
+                                <option value="Uruguay">Uruguay</option>
+                                <option value="Venezuela">Venezuela</option>
+                              </select>
+                            </div>
+
+                          </div>
                         </div>
-                      )}
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
+
+                        {/* Botón y resto del formulario */}
+                        <div className="col-span-1 md:col-span-2 space-y-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2"></div>
+                          </div>
+
+                          <Button
+                            type="submit"
+                            className="w-full h-11 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
+                            disabled={isLoading}
+                          >
+                            {isLoading ? (
+                              <div className="flex items-center space-x-2">
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                <span>Cargando...</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center space-x-2">
+                                <span>Registrate</span>
+                                <ArrowRight className="w-4 h-4" />
+                              </div>
+                            )}
+                          </Button>
+                        </div>
+                      </form>
+                    </CardContent>
+                  </Card>
                 </motion.div>
               )}
             </AnimatePresence>

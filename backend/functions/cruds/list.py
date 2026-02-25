@@ -347,7 +347,7 @@ def obtener_encabezados_factura(db: Session):
 def obtener_detalle_factura(db: Session, id_det_fact: int):
     result = db.execute(
         text(
-            'SELECT descripcion, unidades, precio_unitario, precio_total, forma_pago, id_encab_fact FROM "Detalle_factura" WHERE id_det_fact = :id_det_fact'
+            'SELECT descripcion, unidades, precio_unitario, precio_total, forma_pago, id_encab_fact FROM "Detalle_Factura" WHERE id_det_fact = :id_det_fact'
         ),
         {"id_det_fact": id_det_fact},
     )
@@ -367,7 +367,7 @@ def obtener_detalle_factura(db: Session, id_det_fact: int):
 def obtener_detalles_factura(db: Session):
     result = db.execute(
         text(
-            'SELECT id_det_fact, descripcion, unidades, precio_unitario, precio_total, forma_pago, id_encab_fact FROM "Detalle_factura"'
+            'SELECT id_det_fact, descripcion, unidades, precio_unitario, precio_total, forma_pago, id_encab_fact FROM "Detalle_Factura"'
         )
     )
     rows = result.fetchall()

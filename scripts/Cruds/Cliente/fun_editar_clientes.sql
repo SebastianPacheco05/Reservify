@@ -9,15 +9,17 @@ CREATE OR REPLACE FUNCTION editar_clientes(
     p_id_rol INT
 ) RETURNS VOID AS $$
 BEGIN
-    UPDATE "Cliente"
-    SET id_credencial = p_id_credencial,
-        documento = p_documento,
-        nombre = p_nombre,
-        apellido = p_apellido,
-        tipo_documento = p_tipo_documento,
-        nacionalidad = p_nacionalidad,
-        telefono = p_telefono,
-        id_rol = p_id_rol
+    -- Actualiza datos de un cliente en la tabla unificada "Usuario"
+    UPDATE "Usuario"
+    SET id_credencial   = p_id_credencial,
+        documento       = p_documento,
+        nombre          = p_nombre,
+        apellido        = p_apellido,
+        tipo_documento  = p_tipo_documento,
+        nacionalidad    = NULLIF(TRIM(p_nacionalidad), ''),
+        telefono        = NULLIF(TRIM(p_telefono), ''),
+        id_rol          = p_id_rol,
+        nit             = NULL
     WHERE documento = p_documento;
 END;
 $$ LANGUAGE plpgsql;

@@ -9,17 +9,28 @@ CREATE OR REPLACE FUNCTION insertar_clientes(
     p_id_rol INT
 ) RETURNS VOID AS $$
 BEGIN
-    INSERT INTO "Cliente" (id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol)
-    VALUES (p_id_credencial, p_nombre, p_apellido, p_tipo_documento, p_documento, p_nacionalidad, p_telefono, p_id_rol);
-    -- Exepciones en la base de datos
-    IF NOT p_id_credencial THEN
-        RAISE EXCEPTION 'No se pudo insertar el cliente con id_credencial: %', p_id_credencial;
-    END IF;
-    IF NOT p_documento THEN
-        RAISE EXCEPTION 'No se pudo insertar el cliente con documento: %', p_documento;
-    END IF;
-    IF NOT p_telefono THEN
-        RAISE EXCEPTION 'No se pudo insertar el cliente con telefono: %', p_telefono;
-    END IF;
+    -- Inserta un nuevo usuario con rol de cliente en la tabla unificada "Usuario"
+    INSERT INTO "Usuario" (
+        documento,
+        tipo_documento,
+        nombre,
+        apellido,
+        id_rol,
+        id_credencial,
+        nacionalidad,
+        telefono,
+        nit
+    )
+    VALUES (
+        p_documento,
+        p_tipo_documento,
+        p_nombre,
+        p_apellido,
+        p_id_rol,
+        p_id_credencial,
+        NULLIF(TRIM(p_nacionalidad), ''),
+        NULLIF(TRIM(p_telefono), ''),
+        NULL
+    );
 END;
 $$ LANGUAGE plpgsql;

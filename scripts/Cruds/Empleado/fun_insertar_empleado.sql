@@ -10,7 +10,28 @@ CREATE OR REPLACE FUNCTION insertar_empleado(
     p_nit INT
 ) RETURNS VOID AS $$
 BEGIN
-    INSERT INTO "Empleado" (id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit)
-    VALUES (p_id_credencial, p_nombre, p_apellido, p_tipo_documento, p_documento, p_nacionalidad, p_telefono, p_id_rol, p_nit);
+    -- Inserta un nuevo usuario con rol de empleado en la tabla unificada "Usuario"
+    INSERT INTO "Usuario" (
+        documento,
+        tipo_documento,
+        nombre,
+        apellido,
+        id_rol,
+        id_credencial,
+        nacionalidad,
+        telefono,
+        nit
+    )
+    VALUES (
+        p_documento,
+        p_tipo_documento,
+        p_nombre,
+        p_apellido,
+        p_id_rol,
+        p_id_credencial,
+        NULLIF(TRIM(p_nacionalidad), ''),
+        NULLIF(TRIM(p_telefono), ''),
+        p_nit
+    );
 END;
 $$ LANGUAGE plpgsql;

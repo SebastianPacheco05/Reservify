@@ -162,12 +162,15 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
     try {
       let paymentMethod: any
       if (paymentType === "CARD") {
+        const expYearShort = expYear.toString().slice(-2)
+        const expMonthPadded = expMonth.toString().padStart(2, "0")
+
         paymentMethod = {
           type: "CARD",
           card_number: cardNumber.replace(/\s/g, ""),
           cvc,
-          exp_month: expMonth,
-          exp_year: expYear,
+          exp_month: expMonthPadded,
+          exp_year: expYearShort,
           card_holder: cardHolder,
           installments: 1,
         }
@@ -224,26 +227,26 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
           window.location.href = "/"
           return
         }
-        
+
         // Si el estado es DECLINED o ERROR, mostrar error
         if (transactionStatus === "DECLINED") {
           setLoading(false)
           alert("El pago fue rechazado. Por favor intenta con otra tarjeta")
           return
         }
-        
+
         if (transactionStatus === "ERROR") {
           setLoading(false)
           alert("Error al procesar el pago. Por favor intenta de nuevo")
           return
         }
-        
+
         // Si el estado es PENDING y tenemos transaction_id, iniciar polling
         if (transactionStatus === "PENDING" && transactionId) {
           await pollTransactionStatus(transactionId)
           return
         }
-        
+
         // Si no tenemos transaction_id pero la transacción fue creada, esperar webhook
         if (transactionId) {
           alert("Tu pago está siendo procesado. Te notificaremos cuando se complete.")
@@ -330,11 +333,10 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                     setPaymentType("CARD")
                     setErrors({})
                   }}
-                  className={`w-full text-left p-6 rounded-xl border-2 transition-all ${
-                    paymentType === "CARD"
+                  className={`w-full text-left p-6 rounded-xl border-2 transition-all ${paymentType === "CARD"
                       ? "border-primary bg-primary/10 shadow-lg shadow-primary/20"
                       : "border-border bg-card hover:border-primary/50 hover:bg-muted/50"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
@@ -342,9 +344,8 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                       <p className="text-sm text-muted-foreground mt-1">Visa, Mastercard, Amex</p>
                     </div>
                     <div
-                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                        paymentType === "CARD" ? "border-primary bg-primary" : "border-muted-foreground/30"
-                      }`}
+                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${paymentType === "CARD" ? "border-primary bg-primary" : "border-muted-foreground/30"
+                        }`}
                     >
                       {paymentType === "CARD" && <Check className="w-4 h-4 text-primary-foreground" />}
                     </div>
@@ -357,11 +358,10 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                     setPaymentType("BANCOLOMBIA_TRANSFER")
                     setErrors({})
                   }}
-                  className={`w-full text-left p-6 rounded-xl border-2 transition-all ${
-                    paymentType === "BANCOLOMBIA_TRANSFER"
+                  className={`w-full text-left p-6 rounded-xl border-2 transition-all ${paymentType === "BANCOLOMBIA_TRANSFER"
                       ? "border-secondary bg-secondary/10 shadow-lg shadow-secondary/20"
                       : "border-border bg-card hover:border-secondary/50 hover:bg-muted/50"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
@@ -369,9 +369,8 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                       <p className="text-sm text-muted-foreground mt-1">Transferencia bancaria segura</p>
                     </div>
                     <div
-                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                        paymentType === "BANCOLOMBIA_TRANSFER" ? "border-secondary bg-secondary" : "border-muted-foreground/30"
-                      }`}
+                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${paymentType === "BANCOLOMBIA_TRANSFER" ? "border-secondary bg-secondary" : "border-muted-foreground/30"
+                        }`}
                     >
                       {paymentType === "BANCOLOMBIA_TRANSFER" && <Check className="w-4 h-4 text-secondary-foreground" />}
                     </div>
@@ -398,11 +397,10 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                         onChange={handleCardNumberChange}
                         onBlur={() => setTouched({ ...touched, cardNumber: true })}
                         maxLength={19}
-                        className={`w-full px-5 py-4 text-lg rounded-xl border-2 outline-none transition-all ${
-                          errors.cardNumber && touched.cardNumber
+                        className={`w-full px-5 py-4 text-lg rounded-xl border-2 outline-none transition-all ${errors.cardNumber && touched.cardNumber
                             ? "border-destructive bg-destructive/10"
                             : "border-input bg-background focus:border-primary focus:ring-2 focus:ring-primary/20"
-                        }`}
+                          }`}
                       />
                     </div>
                     {errors.cardNumber && touched.cardNumber && (
@@ -425,11 +423,10 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                         setTouched({ ...touched, cardHolder: true })
                       }}
                       onBlur={() => setTouched({ ...touched, cardHolder: true })}
-                      className={`w-full px-5 py-4 text-lg rounded-xl border-2 outline-none transition-all ${
-                        errors.cardHolder && touched.cardHolder
+                      className={`w-full px-5 py-4 text-lg rounded-xl border-2 outline-none transition-all ${errors.cardHolder && touched.cardHolder
                           ? "border-destructive bg-destructive/10"
                           : "border-input bg-background focus:border-primary focus:ring-2 focus:ring-primary/20"
-                      }`}
+                        }`}
                     />
                     {errors.cardHolder && touched.cardHolder && (
                       <div className="flex items-center gap-2 mt-2 text-destructive">
@@ -454,11 +451,10 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                         }}
                         onBlur={() => setTouched({ ...touched, expMonth: true })}
                         maxLength={2}
-                        className={`w-full px-4 py-4 text-lg rounded-xl border-2 outline-none transition-all text-center ${
-                          errors.expMonth && touched.expMonth
+                        className={`w-full px-4 py-4 text-lg rounded-xl border-2 outline-none transition-all text-center ${errors.expMonth && touched.expMonth
                             ? "border-destructive bg-destructive/10"
                             : "border-input bg-background focus:border-primary focus:ring-2 focus:ring-primary/20"
-                        }`}
+                          }`}
                       />
                       {errors.expMonth && touched.expMonth && (
                         <p className="text-xs text-destructive mt-2">{errors.expMonth}</p>
@@ -477,11 +473,10 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                         }}
                         onBlur={() => setTouched({ ...touched, expYear: true })}
                         maxLength={4}
-                        className={`w-full px-4 py-4 text-lg rounded-xl border-2 outline-none transition-all text-center ${
-                          errors.expYear && touched.expYear
+                        className={`w-full px-4 py-4 text-lg rounded-xl border-2 outline-none transition-all text-center ${errors.expYear && touched.expYear
                             ? "border-destructive bg-destructive/10"
                             : "border-input bg-background focus:border-primary focus:ring-2 focus:ring-primary/20"
-                        }`}
+                          }`}
                       />
                       {errors.expYear && touched.expYear && (
                         <p className="text-xs text-destructive mt-2">{errors.expYear}</p>
@@ -500,11 +495,10 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                         }}
                         onBlur={() => setTouched({ ...touched, cvc: true })}
                         maxLength={3}
-                        className={`w-full px-4 py-4 text-lg rounded-xl border-2 outline-none transition-all text-center ${
-                          errors.cvc && touched.cvc
+                        className={`w-full px-4 py-4 text-lg rounded-xl border-2 outline-none transition-all text-center ${errors.cvc && touched.cvc
                             ? "border-destructive bg-destructive/10"
                             : "border-input bg-background focus:border-primary focus:ring-2 focus:ring-primary/20"
-                        }`}
+                          }`}
                       />
                       {errors.cvc && touched.cvc && <p className="text-xs text-destructive mt-2">{errors.cvc}</p>}
                     </div>
@@ -550,11 +544,10 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                 <button
                   onClick={handlePayment}
                   disabled={loading || !emailCliente || (paymentType === "CARD" && !isCardFormValid)}
-                  className={`w-full py-4 px-6 rounded-xl text-lg font-bold flex items-center justify-center gap-3 transition-all shadow-lg ${
-                    loading || !emailCliente || (paymentType === "CARD" && !isCardFormValid)
+                  className={`w-full py-4 px-6 rounded-xl text-lg font-bold flex items-center justify-center gap-3 transition-all shadow-lg ${loading || !emailCliente || (paymentType === "CARD" && !isCardFormValid)
                       ? "bg-muted text-muted-foreground cursor-not-allowed"
                       : "bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:from-primary/90 hover:to-secondary/90 active:scale-95 shadow-primary/30"
-                  }`}
+                    }`}
                 >
                   {loading ? (
                     <>
@@ -596,11 +589,11 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                       </div>
                       <div className="flex items-center gap-3">
                         {expMonth &&
-                        expYear &&
-                        touched.expMonth &&
-                        touched.expYear &&
-                        !errors.expMonth &&
-                        !errors.expYear ? (
+                          expYear &&
+                          touched.expMonth &&
+                          touched.expYear &&
+                          !errors.expMonth &&
+                          !errors.expYear ? (
                           <Check className="w-4 h-4 text-primary flex-shrink-0" />
                         ) : (
                           <div className="w-4 h-4 rounded-full bg-muted-foreground/30 flex-shrink-0" />

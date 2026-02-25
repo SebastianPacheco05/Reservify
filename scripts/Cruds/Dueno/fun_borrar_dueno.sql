@@ -2,7 +2,8 @@ CREATE OR REPLACE FUNCTION borrar_dueno(
     p_documento INT
 ) RETURNS VOID AS $$
 BEGIN
-    DELETE FROM "Dueno"
+    -- Elimina un usuario con rol de dueño desde la tabla unificada "Usuario"
+    DELETE FROM "Usuario"
     WHERE documento = p_documento;
 END;
 $$ LANGUAGE plpgsql;

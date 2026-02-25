@@ -8,7 +8,28 @@ CREATE OR REPLACE FUNCTION insertar_dueno(
 )
 RETURNS VOID AS $$
 BEGIN
-    INSERT INTO "Dueno" (documento, tipo_documento, nombre, apellido, id_rol, id_credencial)
-    VALUES (p_documento, p_tipo_documento, p_nombre, p_apellido, p_id_rol, p_id_credencial);
+    -- Inserta un nuevo usuario con rol de dueño en la tabla unificada "Usuario"
+    INSERT INTO "Usuario" (
+        documento,
+        tipo_documento,
+        nombre,
+        apellido,
+        id_rol,
+        id_credencial,
+        nacionalidad,
+        telefono,
+        nit
+    )
+    VALUES (
+        p_documento,
+        p_tipo_documento,
+        p_nombre,
+        p_apellido,
+        p_id_rol,
+        p_id_credencial,
+        NULL,
+        NULL,
+        NULL
+    );
 END;
 $$ LANGUAGE plpgsql;

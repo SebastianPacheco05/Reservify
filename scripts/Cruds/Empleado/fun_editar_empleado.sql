@@ -10,16 +10,17 @@ CREATE OR REPLACE FUNCTION editar_empleado(
     p_nit INT
 ) RETURNS VOID AS $$
 BEGIN
-    UPDATE "Empleado"
-    SET id_credencial = p_id_credencial,
-        nombre = p_nombre,
-        apellido = p_apellido,
+    -- Actualiza datos de un empleado en la tabla unificada "Usuario"
+    UPDATE "Usuario"
+    SET id_credencial  = p_id_credencial,
+        nombre         = p_nombre,
+        apellido       = p_apellido,
         tipo_documento = p_tipo_documento,
-        documento = p_documento,
-        nacionalidad = p_nacionalidad,
-        telefono = p_telefono,
-        id_rol = p_id_rol,
-        nit = p_nit
+        documento      = p_documento,
+        nacionalidad   = NULLIF(TRIM(p_nacionalidad), ''),
+        telefono       = NULLIF(TRIM(p_telefono), ''),
+        id_rol         = p_id_rol,
+        nit            = p_nit
     WHERE documento = p_documento;
 END;
 $$ LANGUAGE plpgsql;

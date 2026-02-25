@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends, Request
 import os
 import re
 import traceback
+from pathlib import Path
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from config import get_db
@@ -16,7 +17,13 @@ from functions.wompi.wompi_service import (
 from functions.wompi.webhook_validator import validar_firma_webhook
 from models import PagoRequest
 
-load_dotenv()
+# Cargar variables de entorno desde el .env de la raíz del proyecto
+project_root = Path(__file__).parent.parent.parent
+env_path = project_root / ".env"
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path)
+else:
+    load_dotenv()
 
 router = APIRouter(
     prefix="/wompi",

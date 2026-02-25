@@ -9,8 +9,17 @@ RETURNS TABLE (
     telefono VARCHAR,
     id_rol INTEGER
 ) LANGUAGE sql AS $$
-SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol
-FROM "Cliente";
+SELECT u.id_credencial,
+       u.nombre,
+       u.apellido,
+       u.tipo_documento,
+       u.documento,
+       u.nacionalidad,
+       u.telefono,
+       u.id_rol
+FROM "Usuario" u
+JOIN "Roles" r ON u.id_rol = r.id_rol
+WHERE LOWER(TRIM(r.nombre_rol)) = 'cliente';
 $$;
 
 CREATE OR REPLACE FUNCTION get_cliente_by_documento(p_documento NUMERIC)
@@ -24,8 +33,17 @@ RETURNS TABLE (
     telefono VARCHAR,
     id_rol INTEGER
 ) LANGUAGE sql AS $$
-SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol
-FROM "Cliente"
-WHERE documento = p_documento;
+SELECT u.id_credencial,
+       u.nombre,
+       u.apellido,
+       u.tipo_documento,
+       u.documento,
+       u.nacionalidad,
+       u.telefono,
+       u.id_rol
+FROM "Usuario" u
+JOIN "Roles" r ON u.id_rol = r.id_rol
+WHERE LOWER(TRIM(r.nombre_rol)) = 'cliente'
+  AND u.documento = p_documento;
 $$;
 
