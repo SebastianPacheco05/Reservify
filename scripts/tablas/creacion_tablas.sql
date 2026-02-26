@@ -50,8 +50,8 @@ CREATE TABLE "Usuario" (
     apellido VARCHAR(50) NOT NULL,
     id_rol INT NOT NULL,
     id_credencial INT NOT NULL UNIQUE,
-    nacionalidad VARCHAR(20),
-    telefono VARCHAR(10) CHECK (telefono IS NULL OR telefono ~ '^[0-9]{10}$'),
+    nacionalidad VARCHAR(20) NOT NULL DEFAULT 'sin dato',
+    telefono VARCHAR(10) NOT NULL DEFAULT 'sin dato' CHECK (telefono = 'sin dato' OR telefono ~ '^[0-9]{10}$'),
     nit DECIMAL(10, 0) NULL,  -- Solo para rol empleado: restaurante donde trabaja; dueño se vincula por Restaurante.documento
     FOREIGN KEY (id_rol) REFERENCES "Roles" (id_rol) ON DELETE CASCADE,
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
@@ -80,8 +80,8 @@ CREATE TABLE "Restaurante" (
     -- Antelación mínima en horas para crear una reserva (0 = sin restricción).
     -- Ej: 24 = al menos 1 día antes, 2 = al menos 2 horas antes.
     min_anticipacion_horas INT NOT NULL DEFAULT 0 CHECK (min_anticipacion_horas >= 0),
-    lat DOUBLE PRECISION,  -- Latitud para mostrar el restaurante en el mapa
-    lng DOUBLE PRECISION,  -- Longitud para mostrar el restaurante en el mapa
+    lat DOUBLE PRECISION NOT NULL DEFAULT 0,  -- Latitud para mostrar el restaurante en el mapa (0 = sin dato)
+    lng DOUBLE PRECISION NOT NULL DEFAULT 0,  -- Longitud para mostrar el restaurante en el mapa (0 = sin dato)
     foreign key (id_categoria) references "Categorias" (id_categoria) ON DELETE CASCADE,
     FOREIGN KEY (documento) REFERENCES "Usuario" (documento) ON DELETE CASCADE,
     CHECK (horario_apertura < horario_cierre)  -- Validación de horarios
@@ -109,7 +109,7 @@ COMMENT ON COLUMN "Imagen_referencia_restaurante".orden IS 'Orden de la imagen (
 CREATE TABLE "Mesas" (
     id_mesa SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     estado_de_disponibilidad BOOLEAN NOT NULL,  -- Estado de disponibilidad
-    cant_personas INT CHECK (cant_personas > 0),  -- Capacidad de personas
+    cant_personas INT NOT NULL CHECK (cant_personas > 0),  -- Capacidad de personas
     nit DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
     precio DECIMAL(10, 2) NOT NULL CHECK (precio >= 0),  -- Precio de la mesa
     FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
@@ -143,8 +143,8 @@ CREATE TABLE "Reserva" (
     num_comensales INT NOT NULL DEFAULT 1,  -- numero de personas
     horario TIME NOT NULL,  -- Horario de la reserva
     fecha DATE NOT NULL CHECK (fecha >= CURRENT_DATE),  -- Fecha de la reserva
-    motivo_cancelacion VARCHAR(250),  -- Motivo indicado al cancelar (máx 250 caracteres); se envía al cliente por correo
-    ajuste TEXT,  -- Observaciones o ajuste solicitado por el cliente en la reserva
+    motivo_cancelacion VARCHAR(250) NOT NULL DEFAULT 'sin dato',  -- Motivo indicado al cancelar (máx 250 caracteres); se envía al cliente por correo
+    ajuste TEXT NOT NULL DEFAULT 'sin dato',  -- Observaciones o ajuste solicitado por el cliente en la reserva
     UNIQUE (id_mesa, fecha, horario),  -- Restricción de unicidad para evitar reservas duplicadas
     FOREIGN KEY (id_mesa) REFERENCES "Mesas" (id_mesa) ON DELETE CASCADE,
     FOREIGN KEY (documento) REFERENCES "Usuario" (documento) ON DELETE CASCADE,
@@ -171,7 +171,7 @@ CREATE TABLE "Comentarios" (
     nit DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
     comentario TEXT NOT NULL,  -- Comentario del cliente
     fecha TIMESTAMP NOT NULL DEFAULT NOW(),  -- Fecha del comentario
-    calificacion INT CHECK (calificacion >= 1 AND calificacion <= 5),  -- Calificación del 1 al 5
+    calificacion INT NOT NULL DEFAULT 0 CHECK (calificacion >= 0 AND calificacion <= 5),  -- Calificación del 1 al 5 (0 = sin dato)
     FOREIGN KEY (documento) REFERENCES "Usuario" (documento) ON DELETE CASCADE,
     FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
 );
@@ -187,10 +187,10 @@ CREATE TABLE "jwt_tokens" (
     expires_at TIMESTAMP NOT NULL,  -- Expiración del access token
     refresh_expires_at TIMESTAMP NOT NULL,  -- Expiración del refresh token
     revoked BOOLEAN NOT NULL DEFAULT FALSE,
-    user_agent TEXT,
-    ip_address TEXT,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
+    user_agent TEXT NOT NULL DEFAULT 'sin dato',
+    ip_address TEXT NOT NULL DEFAULT 'sin dato',
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX idx_jwt_tokens_refresh_token ON "jwt_tokens" (refresh_token);
@@ -202,7 +202,7 @@ CREATE TABLE "SMTP_config" (
     host VARCHAR(255) NOT NULL,
     port INT NOT NULL CHECK (port > 0 AND port <= 65535),
     usuario VARCHAR(255) NOT NULL,
-    password_encrypted VARCHAR(512),
+    password_encrypted VARCHAR(512) NOT NULL DEFAULT 'sin dato',
     from_email VARCHAR(255) NOT NULL,
     consentimiento_archivo BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -218,7 +218,7 @@ CREATE TABLE "IMAP_config" (
     host VARCHAR(255) NOT NULL,
     port INT NOT NULL CHECK (port > 0 AND port <= 65535),
     usuario VARCHAR(255) NOT NULL,
-    password_encrypted VARCHAR(512),
+    password_encrypted VARCHAR(512) NOT NULL DEFAULT 'sin dato',
     consentimiento_archivo BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -232,12 +232,12 @@ CREATE TABLE "Mails" (
     id_credencial INT NOT NULL REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE,
     imap_uid INT NOT NULL,
     from_email VARCHAR(512) NOT NULL,
-    to_email VARCHAR(512),
+    to_email VARCHAR(512) NOT NULL DEFAULT 'sin dato',
     subject VARCHAR(1024) NOT NULL,
-    snippet VARCHAR(1024),
-    body_text TEXT,
-    body_html TEXT,
-    date_received TIMESTAMP,
+    snippet VARCHAR(1024) NOT NULL DEFAULT 'sin dato',
+    body_text TEXT NOT NULL DEFAULT 'sin dato',
+    body_html TEXT NOT NULL DEFAULT 'sin dato',
+    date_received TIMESTAMP NOT NULL DEFAULT NOW(),
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 CREATE UNIQUE INDEX idx_mails_credencial_uid ON "Mails" (id_credencial, imap_uid);

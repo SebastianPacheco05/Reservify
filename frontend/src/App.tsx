@@ -5,6 +5,7 @@ import { startProactiveRefresh } from "./services/authService";
 import { motion } from "framer-motion";
 import { fadeIn } from "./lib/animations";
 import { getProtectedRoutes, getPublicRoutes } from "./routes/config";
+import { CookieConsentModal } from "./components/CookieConsentModal";
 
 function PageWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -29,6 +30,7 @@ function App() {
 
   return (
     <ToastProvider>
+      <CookieConsentModal />
       <Routes>
         {publicRoutes.map(({ path, element }) => (
           <Route key={path} path={path} element={element} />
