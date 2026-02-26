@@ -24,10 +24,6 @@ DROP TRIGGER IF EXISTS "auditoria_insert_encabezado_factura" ON "Encabezado_Fact
 DROP TRIGGER IF EXISTS "auditoria_update_encabezado_factura" ON "Encabezado_Factura";
 DROP TRIGGER IF EXISTS "auditoria_delete_encabezado_factura" ON "Encabezado_Factura";
 
-DROP TRIGGER IF EXISTS "auditoria_insert_detalle_factura" ON "Detalle_Factura";
-DROP TRIGGER IF EXISTS "auditoria_update_detalle_factura" ON "Detalle_Factura";
-DROP TRIGGER IF EXISTS "auditoria_delete_detalle_factura" ON "Detalle_Factura";
-
 DROP TRIGGER IF EXISTS "auditoria_insert_reserva" ON "Reserva";
 DROP TRIGGER IF EXISTS "auditoria_update_reserva" ON "Reserva";
 DROP TRIGGER IF EXISTS "auditoria_delete_reserva" ON "Reserva";
@@ -36,13 +32,33 @@ DROP TRIGGER IF EXISTS "auditoria_insert_categoria" ON "Categorias";
 DROP TRIGGER IF EXISTS "auditoria_update_categoria" ON "Categorias";
 DROP TRIGGER IF EXISTS "auditoria_delete_categoria" ON "Categorias";
 
--- DROP TRIGGER IF EXISTS "auditoria_insert_comentario" ON "Comentarios";
--- DROP TRIGGER IF EXISTS "auditoria_update_comentario" ON "Comentarios";
--- DROP TRIGGER IF EXISTS "auditoria_delete_comentario" ON "Comentarios";
+DROP TRIGGER IF EXISTS "auditoria_insert_imagen_ref_restaurante" ON "Imagen_referencia_restaurante";
+DROP TRIGGER IF EXISTS "auditoria_update_imagen_ref_restaurante" ON "Imagen_referencia_restaurante";
+DROP TRIGGER IF EXISTS "auditoria_delete_imagen_ref_restaurante" ON "Imagen_referencia_restaurante";
 
--- DROP TRIGGER IF EXISTS "auditoria_insert_cal_mensual" ON "Calculos_mensuales";
--- DROP TRIGGER IF EXISTS "auditoria_update_cal_mensual" ON "Calculos_mensuales";
--- DROP TRIGGER IF EXISTS "auditoria_delete_cal_mensual" ON "Calculos_mensuales";
+DROP TRIGGER IF EXISTS "auditoria_insert_comentario" ON "Comentarios";
+DROP TRIGGER IF EXISTS "auditoria_update_comentario" ON "Comentarios";
+DROP TRIGGER IF EXISTS "auditoria_delete_comentario" ON "Comentarios";
+
+DROP TRIGGER IF EXISTS "auditoria_insert_cal_mensual" ON "Calculos_mensuales";
+DROP TRIGGER IF EXISTS "auditoria_update_cal_mensual" ON "Calculos_mensuales";
+DROP TRIGGER IF EXISTS "auditoria_delete_cal_mensual" ON "Calculos_mensuales";
+
+DROP TRIGGER IF EXISTS "auditoria_insert_jwt_tokens" ON "jwt_tokens";
+DROP TRIGGER IF EXISTS "auditoria_update_jwt_tokens" ON "jwt_tokens";
+DROP TRIGGER IF EXISTS "auditoria_delete_jwt_tokens" ON "jwt_tokens";
+
+DROP TRIGGER IF EXISTS "auditoria_insert_smtp_config" ON "SMTP_config";
+DROP TRIGGER IF EXISTS "auditoria_update_smtp_config" ON "SMTP_config";
+DROP TRIGGER IF EXISTS "auditoria_delete_smtp_config" ON "SMTP_config";
+
+DROP TRIGGER IF EXISTS "auditoria_insert_imap_config" ON "IMAP_config";
+DROP TRIGGER IF EXISTS "auditoria_update_imap_config" ON "IMAP_config";
+DROP TRIGGER IF EXISTS "auditoria_delete_imap_config" ON "IMAP_config";
+
+DROP TRIGGER IF EXISTS "auditoria_insert_mails" ON "Mails";
+DROP TRIGGER IF EXISTS "auditoria_update_mails" ON "Mails";
+DROP TRIGGER IF EXISTS "auditoria_delete_mails" ON "Mails";
 
 -- Eliminar tabla de auditoría
 DROP TABLE IF EXISTS "Auditoria" ;
@@ -204,21 +220,6 @@ BEFORE DELETE ON "Encabezado_Factura"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
-CREATE TRIGGER "auditoria_insert_detalle_factura"
-AFTER INSERT ON "Detalle_Factura"
-FOR EACH ROW
-EXECUTE PROCEDURE "auditoria_insert_trigger"();
-
-CREATE TRIGGER "auditoria_update_detalle_factura"
-AFTER UPDATE ON "Detalle_Factura"
-FOR EACH ROW
-EXECUTE PROCEDURE "auditoria_update_trigger"();
-
-CREATE TRIGGER "auditoria_delete_detalle_factura"
-BEFORE DELETE ON "Detalle_Factura"
-FOR EACH ROW
-EXECUTE PROCEDURE "auditoria_delete_trigger"();
-
 CREATE TRIGGER "auditoria_insert_reserva"
 AFTER INSERT ON "Reserva"
 FOR EACH ROW
@@ -249,33 +250,115 @@ BEFORE DELETE ON "Categorias"
 FOR EACH ROW
 EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
--- CREATE TRIGGER "auditoria_insert_cal_mensual"
--- AFTER INSERT ON "Calculos_mensuales"
--- FOR EACH ROW
--- EXECUTE PROCEDURE "auditoria_insert_trigger"();
+-- Imagen_referencia_restaurante
+CREATE TRIGGER "auditoria_insert_imagen_ref_restaurante"
+AFTER INSERT ON "Imagen_referencia_restaurante"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_insert_trigger"();
 
--- CREATE TRIGGER "auditoria_update_cal_mensual"
--- AFTER INSERT ON "Calculos_mensuales"
--- FOR EACH ROW
--- EXECUTE PROCEDURE "auditoria_update_trigger"();
+CREATE TRIGGER "auditoria_update_imagen_ref_restaurante"
+AFTER UPDATE ON "Imagen_referencia_restaurante"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_update_trigger"();
 
--- CREATE TRIGGER "auditoria_delete_cal_mensual"
--- AFTER INSERT ON "Calculos_mensuales"
--- FOR EACH ROW
--- EXECUTE PROCEDURE "auditoria_delete_trigger"();
+CREATE TRIGGER "auditoria_delete_imagen_ref_restaurante"
+BEFORE DELETE ON "Imagen_referencia_restaurante"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
--- CREATE TRIGGER "auditoria_insert_comentario"
--- AFTER INSERT ON "Comentarios"
--- FOR EACH ROW
--- EXECUTE PROCEDURE "auditoria_insert_trigger"();
+-- Comentarios
+CREATE TRIGGER "auditoria_insert_comentario"
+AFTER INSERT ON "Comentarios"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_insert_trigger"();
 
--- CREATE TRIGGER "auditoria_update_comentario"
--- AFTER INSERT ON "Comentarios"
--- FOR EACH ROW
--- EXECUTE PROCEDURE "auditoria_update_trigger"();
+CREATE TRIGGER "auditoria_update_comentario"
+AFTER UPDATE ON "Comentarios"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_update_trigger"();
 
--- CREATE TRIGGER "auditoria_delete_comentario"
--- AFTER INSERT ON "Comentarios"
--- FOR EACH ROW
--- EXECUTE PROCEDURE "auditoria_delete_trigger"();
+CREATE TRIGGER "auditoria_delete_comentario"
+BEFORE DELETE ON "Comentarios"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_delete_trigger"();
+
+-- Calculos_mensuales
+CREATE TRIGGER "auditoria_insert_cal_mensual"
+AFTER INSERT ON "Calculos_mensuales"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_insert_trigger"();
+
+CREATE TRIGGER "auditoria_update_cal_mensual"
+AFTER UPDATE ON "Calculos_mensuales"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_update_trigger"();
+
+CREATE TRIGGER "auditoria_delete_cal_mensual"
+BEFORE DELETE ON "Calculos_mensuales"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_delete_trigger"();
+
+-- jwt_tokens
+CREATE TRIGGER "auditoria_insert_jwt_tokens"
+AFTER INSERT ON "jwt_tokens"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_insert_trigger"();
+
+CREATE TRIGGER "auditoria_update_jwt_tokens"
+AFTER UPDATE ON "jwt_tokens"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_update_trigger"();
+
+CREATE TRIGGER "auditoria_delete_jwt_tokens"
+BEFORE DELETE ON "jwt_tokens"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_delete_trigger"();
+
+-- SMTP_config
+CREATE TRIGGER "auditoria_insert_smtp_config"
+AFTER INSERT ON "SMTP_config"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_insert_trigger"();
+
+CREATE TRIGGER "auditoria_update_smtp_config"
+AFTER UPDATE ON "SMTP_config"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_update_trigger"();
+
+CREATE TRIGGER "auditoria_delete_smtp_config"
+BEFORE DELETE ON "SMTP_config"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_delete_trigger"();
+
+-- IMAP_config
+CREATE TRIGGER "auditoria_insert_imap_config"
+AFTER INSERT ON "IMAP_config"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_insert_trigger"();
+
+CREATE TRIGGER "auditoria_update_imap_config"
+AFTER UPDATE ON "IMAP_config"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_update_trigger"();
+
+CREATE TRIGGER "auditoria_delete_imap_config"
+BEFORE DELETE ON "IMAP_config"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_delete_trigger"();
+
+-- Mails
+CREATE TRIGGER "auditoria_insert_mails"
+AFTER INSERT ON "Mails"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_insert_trigger"();
+
+CREATE TRIGGER "auditoria_update_mails"
+AFTER UPDATE ON "Mails"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_update_trigger"();
+
+CREATE TRIGGER "auditoria_delete_mails"
+BEFORE DELETE ON "Mails"
+FOR EACH ROW
+EXECUTE PROCEDURE "auditoria_delete_trigger"();
 
