@@ -6,21 +6,21 @@
 
 -- Primero se eliminan todas las tablas existentes en orden inverso a su creación
 -- para evitar problemas de dependencias
-DROP TABLE IF EXISTS "SMTP_config";
-DROP TABLE IF EXISTS "IMAP_config";
 DROP TABLE IF EXISTS "Reserva";
-DROP TABLE IF EXISTS "Encabezado_Factura" CASCADE;
-DROP TABLE IF EXISTS "Comentarios" CASCADE;
+DROP TABLE IF EXISTS "Comentarios";
+DROP TABLE IF EXISTS "Calculos_mensuales";
+DROP TABLE IF EXISTS "Imagen_referencia_restaurante";
 DROP TABLE IF EXISTS "Mesas";
-DROP TABLE IF EXISTS "Calculos_mensuales" CASCADE;
-DROP TABLE IF EXISTS "Imagen_referencia_restaurante" CASCADE;
-DROP TABLE IF EXISTS "Restaurante" CASCADE;
-DROP TABLE IF EXISTS "Usuario" CASCADE;
-DROP TABLE IF EXISTS "Roles" CASCADE;
+DROP TABLE IF EXISTS "Encabezado_Factura";
+DROP TABLE IF EXISTS "Restaurante";
+DROP TABLE IF EXISTS "Mails";
+DROP TABLE IF EXISTS "IMAP_config";
+DROP TABLE IF EXISTS "SMTP_config";
 DROP TABLE IF EXISTS "jwt_tokens";
-DROP TABLE IF EXISTS "Credenciales" CASCADE;
-DROP TABLE IF EXISTS "Categorias" CASCADE;
-DROP TABLE IF EXISTS "Mails" CASCADE;
+DROP TABLE IF EXISTS "Usuario";
+DROP TABLE IF EXISTS "Categorias";
+DROP TABLE IF EXISTS "Roles";
+DROP TABLE IF EXISTS "Credenciales";
 
 
 -- Tabla Credenciales: Almacena la información de autenticación de usuarios

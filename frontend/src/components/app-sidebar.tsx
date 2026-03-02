@@ -25,11 +25,6 @@ const data = {
       icon: Home,
     },
     {
-      id: "reservas",
-      title: "Reservas",
-      icon: Calendar,
-    },
-    {
       id: "restaurantes",
       title: "Restaurantes",
       icon: UtensilsCrossed,
