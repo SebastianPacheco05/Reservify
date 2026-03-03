@@ -88,7 +88,8 @@ export default function RestaurantPage() {
   };
 
   const handleBackToHome = () => {
-    navigate("/");
+    // Redirige a "/" y fuerza recarga de la página
+    window.location.href = "/";
   };
 
   const handlePaymentReservation = async () => {
@@ -264,12 +265,14 @@ export default function RestaurantPage() {
               <p className="text-muted-foreground mb-6">
                 No se pudo cargar la información del restaurante. Verifica que el NIT sea correcto.
               </p>
-              <Link to="/">
-                <Button variant="outline" onClick={() => handleBackToHome} className="cursor-pointer">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Volver al inicio
-                </Button>
-              </Link>
+              <Button
+                variant="outline"
+                onClick={handleBackToHome}
+                className="cursor-pointer"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Volver al inicio
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -282,14 +285,15 @@ export default function RestaurantPage() {
       {/* Barra superior: navegación + cambio de tema */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-sm">
         <div className="max-w-7xl mx-auto flex h-14 sm:h-16 items-center justify-between px-4 sm:px-6">
-          <Link
-            to="/"
+          <button
+            type="button"
+            onClick={handleBackToHome}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-medium rounded-lg px-3 py-2 hover:bg-accent/50"
           >
             <ArrowLeft className="h-5 w-5" />
             <span className="hidden sm:inline">Volver al inicio</span>
             <span className="sm:hidden">Volver</span>
-          </Link>
+          </button>
           <div className="flex items-center gap-2">
             <img src="/logoreservify.png" alt="Reservify" className="h-8 dark:invert" />
             <ModeToggle />
