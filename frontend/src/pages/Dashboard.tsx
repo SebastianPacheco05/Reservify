@@ -10,7 +10,7 @@ import { MonthlyChart } from "../components/ui/monthly-chart";
 import { InvoicesTable } from "../components/ui/invoices-table";
 import { Skeleton } from "../components/ui/skeleton";
 import { Button } from "../components/ui/button";
-import type { Restaurant, Reservation, MonthlyFlow, Invoice, DailyFlow, ClienteGestor } from "../types/dashboard";
+import type { Restaurant, MonthlyFlow, Invoice, DailyFlow, ClienteGestor } from "../types/dashboard";
 import { OwnerMetricsService, type OwnerMetrics } from "../services/OwnerMetricsService";
 import { OwnerInvoicesService } from "../services/OwnerInvoicesService";
 import { OwnerMonthlyFlowService } from "../services/OwnerMonthlyFlowService";
@@ -87,7 +87,6 @@ export default function Dashboard() {
     revenue_mes: 0,
   });
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-  const [, setReservations] = useState<Reservation[]>([]);
   const [monthlyFlow, setMonthlyFlow] = useState<MonthlyFlow[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isLoadingMetrics, setIsLoadingMetrics] = useState(true);

@@ -41,8 +41,6 @@ import {
   ArrowLeft,
 } from "lucide-react";
 
-import { useNavigate } from "react-router-dom";
-
 import { useRestaurantData } from "../hooks/useRestaurantData";
 import { useToastContext } from "../components/ToastProvider";
 import { getApiEndpoint } from "../config/api";
@@ -51,7 +49,6 @@ import ReviewForm from "../components/ReviewForm";
 import { ModeToggle } from "../components/mode-toggle";
 
 export default function RestaurantPage() {
-  const navigate = useNavigate();
   const { toast } = useToastContext();
   const [searchParams] = useSearchParams();
   const restaurantNIT = Number(searchParams.get("nit") || 0);
