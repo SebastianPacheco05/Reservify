@@ -43,10 +43,10 @@ function agruparPorSeccion(reservas: Reserva[]) {
   };
   for (const r of reservas) {
     const estado = (r.estado_reserva || "").toLowerCase().trim();
-    if (SECCIONES[0].estados.includes(estado)) grupos.activas.push(r);
-    else if (SECCIONES[1].estados.includes(estado)) grupos.pendientes.push(r);
-    else if (SECCIONES[2].estados.includes(estado)) grupos.finalizadas.push(r);
-    else if (SECCIONES[3].estados.includes(estado)) grupos.canceladas.push(r);
+    if ((SECCIONES[0].estados as readonly string[]).includes(estado)) grupos.activas.push(r);
+    else if ((SECCIONES[1].estados as readonly string[]).includes(estado)) grupos.pendientes.push(r);
+    else if ((SECCIONES[2].estados as readonly string[]).includes(estado)) grupos.finalizadas.push(r);
+    else if ((SECCIONES[3].estados as readonly string[]).includes(estado)) grupos.canceladas.push(r);
   }
   return grupos;
 }

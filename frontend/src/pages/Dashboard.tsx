@@ -87,7 +87,7 @@ export default function Dashboard() {
     revenue_mes: 0,
   });
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [, setReservations] = useState<Reservation[]>([]);
   const [monthlyFlow, setMonthlyFlow] = useState<MonthlyFlow[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isLoadingMetrics, setIsLoadingMetrics] = useState(true);

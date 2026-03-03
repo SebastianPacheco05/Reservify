@@ -26,14 +26,10 @@ function onTokenRefreshed(token: string) {
  * solo devuelve null si falla (el llamador decide si sacar al usuario).
  */
 async function refreshAccessToken(): Promise<string | null> {
-  const refreshToken = localStorage.getItem("refresh_token");
-  if (!refreshToken) return null;
-
   try {
     const response = await fetch(`${API_BASE_URL}/credenciales/refresh`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refresh_token: refreshToken }),
+      credentials: "include",
     });
 
     if (!response.ok) {
@@ -56,7 +52,7 @@ async function refreshAccessToken(): Promise<string | null> {
  * el usuario reciba 401. Solo redirige a login si el refresh falla (token revocado/expirado).
  */
 async function runProactiveRefresh(): Promise<void> {
-  if (!localStorage.getItem("refresh_token")) return;
+  if (!localStorage.getItem("access_token")) return;
   const newToken = await refreshAccessToken();
   if (newToken) return;
   // Refresh falló: sesión inválida o expirada; solo entonces sacar de la página
@@ -77,7 +73,7 @@ function clearProactiveRefresh(): void {
  * El token se renovará cada 25 min sin salir de la página.
  */
 export function startProactiveRefresh(): void {
-  if (!localStorage.getItem("refresh_token") || !localStorage.getItem("access_token")) {
+  if (!localStorage.getItem("access_token")) {
     return;
   }
   if (proactiveRefreshTimerId !== null) return;
@@ -96,7 +92,11 @@ export async function authFetch(url: string, options: RequestInit = {}): Promise
   };
 
   // Primera solicitud
-  let response = await fetch(url, { ...options, headers });
+  let response = await fetch(url, {
+    ...options,
+    headers,
+    credentials: "include",
+  });
 
   // Si recibimos 401 (Unauthorized), intentar renovar el token
   if (response.status === 401) {
@@ -114,7 +114,13 @@ export async function authFetch(url: string, options: RequestInit = {}): Promise
           subscribeTokenRefresh((newToken: string) => {
             // Reintentar la solicitud con el nuevo token
             headers.Authorization = `Bearer ${newToken}`;
-            resolve(fetch(url, { ...options, headers }));
+            resolve(
+              fetch(url, {
+                ...options,
+                headers,
+                credentials: "include",
+              }),
+            );
           });
         });
       }
@@ -129,7 +135,11 @@ export async function authFetch(url: string, options: RequestInit = {}): Promise
       if (newToken) {
         onTokenRefreshed(newToken);
         headers.Authorization = `Bearer ${newToken}`;
-        response = await fetch(url, { ...options, headers });
+        response = await fetch(url, {
+          ...options,
+          headers,
+          credentials: "include",
+        });
       } else {
         clearProactiveRefresh();
         localStorage.clear();
@@ -148,7 +158,6 @@ export async function authFetch(url: string, options: RequestInit = {}): Promise
 export function logout() {
   clearProactiveRefresh();
   localStorage.removeItem("access_token");
-  localStorage.removeItem("refresh_token");
   localStorage.removeItem("token_type");
   localStorage.removeItem("tipo_usuario");
   localStorage.removeItem("documento");

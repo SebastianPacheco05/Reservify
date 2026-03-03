@@ -90,8 +90,11 @@ def get_estadisticas_gestor_actual(
         return data
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        raise HTTPException(
+            status_code=500,
+            detail="Error interno al obtener métricas del gestor",
+        )
 
 
 @router.get("/flujo-diario")
@@ -106,8 +109,11 @@ def get_flujo_diario(
         return data
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        raise HTTPException(
+            status_code=500,
+            detail="Error interno al obtener flujo diario",
+        )
 
 
 @router.get("/metricas-mensuales")
@@ -122,8 +128,11 @@ def get_metricas_mensuales(
         return data
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        raise HTTPException(
+            status_code=500,
+            detail="Error interno al obtener métricas mensuales",
+        )
 
 
 @router.get("/mi-balance")

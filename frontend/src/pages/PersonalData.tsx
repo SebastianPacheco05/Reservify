@@ -1,37 +1,22 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
-import { Lock, ArrowRight, User, IdCard, Flag, Phone } from "lucide-react";
-import { Button } from "../components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
 
 export default function PersonalData() {
-  const [nombre, setNombre] = useState("");
-  const [apellidos, setApellidos] = useState("");
-  const [nacionalidad, setNacionalidad] = useState("");
-  const [tipo_documento, setTipo_documento] = useState("");
-  const [numero_documento, setNumero_documento] = useState("");
-  const [telefono, setTelefono] = useState("");
+  const [nombre] = useState("");
+  const [apellidos] = useState("");
+  const [nacionalidad] = useState("");
+  const [tipo_documento] = useState("");
+  const [numero_documento] = useState("");
+  const [telefono] = useState("");
   const [rememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const _handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
-    // Simular llamada a API
     await new Promise((resolve) => setTimeout(resolve, 1500));
-
     console.log("Login attempt:", {
       nombre,
       apellidos,
@@ -43,6 +28,7 @@ export default function PersonalData() {
     });
     setIsLoading(false);
   };
+  void _handleSubmit;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/50 via-background to-accent/20 flex items-center justify-center p-2 sm:p-4">

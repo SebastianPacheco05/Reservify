@@ -1,9 +1,9 @@
 import type React from "react";
 import { useState } from "react";
 import { ChefHat, Utensils, Coffee, Pizza } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Card, CardContent } from "./ui/card";
-import { fadeInUp, transitionNormal } from "../lib/animations";
+import { transitionNormal } from "../lib/animations";
 
 interface CuisineType {
   name: string;

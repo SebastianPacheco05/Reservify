@@ -13,7 +13,7 @@ export function DailyFlow({ data }: DailyFlowProps) {
   const totalWalkIns = dailyFlow.reduce((acc, curr) => acc + curr.walkIns, 0)
 
   const currentHour = new Date().getHours()
-  const currentHourData = dailyFlow.find((d) => Number.parseInt(d.hour.split(":")[0]) === currentHour)
+  void dailyFlow.find((d) => Number.parseInt(d.hour.split(":")[0]) === currentHour)
 
   return (
     <div className="space-y-8">

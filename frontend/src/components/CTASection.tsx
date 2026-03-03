@@ -1,4 +1,3 @@
-import type React from "react";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import { fadeInUp, transitionNormal } from "../lib/animations";

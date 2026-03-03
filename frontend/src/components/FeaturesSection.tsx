@@ -1,4 +1,3 @@
-import type React from "react";
 import { Clock, Users, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer, transitionNormal } from "../lib/animations";

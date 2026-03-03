@@ -5,12 +5,29 @@ from config import get_db
 from functions.cruds import restaurante, list as restaurante_queries
 from functions.auth.dependencies import verificar_token
 from functions.cloudinary_upload import upload_image
+from functions.data_owner.data_owner import puede_acceder_restaurante, es_dueño_de_restaurante
 from models import RestauranteBase, RestauranteUpdate, RestauranteDelete, ListarRestaurantes
 
 router = APIRouter(
     prefix="/restaurante",
     tags=["Restaurante"]
 )
+
+
+def _requerir_dueno_restaurante(usuario_actual: dict, nit: int, db: Session) -> None:
+    if not es_dueño_de_restaurante(usuario_actual["id"], nit, db):
+        raise HTTPException(
+            status_code=403,
+            detail="Solo el dueño del restaurante puede realizar esta acción.",
+        )
+
+
+def _requerir_gestor_restaurante(usuario_actual: dict, nit: int, db: Session) -> None:
+    if not puede_acceder_restaurante(usuario_actual["id"], nit, db):
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permisos para gestionar este restaurante.",
+        )
 
 @router.get("/{nit}")
 async def obtener_restaurante_publico(nit: int, db: Session = Depends(get_db)):
@@ -93,7 +110,24 @@ async def subir_imagen(
 
 
 @router.post("/insertarrestaurante")
-async def insertar(data: RestauranteBase, db: Session = Depends(get_db)):
+async def insertar(
+    data: RestauranteBase,
+    usuario_actual: dict = Depends(verificar_token),
+    db: Session = Depends(get_db),
+):
+    """
+    Crea un restaurante. Solo el dueño (documento del usuario) puede crear sus propios restaurantes.
+    """
+    # Asegurar que el documento del restaurante coincide con el del dueño autenticado
+    from functions.data_owner.data_owner import obtener_documento_dueno
+
+    documento_dueno = obtener_documento_dueno(usuario_actual["id"], db)
+    if int(data.documento) != int(documento_dueno):
+        raise HTTPException(
+            status_code=403,
+            detail="Solo puedes crear restaurantes asociados a tu propio documento.",
+        )
+
     imagenes_ref = data.imagenes_referencia if data.imagenes_referencia is not None else None
     if imagenes_ref and len(imagenes_ref) > 15:
         imagenes_ref = imagenes_ref[:15]
@@ -122,7 +156,16 @@ async def listar_restaurantes(db: Session = Depends(get_db)):
     return {"respuesta": respuesta}
 
 @router.put("/editarrestaurante")
-async def editar(data: RestauranteUpdate, db: Session = Depends(get_db)):
+async def editar(
+    data: RestauranteUpdate,
+    usuario_actual: dict = Depends(verificar_token),
+    db: Session = Depends(get_db),
+):
+    """
+    Edita un restaurante existente. Solo el dueño del restaurante puede editarlo.
+    """
+    _requerir_dueno_restaurante(usuario_actual, data.nit, db)
+
     restaurante.editar_restaurante(
         db,
         data.nit,
@@ -136,5 +179,13 @@ async def editar(data: RestauranteUpdate, db: Session = Depends(get_db)):
     )
 
 @router.delete("/borrarrestaurante")
-async def borrar(data: RestauranteDelete, db: Session = Depends(get_db)):
+async def borrar(
+    data: RestauranteDelete,
+    usuario_actual: dict = Depends(verificar_token),
+    db: Session = Depends(get_db),
+):
+    """
+    Borra un restaurante. Solo el dueño del restaurante puede borrarlo.
+    """
+    _requerir_dueno_restaurante(usuario_actual, data.nit, db)
     restaurante.borrar_restaurante(db, data.nit)

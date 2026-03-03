@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS "Restaurante";
 DROP TABLE IF EXISTS "Mails";
 DROP TABLE IF EXISTS "IMAP_config";
 DROP TABLE IF EXISTS "SMTP_config";
+DROP TABLE IF EXISTS "Password_Reset_Codes";
 DROP TABLE IF EXISTS "jwt_tokens";
 DROP TABLE IF EXISTS "Usuario";
 DROP TABLE IF EXISTS "Categorias";
@@ -122,7 +123,10 @@ CREATE TABLE "Encabezado_Factura" (
     nombre_restaurante VARCHAR(255) NOT NULL,  -- Nombre del restaurante
     direccion VARCHAR(255) NOT NULL,  -- Dirección del restaurante (ej. Nominatim)
     ciudad VARCHAR(255) NOT NULL,  -- Ciudad
-    fecha DATE NOT NULL CHECK (fecha = CURRENT_DATE),  -- Fecha de la factura
+    fecha DATE NOT NULL CHECK (
+        fecha >= CURRENT_DATE - INTERVAL '1 day'
+        AND fecha <= CURRENT_DATE + INTERVAL '1 day'
+    ),  -- Fecha de la factura (permite pequeñas diferencias de zona horaria)
     documento DECIMAL(10, 0) NOT NULL,  -- Referencia al cliente
     forma_pago VARCHAR(50) NOT NULL CHECK (forma_pago IN ('Efectivo', 'Tarjeta', 'Transferencia', 'Otro', 'Pendiente')),  -- Forma de pago con validación
     precio_total DECIMAL(10, 2) NOT NULL,  -- Precio total
@@ -194,6 +198,17 @@ CREATE TABLE "jwt_tokens" (
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX idx_jwt_tokens_refresh_token ON "jwt_tokens" (refresh_token);
+
+-- Tabla Password_Reset_Codes: Códigos temporales para recuperación de contraseña
+CREATE TABLE "Password_Reset_Codes" (
+    id SERIAL PRIMARY KEY NOT NULL,
+    id_credencial INT NOT NULL REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE,
+    code_hash VARCHAR(255) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    used BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_password_reset_codes_credencial ON "Password_Reset_Codes" (id_credencial, used, expires_at);
 
 -- Tabla SMTP_config: Configuración por usuario para envío de correos (cada usuario su correo/contraseña)
 CREATE TABLE "SMTP_config" (

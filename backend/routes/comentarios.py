@@ -112,21 +112,70 @@ async def crear_comentario(
         )
 
 
-# Insertar comentario (endpoint antiguo, mantener para compatibilidad)
+# Insertar comentario (endpoint antiguo, mantener para compatibilidad,
+# ahora con autenticación y autoría controlada)
 @router.post("/insertarcomentario")
-async def insertar(data: ComentarioBase, db: Session = Depends(get_db)):
-    comentarios.insertar_comentario(db, data.documento, data.nit, data.comentario, getattr(data, 'calificacion', 5))
+async def insertar(
+    data: ComentarioBase,
+    db: Session = Depends(get_db),
+    usuario_actual: dict = Depends(verificar_token),
+):
+    documento = obtener_documento_por_email(db, usuario_actual["email"])
+    calificacion = getattr(data, "calificacion", 5)
+    comentarios.insertar_comentario(
+        db,
+        documento,
+        data.nit,
+        data.comentario,
+        calificacion,
+    )
 
 
-# Editar comentario
+# Editar comentario (solo autor)
 @router.put("/editarcomentario")
-async def editar(data: ComentarioUpdate, db: Session = Depends(get_db)):
+async def editar(
+    data: ComentarioUpdate,
+    db: Session = Depends(get_db),
+    usuario_actual: dict = Depends(verificar_token),
+):
+    row = db.execute(
+        text('SELECT documento FROM "Comentarios" WHERE id_comentario = :id'),
+        {"id": data.id_comentario},
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Comentario no encontrado")
+
+    documento_actual = obtener_documento_por_email(db, usuario_actual["email"])
+    if int(row[0]) != int(documento_actual):
+        raise HTTPException(
+            status_code=403,
+            detail="Solo puedes editar tus propios comentarios",
+        )
+
     comentarios.editar_comentario(db, data.id_comentario, data.comentario)
 
 
-# Borrar comentario
+# Borrar comentario (solo autor)
 @router.delete("/borrarcomentario")
-async def borrar(data: ComentarioDelete, db: Session = Depends(get_db)):
+async def borrar(
+    data: ComentarioDelete,
+    db: Session = Depends(get_db),
+    usuario_actual: dict = Depends(verificar_token),
+):
+    row = db.execute(
+        text('SELECT documento FROM "Comentarios" WHERE id_comentario = :id'),
+        {"id": data.id_comentario},
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Comentario no encontrado")
+
+    documento_actual = obtener_documento_por_email(db, usuario_actual["email"])
+    if int(row[0]) != int(documento_actual):
+        raise HTTPException(
+            status_code=403,
+            detail="Solo puedes borrar tus propios comentarios",
+        )
+
     comentarios.borrar_comentario(db, data.id_comentario)
 
 

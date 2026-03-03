@@ -39,7 +39,6 @@ const navGroupsDueño = [
     title: "Operaciones",
     items: [
       { id: "restaurants", label: "Restaurantes", icon: Restaurant },
-      { id: "reservations", label: "Reservas", icon: Calendar },
     ],
   },
   {
@@ -71,7 +70,6 @@ const navGroupsAdministrador = [
     title: "Operaciones",
     items: [
       { id: "restaurants", label: "Mi Restaurante", icon: Restaurant },
-      { id: "reservations", label: "Reservas", icon: Calendar },
     ],
   },
   {

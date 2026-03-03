@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Star, Send, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Star, Send, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Badge } from "./ui/badge";
 import { authFetch, isAuthenticated } from "../services/authService";
 import { getApiEndpoint } from "../config/api";
 import { useToastContext } from "./ToastProvider";

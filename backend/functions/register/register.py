@@ -6,8 +6,28 @@ from psycopg2.errors import CheckViolation
 import bcrypt
 import re
 
+
 def hash_password(password: str):
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+def validar_password_fuerte(password: str) -> bool:
+    """
+    Política de contraseña:
+    - Mínimo 10 caracteres
+    - Al menos una mayúscula, una minúscula, un número y un carácter especial
+    """
+    if not password or len(password) < 10:
+        return False
+    if not re.search(r"[A-Z]", password):
+        return False
+    if not re.search(r"[a-z]", password):
+        return False
+    if not re.search(r"[0-9]", password):
+        return False
+    if not re.search(r"[^A-Za-z0-9]", password):
+        return False
+    return True
 
 def validar_formato_email(email: str) -> bool:
     """
@@ -35,6 +55,16 @@ def registrar_usuario(db: Session, email: str, password: str, nombre: str, apell
                 detail=f"El formato del email '{email}' no es válido. Por favor, verifica que tenga el formato correcto (ejemplo: usuario@dominio.com)"
             )
         
+        # Validar complejidad de contraseña
+        if not validar_password_fuerte(password):
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "La contraseña no cumple la política de seguridad. "
+                    "Debe tener al menos 10 caracteres, con mayúsculas, minúsculas, números y caracteres especiales."
+                ),
+            )
+
         # Validar que el registro público solo permita crear clientes
         # Los administradores y dueños solo pueden ser creados por dueños a través del endpoint de empleado
         rol_nombre = db.execute(

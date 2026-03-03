@@ -7,7 +7,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from config import get_db
+from functions.auth.dependencies import verificar_token
 from functions.cruds import list as restaurante_queries
+from functions.data_owner.data_owner import puede_acceder_restaurante
 
 router = APIRouter(tags=["Restaurantes (mapa)"])
 
@@ -34,13 +36,29 @@ async def get_restaurantes_cercanos(
 @router.put("/mapa")
 async def actualizar_posicion_mapa(
     body: MapaUpdate,
+    usuario_actual: dict = Depends(verificar_token),
     db: Session = Depends(get_db),
 ):
     """
     Actualiza las coordenadas (lat/lng) del restaurante.
+    Solo dueño/administrador/empleado con acceso al restaurante pueden hacerlo.
     """
+    if not puede_acceder_restaurante(usuario_actual["id"], body.nit, db):
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permisos para actualizar la posición de este restaurante.",
+        )
+
     try:
-        restaurante_queries.actualizar_coordenadas_restaurante(db, body.nit, body.lat, body.lng)
+        restaurante_queries.actualizar_coordenadas_restaurante(
+            db,
+            body.nit,
+            body.lat,
+            body.lng,
+        )
         return {"ok": True, "nit": body.nit, "lat": body.lat, "lng": body.lng}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception:
+        raise HTTPException(
+            status_code=400,
+            detail="No se pudo actualizar la posición del restaurante",
+        )

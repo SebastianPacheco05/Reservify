@@ -3,12 +3,22 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from config import get_db
 from functions.cruds import mesas, list as mesas_queries
+from functions.auth.dependencies import verificar_token
+from functions.data_owner.data_owner import puede_acceder_restaurante
 from models import MesaBase, MesaUpdate, MesaDelete, ListarMesas
 
 router = APIRouter(
     prefix="/mesas",
     tags=["Mesas"]
 )
+
+
+def _requerir_gestor_restaurante(usuario_actual: dict, nit: int, db: Session) -> None:
+    if not puede_acceder_restaurante(usuario_actual["id"], nit, db):
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permisos para gestionar las mesas de este restaurante.",
+        )
 
 @router.get("/restaurante/{nit}")
 async def obtener_mesas_por_restaurante(nit: int, db: Session = Depends(get_db)):
@@ -41,9 +51,19 @@ async def obtener_mesas_por_restaurante(nit: int, db: Session = Depends(get_db))
         raise HTTPException(status_code=500, detail=f"Error al obtener mesas: {str(e)}")
 
 @router.post("/insertarmesas")
-async def insertar(data: MesaBase, db: Session = Depends(get_db)):
+async def insertar(
+    data: MesaBase,
+    usuario_actual: dict = Depends(verificar_token),
+    db: Session = Depends(get_db),
+):
+    _requerir_gestor_restaurante(usuario_actual, data.nit, db)
+
     mesas.insertar_mesas(
-        db, data.estado_de_disponibilidad, data.cant_personas, data.nit, data.precio
+        db,
+        data.estado_de_disponibilidad,
+        data.cant_personas,
+        data.nit,
+        data.precio,
     )
 
 @router.get("/listar_mesa")
@@ -57,7 +77,13 @@ async def listar_mesas(db: Session = Depends(get_db)):
     return {"respuesta": respuesta}
 
 @router.put("/editarmesas")
-async def editar(data: MesaUpdate, db: Session = Depends(get_db)):
+async def editar(
+    data: MesaUpdate,
+    usuario_actual: dict = Depends(verificar_token),
+    db: Session = Depends(get_db),
+):
+    _requerir_gestor_restaurante(usuario_actual, data.nit, db)
+
     mesas.editar_mesas(
         db,
         data.id_mesa,
@@ -68,5 +94,23 @@ async def editar(data: MesaUpdate, db: Session = Depends(get_db)):
     )
 
 @router.delete("/borrarmesas")
-async def borrar(data: MesaDelete, db: Session = Depends(get_db)):
+async def borrar(
+    data: MesaDelete,
+    usuario_actual: dict = Depends(verificar_token),
+    db: Session = Depends(get_db),
+):
+    """
+    Borra una mesa. Solo dueños/gestores del restaurante pueden hacerlo.
+    """
+    # Obtener NIT de la mesa antes de borrar
+    row = db.execute(
+        text('SELECT nit FROM "Mesas" WHERE id_mesa = :id_mesa'),
+        {"id_mesa": data.id_mesa},
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Mesa no encontrada")
+
+    nit = int(row[0])
+    _requerir_gestor_restaurante(usuario_actual, nit, db)
+
     mesas.borrar_mesas(db, data.id_mesa)

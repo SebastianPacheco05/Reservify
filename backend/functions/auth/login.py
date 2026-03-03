@@ -29,10 +29,31 @@ def login_usuario(db: Session, email: str, password: str, request: Request):
             raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
         id_credencial = resultado["id_credencial"]
-        hashed_password = resultado["password"]
+        stored_password = resultado["password"] or ""
 
-        if not verificar_password(password, hashed_password):
-            raise HTTPException(status_code=401, detail="Contraseña incorrecta")
+        # Compatibilidad con datos antiguos: si la contraseña en BD no es un hash bcrypt,
+        # la tratamos como texto plano una sola vez y la migramos a bcrypt.
+        is_bcrypt = stored_password.startswith("$2a$") or stored_password.startswith("$2b$")
+
+        if is_bcrypt:
+            if not verificar_password(password, stored_password):
+                raise HTTPException(status_code=401, detail="Contraseña incorrecta")
+        else:
+            # Contraseña legacy en texto plano
+            if password != stored_password:
+                raise HTTPException(status_code=401, detail="Contraseña incorrecta")
+
+            # Migrar a bcrypt de forma transparente
+            new_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode(
+                "utf-8"
+            )
+            db.execute(
+                text(
+                    'UPDATE "Credenciales" SET password = :password WHERE id_credencial = :id'
+                ),
+                {"password": new_hash, "id": id_credencial},
+            )
+            stored_password = new_hash
 
         # Generar access token (30 minutos)
         token_data = {"sub": email, "id": id_credencial}
@@ -134,9 +155,12 @@ def login_usuario(db: Session, email: str, password: str, request: Request):
             "redirect_to": redirect_to
         }
 
-    except Exception as e:
+    except Exception:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Error en el login: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="Error interno al intentar iniciar sesión",
+        )
 
 
 def renovar_token(db: Session, refresh_token: str, request: Request):
@@ -204,8 +228,14 @@ def renovar_token(db: Session, refresh_token: str, request: Request):
             "token_type": "bearer",
         }
         
-    except JWTError as e:
-        raise HTTPException(status_code=401, detail=f"Token inválido: {str(e)}")
-    except Exception as e:
+    except JWTError:
+        raise HTTPException(
+            status_code=401,
+            detail="Refresh token inválido o expirado",
+        )
+    except Exception:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al renovar token: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="Error interno al renovar el token",
+        )

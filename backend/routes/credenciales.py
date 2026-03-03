@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, Request, HTTPException, Response
 from sqlalchemy.orm import Session
 from config import get_db
 from functions.auth.login import login_usuario, renovar_token
@@ -11,16 +11,59 @@ router = APIRouter()
 
 
 @router.post("/login")
-def login_user(input: LoginSchema, request: Request, db: Session = Depends(get_db)):
-    return login_usuario(db, input.email, input.password, request)
+def login_user(
+    input: LoginSchema,
+    request: Request,
+    response: Response,
+    db: Session = Depends(get_db),
+):
+    """
+    Inicia sesión y devuelve el access token.
+    El refresh token se envía solo en una cookie HttpOnly.
+    """
+    result = login_usuario(db, input.email, input.password, request)
+
+    refresh_token = result.pop("refresh_token", None)
+    if refresh_token:
+        # Cookie HttpOnly para el refresh token
+        response.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            secure=True,
+            samesite="strict",
+            max_age=60 * 60 * 24 * 7,  # 7 días
+        )
+
+    return result
 
 
 @router.post("/refresh")
-def refresh_access_token(input: RefreshTokenRequest, request: Request, db: Session = Depends(get_db)):
+def refresh_access_token(
+    request: Request,
+    response: Response,
+    db: Session = Depends(get_db),
+):
     """
-    Endpoint para renovar el access token usando un refresh token válido
+    Endpoint para renovar el access token usando el refresh token almacenado en cookie HttpOnly.
     """
-    return renovar_token(db, input.refresh_token, request)
+    refresh_token = request.cookies.get("refresh_token")
+    if not refresh_token:
+        raise HTTPException(status_code=401, detail="Refresh token no encontrado")
+
+    result = renovar_token(db, refresh_token, request)
+
+    # Opcional: refrescar expiración de la cookie si fue válida
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=True,
+        samesite="strict",
+        max_age=60 * 60 * 24 * 7,
+    )
+
+    return result
 
 
 @router.get("/me/role")
