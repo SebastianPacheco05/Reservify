@@ -1,21 +1,8 @@
 /*
- * Script de migración para corregir la función registrar_factura_y_reserva
- * y actualizar la tabla Encabezado_Factura
- * 
- * Este script:
- * 1. Actualiza la restricción de forma_pago para permitir 'Pendiente'
- * 2. Recrea la función registrar_factura_y_reserva con los parámetros adicionales
+ * Funciones relacionadas con facturación y reservas.
  */
 
--- 1️⃣ Actualizar la tabla Encabezado_Factura para permitir 'Pendiente' como forma_pago
-ALTER TABLE "Encabezado_Factura" 
-DROP CONSTRAINT IF EXISTS "Encabezado_Factura_forma_pago_check";
-
-ALTER TABLE "Encabezado_Factura"
-ADD CONSTRAINT "Encabezado_Factura_forma_pago_check" 
-CHECK (forma_pago IN ('Efectivo', 'Tarjeta', 'Transferencia', 'Otro', 'Pendiente'));
-
--- 2️⃣ Recrear la función registrar_factura_y_reserva con los nuevos parámetros
+-- Función para registrar factura y reserva en una sola operación
 CREATE OR REPLACE FUNCTION registrar_factura_y_reserva(
     p_nit DECIMAL(10,0),
     p_nombre_restaurante VARCHAR,
@@ -32,7 +19,7 @@ CREATE OR REPLACE FUNCTION registrar_factura_y_reserva(
 DECLARE
     v_id_encab_fact INT;
 BEGIN
-    -- 1️⃣ Insertar en Encabezado_Factura
+    -- Insertar en Encabezado_Factura
     INSERT INTO "Encabezado_Factura" (
         nit,
         nombre_restaurante,
@@ -55,7 +42,7 @@ BEGIN
     )
     RETURNING id_encab_fact INTO v_id_encab_fact;
 
-    -- 2️⃣ Insertar en Reserva con el id_encab_fact recién creado
+    -- Insertar en Reserva con el id_encab_fact recién creado
     INSERT INTO "Reserva" (
         id_mesa,
         documento,
@@ -75,12 +62,8 @@ BEGIN
         p_fecha
     );
 
-    -- 3️⃣ Retornar el id del encabezado de factura
+    -- Retornar el id del encabezado de factura
     RETURN v_id_encab_fact;
 END;
 $$ LANGUAGE plpgsql;
-
--- Confirmación
-SELECT 'Migración completada exitosamente' AS status;
-
 

@@ -1,10 +1,32 @@
 /*
- * Migración: insertar_restaurante acepta url_imagen (imagen principal Cloudinary).
- * Función para insertar imágenes de referencia (máx. 15 por NIT).
- * Ejecutar después de imagenes_referencia_restaurante.sql
+ * Funciones y triggers relacionados con Restaurante e Imagen_referencia_restaurante.
  */
 
--- Actualizar función insertar_restaurante para recibir url_imagen
+-- Límite de máximo 15 imágenes de referencia por restaurante
+CREATE OR REPLACE FUNCTION verificar_max_imagenes_referencia()
+RETURNS TRIGGER AS $$
+DECLARE
+    total_imagenes INT;
+BEGIN
+    SELECT COUNT(*) INTO total_imagenes
+    FROM "Imagen_referencia_restaurante"
+    WHERE nit = NEW.nit;
+    
+    IF total_imagenes >= 15 THEN
+        RAISE EXCEPTION 'Máximo 15 imágenes de referencia por restaurante';
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trigger_max_imagenes_ref ON "Imagen_referencia_restaurante";
+CREATE TRIGGER trigger_max_imagenes_ref
+    BEFORE INSERT ON "Imagen_referencia_restaurante"
+    FOR EACH ROW
+    EXECUTE FUNCTION verificar_max_imagenes_referencia();
+
+-- Función para insertar restaurante (incluye url_imagen)
 CREATE OR REPLACE FUNCTION insertar_restaurante(
     p_nit DECIMAL(10, 0),
     p_direccion VARCHAR(50),
@@ -37,3 +59,4 @@ BEGIN
     VALUES (p_nit, p_url_imagen, p_orden);
 END;
 $$ LANGUAGE plpgsql;
+

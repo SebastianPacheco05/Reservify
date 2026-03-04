@@ -67,7 +67,7 @@ CREATE TABLE "Categorias" (
 -- Tabla Restaurante: Almacena información de los restaurantes
 CREATE TABLE "Restaurante" (
     nit DECIMAL(10, 0) PRIMARY KEY NOT NULL,  -- nit como identificador único
-    direccion VARCHAR(50) NOT NULL,  -- Dirección del restaurante
+    direccion VARCHAR(255) NOT NULL,  -- Dirección del restaurante
     nombre_restaurante VARCHAR(50) NOT NULL,  -- Nombre del restaurante
     descripcion_restaurante VARCHAR(100) NOT NULL,  -- Descripción del restaurante
     rating DECIMAL(2, 1) NOT NULL,  -- Rating del restaurante

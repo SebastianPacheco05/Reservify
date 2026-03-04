@@ -1,14 +1,7 @@
 /*
- * Añade el rol "administrador" y la función de estadísticas por restaurante (un solo NIT).
- * El administrador tiene los mismos permisos que el dueño pero solo sobre UN restaurante (Usuario.nit).
+ * Función de estadísticas de un solo restaurante (para rol administrador).
  */
 
--- 1) Insertar rol administrador (si no existe)
-INSERT INTO "Roles" (nombre_rol, descripcion)
-SELECT 'administrador', 'Administra un solo restaurante'
-WHERE NOT EXISTS (SELECT 1 FROM "Roles" WHERE LOWER(TRIM(nombre_rol)) = 'administrador');
-
--- 2) Función: estadísticas de UN restaurante por NIT (para administrador)
 CREATE OR REPLACE FUNCTION obtener_estadisticas_restaurante(p_nit DECIMAL)
 RETURNS TABLE (
     total_restaurantes INT,
@@ -55,4 +48,3 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-SELECT 'Rol administrador y función obtener_estadisticas_restaurante listos' AS status;
