@@ -1,4 +1,4 @@
-import { Utensils } from "lucide-react";
+import icon_reservify from "../../public/icon_reservify.svg";
 import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer, transitionNormal } from "../lib/animations";
 
@@ -28,7 +28,7 @@ export default function Footer() {
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
-                <Utensils className="w-5 h-5 text-primary-foreground" />
+                <img src={icon_reservify} alt="Reservify" className="w-8 h-8 items-center justify-center" />
               </motion.div>
               <h4 className="text-xl font-bold">Reservify</h4>
             </div>

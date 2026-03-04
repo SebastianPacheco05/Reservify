@@ -6,24 +6,8 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 def insertar_comentario(db: Session, documento: int, nit: int, comentario: str, calificacion: int = 5):
     try:
-        if calificacion < 1 or calificacion > 5:
-            raise HTTPException(
-                status_code=400,
-                detail="La calificación debe estar entre 1 y 5.",
-            )
-        # Verificar si ya existe reseña (misma lógica que fun_insertar_comentarios.sql)
-        existe = db.execute(
-            text('SELECT 1 FROM "Comentarios" WHERE documento = :documento AND nit = :nit'),
-            {"documento": documento, "nit": nit},
-        ).fetchone()
-        if existe:
-            raise HTTPException(
-                status_code=400,
-                detail="Ya has dejado una reseña para este restaurante. Solo puedes dejar una reseña por restaurante.",
-            )
-        # Insert directo (no depende de la función insertar_comentario en la BD)
         db.execute(
-            text('INSERT INTO "Comentarios" (documento, nit, comentario, calificacion) VALUES (:documento, :nit, :comentario, :calificacion)'),
+            text("SELECT insertar_comentario(:documento, :nit, :comentario, :calificacion)"),
             {
                 "documento": documento,
                 "nit": nit,
@@ -47,12 +31,11 @@ def insertar_comentario(db: Session, documento: int, nit: int, comentario: str, 
 def verificar_comentario_existente(db: Session, documento: int, nit: int) -> bool:
     """Verifica si el usuario ya tiene un comentario para este restaurante"""
     try:
-        result = db.execute(
-            text("SELECT COUNT(*) FROM \"Comentarios\" WHERE documento = :documento AND nit = :nit"),
+        resultado = db.execute(
+            text("SELECT existe_comentario(:documento, :nit)"),
             {"documento": documento, "nit": nit},
-        )
-        count = result.scalar()
-        return count > 0
+        ).scalar()
+        return bool(resultado)
     except Exception as e:
         return False
 
