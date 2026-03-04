@@ -85,9 +85,13 @@ export default function Home() {
   const handleSearch = (cuisine: string) => {
     setSearchQuery(cuisine);
     setShowSuggestions(false);
-    // Aquí puedes agregar la lógica para navegar a la sección de restaurantes
-    // o filtrar los restaurantes por tipo de cocina
-    console.log(`Buscando restaurantes de cocina: ${cuisine}`);
+
+    // Desplazar suavemente a la sección de restaurantes
+    setTimeout(() => {
+      document
+        .getElementById("restaurantes")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -161,7 +165,7 @@ export default function Home() {
       </Suspense>
 
       <Suspense fallback={<div className="min-h-[280px]" aria-hidden="true" />}>
-        <RestaurantGrid />
+        <RestaurantGrid searchQuery={searchQuery} />
       </Suspense>
 
       <Suspense fallback={<div className="min-h-[200px]" aria-hidden="true" />}>

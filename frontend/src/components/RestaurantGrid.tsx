@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Star, MapPin, Loader2, AlertCircle } from "lucide-react";
+import { Star, MapPin, Loader2, AlertCircle, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
@@ -13,8 +13,14 @@ import {
 } from "../lib/animations";
 import { getApiEndpoint } from "../config/api";
 
-export default function RestaurantGrid() {
+interface RestaurantGridProps {
+  searchQuery?: string;
+}
+
+export default function RestaurantGrid({ searchQuery }: RestaurantGridProps) {
   const [restaurantes, setRestaurantes] = useState<Restaurante[]>([]);
+  const [filteredRestaurantes, setFilteredRestaurantes] =
+    useState<Restaurante[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -49,6 +55,7 @@ export default function RestaurantGrid() {
         ) => {
           const list = Array.isArray(data) ? data : (data?.respuesta ?? []);
           setRestaurantes(list);
+          setFilteredRestaurantes(list);
           setLoading(false);
         },
       )
@@ -71,6 +78,41 @@ export default function RestaurantGrid() {
     };
   }, []);
 
+  // Normalizar texto para comparación (minúsculas, sin tildes)
+  const normalizeText = (value: string) =>
+    value
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+
+  // Filtrar restaurantes según el término de búsqueda usando palabras aproximadas
+  useEffect(() => {
+    if (!searchQuery || !searchQuery.trim()) {
+      setFilteredRestaurantes(restaurantes);
+      return;
+    }
+
+    const normalizedTerm = normalizeText(searchQuery);
+    const terms = normalizedTerm
+      .split(/\s+/)
+      .map((t) => t.trim())
+      .filter(Boolean);
+    const filtrados = restaurantes.filter((restaurant) => {
+      const nombre = normalizeText(restaurant.nombre_restaurante ?? "");
+      const categoria = normalizeText(restaurant.nombre_categoria ?? "");
+      const descripcion = normalizeText(
+        restaurant.descripcion_restaurante ?? "",
+      );
+
+      const combined = `${nombre} ${categoria} ${descripcion}`;
+
+      // Cada palabra que escribe el usuario debe aparecer en alguna parte del contenido combinado
+      return terms.every((t) => combined.includes(t));
+    });
+
+    setFilteredRestaurantes(filtrados);
+  }, [searchQuery, restaurantes]);
+
   return (
     <section
       id="restaurantes"
@@ -87,9 +129,22 @@ export default function RestaurantGrid() {
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4">
             Restaurantes Destacados
           </h3>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Los favoritos de nuestra comunidad
-          </p>
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Los favoritos de nuestra comunidad
+            </p>
+            {searchQuery && searchQuery.trim() && (
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm border border-primary/30">
+                <Search className="w-4 h-4" />
+                <span>
+                  Resultados para:{" "}
+                  <span className="font-semibold">
+                    {searchQuery}
+                  </span>
+                </span>
+              </div>
+            )}
+          </div>
         </motion.div>
 
         {loading && (
@@ -120,15 +175,15 @@ export default function RestaurantGrid() {
           </div>
         )}
 
-        {!loading && !error && restaurantes.length === 0 && (
+        {!loading && !error && filteredRestaurantes.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16">
             <p className="text-muted-foreground text-lg">
-              No hay restaurantes destacados disponibles en este momento.
+              No encontramos restaurantes que coincidan con tu búsqueda.
             </p>
           </div>
         )}
 
-        {!loading && !error && restaurantes.length > 0 && (
+        {!loading && !error && filteredRestaurantes.length > 0 && (
           <motion.div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
             variants={staggerContainer}
@@ -136,7 +191,7 @@ export default function RestaurantGrid() {
             whileInView="animate"
             viewport={{ once: true, margin: "-50px" }}
           >
-            {restaurantes.map((restaurant) => (
+            {filteredRestaurantes.map((restaurant) => (
               <motion.div
                 key={restaurant.nit}
                 variants={fadeInUp}

@@ -90,7 +90,8 @@ export default function SearchBar({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="¿Qué tipo de cocina te apetece hoy?"
-            className="w-full min-h-[3.25rem] sm:min-h-[4.5rem] pl-10 sm:pl-[3.25rem] pr-20 sm:pr-[6.5rem] py-3 sm:py-4 text-base sm:text-xl md:text-2xl rounded-2xl sm:rounded-3xl border-2 border-primary/30 focus:border-primary bg-background/90 backdrop-blur-sm shadow-xl transition-all duration-300 hover:shadow-primary/20 focus:shadow-primary/30 group-hover:border-primary/50 text-foreground placeholder:text-muted-foreground placeholder:text-sm sm:placeholder:text-base md:placeholder:text-lg"
+            className="w-full min-h-[3.25rem] sm:min-h-[4.5rem] pl-10 sm:pl-[3.25rem] pr-20 sm:pr-[6.5rem] py-3 sm:py-4 text-base sm:text-xl md:text-2xl rounded-2xl sm:rounded-3xl border-2 border-primary/30 focus:border-primary bg-background/90 backdrop-blur-sm shadow-xl transition-all duration-300 hover:shadow-primary/20 focus:shadow-primary/30 group-hover:border-primary/50 text-foreground placeholder:text-muted-foreground placeholder:text-sm sm:placeholder:text-base md:placeholder:text-lg focus:ring-2 focus:ring-primary/40 focus:outline-none"
+            aria-label="Buscar restaurantes por nombre o tipo de cocina"
           />
 
           {/* Botón Buscar más grande */}
@@ -117,7 +118,10 @@ export default function SearchBar({
                   <button
                     key={index}
                     type="button"
-                    onClick={() => onSearch(cuisine)}
+                    onClick={() => {
+                      onSearch(cuisine);
+                      setShowSuggestions(false);
+                    }}
                     className="text-left p-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-400 transition-all duration-200 hover:scale-105 group"
                   >
                     <div className="flex items-center">
