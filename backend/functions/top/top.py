@@ -3,8 +3,24 @@ from sqlalchemy import text
 
 def obtener_top_restaurantes(db: Session):
     result = db.execute(
-        text('SELECT r.nit, r.direccion, r.nombre_restaurante, r.rating, r.reviews, r.availabletoday, r.horario_apertura, r.horario_cierre, r.documento, r.url_image ,c.nombre_categoria FROM "Restaurante" r INNER JOIN "Categorias" c ON c.id_categoria = r.id_categoria ORDER BY r.reviews DESC LIMIT 9;'
-)
+        text(
+            """
+            SELECT
+                nit,
+                direccion,
+                nombre_restaurante,
+                rating,
+                reviews,
+                availabletoday,
+                horario_apertura,
+                horario_cierre,
+                documento,
+                url_image,
+                nombre_categoria
+            FROM fn_top_obtener_top_restaurantes(:limit)
+            """
+        ),
+        {"limit": 9},
     )
     rows = result.mappings().all()
     return [dict(row) for row in rows]

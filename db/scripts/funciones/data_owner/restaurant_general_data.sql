@@ -1,3 +1,5 @@
+/* Archivo original: db/scripts/funciones/restaurant_general_data.sql */
+
 CREATE OR REPLACE FUNCTION obtener_estadisticas_dueno(p_documento_dueno DECIMAL)
 RETURNS TABLE (
     total_restaurantes INT,
@@ -8,13 +10,11 @@ RETURNS TABLE (
     total_clientes_mes INT
 ) AS $$
 BEGIN
-    -- Cantidad de restaurantes del dueño
     SELECT COUNT(*)
     INTO total_restaurantes
     FROM "Restaurante"
     WHERE documento = p_documento_dueno;
 
-    -- Reservas activas (pendiente, confirmada, en curso)
     SELECT COUNT(*)
     INTO reservas_activas
     FROM "Reserva" r
@@ -23,7 +23,6 @@ BEGIN
     WHERE rest.documento = p_documento_dueno
       AND r.estado_reserva IN ('pendiente', 'confirmada', 'en curso');
 
-    -- Visitantes mensuales (suma de num_comensales en el mes actual)
     SELECT COALESCE(SUM(r.num_comensales), 0)
     INTO visitantes_mes
     FROM "Reserva" r
@@ -32,7 +31,6 @@ BEGIN
     WHERE rest.documento = p_documento_dueno
       AND DATE_TRUNC('month', r.fecha) = DATE_TRUNC('month', CURRENT_DATE);
 
-    -- Calculos mensuales (sumados de todos los restaurantes del dueño en el mes actual)
     SELECT 
         COALESCE(SUM(c.total_reservas), 0),
         COALESCE(SUM(c.revenue), 0),
@@ -47,3 +45,4 @@ BEGIN
     RETURN NEXT;
 END;
 $$ LANGUAGE plpgsql;
+

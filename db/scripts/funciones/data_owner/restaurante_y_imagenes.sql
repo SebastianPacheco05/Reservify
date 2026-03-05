@@ -1,8 +1,5 @@
-/*
- * Funciones y triggers relacionados con Restaurante e Imagen_referencia_restaurante.
- */
+/* Archivo original: db/scripts/funciones/restaurante_y_imagenes.sql */
 
--- Límite de máximo 15 imágenes de referencia por restaurante
 CREATE OR REPLACE FUNCTION verificar_max_imagenes_referencia()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -26,7 +23,6 @@ CREATE TRIGGER trigger_max_imagenes_ref
     FOR EACH ROW
     EXECUTE FUNCTION verificar_max_imagenes_referencia();
 
--- Función para insertar restaurante (incluye url_imagen)
 CREATE OR REPLACE FUNCTION insertar_restaurante(
     p_nit DECIMAL(10, 0),
     p_direccion VARCHAR(50),
@@ -48,7 +44,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Función para insertar una imagen de referencia (orden 0..14; el trigger limita a 15)
 CREATE OR REPLACE FUNCTION insertar_imagen_referencia_restaurante(
     p_nit DECIMAL(10, 0),
     p_url_imagen VARCHAR,

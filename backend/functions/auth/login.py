@@ -18,7 +18,12 @@ def login_usuario(db: Session, email: str, password: str, request: Request):
     try:
         resultado = (
             db.execute(
-                text('SELECT id_credencial, email, password FROM "Credenciales" WHERE email = :email'),
+                text(
+                    """
+                    SELECT id_credencial, email, password
+                    FROM fn_auth_get_credenciales_by_email(:email)
+                    """
+                ),
                 {"email": email},
             )
             .mappings()
@@ -43,13 +48,15 @@ def login_usuario(db: Session, email: str, password: str, request: Request):
             if password != stored_password:
                 raise HTTPException(status_code=401, detail="Contraseña incorrecta")
 
-            # Migrar a bcrypt de forma transparente
+            # Migrar a bcrypt de forma transparente usando función SQL
             new_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode(
                 "utf-8"
             )
             db.execute(
                 text(
-                    'UPDATE "Credenciales" SET password = :password WHERE id_credencial = :id'
+                    """
+                    SELECT fn_auth_update_password(:id_credencial, :password)
+                    """
                 ),
                 {"password": new_hash, "id": id_credencial},
             )
@@ -67,32 +74,17 @@ def login_usuario(db: Session, email: str, password: str, request: Request):
         db.execute(
             text(
                 """
-                INSERT INTO jwt_tokens (
-                    id_credencial,
-                    token,
-                    refresh_token,
-                    issued_at,
-                    expires_at,
-                    refresh_expires_at,
-                    revoked,
-                    user_agent,
-                    ip_address,
-                    created_at,
-                    updated_at
-                ) VALUES (
+                SELECT fn_auth_insert_jwt_session(
                     :id_credencial,
                     :token,
                     :refresh_token,
                     :issued_at,
                     :expires_at,
                     :refresh_expires_at,
-                    FALSE,
                     :user_agent,
-                    :ip_address,
-                    NOW(),
-                    NOW()
+                    :ip_address
                 )
-            """
+                """
             ),
             {
                 "id_credencial": id_credencial,
@@ -109,10 +101,8 @@ def login_usuario(db: Session, email: str, password: str, request: Request):
         # Obtener usuario y rol desde tabla Usuario (un solo lugar por id_credencial)
         usuario_rol = db.execute(
             text('''
-                SELECT u.documento, r.nombre_rol
-                FROM "Usuario" u
-                JOIN "Roles" r ON u.id_rol = r.id_rol
-                WHERE u.id_credencial = :id_credencial
+                SELECT documento, nombre_rol
+                FROM fn_auth_get_usuario_documento_y_rol(:id_credencial)
             '''),
             {"id_credencial": id_credencial},
         ).fetchone()
@@ -185,7 +175,10 @@ def renovar_token(db: Session, refresh_token: str, request: Request):
         # Buscar sesión por refresh_token (columna dedicada)
         row = db.execute(
             text(
-                "SELECT id_credencial, revoked, refresh_expires_at FROM jwt_tokens WHERE refresh_token = :refresh_token"
+                """
+                SELECT id_credencial, revoked, refresh_expires_at
+                FROM fn_auth_get_session_by_refresh_token(:refresh_token)
+                """
             ),
             {"refresh_token": refresh_token},
         ).fetchone()
@@ -208,9 +201,12 @@ def renovar_token(db: Session, refresh_token: str, request: Request):
         db.execute(
             text(
                 """
-                UPDATE jwt_tokens
-                SET token = :new_token, expires_at = :expires_at, issued_at = :issued_at, updated_at = NOW()
-                WHERE refresh_token = :refresh_token
+                SELECT fn_auth_update_jwt_token(
+                    :refresh_token,
+                    :new_token,
+                    :expires_at,
+                    :issued_at
+                )
                 """
             ),
             {

@@ -65,9 +65,11 @@ export default function Login() {
         variant: "default"
       });
     } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error("Error de inicio de sesión:", err);
       toast({
-        title: "Error de inicio de sesión",
-        description: err.message,
+        title: "No pudimos iniciar tu sesión",
+        description: "Verifica tu correo y contraseña o inténtalo de nuevo en unos minutos.",
         variant: "destructive"
       });
     } finally {

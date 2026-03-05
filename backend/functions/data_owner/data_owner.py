@@ -11,13 +11,10 @@ def obtener_contexto_gestor(id_credencial: int, db: Session) -> dict:
     Obtiene el contexto del usuario gestor (dueño, administrador o empleado).
     Retorna {"tipo": "dueno", "documento": int} o {"tipo": "administrador"|"empleado", "nit": int}.
     """
-    sql = text("""
-        SELECT u.documento, u.nit, LOWER(TRIM(r.nombre_rol)) as rol
-        FROM "Usuario" u
-        JOIN "Roles" r ON u.id_rol = r.id_rol
-        WHERE u.id_credencial = :id_credencial
-    """)
-    row = db.execute(sql, {"id_credencial": id_credencial}).fetchone()
+    row = db.execute(
+        text("SELECT documento, nit, rol FROM fn_do_obtener_contexto_gestor(:id_credencial)"),
+        {"id_credencial": id_credencial},
+    ).fetchone()
     if not row:
         raise HTTPException(status_code=403, detail="Usuario no encontrado")
     doc, nit, rol = row[0], row[1], (row[2] or "").replace("dueño", "dueno")
@@ -455,7 +452,7 @@ def obtener_email_cliente_por_reserva(id_reserva: int, db: Session) -> str | Non
 def actualizar_motivo_cancelacion(db: Session, id_reserva: int, motivo: str) -> None:
     """Guarda el motivo de cancelación en la reserva."""
     db.execute(
-        text('UPDATE "Reserva" SET motivo_cancelacion = :motivo WHERE id_reserva = :id_reserva'),
+        text("SELECT fn_do_actualizar_motivo_cancelacion(:id_reserva, :motivo)"),
         {"motivo": motivo, "id_reserva": id_reserva},
     )
     db.commit()
@@ -766,27 +763,9 @@ def asignar_administrador_restaurante(id_credencial_dueno: int, nit: int, id_cre
     """Asigna un único administrador al restaurante. Quita a cualquier otro admin de este restaurante (pasa a empleado sin nit)."""
     if not es_dueño_de_restaurante(id_credencial_dueno, nit, db):
         raise HTTPException(status_code=403, detail="No eres dueño de este restaurante")
-    r_admin = db.execute(text("SELECT id_rol FROM \"Roles\" WHERE LOWER(TRIM(nombre_rol)) = 'administrador'")).fetchone()
-    r_emp = db.execute(text("SELECT id_rol FROM \"Roles\" WHERE LOWER(TRIM(nombre_rol)) = 'empleado'")).fetchone()
-    id_rol_admin = r_admin[0] if r_admin else None
-    id_rol_empleado = r_emp[0] if r_emp else None
-    if not id_rol_admin or not id_rol_empleado:
-        raise HTTPException(status_code=500, detail="Roles no configurados")
-    # Quitar a cualquier otro admin de este nit (pasarlo a empleado sin nit)
     db.execute(
-        text("""
-            UPDATE "Usuario" SET id_rol = :id_empleado, nit = NULL
-            WHERE nit = :nit AND id_rol = :id_admin AND id_credencial != :id_new
-        """),
-        {"id_empleado": id_rol_empleado, "nit": nit, "id_admin": id_rol_admin, "id_new": id_credencial_admin},
-    )
-    # Asignar este usuario como administrador de este restaurante
-    db.execute(
-        text("""
-            UPDATE "Usuario" SET id_rol = :id_admin, nit = :nit
-            WHERE id_credencial = :id_credencial
-        """),
-        {"id_admin": id_rol_admin, "nit": nit, "id_credencial": id_credencial_admin},
+        text("SELECT fn_do_asignar_administrador_restaurante(:nit, :id_credencial_admin)"),
+        {"nit": nit, "id_credencial_admin": id_credencial_admin},
     )
     db.commit()
 
@@ -930,15 +909,10 @@ def cambiar_rol_a_cliente(id_credencial_gestor: int, id_credencial: int, db: Ses
     else:
         raise HTTPException(status_code=403, detail="No tienes permisos para cambiar roles a cliente.")
 
-    # Aplicar cambio a rol cliente (común para dueño y admin)
-    r_cliente = db.execute(
-        text('SELECT id_rol FROM "Roles" WHERE LOWER(TRIM(nombre_rol)) = \'cliente\''),
-    ).fetchone()
-    if not r_cliente:
-        raise HTTPException(status_code=500, detail="Rol cliente no configurado.")
+    # Aplicar cambio a rol cliente (común para dueño y admin) mediante función SQL
     db.execute(
-        text('UPDATE "Usuario" SET id_rol = :id_rol, nit = NULL WHERE id_credencial = :id_credencial'),
-        {"id_rol": r_cliente[0], "id_credencial": id_credencial},
+        text("SELECT fn_do_cambiar_rol_a_cliente(:id_credencial)"),
+        {"id_credencial": id_credencial},
     )
     db.commit()
 
@@ -947,16 +921,9 @@ def asignar_empleado_existente(id_credencial_dueno: int, id_credencial: int, nit
     """Asigna un usuario existente como empleado del restaurante (solo dueño, solo sus restaurantes)."""
     if not es_dueño_de_restaurante(id_credencial_dueno, nit, db):
         raise HTTPException(status_code=403, detail="No eres dueño de este restaurante.")
-    r_emp = db.execute(text("SELECT id_rol FROM \"Roles\" WHERE LOWER(TRIM(nombre_rol)) = 'empleado'")).fetchone()
-    id_rol_empleado = r_emp[0] if r_emp else None
-    if not id_rol_empleado:
-        raise HTTPException(status_code=500, detail="Rol empleado no configurado.")
     db.execute(
-        text("""
-            UPDATE "Usuario" SET id_rol = :id_rol, nit = :nit
-            WHERE id_credencial = :id_credencial
-        """),
-        {"id_rol": id_rol_empleado, "nit": nit, "id_credencial": id_credencial},
+        text("SELECT fn_do_asignar_empleado_existente(:id_credencial, :nit)"),
+        {"id_credencial": id_credencial, "nit": nit},
     )
     db.commit()
 
@@ -978,40 +945,47 @@ def crear_empleado_invitado(
     if not validar_formato_email(email):
         raise HTTPException(status_code=400, detail="El formato del email no es válido.")
     email = email.strip().lower()
-    existe = db.execute(
-        text('SELECT 1 FROM "Credenciales" WHERE LOWER(TRIM(email)) = :email'),
+
+    # Verificar existencia de email mediante función SQL
+    row = db.execute(
+        text("SELECT fn_do_email_credencial_existe(:email)"),
         {"email": email},
     ).fetchone()
-    if existe:
+    if row and row[0]:
         raise HTTPException(status_code=400, detail="Ese correo ya está registrado.")
-    r_emp = db.execute(text("SELECT id_rol FROM \"Roles\" WHERE LOWER(TRIM(nombre_rol)) = 'empleado'")).fetchone()
-    id_rol_empleado = r_emp[0] if r_emp else None
-    if not id_rol_empleado:
-        raise HTTPException(status_code=500, detail="Rol empleado no configurado.")
+
     password_plano = _generar_password_aleatorio()
     password_hash = hash_password(password_plano)
-    r = db.execute(
-        text('INSERT INTO "Credenciales" (email, password) VALUES (:email, :password) RETURNING id_credencial'),
-        {"email": email, "password": password_hash},
-    )
-    id_credencial = r.scalar()
     nombre_desde_email = email.split("@")[0].replace(".", " ").strip() or "Empleado"
-    db.execute(
-        text("""
-            INSERT INTO "Usuario" (id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit)
-            VALUES (:id_credencial, :nombre, :apellido, :tipo_doc, :documento, :nacionalidad, :telefono, :id_rol, :nit)
-        """),
+    # Crear empleado invitado (Credenciales + Usuario) mediante función SQL
+    row_new = db.execute(
+        text(
+            """
+            SELECT fn_do_crear_empleado_invitado(
+                :email,
+                :password_hash,
+                :nit,
+                :nombre,
+                :apellido,
+                :tipo_doc,
+                :documento,
+                :nacionalidad,
+                :telefono
+            )
+            """
+        ),
         {
-            "id_credencial": id_credencial,
+            "email": email,
+            "password_hash": password_hash,
+            "nit": nit,
             "nombre": nombre_desde_email[:50],
             "apellido": "Empleado",
             "tipo_doc": "CC",
-            "documento": id_credencial,
+            "documento": 0,
             "nacionalidad": "",
             "telefono": "",
-            "id_rol": id_rol_empleado,
-            "nit": nit,
         },
-    )
+    ).fetchone()
+    id_credencial = int(row_new[0]) if row_new and row_new[0] is not None else None
     db.commit()
     return {"email": email, "password": password_plano, "id_credencial": id_credencial}

@@ -1,5 +1,5 @@
--- Función para obtener el documento del usuario a partir del email
--- Usa la tabla Usuario (unificada para cliente, dueño, empleado)
+-- Archivo original: db/scripts/funciones/get_documento_by_email.sql
+
 CREATE OR REPLACE FUNCTION get_documento_by_email(p_email VARCHAR)
 RETURNS DECIMAL AS $$
 DECLARE
@@ -17,3 +17,4 @@ BEGIN
     RETURN v_documento;
 END;
 $$ LANGUAGE plpgsql;
+

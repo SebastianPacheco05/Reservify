@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -143,9 +143,11 @@ export default function RestaurantMap({ onlyNit, initialCenter }: RestaurantMapP
     return () => controller.abort();
   }, [userCoords?.lat, userCoords?.lng, defaultCenter.lat, defaultCenter.lng, error]);
 
-  const displayedRestaurantes = onlyNit
-    ? restaurantes.filter((r) => r.nit === onlyNit)
-    : restaurantes;
+  const displayedRestaurantes = useMemo(
+    () =>
+      onlyNit ? restaurantes.filter((r) => r.nit === onlyNit) : restaurantes,
+    [onlyNit, restaurantes],
+  );
 
   useEffect(() => {
     if (onlyNit && displayedRestaurantes.length > 0) {
@@ -181,7 +183,7 @@ export default function RestaurantMap({ onlyNit, initialCenter }: RestaurantMapP
       )}
       {locationStatus === "asking" && (
         <div className="bg-muted/ text-muted-foreground px-4 py-2 text-sm">
-          Solicitando acceso a tu ubicaciÃ³nâ€¦ Acepta el permiso en tu navegador o
+          Solicitando acceso a tu ubicaciÃ³nâÿ¦ Acepta el permiso en tu navegador o
           celular.
         </div>
       )}

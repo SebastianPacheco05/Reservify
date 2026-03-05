@@ -1,20 +1,18 @@
--- Función para actualizar el estado de una reserva
+-- Archivo original: db/scripts/funciones/update_reservation_status.sql
+
 CREATE OR REPLACE FUNCTION update_reservation_status(
     p_id_reserva INT,
     p_nuevo_estado VARCHAR
 ) RETURNS BOOLEAN AS $$
 BEGIN
-    -- Validar que el estado sea válido
     IF p_nuevo_estado NOT IN ('pendiente', 'confirmada', 'en curso', 'finalizada', 'cancelada', 'no presentada') THEN
         RAISE EXCEPTION 'Estado de reserva inválido: %', p_nuevo_estado;
     END IF;
 
-    -- Actualizar el estado de la reserva
     UPDATE "Reserva"
     SET estado_reserva = p_nuevo_estado
     WHERE id_reserva = p_id_reserva;
     
-    -- Verificar si se actualizó alguna fila
     IF FOUND THEN
         RETURN TRUE;
     ELSE
@@ -22,3 +20,4 @@ BEGIN
     END IF;
 END;
 $$ LANGUAGE plpgsql;
+

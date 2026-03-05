@@ -107,9 +107,11 @@ export default function Registrar() {
 
       navigate("/");
     } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error("Error en el registro:", err);
       toast({
-        title: "Error en el registro",
-        description: err.message,
+        title: "No pudimos completar tu registro",
+        description: "Inténtalo de nuevo más tarde. Si el problema persiste, verifica tu correo o vuelve a intentarlo más tarde.",
         variant: "destructive"
       });
     } finally {

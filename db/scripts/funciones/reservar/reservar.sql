@@ -1,3 +1,6 @@
+-- Función para registrar factura y reserva en una sola operación
+-- Archivo original: db/scripts/funciones/reservar.sql
+
 CREATE OR REPLACE FUNCTION registrar_factura_y_reserva(
     p_nit DECIMAL(10,0),
     p_nombre_restaurante VARCHAR,
@@ -14,7 +17,6 @@ CREATE OR REPLACE FUNCTION registrar_factura_y_reserva(
 DECLARE
     v_id_encab_fact INT;
 BEGIN
-    -- 1️⃣ Insertar en Encabezado_Factura
     INSERT INTO "Encabezado_Factura" (
         nit,
         nombre_restaurante,
@@ -30,14 +32,13 @@ BEGIN
         p_nombre_restaurante,
         p_direccion,
         p_ciudad,
-        CURRENT_DATE,  -- Cumple la restricción de la tabla
+        CURRENT_DATE,
         p_documento_cliente,
         p_forma_pago,
         p_precio_total
     )
     RETURNING id_encab_fact INTO v_id_encab_fact;
 
-    -- 2️⃣ Insertar en Reserva con el id_encab_fact recién creado
     INSERT INTO "Reserva" (
         id_mesa,
         documento,
@@ -51,13 +52,13 @@ BEGIN
         p_id_mesa,
         p_documento_cliente,
         v_id_encab_fact,
-        'pendiente',  -- Estado inicial
+        'pendiente',
         p_num_comensales,
         p_horario,
         p_fecha
     );
 
-    -- 3️⃣ Retornar el id del encabezado de factura
     RETURN v_id_encab_fact;
 END;
 $$ LANGUAGE plpgsql;
+

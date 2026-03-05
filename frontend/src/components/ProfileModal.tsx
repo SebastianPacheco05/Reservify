@@ -96,7 +96,9 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
         setPassword("");
       }
     } catch (err) {
-      toast({ title: "Error", description: "No se pudo cargar el perfil", variant: "destructive" });
+      // eslint-disable-next-line no-console
+      console.error("Error al cargar perfil:", err);
+      toast({ title: "No pudimos cargar tu perfil", description: "Inténtalo de nuevo más tarde.", variant: "destructive" });
     } finally {
       setIsLoadingPerfil(false);
     }
@@ -113,7 +115,9 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
       const data = await res.json();
       setReservas(data.reservas ?? []);
     } catch (err) {
-      toast({ title: "Error", description: "No se pudieron cargar las reservas", variant: "destructive" });
+      // eslint-disable-next-line no-console
+      console.error("Error al cargar reservas:", err);
+      toast({ title: "No pudimos cargar tus reservas", description: "Inténtalo de nuevo más tarde.", variant: "destructive" });
     } finally {
       setIsLoadingReservas(false);
     }
@@ -162,9 +166,11 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
       toast({ title: "Perfil actualizado", description: "Tus datos se guardaron correctamente." });
       setPerfil((prev) => prev ? { ...prev, nombre, apellido, email } : null);
     } catch (err: unknown) {
+      // eslint-disable-next-line no-console
+      console.error("Error al guardar perfil:", err);
       toast({
-        title: "Error",
-        description: err instanceof Error ? err.message : "No se pudo actualizar",
+        title: "No pudimos guardar tus datos",
+        description: "Revisa la información ingresada o inténtalo nuevamente.",
         variant: "destructive",
       });
     } finally {
@@ -236,9 +242,11 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
       setCancelReason("");
       await loadReservas();
     } catch (err: unknown) {
+      // eslint-disable-next-line no-console
+      console.error("Error al cancelar reserva:", err);
       toast({
-        title: "Error",
-        description: err instanceof Error ? err.message : "No se pudo cancelar la reserva",
+        title: "No pudimos cancelar tu reserva",
+        description: "Inténtalo de nuevo en unos minutos.",
         variant: "destructive",
       });
     } finally {

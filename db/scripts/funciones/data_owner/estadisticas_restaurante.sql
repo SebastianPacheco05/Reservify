@@ -1,6 +1,4 @@
-/*
- * Función de estadísticas de un solo restaurante (para rol administrador).
- */
+/* Archivo original: db/scripts/funciones/estadisticas_restaurante.sql */
 
 CREATE OR REPLACE FUNCTION obtener_estadisticas_restaurante(p_nit DECIMAL)
 RETURNS TABLE (
@@ -12,7 +10,6 @@ RETURNS TABLE (
     total_clientes_mes INT
 ) AS $$
 BEGIN
-    -- Para un solo restaurante: total_restaurantes = 1
     total_restaurantes := 1;
 
     SELECT COUNT(*)

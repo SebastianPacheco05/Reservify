@@ -68,11 +68,15 @@ def registrar_usuario(db: Session, email: str, password: str, nombre: str, apell
         # Validar que el registro público solo permita crear clientes
         # Los administradores y dueños solo pueden ser creados por dueños a través del endpoint de empleado
         rol_nombre = db.execute(
-            text('SELECT LOWER(TRIM(nombre_rol)) FROM "Roles" WHERE id_rol = :id_rol'),
-            {"id_rol": id_rol}
+            text(
+                """
+                SELECT fn_register_get_rol_normalizado(:id_rol)
+                """
+            ),
+            {"id_rol": id_rol},
         ).fetchone()
         
-        if rol_nombre:
+        if rol_nombre and rol_nombre[0]:
             rol = rol_nombre[0]
             if rol in ("administrador", "admin", "dueño", "dueno"):
                 raise HTTPException(
@@ -80,39 +84,61 @@ def registrar_usuario(db: Session, email: str, password: str, nombre: str, apell
                     detail="No puedes registrarte como administrador o dueño. Solo el dueño puede crear administradores para sus restaurantes."
                 )
         
-        # Validar si ya existe el correo
-        existe = db.execute(
-            text('SELECT 1 FROM "Credenciales" WHERE email = :email'),
-            {"email": email}
+        # Validar si ya existe el correo usando función SQL
+        existe_row = db.execute(
+            text(
+                """
+                SELECT fn_register_email_existe(:email)
+                """
+            ),
+            {"email": email},
         ).fetchone()
 
-        if existe:
+        if existe_row and existe_row[0]:
             raise HTTPException(status_code=400, detail=f"El correo {email} ya está registrado")
 
         # Hashear contraseña
         hashed_password = hash_password(password)
 
-        # Misma lógica que scripts/functions/registrar.sql pero en Python (no depende de que exista la función en la BD)
-        r = db.execute(
-            text('INSERT INTO "Credenciales" (email, password) VALUES (:email, :password) RETURNING id_credencial'),
+        # Insertar credenciales usando función SQL que devuelve id_credencial
+        row_cred = db.execute(
+            text(
+                """
+                SELECT fn_register_insertar_credenciales(:email, :password)
+                """
+            ),
             {"email": email, "password": hashed_password},
-        )
-        id_credencial = r.scalar()
+        ).fetchone()
+        id_credencial = int(row_cred[0]) if row_cred and row_cred[0] is not None else None
 
         nacionalidad_val = (nacionalidad or "").strip() or None
         telefono_val = (telefono or "").strip() or None
 
+        # Insertar usuario cliente usando función SQL
         db.execute(
-            text("""INSERT INTO "Usuario" (id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit)
-                    VALUES (:id_credencial, :nombre, :apellido, :tipo_documento, :documento, :nacionalidad, :telefono, :id_rol, :nit)"""),
+            text(
+                """
+                SELECT fn_register_insertar_usuario_cliente(
+                    :id_credencial,
+                    :nombre,
+                    :apellido,
+                    :tipo_documento,
+                    :documento,
+                    :nacionalidad,
+                    :telefono,
+                    :id_rol,
+                    :nit
+                )
+                """
+            ),
             {
                 "id_credencial": id_credencial,
                 "nombre": nombre,
                 "apellido": apellido,
                 "tipo_documento": tipo_documento,
                 "documento": documento,
-                "nacionalidad": nacionalidad_val,
-                "telefono": telefono_val,
+                "nacionalidad": nacionalidad_val or "",
+                "telefono": telefono_val or "",
                 "id_rol": id_rol,
                 "nit": nit,
             },

@@ -120,10 +120,11 @@ export default function ReviewForm({ restaurantNIT, onReviewSubmitted }: ReviewF
         window.location.reload();
       }, 2000);
     } catch (error: any) {
+      // eslint-disable-next-line no-console
       console.error("Error al enviar reseña:", error);
       toast({
-        title: "Error al enviar reseña",
-        description: error.message || "No se pudo enviar la reseña. Inténtalo de nuevo.",
+        title: "No pudimos enviar tu reseña",
+        description: "Inténtalo de nuevo más tarde.",
         variant: "destructive",
       });
     } finally {

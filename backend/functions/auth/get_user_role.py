@@ -7,12 +7,12 @@ def obtener_rol_usuario(db: Session, id_credencial: int):
     Retorna el nombre_rol, id_rol y tipo_usuario (dueno, empleado, cliente).
     """
     row = db.execute(
-        text("""
-            SELECT u.id_rol, r.nombre_rol
-            FROM "Usuario" u
-            JOIN "Roles" r ON u.id_rol = r.id_rol
-            WHERE u.id_credencial = :id_credencial
-        """),
+        text(
+            """
+            SELECT id_rol, nombre_rol
+            FROM fn_auth_get_usuario_rol(:id_credencial)
+            """
+        ),
         {"id_credencial": id_credencial}
     ).fetchone()
 

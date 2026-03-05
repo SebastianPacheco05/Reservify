@@ -137,9 +137,11 @@ export function AddRestaurantModal({
       const nueva = list.find((c) => c.nombre_categoria.toLowerCase() === nombre.toLowerCase());
       if (nueva) update("id_categoria", String(nueva.id_categoria));
     } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Error al crear categoría:", e);
       toast({
         title: "Error",
-        description: e instanceof Error ? e.message : "No se pudo crear la categoría.",
+        description: "No se pudo crear la categoría. Inténtalo de nuevo más tarde.",
         variant: "destructive",
       });
     } finally {
@@ -257,10 +259,11 @@ export function AddRestaurantModal({
       update("url_imagen", url);
       toast({ title: "Imagen principal", description: "Subida correctamente." });
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error("Error en handleMainImageChange:", err);
       toast({
         title: "Error al subir imagen",
-        description: err instanceof Error ? err.message : "Error al subir la imagen. Verifica tu conexión y que Cloudinary esté configurado.",
+        description: "No se pudo subir la imagen. Inténtalo de nuevo en unos minutos.",
         variant: "destructive",
       });
     } finally {
@@ -300,10 +303,11 @@ export function AddRestaurantModal({
       }));
       toast({ title: "Imagen de referencia", description: "Agregada correctamente." });
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error("Error en handleRefImageChange:", err);
       toast({
         title: "Error al subir imagen",
-        description: err instanceof Error ? err.message : "Error al subir la imagen. Verifica tu conexión y que Cloudinary esté configurado.",
+        description: "No se pudo subir la imagen. Inténtalo de nuevo en unos minutos.",
         variant: "destructive",
       });
     } finally {
@@ -385,10 +389,11 @@ export function AddRestaurantModal({
       onSuccess();
       onClose();
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Error al crear el restaurante.";
+      // eslint-disable-next-line no-console
+      console.error("Error al crear restaurante:", err);
       toast({
-        title: "Error",
-        description: message,
+        title: "No se pudo crear el restaurante",
+        description: "Ocurrió un problema al guardar la información. Revisa los datos o inténtalo nuevamente.",
         variant: "destructive",
       });
     } finally {

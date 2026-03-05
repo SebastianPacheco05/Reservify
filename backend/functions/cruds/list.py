@@ -255,16 +255,10 @@ def actualizar_coordenadas_restaurante(db: Session, nit: int, lat: float, lng: f
     """
     Actualiza las coordenadas (lat/lng) del restaurante.
     """
-    result = db.execute(
-        text("""
-            UPDATE "Restaurante"
-            SET lat = :lat, lng = :lng
-            WHERE nit = :nit
-        """),
+    db.execute(
+        text("SELECT actualizar_coordenadas_restaurante(:nit, :lat, :lng)"),
         {"nit": nit, "lat": lat, "lng": lng},
     )
-    if getattr(result, "rowcount", 0) == 0:
-        raise ValueError(f"No existe restaurante con nit={nit}")
     db.commit()
 
 

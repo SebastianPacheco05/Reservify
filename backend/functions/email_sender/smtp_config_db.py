@@ -14,8 +14,10 @@ def get_smtp_config(db: Session, id_credencial: int) -> dict | None:
     try:
         row = db.execute(
             text(
-                'SELECT host, port, usuario, password_encrypted, from_email, '
-                'COALESCE(consentimiento_archivo, FALSE) FROM "SMTP_config" WHERE id_credencial = :id_credencial LIMIT 1'
+                """
+                SELECT host, port, usuario, password_encrypted, from_email, consentimiento_archivo
+                FROM fn_es_get_smtp_config(:id_credencial)
+                """
             ),
             {"id_credencial": id_credencial},
         ).fetchone()
@@ -31,26 +33,7 @@ def get_smtp_config(db: Session, id_credencial: int) -> dict | None:
             "consentimiento_archivo": bool(row[5]) if len(row) > 5 else False,
         }
     except Exception:
-        try:
-            row = db.execute(
-                text(
-                    'SELECT host, port, usuario, password_encrypted, from_email FROM "SMTP_config" WHERE id_credencial = :id_credencial LIMIT 1'
-                ),
-                {"id_credencial": id_credencial},
-            ).fetchone()
-            if not row:
-                return None
-            pwd = decrypt_password(row[3])
-            return {
-                "host": row[0],
-                "port": row[1],
-                "usuario": row[2],
-                "password_encrypted": pwd,
-                "from_email": row[4],
-                "consentimiento_archivo": False,
-            }
-        except Exception:
-            return None
+        return None
 
 
 def get_smtp_config_para_dashboard(db: Session, id_credencial: int) -> dict | None:
@@ -80,56 +63,34 @@ def upsert_smtp_config(
 ) -> None:
     """Crea o actualiza la configuración SMTP del usuario (id_credencial). Si consentimiento_archivo es None, no se cambia en UPDATE."""
     try:
-        row = db.execute(
-            text('SELECT id FROM "SMTP_config" WHERE id_credencial = :id_credencial LIMIT 1'),
-            {"id_credencial": id_credencial},
-        ).fetchone()
         consent = consentimiento_archivo if consentimiento_archivo is not None else False
         pwd_to_store = encrypt_password(password_encrypted) if (password_encrypted and password_encrypted.strip()) else None
-        if row:
-            if consentimiento_archivo is not None:
-                if pwd_to_store:
-                    db.execute(
-                        text(
-                            'UPDATE "SMTP_config" SET host = :host, port = :port, usuario = :usuario, '
-                            'from_email = :from_email, password_encrypted = :pwd, '
-                            'consentimiento_archivo = :consent, updated_at = NOW() WHERE id = :id'
-                        ),
-                        {"host": host, "port": port, "usuario": usuario, "from_email": from_email, "pwd": pwd_to_store, "consent": consent, "id": row[0]},
-                    )
-                else:
-                    db.execute(
-                        text(
-                            'UPDATE "SMTP_config" SET host = :host, port = :port, usuario = :usuario, '
-                            'from_email = :from_email, consentimiento_archivo = :consent, updated_at = NOW() WHERE id = :id'
-                        ),
-                        {"host": host, "port": port, "usuario": usuario, "from_email": from_email, "consent": consent, "id": row[0]},
-                    )
-            else:
-                if pwd_to_store:
-                    db.execute(
-                        text(
-                            'UPDATE "SMTP_config" SET host = :host, port = :port, usuario = :usuario, '
-                            'from_email = :from_email, password_encrypted = :pwd, updated_at = NOW() WHERE id = :id'
-                        ),
-                        {"host": host, "port": port, "usuario": usuario, "from_email": from_email, "pwd": pwd_to_store, "id": row[0]},
-                    )
-                else:
-                    db.execute(
-                        text(
-                            'UPDATE "SMTP_config" SET host = :host, port = :port, usuario = :usuario, '
-                            'from_email = :from_email, updated_at = NOW() WHERE id = :id'
-                        ),
-                        {"host": host, "port": port, "usuario": usuario, "from_email": from_email, "id": row[0]},
-                    )
-        else:
-            db.execute(
-                text(
-                    'INSERT INTO "SMTP_config" (id_credencial, host, port, usuario, password_encrypted, from_email, consentimiento_archivo) '
-                    'VALUES (:id_credencial, :host, :port, :usuario, :pwd, :from_email, :consent)'
-                ),
-                {"id_credencial": id_credencial, "host": host, "port": port, "usuario": usuario, "pwd": pwd_to_store or "", "from_email": from_email, "consent": consent},
-            )
+        db.execute(
+            text(
+                """
+                SELECT fn_es_upsert_smtp_config(
+                    :id_credencial,
+                    :host,
+                    :port,
+                    :usuario,
+                    :from_email,
+                    :pwd,
+                    :consent,
+                    :actualizar_consentimiento
+                )
+                """
+            ),
+            {
+                "id_credencial": id_credencial,
+                "host": host,
+                "port": port,
+                "usuario": usuario,
+                "from_email": from_email,
+                "pwd": pwd_to_store,
+                "consent": consent,
+                "actualizar_consentimiento": consentimiento_archivo is not None,
+            },
+        )
         db.commit()
     except Exception:
         db.rollback()
@@ -141,7 +102,10 @@ def get_imap_config(db: Session, id_credencial: int) -> dict | None:
     try:
         row = db.execute(
             text(
-                'SELECT host, port, usuario, password_encrypted, COALESCE(consentimiento_archivo, FALSE) FROM "IMAP_config" WHERE id_credencial = :id_credencial LIMIT 1'
+                """
+                SELECT host, port, usuario, password_encrypted, consentimiento_archivo
+                FROM fn_es_get_imap_config(:id_credencial)
+                """
             ),
             {"id_credencial": id_credencial},
         ).fetchone()
@@ -155,22 +119,7 @@ def get_imap_config(db: Session, id_credencial: int) -> dict | None:
             "consentimiento_archivo": bool(row[4]) if len(row) > 4 else False,
         }
     except Exception:
-        try:
-            row = db.execute(
-                text('SELECT host, port, usuario, password_encrypted FROM "IMAP_config" WHERE id_credencial = :id_credencial LIMIT 1'),
-                {"id_credencial": id_credencial},
-            ).fetchone()
-            if not row:
-                return None
-            return {
-                "host": row[0],
-                "port": row[1],
-                "usuario": row[2],
-                "tiene_password": bool(row[3]),
-                "consentimiento_archivo": False,
-            }
-        except Exception:
-            return None
+        return None
 
 
 def get_imap_config_with_password(db: Session, id_credencial: int) -> dict | None:
@@ -178,7 +127,10 @@ def get_imap_config_with_password(db: Session, id_credencial: int) -> dict | Non
     try:
         row = db.execute(
             text(
-                'SELECT host, port, usuario, password_encrypted, COALESCE(consentimiento_archivo, FALSE) FROM "IMAP_config" WHERE id_credencial = :id_credencial LIMIT 1'
+                """
+                SELECT host, port, usuario, password_encrypted, consentimiento_archivo
+                FROM fn_es_get_imap_config(:id_credencial)
+                """
             ),
             {"id_credencial": id_credencial},
         ).fetchone()
@@ -193,23 +145,7 @@ def get_imap_config_with_password(db: Session, id_credencial: int) -> dict | Non
             "consentimiento_archivo": bool(row[4]) if len(row) > 4 else False,
         }
     except Exception:
-        try:
-            row = db.execute(
-                text('SELECT host, port, usuario, password_encrypted FROM "IMAP_config" WHERE id_credencial = :id_credencial LIMIT 1'),
-                {"id_credencial": id_credencial},
-            ).fetchone()
-            if not row or not row[0] or not row[2]:
-                return None
-            pwd = decrypt_password(row[3])
-            return {
-                "host": row[0],
-                "port": row[1] or 993,
-                "usuario": row[2],
-                "password_encrypted": pwd or "",
-                "consentimiento_archivo": False,
-            }
-        except Exception:
-            return None
+        return None
 
 
 def upsert_imap_config(
@@ -223,54 +159,32 @@ def upsert_imap_config(
 ) -> None:
     """Crea o actualiza la configuración IMAP del usuario (id_credencial)."""
     try:
-        row = db.execute(
-            text('SELECT id FROM "IMAP_config" WHERE id_credencial = :id_credencial LIMIT 1'),
-            {"id_credencial": id_credencial},
-        ).fetchone()
         consent = consentimiento_archivo if consentimiento_archivo is not None else False
         pwd_imap_to_store = encrypt_password(password_encrypted) if (password_encrypted and password_encrypted.strip()) else None
-        if row:
-            if consentimiento_archivo is not None:
-                if pwd_imap_to_store is not None:
-                    db.execute(
-                        text(
-                            'UPDATE "IMAP_config" SET host = :host, port = :port, usuario = :usuario, '
-                            'password_encrypted = :pwd, consentimiento_archivo = :consent, updated_at = NOW() WHERE id = :id'
-                        ),
-                        {"host": host, "port": port, "usuario": usuario, "pwd": pwd_imap_to_store, "consent": consent, "id": row[0]},
-                    )
-                else:
-                    db.execute(
-                        text(
-                            'UPDATE "IMAP_config" SET host = :host, port = :port, usuario = :usuario, '
-                            'consentimiento_archivo = :consent, updated_at = NOW() WHERE id = :id'
-                        ),
-                        {"host": host, "port": port, "usuario": usuario, "consent": consent, "id": row[0]},
-                    )
-            else:
-                if pwd_imap_to_store is not None:
-                    db.execute(
-                        text(
-                            'UPDATE "IMAP_config" SET host = :host, port = :port, usuario = :usuario, '
-                            'password_encrypted = :pwd, updated_at = NOW() WHERE id = :id'
-                        ),
-                        {"host": host, "port": port, "usuario": usuario, "pwd": pwd_imap_to_store, "id": row[0]},
-                    )
-                else:
-                    db.execute(
-                        text(
-                            'UPDATE "IMAP_config" SET host = :host, port = :port, usuario = :usuario, updated_at = NOW() WHERE id = :id'
-                        ),
-                        {"host": host, "port": port, "usuario": usuario, "id": row[0]},
-                    )
-        else:
-            db.execute(
-                text(
-                    'INSERT INTO "IMAP_config" (id_credencial, host, port, usuario, password_encrypted, consentimiento_archivo) '
-                    'VALUES (:id_credencial, :host, :port, :usuario, :pwd, :consent)'
-                ),
-                {"id_credencial": id_credencial, "host": host, "port": port, "usuario": usuario, "pwd": pwd_imap_to_store or "", "consent": consent},
-            )
+        db.execute(
+            text(
+                """
+                SELECT fn_es_upsert_imap_config(
+                    :id_credencial,
+                    :host,
+                    :port,
+                    :usuario,
+                    :pwd,
+                    :consent,
+                    :actualizar_consentimiento
+                )
+                """
+            ),
+            {
+                "id_credencial": id_credencial,
+                "host": host,
+                "port": port,
+                "usuario": usuario,
+                "pwd": pwd_imap_to_store,
+                "consent": consent,
+                "actualizar_consentimiento": consentimiento_archivo is not None,
+            },
+        )
         db.commit()
     except Exception:
         db.rollback()
@@ -298,13 +212,19 @@ def insert_mails(db: Session, correos: list[dict], id_credencial: int) -> None:
             try:
                 db.execute(
                     text(
-                        'INSERT INTO "Mails" (id_credencial, imap_uid, from_email, to_email, subject, snippet, body_text, body_html, date_received) '
-                        'VALUES (:id_credencial, :imap_uid, :from_email, :to_email, :subject, :snippet, :body_text, :body_html, :date_received) '
-                        'ON CONFLICT (id_credencial, imap_uid) DO UPDATE SET '
-                        'subject = EXCLUDED.subject, snippet = EXCLUDED.snippet, '
-                        'body_text = COALESCE(EXCLUDED.body_text, "Mails".body_text), '
-                        'body_html = COALESCE(EXCLUDED.body_html, "Mails".body_html), '
-                        'date_received = EXCLUDED.date_received'
+                        """
+                        SELECT fn_es_upsert_mail(
+                            :id_credencial,
+                            :imap_uid,
+                            :from_email,
+                            :to_email,
+                            :subject,
+                            :snippet,
+                            :body_text,
+                            :body_html,
+                            :date_received
+                        )
+                        """
                     ),
                     {
                         "id_credencial": id_credencial,
@@ -334,9 +254,10 @@ def get_mails_by_credencial(db: Session, id_credencial: int, limit: int = 50) ->
     try:
         rows = db.execute(
             text(
-                'SELECT imap_uid, from_email, subject, date_received, snippet '
-                'FROM "Mails" WHERE id_credencial = :id_credencial '
-                'ORDER BY date_received DESC NULLS LAST, created_at DESC NULLS LAST LIMIT :lim'
+                """
+                SELECT imap_uid, from_email, subject, date_received, snippet
+                FROM fn_es_get_mails_by_credencial(:id_credencial, :lim)
+                """
             ),
             {"id_credencial": id_credencial, "lim": limit},
         ).fetchall()
@@ -359,8 +280,10 @@ def get_mail_by_uid(db: Session, imap_uid: int, id_credencial: int) -> dict | No
     try:
         row = db.execute(
             text(
-                'SELECT imap_uid, from_email, to_email, subject, snippet, body_text, body_html, date_received, created_at '
-                'FROM "Mails" WHERE imap_uid = :uid AND id_credencial = :id_credencial LIMIT 1'
+                """
+                SELECT imap_uid, from_email, to_email, subject, snippet, body_text, body_html, date_received, created_at
+                FROM fn_es_get_mail_by_uid(:uid, :id_credencial)
+                """
             ),
             {"uid": imap_uid, "id_credencial": id_credencial},
         ).fetchone()

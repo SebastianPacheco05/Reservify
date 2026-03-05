@@ -195,10 +195,9 @@ export default function RestaurantPage() {
     } catch (error) {
       console.error("Error al procesar la reserva:", error);
       toast({
-        title: "Error en la reserva",
+        title: "No pudimos completar tu reserva",
         description:
-          (error as { message?: string })?.message ||
-          "Error al procesar la reserva. Inténtalo de nuevo.",
+          "Hubo un problema al validar tu información como cliente. Intenta de nuevo más tarde o comunícate con soporte si el problema persiste.",
         variant: "destructive",
       });
     }

@@ -32,15 +32,16 @@ export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
         };
 
         const getVariantClass = () => {
+          // Fondo según tipo de mensaje, pero siempre texto en negro
           switch (toast.variant) {
             case 'success':
-              return 'border-green-200 bg-green-50 text-green-800';
+              return 'border-green-200 bg-green-50 text-black';
             case 'destructive':
-              return 'border-red-200 bg-red-50 text-red-800';
+              return 'border-red-200 bg-red-50 text-black';
             case 'warning':
-              return 'border-yellow-200 bg-yellow-50 text-yellow-800';
+              return 'border-yellow-200 bg-yellow-50 text-black';
             default:
-              return 'border-blue-200 bg-blue-50 text-blue-800';
+              return 'border-blue-200 bg-blue-50 text-black';
           }
         };
 
@@ -52,9 +53,11 @@ export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
             <div className="flex items-start gap-3">
               {getIcon()}
               <div className="flex-1">
-                <AlertTitle className="font-medium">{toast.title}</AlertTitle>
+                <AlertTitle className="font-medium text-black">
+                  {toast.title}
+                </AlertTitle>
                 {toast.description && (
-                  <AlertDescription className="mt-1">
+                  <AlertDescription className="mt-1 text-black">
                     {toast.description}
                   </AlertDescription>
                 )}

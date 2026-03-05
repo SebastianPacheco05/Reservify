@@ -16,7 +16,7 @@ def insertar_calculo_mensual(
     try:
         db.execute(
             text(
-                "SELECT insersat_calculo_mensual(:nit, :mes, :anio, :total_reservas, :revenue, :total_clientes)"
+                "SELECT insertar_calculo_mensual(:nit, :mes, :anio, :total_reservas, :revenue, :total_clientes)"
             ),
             {
                 "nit": nit,

@@ -5,9 +5,14 @@ export function showErrorToast(
   error: unknown,
   fallbackMessage: string
 ): void {
+  // Registrar el error completo en consola para debug,
+  // pero mostrar un mensaje amigable al usuario.
+  // eslint-disable-next-line no-console
+  console.error(error);
+
   toast({
     title: "Error",
-    description: error instanceof Error ? error.message : fallbackMessage,
+    description: fallbackMessage,
     variant: "destructive",
   });
 }

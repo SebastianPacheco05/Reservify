@@ -23,17 +23,18 @@ def verificar_token(token: str = Depends(oauth2_scheme), db: Session = Depends(g
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         id_credencial = payload.get("id")
         email = payload.get("sub")
-        
+
         if id_credencial is None or email is None:
             raise HTTPException(status_code=401, detail="Token inválido")
 
-        # Verifica que no esté revocado
+        # Verifica que no esté revocado usando función SQL (SELECT funcionSQL(:X))
         result = db.execute(
-            text("SELECT revoked FROM jwt_tokens WHERE token = :token"),
+            text("SELECT fn_auth_get_jwt_token_status(:token)"),
             {"token": token},
         ).fetchone()
 
-        if not result or result[0]:  # ← SOLUCIÓN AQUÍ
+        # La función devuelve TRUE si el token está revocado o no existe
+        if result and result[0]:
             raise HTTPException(status_code=401, detail="Token revocado o no registrado")
 
         # Devolver payload con email incluido
