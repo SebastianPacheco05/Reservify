@@ -33,6 +33,7 @@ export interface Categoria {
 
 export interface AddRestaurantForm {
   nit: string;
+  nit_dv: string; // Dígito de verificación (0-9)
   nombre_restaurante: string;
   descripcion_restaurante: string;
   direccion: string;
@@ -45,6 +46,7 @@ export interface AddRestaurantForm {
 
 const initialForm: AddRestaurantForm = {
   nit: "",
+  nit_dv: "",
   nombre_restaurante: "",
   descripcion_restaurante: "",
   direccion: "",
@@ -326,8 +328,11 @@ export function AddRestaurantModal({
   const validate = (): boolean => {
     const next: Partial<Record<keyof AddRestaurantForm, string>> = {};
     const nitNum = form.nit.trim();
+    const nitDv = form.nit_dv.trim();
     if (!nitNum) next.nit = "El NIT es obligatorio.";
-    else if (!/^\d{1,10}$/.test(nitNum)) next.nit = "El NIT debe ser numérico (máx. 10 dígitos).";
+    else if (!/^\d{1,9}$/.test(nitNum)) next.nit = "El NIT debe ser numérico (máx. 9 dígitos).";
+    if (!nitDv) next.nit_dv = "El dígito de verificación es obligatorio.";
+    else if (!/^[0-9]$/.test(nitDv)) next.nit_dv = "El dígito de verificación debe ser un número del 0 al 9.";
     if (!form.nombre_restaurante.trim()) next.nombre_restaurante = "El nombre es obligatorio.";
     if (!form.descripcion_restaurante.trim()) next.descripcion_restaurante = "La descripción es obligatoria.";
     if (!form.direccion.trim()) next.direccion = "La dirección es obligatoria.";
@@ -359,7 +364,7 @@ export function AddRestaurantModal({
     setIsSubmitting(true);
     try {
       const body = {
-        nit: parseInt(form.nit.trim(), 10),
+        nit: parseInt(form.nit.trim() + form.nit_dv.trim(), 10),
         nombre_restaurante: form.nombre_restaurante.trim(),
         descripcion_restaurante: form.descripcion_restaurante.trim(),
         direccion: form.direccion.trim(),
@@ -419,17 +424,47 @@ export function AddRestaurantModal({
 
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="nit">NIT *</Label>
-              <Input
-                id="nit"
-                placeholder="Ej: 900123456"
-                value={form.nit}
-                onChange={(e) => update("nit", e.target.value)}
-                aria-invalid={!!errors.nit}
-              />
-              {errors.nit && (
-                <p className="text-sm text-destructive">{errors.nit}</p>
-              )}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="nit">NIT *</Label>
+                  <Input
+                    id="nit"
+                    placeholder="Ej: 900123456"
+                    value={form.nit}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/\D/g, "").slice(0, 9);
+                      update("nit", v);
+                    }}
+                    maxLength={9}
+                    inputMode="numeric"
+                    aria-invalid={!!errors.nit}
+                  />
+                  {errors.nit && (
+                    <p className="text-sm text-destructive">{errors.nit}</p>
+                  )}
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="nit_dv">D.V. *</Label>
+                  <Input
+                    id="nit_dv"
+                    placeholder="0-9"
+                    value={form.nit_dv}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/\D/g, "").slice(0, 1);
+                      if (v === "" || /^[0-9]$/.test(v)) update("nit_dv", v);
+                    }}
+                    maxLength={1}
+                    inputMode="numeric"
+                    aria-invalid={!!errors.nit_dv}
+                  />
+                  {errors.nit_dv && (
+                    <p className="text-sm text-destructive">{errors.nit_dv}</p>
+                  )}
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Formato Colombia: 800.000.000 – 9 (NIT + dígito de verificación de la DIAN)
+              </p>
             </div>
 
             <div className="grid gap-2">

@@ -1,3 +1,4 @@
+import os
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -6,6 +7,9 @@ from functions.email_sender.email_utils import send_email
 from models import EmailSchema
 from config import SessionLocal  # asegúrate de tener esto bien configurado
 import asyncio
+
+# En desarrollo: SKIP_EMAIL_SCHEDULE=1 para ejecutar la tarea cada hora sin esperar horario 8AM-8PM
+SKIP_EMAIL_SCHEDULE = os.environ.get("SKIP_EMAIL_SCHEDULE", "").strip().lower() in ("1", "true", "yes")
 
 # Diccionario temporal para saber qué correos ya se enviaron
 enviados = set()
@@ -61,10 +65,14 @@ async def tarea_programada():
     while True:
         ahora = datetime.now()
         hora_actual = ahora.hour
+        en_horario = 8 <= hora_actual < 20  # 8 AM a 7:59 PM
 
-        # Verificar si está en horario de trabajo (8 AM a 8 PM)
-        if 8 <= hora_actual < 20:  # 8 AM a 7:59 PM
-            print(f"[{ahora.strftime('%H:%M:%S')}] Ejecutando tarea_programada...")
+        # Verificar si está en horario de trabajo (8 AM a 8 PM) o si se ignora en desarrollo
+        if en_horario or SKIP_EMAIL_SCHEDULE:
+            if SKIP_EMAIL_SCHEDULE and not en_horario:
+                print(f"[{ahora.strftime('%H:%M:%S')}] Ejecutando tarea_programada (SKIP_EMAIL_SCHEDULE)...")
+            else:
+                print(f"[{ahora.strftime('%H:%M:%S')}] Ejecutando tarea_programada...")
 
             try:
                 db: Session = SessionLocal()

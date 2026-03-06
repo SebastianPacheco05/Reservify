@@ -79,15 +79,15 @@ export function RestaurantConfigModal({
   });
   const [isMapPickerOpen, setIsMapPickerOpen] = useState(false);
 
-  // Nueva mesa
+  // Nueva mesa (precioInput como string para permitir vacío y decimales al escribir)
   const [newMesa, setNewMesa] = useState({
     estado_de_disponibilidad: true,
     cant_personas: 2,
-    precio: 0,
+    precioInput: "",
   });
   const [addingMesa, setAddingMesa] = useState(false);
   const [editingMesaId, setEditingMesaId] = useState<number | null>(null);
-  const [editMesaForm, setEditMesaForm] = useState({ cant_personas: 2, precio: 0, estado_de_disponibilidad: true });
+  const [editMesaForm, setEditMesaForm] = useState({ cant_personas: 2, precioInput: "", estado_de_disponibilidad: true });
 
   // Asignar administrador
   const [selectedAdminId, setSelectedAdminId] = useState<string>("");
@@ -191,16 +191,17 @@ export function RestaurantConfigModal({
     if (!nit) return;
     setAddingMesa(true);
     try {
+      const precioNum = parseFloat(newMesa.precioInput.replace(",", ".")) || 0;
       await OwnerRestaurantConfigService.addMesa(nit, {
         estado_de_disponibilidad: true,
         cant_personas: newMesa.cant_personas,
-        precio: newMesa.precio,
+        precio: precioNum,
         nit,
       });
       toast({ title: "Mesa agregada", description: "La mesa se ha añadido correctamente." });
       const list = await OwnerRestaurantConfigService.getMesas(nit);
       setMesas(list);
-      setNewMesa({ estado_de_disponibilidad: true, cant_personas: 2, precio: 0 });
+      setNewMesa({ estado_de_disponibilidad: true, cant_personas: 2, precioInput: "" });
       onSuccess();
     } catch (e) {
       showErrorToast(toast, e, "Error al agregar mesa.");
@@ -213,12 +214,13 @@ export function RestaurantConfigModal({
     if (!nit || editingMesaId == null) return;
     setAddingMesa(true);
     try {
+      const precioNum = parseFloat(editMesaForm.precioInput.replace(",", ".")) || 0;
       await OwnerRestaurantConfigService.updateMesa(nit, editingMesaId, {
         id_mesa: editingMesaId,
         nit,
         estado_de_disponibilidad: editMesaForm.estado_de_disponibilidad,
         cant_personas: editMesaForm.cant_personas,
-        precio: editMesaForm.precio,
+        precio: precioNum,
       });
       toast({ title: "Mesa actualizada", description: "Cambios guardados." });
       const list = await OwnerRestaurantConfigService.getMesas(nit);
@@ -503,11 +505,14 @@ export function RestaurantConfigModal({
                     <div className="grid gap-1">
                       <Label className="text-xs">Precio</Label>
                       <Input
-                        type="number"
-                        min={0}
-                        step={0.01}
-                        value={newMesa.precio}
-                        onChange={(e) => setNewMesa((p) => ({ ...p, precio: parseFloat(e.target.value) || 0 }))}
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="0"
+                        value={newMesa.precioInput}
+                        onChange={(e) => {
+                          const v = e.target.value.replace(",", ".");
+                          if (v === "" || /^\d*\.?\d*$/.test(v)) setNewMesa((p) => ({ ...p, precioInput: v }));
+                        }}
                         className="w-24"
                       />
                     </div>
@@ -538,13 +543,14 @@ export function RestaurantConfigModal({
                                 className="w-20"
                               />
                               <Input
-                                type="number"
-                                min={0}
-                                step={0.01}
-                                value={editMesaForm.precio}
-                                onChange={(e) =>
-                                  setEditMesaForm((p) => ({ ...p, precio: parseFloat(e.target.value) || 0 }))
-                                }
+                                type="text"
+                                inputMode="decimal"
+                                placeholder="0"
+                                value={editMesaForm.precioInput}
+                                onChange={(e) => {
+                                  const v = e.target.value.replace(",", ".");
+                                  if (v === "" || /^\d*\.?\d*$/.test(v)) setEditMesaForm((p) => ({ ...p, precioInput: v }));
+                                }}
                                 className="w-24"
                               />
                               <label className="flex items-center gap-1 text-sm">
@@ -579,7 +585,7 @@ export function RestaurantConfigModal({
                                     setEditingMesaId(m.id_mesa);
                                     setEditMesaForm({
                                       cant_personas: m.cant_personas,
-                                      precio: m.precio,
+                                      precioInput: m.precio != null ? String(m.precio) : "",
                                       estado_de_disponibilidad: m.estado_de_disponibilidad,
                                     });
                                   }}

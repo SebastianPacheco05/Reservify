@@ -9,9 +9,9 @@ interface ProtectedRouteProps {
   requiredRole?: string | string[]; // "dueño", "cliente", "empleado", "administrador" o array de roles
 }
 
-export default function ProtectedRoute({ 
-  children, 
-  requiredRole = "dueño" 
+export default function ProtectedRoute({
+  children,
+  requiredRole = "dueño"
 }: ProtectedRouteProps) {
   const { toast } = useToastContext();
   const [isLoading, setIsLoading] = useState(true);
@@ -46,25 +46,25 @@ export default function ProtectedRoute({
         // Verificar si el usuario tiene el rol requerido
         // Los roles en la DB son: "dueño", "cliente", "empleado", "administrador"
         // Cada usuario solo puede acceder a su propio dashboard
-        const requiredRoles = Array.isArray(requiredRole) 
+        const requiredRoles = Array.isArray(requiredRole)
           ? requiredRole.map(r => r.toLowerCase())
           : [requiredRole.toLowerCase()];
-        
+
         const hasRequiredRole = requiredRoles.includes(userRole);
-        
+
         if (hasRequiredRole) {
           setHasAccess(true);
         } else {
           setHasAccess(false);
           // Mensaje personalizado según el dashboard intentado
-          const dashboardName = requiredRoles.includes("dueño") 
-            ? "Dashboard de Dueño" 
+          const dashboardName = requiredRoles.includes("dueño")
+            ? "Dashboard de Dueño"
             : requiredRoles.includes("administrador")
-            ? "Dashboard de Administrador"
-            : requiredRoles.includes("empleado")
-            ? "Dashboard de Empleado"
-            : "Dashboard de Cliente";
-          
+              ? "Dashboard de Administrador"
+              : requiredRoles.includes("empleado")
+                ? "Dashboard de Empleado"
+                : "Dashboard de Cliente";
+
           toast({
             title: "Acceso denegado",
             description: `No tienes permisos para acceder al ${dashboardName}. Solo los usuarios con el rol correspondiente pueden acceder.`,

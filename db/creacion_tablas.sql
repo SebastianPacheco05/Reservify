@@ -41,6 +41,14 @@ CREATE TABLE "Roles" (
     descripcion VARCHAR(100) NOT NULL  -- Descripción del rol
 );
 
+-- Roles iniciales del sistema
+INSERT INTO "Roles" (id_rol, nombre_rol, descripcion) VALUES
+    (1, 'dueño', 'Propietario de uno o más restaurantes'),
+    (2, 'cliente', 'Usuario que realiza reservas en restaurantes'),
+    (3, 'empleado', 'Trabajador vinculado a un restaurante'),
+    (4, 'administrador', 'Administrador general de varios restaurantes')
+ON CONFLICT (id_rol) DO NOTHING;
+
 -- Tabla Usuario: Almacena todos los usuarios del sistema (cliente, dueño, empleado) según id_rol
 -- Dueño: vinculado a restaurantes por Restaurante.documento = Usuario.documento
 -- Empleado: vinculado a un restaurante por Usuario.nit (restaurante donde trabaja)

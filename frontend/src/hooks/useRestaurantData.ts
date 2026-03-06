@@ -28,7 +28,7 @@ export const useRestaurantData = (restaurantNIT?: number) => {
   // Función para cargar todos los datos
   const loadAllData = async () => {
     if (!restaurantNIT) return;
-    
+
     setLoading({
       info: true,
       mesas: true,

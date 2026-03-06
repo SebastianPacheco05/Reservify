@@ -9,6 +9,7 @@ if __name__ == "__main__":
         "main:app",
         host=BACKEND_HOST,
         port=BACKEND_PORT,
-        reload=True
+        reload=True,
+        reload_excludes=["venv", "venv/**", "**/venv/**"],
     )
 
