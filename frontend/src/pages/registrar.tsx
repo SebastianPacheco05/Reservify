@@ -28,7 +28,6 @@ import {
 } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { Separator } from "../components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -126,29 +125,45 @@ export default function Registrar() {
   };
 
   const handleContinue = () => {
-    if (email == "") {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (email === "") {
       toast({
         title: "Campo requerido",
         description: "Por favor, ingresa un correo electrónico.",
-        variant: "warning"
-      });
-      return;
-    } else if (password !== confirmPassword) {
-      toast({
-        title: "Error de validación",
-        description: "Las contraseñas no coinciden.",
-        variant: "destructive"
-      });
-      return;
-    } else if (password == "" && confirmPassword == "") {
-      toast({
-        title: "Campo requerido",
-        description: "Por favor, ingresa una contraseña.",
-        variant: "warning"
+        variant: "warning",
       });
       return;
     }
-    setShowCard(false); // 👈 solo avanza si las contraseñas coinciden
+
+    if (!emailRegex.test(email)) {
+      toast({
+        title: "Correo inválido",
+        description: "Por favor, ingresa un correo electrónico válido (ej: usuario@dominio.com).",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (password === "" || confirmPassword === "") {
+      toast({
+        title: "Campo requerido",
+        description: "Por favor, ingresa y confirma tu contraseña.",
+        variant: "warning",
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast({
+        title: "Error de validación",
+        description: "Las contraseñas no coinciden.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setShowCard(false);
   };
 
   return (
