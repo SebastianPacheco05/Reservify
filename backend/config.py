@@ -18,9 +18,19 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 BACKEND_HOST = os.getenv("BACKEND_HOST", "10.5.213.111")
 BACKEND_PORT = int(os.getenv("BACKEND_PORT", "8000"))
 
-# CORS: con credentials el navegador no acepta '*'. Lista de orígenes separados por coma.
-# Incluye el puerto del frontend (ej. 5123 o 5173) y la URL de devtunnels si la usas.
-CORS_ORIGINS_RAW = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5123,http://127.0.0.1:5123")
+# Host y puerto del frontend desde .env para construir CORS por defecto
+FRONTEND_HOST = os.getenv("FRONTEND_HOST", "localhost")
+FRONTEND_PORT = os.getenv("FRONTEND_PORT", "5173")
+
+# CORS: con credentials el navegador no acepta '*'.
+# Lista de orígenes separados por coma, totalmente configurable desde .env.
+# Si CORS_ORIGINS no está definido, se deriva de FRONTEND_HOST y FRONTEND_PORT.
+cors_origins_env = os.getenv("CORS_ORIGINS")
+if cors_origins_env and cors_origins_env.strip():
+    CORS_ORIGINS_RAW = cors_origins_env
+else:
+    CORS_ORIGINS_RAW = f"http://{FRONTEND_HOST}:{FRONTEND_PORT}"
+
 CORS_ORIGINS = [o.strip().rstrip("/") for o in CORS_ORIGINS_RAW.split(",") if o.strip()]
 
 engine = create_engine(DATABASE_URL)
