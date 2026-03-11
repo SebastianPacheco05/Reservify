@@ -35,6 +35,7 @@ from routes.data_owner import router as data_owner_router
 from routes.enc_fac_reserva import router as enc_fac_reserva_router
 from routes.wompi import router as wompi_router
 from routes.restaurantes_map import router as restaurantes_map_router
+from routes.password_reset import router as password_reset_router
 
 
 @asynccontextmanager
@@ -117,6 +118,7 @@ app.include_router(register_router)
 app.include_router(top_router)
 app.include_router(searchBox_router)
 app.include_router(restaurantes_map_router)
+app.include_router(password_reset_router, prefix="/password-reset")
 
 
 @app.post("/contactanos")
@@ -130,10 +132,16 @@ async def enviar_correo_contacto(data: EmailSchema):
 
 if __name__ == "__main__":
     import uvicorn
+    from pathlib import Path
+    # Incluir ruta absoluta de venv para que WatchFiles excluya correctamente en Windows
+    venv_dir = Path(__file__).resolve().parent / "venv"
+    reload_excludes = ["venv", "venv/**", "**/venv/**"]
+    if venv_dir.is_dir():
+        reload_excludes.append(str(venv_dir))
     uvicorn.run(
         "main:app",
         host=BACKEND_HOST,
         port=BACKEND_PORT,
         reload=True,
-        reload_excludes=["venv", "venv/**", "**/venv/**"],
+        reload_excludes=reload_excludes,
     )

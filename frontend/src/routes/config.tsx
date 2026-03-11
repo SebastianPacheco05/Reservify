@@ -12,11 +12,21 @@ import PersonalData from "../pages/PersonalData";
 import PaymentGateway from "../pages/PaymentGateway";
 import PagoExitoso from "../pages/PagoExitoso";
 import ProtectedRoute from "../components/ProtectedRoute";
+import Contacto from "../pages/Contacto";
+import Ayuda from "../pages/Ayuda";
+import Terminos from "../pages/Terminos";
+import Privacidad from "../pages/Privacidad";
+import Lost from "../pages/Lost";
 
 export const ROUTES = {
   HOME: "/",
   LOGIN: "/Login",
   REGISTER: "/Registrar",
+  LOST: "/lost",
+  CONTACTO: "/contacto",
+  AYUDA: "/ayuda",
+  TERMINOS: "/terminos",
+  PRIVACIDAD: "/privacidad",
   OWNER_DASHBOARD: "/duenodashboard",
   ADMIN_DASHBOARD: "/admindashboard",
   EMPLOYEE_DASHBOARD: "/EmpleadoDashboard",
@@ -82,6 +92,11 @@ export const getPublicRoutes = (PageWrapper: React.FC<{ children: React.ReactNod
   { path: ROUTES.HOME, element: <PageWrapper><Home /></PageWrapper> },
   { path: ROUTES.LOGIN, element: <PageWrapper><Login /></PageWrapper> },
   { path: ROUTES.REGISTER, element: <PageWrapper><Registrar /></PageWrapper> },
+  { path: ROUTES.LOST, element: <PageWrapper><Lost /></PageWrapper> },
+  { path: ROUTES.CONTACTO, element: <PageWrapper><Contacto /></PageWrapper> },
+  { path: ROUTES.AYUDA, element: <PageWrapper><Ayuda /></PageWrapper> },
+  { path: ROUTES.TERMINOS, element: <PageWrapper><Terminos /></PageWrapper> },
+  { path: ROUTES.PRIVACIDAD, element: <PageWrapper><Privacidad /></PageWrapper> },
   { path: ROUTES.RESTAURANT, element: <PageWrapper><Restaurant /></PageWrapper> },
   { path: ROUTES.PERSONAL_DATA, element: <PageWrapper><PersonalData /></PageWrapper> },
   { path: ROUTES.PAYMENT_GATEWAY, element: <PageWrapper><PaymentGateway /></PageWrapper> },

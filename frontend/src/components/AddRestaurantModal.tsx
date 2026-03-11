@@ -74,8 +74,6 @@ export function AddRestaurantModal({
   const [isLoadingCategorias, setIsLoadingCategorias] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof AddRestaurantForm, string>>>({});
-  const [newCategoriaNombre, setNewCategoriaNombre] = useState("");
-  const [isAddingCategoria, setIsAddingCategoria] = useState(false);
   const [uploadingMain, setUploadingMain] = useState(false);
   const [uploadingRef, setUploadingRef] = useState<number | null>(null);
   const mainImageInputRef = useRef<HTMLInputElement>(null);
@@ -87,7 +85,6 @@ export function AddRestaurantModal({
     if (isOpen) {
       setForm(initialForm);
       setErrors({});
-      setNewCategoriaNombre("");
       loadCategorias();
     }
   }, [isOpen]);
@@ -116,62 +113,27 @@ export function AddRestaurantModal({
     }
   };
 
-  const handleAddCategoria = async () => {
-    const nombre = newCategoriaNombre.trim();
-    if (!nombre) {
-      toast({ title: "Campo requerido", description: "Escribe el nombre de la categoría.", variant: "destructive" });
-      return;
-    }
-    setIsAddingCategoria(true);
-    try {
-      const res = await authFetch(getApiEndpoint("/categorias/insertarcategoria"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre_categoria: nombre }),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail || "Error al crear categoría");
-      }
-      toast({ title: "Categoría creada", description: "Se agregó correctamente." });
-      setNewCategoriaNombre("");
-      const list = await loadCategorias();
-      const nueva = list.find((c) => c.nombre_categoria.toLowerCase() === nombre.toLowerCase());
-      if (nueva) update("id_categoria", String(nueva.id_categoria));
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error("Error al crear categoría:", e);
-      toast({
-        title: "Error",
-        description: "No se pudo crear la categoría. Inténtalo de nuevo más tarde.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAddingCategoria(false);
-    }
-  };
-
   const uploadImage = async (file: File): Promise<string> => {
     const makeRequest = async (token: string | null): Promise<Response> => {
       const formData = new FormData();
       formData.append("file", file);
-      
+
       // Para FormData, NO establecer Content-Type manualmente - el navegador lo hace automáticamente
       const headers: HeadersInit = {};
       if (token) {
         headers.Authorization = `Bearer ${token}`;
       }
-      
+
       return fetch(getApiEndpoint("/restaurante/upload-imagen"), {
         method: "POST",
         headers: headers, // Solo Authorization, sin Content-Type para FormData
         body: formData,
       });
     };
-    
+
     const token = localStorage.getItem("access_token");
     let res = await makeRequest(token);
-    
+
     // Si es 401, intentar refrescar el token y reintentar
     if (res.status === 401) {
       const refreshToken = localStorage.getItem("refresh_token");
@@ -182,7 +144,7 @@ export function AddRestaurantModal({
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ refresh_token: refreshToken }),
           });
-          
+
           if (refreshRes.ok) {
             const refreshData = await refreshRes.json();
             const newToken = refreshData.access_token;
@@ -211,7 +173,7 @@ export function AddRestaurantModal({
         throw new Error("Sesión expirada. Por favor, inicia sesión nuevamente.");
       }
     }
-    
+
     if (!res.ok) {
       let errorMessage = "Error al subir imagen";
       try {
@@ -227,7 +189,7 @@ export function AddRestaurantModal({
       });
       throw new Error(errorMessage);
     }
-    
+
     const data = await res.json();
     const url = data?.url;
     if (!url || typeof url !== "string") {
@@ -342,7 +304,10 @@ export function AddRestaurantModal({
       next.horario_cierre = "La hora de cierre debe ser posterior a la de apertura.";
     }
     if (!form.id_categoria) next.id_categoria = "La categoría es obligatoria.";
-    if (form.id_categoria === "__otro__") next.id_categoria = "Escribe y agrega una nueva categoría abajo o elige una de la lista.";
+    if (!form.url_imagen.trim()) next.url_imagen = "Debes subir al menos una imagen principal del restaurante.";
+    if (!form.imagenes_referencia || form.imagenes_referencia.length === 0) {
+      next.imagenes_referencia = "Debes agregar al menos una imagen de referencia del restaurante.";
+    }
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -576,37 +541,17 @@ export function AddRestaurantModal({
                       {c.nombre_categoria}
                     </SelectItem>
                   ))}
-                  <SelectItem value="__otro__">Otro</SelectItem>
                 </SelectContent>
               </Select>
               {errors.id_categoria && (
                 <p className="text-sm text-destructive">{errors.id_categoria}</p>
               )}
-              {form.id_categoria === "__otro__" && (
-                <div className="flex gap-2 items-end pt-1">
-                  <div className="grid gap-1 flex-1">
-                    <Label htmlFor="new_categoria">Nueva categoría</Label>
-                    <Input
-                      id="new_categoria"
-                      placeholder="Ej: Comida Rápida"
-                      value={newCategoriaNombre}
-                      onChange={(e) => setNewCategoriaNombre(e.target.value)}
-                    />
-                  </div>
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={handleAddCategoria}
-                    disabled={isAddingCategoria}
-                  >
-                    {isAddingCategoria ? <Loader2 className="h-4 w-4 animate-spin" /> : "Insertar"}
-                  </Button>
-                </div>
-              )}
             </div>
 
             <div className="grid gap-2">
-              <Label>Imagen principal (inicio)</Label>
+              <Label>
+                Imagen principal (inicio) <span className="text-destructive">*</span>
+              </Label>
               <div className="flex gap-2 items-center flex-wrap">
                 <input
                   ref={mainImageInputRef}
@@ -625,6 +570,9 @@ export function AddRestaurantModal({
                   {uploadingMain ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4 mr-1" />}
                   {uploadingMain ? "Subiendo..." : "Subir imagen principal"}
                 </Button>
+                {errors.url_imagen && (
+                  <p className="text-sm text-destructive">{errors.url_imagen}</p>
+                )}
                 {form.url_imagen && (
                   <a href={form.url_imagen} target="_blank" rel="noopener noreferrer" className="text-sm text-primary underline truncate max-w-[200px]">
                     Ver imagen
@@ -634,7 +582,9 @@ export function AddRestaurantModal({
             </div>
 
             <div className="grid gap-2">
-              <Label>Imágenes de referencia (máx. 15)</Label>
+              <Label>
+                Imágenes de referencia (mín. 1, máx. 15) <span className="text-destructive">*</span>
+              </Label>
               <p className="text-xs text-muted-foreground">
                 Se guardan temporalmente hasta que cierres el modal o crees el restaurante.
               </p>
@@ -668,6 +618,9 @@ export function AddRestaurantModal({
                 >
                   Ver imágenes ({form.imagenes_referencia.length})
                 </Button>
+                {errors.imagenes_referencia && (
+                  <p className="w-full text-sm text-destructive">{errors.imagenes_referencia}</p>
+                )}
               </div>
             </div>
 

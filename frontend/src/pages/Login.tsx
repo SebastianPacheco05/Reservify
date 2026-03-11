@@ -43,10 +43,11 @@ export default function Login() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail ?? "Error en el login");
 
-      // Guardar access token, tipo de usuario y documento
+      // Guardar access token, tipo de usuario, documento y email
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("token_type", data.token_type ?? "bearer");
       localStorage.setItem("tipo_usuario", data.tipo_usuario);
+      localStorage.setItem("email", email);
       if (data.documento != null) localStorage.setItem("documento", String(data.documento));
 
       // Iniciar renovación proactiva del token (sin salir de la página)
@@ -139,7 +140,7 @@ export default function Login() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
           >
-            <Card className="shadow-xl border-0 bg-card/90 backdrop-blur-md rounded-2xl border border-border">
+            <Card className="shadow-xl bg-card/90 backdrop-blur-md rounded-2xl border border-border">
               <CardHeader className="space-y-1 pb-6">
                 <CardTitle className="text-xl text-center text-foreground transition-colors duration-300">
                   Iniciar Sesión
@@ -211,6 +212,7 @@ export default function Login() {
                     <div className="flex items-center space-x-2"></div>
                     <button
                       type="button"
+                      onClick={() => navigate("/lost")}
                       className="text-sm text-primary hover:text-accent font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
                     >
                       ¿Olvidaste tu contraseña?

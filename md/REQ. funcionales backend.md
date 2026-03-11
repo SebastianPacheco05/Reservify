@@ -1,0 +1,297 @@
+### Requerimientos del backend (desde Excel)
+> Fuente: `md/currents/reservifyreq.v.1.0.xls.xlsx` → hoja **REQ. funcionales backend**
+
+- **BE-001 – Control de disponibilidad de mesas y prevención de reservas duplicadas**
+  - **Estado:** Hecho.
+- **BE-002 – Autenticación, roles y permisos**
+  - **Estado:** Hecho.
+- **BE-003 – Gestión de reservas (crear, listar, cancelar, cambiar estado)**
+  - **Estado:** Hecho.
+- **BE-004 – Manejo de estados de reserva**
+  - **Estado:** Hecho.
+- **BE-005 – Notificaciones por correo y recordatorios**
+  - **Estado:** Hecho.
+- **BE-006 – Reportes y métricas para toma de decisiones**
+  - **Estado:** Hecho.
+- **BE-007 – Gestión de responsables y personal administrativo**
+  - **Estado:** Hecho.
+- **BE-008 – Comentarios y notas asociadas a reservas**
+  - **Estado:** Hecho.
+- **BE-009 – Integración con pasarela de pagos externa**
+  - **Estado:** Hecho.
+- **BE-010 – Manejo de pagos y facturación**
+  - **Estado:** Hecho.
+- **BE-011 – Historial y auditoría de acciones**
+  - **Estado:** Hecho.
+- **BE-012 – Gestión de configuración del restaurante (mesas, horarios, capacidad, categoría)**
+  - **Estado:** Hecho.
+- **BE-013 – Endpoints JSON claros para operaciones de reserva**
+  - **Estado:** Hecho.
+- **BE-014 – Listado y filtrado de reservas para clientes y administradores**
+  - **Estado:** Hecho.
+- **BE-015 – Geolocalización de restaurantes para el mapa**
+  - **Estado:** Hecho.
+- **BE-016 – Búsqueda y filtrado de restaurantes**
+  - **Estado:** Hecho.
+- **BE-017 – Recordatorios automáticos de reservas por correo en horario laboral**
+  - **Estado:** Hecho.
+- **BE-018 – Creación conjunta de factura y reserva en una sola operación**
+  - **Estado:** Hecho.
+- **BE-019 – Confirmación de reserva condicionada al pago aprobado en Wompi**
+  - **Estado:** Hecho.
+- **BE-020 – Configuración de correo empresarial por usuario con consentimiento y cifrado**
+  - **Estado:** Hecho.
+- **BE-021 – Archivado y consulta de correos recibidos vía IMAP**
+  - **Estado:** Hecho.
+- **BE-022 – Gestión persistente de sesiones y tokens de actualización (refresh tokens)**
+  - **Estado:** Hecho.
+- **BE-001a – Restricción única por combinación mesa-fecha-horario**
+  - **Estado:** Hecho.
+- **BE-001b – Validación de disponibilidad desde función almacenada de reserva**
+  - **Estado:** Hecho.
+- **BE-002a – Emisión de tokens de acceso y refresco al iniciar sesión**
+  - **Estado:** Hecho.
+- **BE-002b – Verificación centralizada del token en rutas protegidas**
+  - **Estado:** Hecho.
+- **BE-005a – Envío de correos desde formulario de contacto público**
+  - **Estado:** Hecho.
+- **BE-005b – Recordatorios automáticos de reserva a partir de la hora actual**
+  - **Estado:** Hecho.
+- **BE-006a – Cálculo mensual agregado de reservas, ingresos y clientes**
+  - **Estado:** Hecho.
+- **BE-007a – Asignación y cambio de administrador por restaurante**
+  - **Estado:** Hecho.
+- **BE-008a – Limitación de longitud del motivo de cancelación**
+  - **Estado:** Hecho.
+- **BE-009a – Validación de integridad de webhooks de Wompi**
+  - **Estado:** Hecho.
+- **BE-010a – Asociación de facturas con restaurantes y clientes vía claves foráneas**
+  - **Estado:** Hecho.
+- **BE-011a – Auditoría específica de inserciones, actualizaciones y borrados**
+  - **Estado:** Hecho.
+- **BE-012a – Validación de horarios de apertura y cierre de restaurante**
+  - **Estado:** Hecho.
+- **BE-016a – Búsqueda de restaurantes desde el backend con similitud de texto**
+  - **Estado:** Hecho.
+- **BE-023a – POST /credenciales/login**
+  - **Estado:** Hecho.
+- **BE-023b – POST /credenciales/refresh**
+  - **Estado:** Hecho.
+- **BE-023c – GET /credenciales/me/role**
+  - **Estado:** Hecho.
+- **BE-023d – PUT /credenciales/editarcredencial**
+  - **Estado:** Hecho.
+- **BE-023e – DELETE /credenciales/borrarcredencial**
+  - **Estado:** Hecho.
+- **BE-024a – POST /admin/insertaroles**
+  - **Estado:** Hecho.
+- **BE-024b – GET /admin/listar_roles**
+  - **Estado:** Hecho.
+- **BE-025a – POST /usuario/insertar**
+  - **Estado:** Hecho.
+- **BE-025b – GET /usuario/listar_usuarios**
+  - **Estado:** Hecho.
+- **BE-025c – PUT /usuario/editar**
+  - **Estado:** Hecho.
+- **BE-026a – GET /restaurante/{nit}**
+  - **Estado:** Hecho.
+- **BE-026b – POST /restaurante/insertarrestaurante**
+  - **Estado:** Hecho.
+- **BE-026c – GET /restaurante/listar_restaurantes**
+  - **Estado:** Hecho.
+- **BE-026d – PUT /restaurante/editarrestaurante**
+  - **Estado:** Hecho.
+- **BE-027a – GET /mesas/restaurante/{nit}**
+  - **Estado:** Hecho.
+- **BE-027b – POST /mesas/insertarmesas**
+  - **Estado:** Hecho.
+- **BE-027c – PUT /mesas/editarmesas**
+  - **Estado:** Hecho.
+- **BE-028a – GET /cliente/mi-perfil**
+  - **Estado:** Hecho.
+- **BE-028b – GET /cliente/mis-reservas**
+  - **Estado:** Hecho.
+- **BE-028c – PATCH /cliente/mis-reservas/{id_reserva}/cancelar**
+  - **Estado:** Hecho.
+- **BE-029a – POST /encabezado_factura/insertarencabezadofactura**
+  - **Estado:** Hecho.
+- **BE-029b – GET /encabezado_factura/listar_encabezados_factura**
+  - **Estado:** Hecho.
+- **BE-030a – POST /detalle_factura/insertardetallefactura**
+  - **Estado:** Hecho.
+- **BE-030b – GET /detalle_factura/listar_detalles_factura**
+  - **Estado:** Hecho.
+- **BE-031a – GET /comentarios/restaurante/{nit}**
+  - **Estado:** Hecho.
+- **BE-031b – POST /comentarios/crear**
+  - **Estado:** Hecho.
+- **BE-031c – POST /comentarios/insertarcomentario**
+  - **Estado:** Hecho.
+- **BE-032a – POST /calculos_mensuales/insertar_calculo_mensual**
+  - **Estado:** Hecho.
+- **BE-032b – GET /calculos_mensuales/listar_calculos_mensuales**
+  - **Estado:** Hecho.
+- **BE-033 – POST /facturas/reservar**
+  - **Estado:** Hecho.
+- **BE-034 – POST /register/register**
+  - **Estado:** Hecho.
+- **BE-035a – GET /data-owner/metricas**
+  - **Estado:** Hecho.
+- **BE-035b – GET /data-owner/flujo-diario**
+  - **Estado:** Hecho.
+- **BE-035c – GET /data-owner/metricas-mensuales**
+  - **Estado:** Hecho.
+- **BE-035d – GET /data-owner/clientes**
+  - **Estado:** Hecho.
+- **BE-035e – GET /data-owner/restaurantes**
+  - **Estado:** Hecho.
+- **BE-035f – GET /data-owner/restaurantes/{nit}**
+  - **Estado:** Hecho.
+- **BE-035g – PUT /data-owner/restaurantes/{nit}**
+  - **Estado:** Hecho.
+- **BE-035h – GET /data-owner/restaurantes/{nit}/mesas**
+  - **Estado:** Hecho.
+- **BE-035i – POST /data-owner/restaurantes/{nit}/mesas**
+  - **Estado:** Hecho.
+- **BE-035j – PUT /data-owner/restaurantes/{nit}/mesas/{id_mesa}**
+  - **Estado:** Hecho.
+- **BE-035k – DELETE /data-owner/restaurantes/{nit}/mesas/{id_mesa}**
+  - **Estado:** Hecho.
+- **BE-035l – GET /data-owner/restaurantes/{nit}/administrador**
+  - **Estado:** Hecho.
+- **BE-035m – PUT /data-owner/restaurantes/{nit}/administrador**
+  - **Estado:** Hecho.
+- **BE-035n – POST /data-owner/restaurantes/{nit}/crear-empleado**
+  - **Estado:** Hecho.
+- **BE-035o – POST /data-owner/restaurantes/{nit}/asignar-empleado**
+  - **Estado:** Hecho.
+- **BE-035p – POST /data-owner/cambiar-rol-cliente**
+  - **Estado:** Hecho.
+- **BE-035q – GET /data-owner/restaurantes/{nit}/reservas**
+  - **Estado:** Hecho.
+- **BE-035r – PATCH /data-owner/reservas/{id_reserva}/estado**
+  - **Estado:** Hecho.
+- **BE-035s – GET /data-owner/facturas**
+  - **Estado:** Hecho.
+- **BE-035t – GET /data-owner/facturas/{id_encab_fact}**
+  - **Estado:** Hecho.
+- **BE-035u – POST /data-owner/facturas/{id_encab_fact}/enviar**
+  - **Estado:** Hecho.
+- **BE-035v – GET /data-owner/config/smtp**
+  - **Estado:** Hecho.
+- **BE-035w – GET /data-owner/config/imap**
+  - **Estado:** Hecho.
+- **BE-035x – GET /data-owner/correos**
+  - **Estado:** Hecho.
+- **BE-035y – GET /data-owner/correos/{uid}**
+  - **Estado:** Hecho.
+- **BE-036a – GET /wompi/public-key**
+  - **Estado:** Hecho.
+- **BE-036b – POST /wompi/crear_pago**
+  - **Estado:** Hecho.
+- **BE-036c – POST /wompi/webhook**
+  - **Estado:** Hecho.
+- **BE-037 – POST /contactanos**
+  - **Estado:** Hecho.
+- **BE-038 – GET /top**
+  - **Estado:** Hecho.
+- **BE-039 – POST /buscar_restaurante**
+  - **Estado:** Hecho.
+- **BE-040 – GET /restaurantes**
+  - **Estado:** Hecho.
+- **BE-041 – PUT /mapa**
+  - **Estado:** Hecho.
+- **BE-042 – Función verificar_token**
+  - **Estado:** Hecho.
+- **BE-043 – Función registrar_factura_y_reserva (Python)**
+  - **Estado:** Hecho.
+- **BE-044 – Función obtener_documento_por_email / get_documento_by_email**
+  - **Estado:** Hecho.
+- **BE-045 – Función send_email**
+  - **Estado:** Hecho.
+- **BE-046 – Función tarea_programada (recordatorios)**
+  - **Estado:** Hecho.
+- **BE-047 – Función busqueda_restaurante**
+  - **Estado:** Hecho.
+- **BE-048 – Función obtener_top_restaurantes**
+  - **Estado:** Hecho.
+- **BE-049 – Función puede_acceder_restaurante**
+  - **Estado:** Hecho.
+- **BE-050 – Servicio Wompi (tokenización, crear transacción, confirmar)**
+  - **Estado:** Hecho.
+- **BE-051 – Validación de webhook Wompi**
+  - **Estado:** Hecho.
+- **BE-052 – Cifrado de contraseñas de correo**
+  - **Estado:** Hecho.
+- **BE-053 – Lectura y archivado de correos IMAP**
+  - **Estado:** Hecho.
+- **BE-054 – Obtención de rol de usuario (get_user_role)**
+  - **Estado:** Hecho.
+- **BE-055 – DELETE /encabezado_factura/borrarencabezadofactura**
+  - **Estado:** Hecho.
+- **BE-056 – PUT /detalle_factura/editardetallefactura**
+  - **Estado:** Hecho.
+- **BE-057 – GET /comentarios/listar_comentarios**
+  - **Estado:** Hecho.
+- **BE-058 – PUT /comentarios/editarcomentario**
+  - **Estado:** Hecho.
+- **BE-059 – GET /categorias/listar_categorias**
+  - **Estado:** Hecho.
+- **BE-060 – POST /empleado/insertarempleado**
+  - **Estado:** Hecho.
+- **BE-061 – POST /dueno/insertardueno**
+  - **Estado:** Hecho.
+- **BE-062 – GET /cliente/listar_clientes**
+  - **Estado:** Hecho.
+- **BE-063 – GET /data-owner/reservas**
+  - **Estado:** Hecho.
+- **BE-064 – GET /data-owner/empleados**
+  - **Estado:** Hecho.
+- **BE-065 – PUT /calculos_mensuales/editar_calculo_mensual**
+  - **Estado:** Hecho.
+- **BE-066 – GET /wompi/transaccion/{transaction_id}**
+  - **Estado:** Hecho.
+- **BE-067 – POST /data-owner/correos/responder**
+  - **Estado:** Hecho.
+- **BE-068 – Función insertar_roles (CRUD)**
+  - **Estado:** Hecho.
+- **BE-069 – Función obtener_restaurantes_para_mapa**
+  - **Estado:** Hecho.
+- **BE-070 – Función update_reservation_status (Python)**
+  - **Estado:** Hecho.
+- **BE-071 – Función send2hbf (recordatorio 2h antes)**
+  - **Estado:** Hecho.
+- **BE-072 – Función smtp_config_db (lectura/escritura SMTP_config)**
+  - **Estado:** Hecho.
+- **BE-073 – GET /encabezado_factura/listar_encabezado_factura**
+  - **Estado:** Hecho.
+- **BE-074 – GET /mesas/listar_mesas**
+  - **Estado:** Hecho.
+- **BE-075 – GET /data-owner/mi-balance**
+  - **Estado:** Hecho.
+- **BE-076 – GET /data-owner/empleados-con-reservas**
+  - **Estado:** Hecho.
+- **BE-077 – Refresh token enviado solo en cookie HttpOnly**
+  - **Estado:** Hecho.
+- **BE-078 – Cookie refresh_token con flag secure**
+  - **Estado:** Hecho.
+- **BE-079 – Cookie refresh_token con samesite=strict**
+  - **Estado:** Hecho.
+- **BE-080 – Cookie refresh_token con max_age de 7 días**
+  - **Estado:** Hecho.
+- **BE-081 – Verificación de token revocado en cada petición protegida**
+  - **Estado:** Hecho.
+- **BE-082 – Edición de credencial restringida al propio usuario**
+  - **Estado:** Hecho.
+- **BE-083 – Mantener contraseña actual si no se envía nueva al editar credencial**
+  - **Estado:** Hecho.
+- **BE-084 – Hash de contraseña con bcrypt al editar credencial**
+  - **Estado:** Hecho.
+- **BE-085 – Renovar token solo si refresh_token no está revocado**
+  - **Estado:** Hecho.
+- **BE-086 – Migración transparente de contraseña legacy a bcrypt en login**
+  - **Estado:** Hecho.
+- **BE-087 – Esquema OAuth2PasswordBearer para extracción del token**
+  - **Estado:** Hecho.
+- **BE-088 – CORS con allow_credentials True**
+  - **Estado:** Hecho.

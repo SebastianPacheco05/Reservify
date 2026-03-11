@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import { fadeInUp, transitionNormal } from "../lib/animations";
+import { useToastContext } from "./ToastProvider";
 
 export default function CTASection() {
+  const { toast } = useToastContext();
+
   return (
     <motion.section
       className="bg-gradient-to-r from-primary via-secondary to-accent text-primary-foreground py-16 sm:py-20 md:py-24 px-4 sm:px-6 relative overflow-hidden"
@@ -45,6 +48,14 @@ export default function CTASection() {
             <Button
               size="lg"
               className="border-2 border-background bg-background text-foreground hover:bg-muted hover:border-primary font-semibold rounded-xl px-8 py-6 text-lg transition-all duration-300 shadow-xl"
+              type="button"
+              onClick={() =>
+                toast({
+                  title: "Próximamente",
+                  description: "Muy pronto podrás descargar la app de Reservify.",
+                  variant: "warning",
+                })
+              }
             >
               Descargar app
             </Button>

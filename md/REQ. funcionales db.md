@@ -1,0 +1,243 @@
+### Requerimientos de base de datos (desde Excel)
+> Fuente: `md/currents/reservifyreq.v.1.0.xls.xlsx` → hoja **REQ. funcionales db**
+
+- **DB-001 – Auditoría de tablas del sistema**
+  - **Estado:** Hecho.
+- **DB-002 – Tabla de credenciales**
+  - **Estado:** Hecho.
+- **DB-003 – Tabla de roles**
+  - **Estado:** Hecho.
+- **DB-004 – Tabla de usuarios (clientes, dueños, empleados)**
+  - **Estado:** Hecho.
+- **DB-005 – Tabla de categorías de restaurantes**
+  - **Estado:** Hecho.
+- **DB-006 – Tabla de restaurantes**
+  - **Estado:** Hecho.
+- **DB-007 – Tabla de mesas**
+  - **Estado:** Hecho.
+- **DB-008 – Tabla de encabezado de factura**
+  - **Estado:** Hecho.
+- **DB-009 – Tabla de reservas**
+  - **Estado:** Hecho.
+- **DB-010 – Tabla de cálculos mensuales**
+  - **Estado:** Hecho.
+- **DB-011 – Tabla de comentarios**
+  - **Estado:** Hecho.
+- **DB-012 – Integridad referencial y borrado en cascada**
+  - **Estado:** Hecho.
+- **DB-013 – Restricciones de formato y unicidad**
+  - **Estado:** Hecho.
+- **DB-014 – Asociación de restaurantes a categorías y dueños**
+  - **Estado:** Hecho.
+- **DB-015 – Tokens de sesión y configuración de correo**
+  - **Estado:** Hecho.
+- **DB-016 – Límite de imágenes de referencia por restaurante**
+  - **Estado:** Hecho.
+- **DB-017 – Índices especializados para consulta eficiente de correos archivados**
+  - **Estado:** Hecho.
+- **DB-018 – Configuración de correo con consentimiento explícito y trazabilidad**
+  - **Estado:** Hecho.
+- **DB-001a – Auditoría con almacenamiento del registro completo en JSONB**
+  - **Estado:** No hecho.
+- **DB-004a – Validación de teléfono con formato de 10 dígitos o valor ‘sin dato’**
+  - **Estado:** No hecho.
+- **DB-006a – Antelación mínima configurable por restaurante**
+  - **Estado:** No hecho.
+- **DB-009a – Prohibición de reservas en fechas pasadas**
+  - **Estado:** No hecho.
+- **DB-009b – Almacenamiento obligatorio del motivo de cancelación y ajuste**
+  - **Estado:** No hecho.
+- **DB-010a – Rango válido de meses y años en cálculos mensuales**
+  - **Estado:** No hecho.
+- **DB-011a – Restricción de calificación entre 0 y 5 incluida**
+  - **Estado:** No hecho.
+- **DB-015a – Índice único por `refresh_token` para sesiones**
+  - **Estado:** No hecho.
+- **DB-022 – Columna Credenciales.id_credencial**
+  - **Estado:** Hecho.
+- **DB-023 – Columna Credenciales.email con CHECK de formato**
+  - **Estado:** Hecho.
+- **DB-024 – Columna Credenciales.password**
+  - **Estado:** Hecho.
+- **DB-025 – Columna Roles.id_rol**
+  - **Estado:** Hecho.
+- **DB-026 – Columna Roles.nombre_rol**
+  - **Estado:** Hecho.
+- **DB-027 – Columna Roles.descripcion**
+  - **Estado:** Hecho.
+- **DB-028 – Columna Usuario.documento con CHECK positivo**
+  - **Estado:** Hecho.
+- **DB-029 – Columna Usuario.tipo_documento con dominio CC, CE, TI, Pasaporte**
+  - **Estado:** Hecho.
+- **DB-030 – Columna Usuario.nombre y apellido**
+  - **Estado:** Hecho.
+- **DB-031 – Columna Usuario.nacionalidad con default**
+  - **Estado:** Hecho.
+- **DB-032 – Columna Restaurante.nit como PK**
+  - **Estado:** Hecho.
+- **DB-033 – Columna Restaurante.horario_apertura y horario_cierre con CHECK**
+  - **Estado:** Hecho.
+- **DB-034 – Columna Restaurante.lat y lng con default 0**
+  - **Estado:** Hecho.
+- **DB-035 – Columna Imagen_referencia_restaurante.orden con CHECK 0 a 14**
+  - **Estado:** Hecho.
+- **DB-036 – Columna Mesas.cant_personas positiva**
+  - **Estado:** Hecho.
+- **DB-037 – Columna Mesas.precio no negativa**
+  - **Estado:** Hecho.
+- **DB-038 – Columna Encabezado_Factura.forma_pago con dominio fijo**
+  - **Estado:** Hecho.
+- **DB-039 – Columna Reserva.estado_reserva con seis valores**
+  - **Estado:** Hecho.
+- **DB-040 – Restricción UNIQUE en Reserva (id_mesa, fecha, horario)**
+  - **Estado:** Hecho.
+- **DB-041 – Columna Comentarios.calificacion entre 0 y 5**
+  - **Estado:** Hecho.
+- **DB-042 – Columna Calculos_mensuales.mes entre 1 y 12**
+  - **Estado:** Hecho.
+- **DB-043 – Columna Calculos_mensuales.anio positiva**
+  - **Estado:** Hecho.
+- **DB-044 – Tabla jwt_tokens con token y refresh_token**
+  - **Estado:** Hecho.
+- **DB-045 – Tabla Password_Reset_Codes**
+  - **Estado:** Hecho.
+- **DB-046 – Columna SMTP_config.port en rango válido**
+  - **Estado:** Hecho.
+- **DB-047 – Columna IMAP_config.port en rango válido**
+  - **Estado:** Hecho.
+- **DB-048 – Tabla Mails con imap_uid y body_html**
+  - **Estado:** Hecho.
+- **DB-049 – Índice idx_imagen_ref_nit**
+  - **Estado:** Hecho.
+- **DB-050 – Índice idx_password_reset_codes_credencial**
+  - **Estado:** Hecho.
+- **DB-051 – UNIQUE id_credencial en SMTP_config**
+  - **Estado:** Hecho.
+- **DB-052 – UNIQUE id_credencial en IMAP_config**
+  - **Estado:** Hecho.
+- **DB-053 – Tabla Auditoria con registro JSONB**
+  - **Estado:** Hecho.
+- **DB-054 – Trigger auditoria_insert_credenciales**
+  - **Estado:** Hecho.
+- **DB-055 – Trigger auditoria_update_credenciales**
+  - **Estado:** Hecho.
+- **DB-056 – Trigger auditoria_delete_credenciales**
+  - **Estado:** Hecho.
+- **DB-057 – Trigger auditoria_insert_reserva**
+  - **Estado:** Hecho.
+- **DB-058 – Trigger auditoria_update_reserva**
+  - **Estado:** Hecho.
+- **DB-059 – Trigger auditoria_delete_reserva**
+  - **Estado:** Hecho.
+- **DB-060 – Función auditoria_insert_trigger**
+  - **Estado:** Hecho.
+- **DB-061 – Función auditoria_update_trigger**
+  - **Estado:** Hecho.
+- **DB-062 – Función auditoria_delete_trigger**
+  - **Estado:** Hecho.
+- **DB-063 – Función insertar_reserva**
+  - **Estado:** Hecho.
+- **DB-064 – Función registrar_factura_y_reserva**
+  - **Estado:** Hecho.
+- **DB-065 – Función confirmar_reserva_por_pago**
+  - **Estado:** Hecho.
+- **DB-066 – Función update_reservation_status**
+  - **Estado:** Hecho.
+- **DB-067 – Función get_documento_by_email**
+  - **Estado:** Hecho.
+- **DB-068 – Función verificar_max_imagenes_referencia**
+  - **Estado:** Hecho.
+- **DB-069 – Trigger trigger_max_imagenes_ref**
+  - **Estado:** Hecho.
+- **DB-070 – Función actualizar_updated_at_smtp**
+  - **Estado:** Hecho.
+- **DB-071 – Función actualizar_updated_at_imap**
+  - **Estado:** Hecho.
+- **DB-072 – Función validar_admin_tiene_restaurante**
+  - **Estado:** Hecho.
+- **DB-073 – Trigger trigger_validar_admin_restaurante**
+  - **Estado:** Hecho.
+- **DB-074 – Función insertar_credenciales**
+  - **Estado:** Hecho.
+- **DB-075 – Función editar_credenciales**
+  - **Estado:** Hecho.
+- **DB-076 – Función borrar_credenciales**
+  - **Estado:** Hecho.
+- **DB-077 – Función insertar_roles**
+  - **Estado:** Hecho.
+- **DB-078 – Función insertar_restaurante**
+  - **Estado:** Hecho.
+- **DB-079 – Función insertar_mesas**
+  - **Estado:** Hecho.
+- **DB-080 – Función insertar_enc_fac**
+  - **Estado:** Hecho.
+- **DB-081 – Función insertar_detalle_factura**
+  - **Estado:** Hecho.
+- **DB-082 – Función insertar_comentario**
+  - **Estado:** Hecho.
+- **DB-083 – Función insertar_calculo_mensual**
+  - **Estado:** Hecho.
+- **DB-084 – Función list_restaurantes**
+  - **Estado:** Hecho.
+- **DB-085 – Función get_restaurante_by_nit**
+  - **Estado:** Hecho.
+- **DB-086 – Función list_mesas**
+  - **Estado:** Hecho.
+- **DB-087 – Función list_roles**
+  - **Estado:** Hecho.
+- **DB-088 – Función list_encabezado_factura**
+  - **Estado:** Hecho.
+- **DB-089 – Función list_reservas**
+  - **Estado:** Hecho.
+- **DB-090 – Función list_comentarios**
+  - **Estado:** Hecho.
+- **DB-091 – Función list_calculos_mensuales**
+  - **Estado:** Hecho.
+- **DB-092 – ON DELETE CASCADE en Mesas.nit**
+  - **Estado:** Hecho.
+- **DB-093 – ON DELETE CASCADE en Reserva.id_mesa**
+  - **Estado:** Hecho.
+- **DB-094 – ON DELETE CASCADE en Reserva.id_encab_fact**
+  - **Estado:** Hecho.
+- **DB-095 – Columna Encabezado_Factura.fecha con CHECK de rango**
+  - **Estado:** Hecho.
+- **DB-096 – Trigger auditoria_insert_restaurante**
+  - **Estado:** Hecho.
+- **DB-097 – Trigger auditoria_insert_mesas**
+  - **Estado:** Hecho.
+- **DB-098 – Trigger auditoria_insert_usuario**
+  - **Estado:** Hecho.
+- **DB-099 – Trigger auditoria_insert_encabezado_factura**
+  - **Estado:** Hecho.
+- **DB-100 – Índice idx_mails_credencial_uid**
+  - **Estado:** Hecho.
+- **DB-101 – Índice idx_mails_id_credencial_date**
+  - **Estado:** Hecho.
+- **DB-102 – Función list_usuarios**
+  - **Estado:** Hecho.
+- **DB-103 – Función get_reserva_by_id**
+  - **Estado:** Hecho.
+- **DB-104 – Función get_encabezado_factura_by_id**
+  - **Estado:** Hecho.
+- **DB-105 – Función editar_reserva**
+  - **Estado:** Hecho.
+- **DB-106 – Función borrar_reserva**
+  - **Estado:** Hecho.
+- **DB-107 – Función insertar_dueno**
+  - **Estado:** Hecho.
+- **DB-108 – Función insertar_empleado**
+  - **Estado:** Hecho.
+- **DB-109 – Función insertar_clientes**
+  - **Estado:** Hecho.
+- **DB-110 – Función insertar_usuario**
+  - **Estado:** Hecho.
+- **DB-019 – CRUD de restaurantes, mesas y reservas**
+  - **Estado:** Hecho.
+- **DB-020 – CRUD de facturación (encabezado y detalle)**
+  - **Estado:** Hecho.
+- **DB-021 – CRUD de comentarios y cálculos mensuales**
+  - **Estado:** Hecho.
+- **DB-111 – Columna jwt_tokens.revoked para invalidar sesiones**
+  - **Estado:** Hecho.
+- **DB-112 – Función editar_credenciales (SQL) invocada desde backend**
+  - **Estado:** Hecho.

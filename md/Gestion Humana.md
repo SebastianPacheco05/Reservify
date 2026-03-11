@@ -1,0 +1,81 @@
+### Gestión de usuarios / gestión humana (desde Excel)
+> Fuente: `md/currents/reservifyreq.v.1.0.xls.xlsx` → hoja **Gestion Humana**
+
+- **GU-001 – Registro y autenticación de usuarios**
+  - **Estado:** Hecho.
+- **GU-002 – Perfiles de usuario (cliente, dueño, administrador, empleado)**
+  - **Estado:** Hecho.
+- **GU-003 – Edición y consulta de perfil**
+  - **Estado:** Hecho.
+- **GU-004 – Gestión de personal del restaurante**
+  - **Estado:** Hecho.
+- **GU-005 – Control de acceso por rol en el backend**
+  - **Estado:** Hecho.
+- **GU-006 – Auditoría de cambios en usuarios y credenciales**
+  - **Estado:** Hecho.
+- **GU-007 – Paneles diferenciados según rol (cliente, dueño, administrador, empleado)**
+  - **Estado:** Hecho.
+- **GU-008 – Edición de datos personales desde el dashboard de cliente**
+  - **Estado:** Hecho.
+- **GU-009 – Gestión interactiva de empleados y administradores por parte del dueño**
+  - **Estado:** Hecho.
+- **GU-001a – Almacenamiento encriptado de contraseñas de acceso**
+  - **Estado:** Hecho.
+- **GU-002a – Asociación estricta de cada usuario a un rol único**
+  - **Estado:** Hecho.
+- **GU-003a – Consulta del perfil del cliente autenticado desde el frontend**
+  - **Estado:** Hecho.
+- **GU-004a – Vinculación de empleados a un restaurante específico por NIT**
+  - **Estado:** Hecho.
+- **GU-010 – Campo perfil: nombre editable**
+  - **Estado:** Hecho.
+- **GU-011 – Campo perfil: apellido editable**
+  - **Estado:** Hecho.
+- **GU-012 – Campo perfil: tipo_documento editable**
+  - **Estado:** Hecho.
+- **GU-013 – Campo perfil: documento editable**
+  - **Estado:** Hecho.
+- **GU-014 – Campo perfil: nacionalidad editable**
+  - **Estado:** Hecho.
+- **GU-015 – Campo perfil: telefono editable**
+  - **Estado:** Hecho.
+- **GU-016 – Rol cliente: capacidad de ver mis reservas**
+  - **Estado:** Hecho.
+- **GU-017 – Rol cliente: capacidad de cancelar reserva con motivo**
+  - **Estado:** Hecho.
+- **GU-018 – Rol dueño: acceso a dashboard con restaurantes, reservas, facturas, empleados**
+  - **Estado:** Hecho.
+- **GU-019 – Rol administrador: acceso a AdminDashboard centrado en un restaurante**
+  - **Estado:** Hecho.
+- **GU-020 – Rol empleado: acceso a EmployeeDashboard con reservas del día**
+  - **Estado:** Hecho.
+- **GU-021 – Endpoint GET /cliente/mi-perfil**
+  - **Estado:** Hecho.
+- **GU-022 – Endpoint POST /data-owner/restaurantes/{nit}/crear-empleado**
+  - **Estado:** Hecho.
+- **GU-023 – Endpoint POST /data-owner/restaurantes/{nit}/asignar-empleado**
+  - **Estado:** Hecho.
+- **GU-024 – Endpoint POST /data-owner/cambiar-rol-cliente**
+  - **Estado:** Hecho.
+- **GU-025 – Endpoint GET /data-owner/restaurantes/{nit}/administrador**
+  - **Estado:** Hecho.
+- **GU-026 – Componente PersonalData para ver y editar datos personales**
+  - **Estado:** Hecho.
+- **GU-027 – Componente EditProfileModal o ProfileModal para editar perfil**
+  - **Estado:** Hecho.
+- **GU-028 – Dashboard por rol: ClientDashboard para cliente**
+  - **Estado:** Hecho.
+- **GU-029 – Dashboard por rol: Dashboard (dueño) en /duenodashboard**
+  - **Estado:** Hecho.
+- **GU-030 – Dashboard por rol: AdminDashboard en /admindashboard**
+  - **Estado:** Hecho.
+- **GU-031 – Dashboard por rol: EmployeeDashboard en /EmpleadoDashboard**
+  - **Estado:** Hecho.
+- **GU-032 – POST /data-owner/buscar-email para buscar usuario por correo antes de asignar**
+  - **Estado:** Hecho.
+- **GU-033 – Tabla Roles con nombre_rol (cliente, dueño, administrador, empleado)**
+  - **Estado:** Hecho.
+- **GU-034 – Endpoint /credenciales/me/role protegido por verificar_token**
+  - **Estado:** Hecho.
+- **GU-035 – Validación de formato de email en registro**
+  - **Estado:** Hecho.

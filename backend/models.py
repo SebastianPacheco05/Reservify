@@ -270,6 +270,12 @@ class CrearEmpleadoSchema(BaseModel):
     email: str
 
 
+class EnviarCorreoPropietarioSchema(BaseModel):
+    """Envía un correo al email del usuario autenticado (el del login)."""
+    subject: str
+    message: str
+
+
 class ResponderCorreoSchema(BaseModel):
     """Body para enviar respuesta a un correo (desde dashboard)."""
     to_email: str
@@ -285,6 +291,21 @@ class LoginSchema(BaseModel):
 
 class RefreshTokenRequest(BaseModel):
     refresh_token: str
+
+
+class PasswordResetRequestSchema(BaseModel):
+    email: EmailStr
+
+
+class PasswordResetVerifySchema(BaseModel):
+    email: EmailStr
+    code: str = Field(..., min_length=8, max_length=16)
+
+
+class PasswordResetConfirmSchema(BaseModel):
+    reset_token: str = Field(..., min_length=20)
+    password: str = Field(..., min_length=8, max_length=128)
+    confirm_password: str = Field(..., min_length=8, max_length=128)
 
 
 class ListarRoles(BaseModel):

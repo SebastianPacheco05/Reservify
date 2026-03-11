@@ -1,6 +1,8 @@
 import icon_reservify from "../../public/icon_reservify.svg";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { fadeInUp, staggerContainer, transitionNormal } from "../lib/animations";
+import { ROUTES } from "../routes/config";
 
 export default function Footer() {
   const linkClass = "hover:text-accent transition-colors duration-200";
@@ -49,16 +51,32 @@ export default function Footer() {
             <h5 className="font-semibold mb-4">Empresa</h5>
             <ul className={`space-y-3 ${mutedTextClass}`}>
               <li><a href="#acerca_de" className={linkClass}>Acerca de</a></li>
-              <li><a href="#" className={linkClass}>Contacto</a></li>
+              <li>
+                <Link to={ROUTES.CONTACTO} className={linkClass}>
+                  Contacto
+                </Link>
+              </li>
             </ul>
           </motion.div>
 
           <motion.div variants={fadeInUp} transition={transitionNormal}>
             <h5 className="font-semibold mb-4">Soporte</h5>
             <ul className={`space-y-3 ${mutedTextClass}`}>
-              <li><a href="#" className={linkClass}>Ayuda</a></li>
-              <li><a href="#" className={linkClass}>Términos</a></li>
-              <li><a href="#" className={linkClass}>Privacidad</a></li>
+              <li>
+                <Link to={ROUTES.AYUDA} className={linkClass}>
+                  Ayuda
+                </Link>
+              </li>
+              <li>
+                <Link to={ROUTES.TERMINOS} className={linkClass}>
+                  Términos
+                </Link>
+              </li>
+              <li>
+                <Link to={ROUTES.PRIVACIDAD} className={linkClass}>
+                  Privacidad
+                </Link>
+              </li>
             </ul>
           </motion.div>
         </motion.div>

@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { fadeInDown, transitionNormal } from "../lib/animations";
+import { ROUTES } from "../routes/config";
 
 interface HeaderProps {
   isMenuOpen: boolean;
@@ -40,14 +41,16 @@ export default function Header({
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 17 }}
         >
-          <img
-            src="/logoreservify.png"
-            width="140"
-            height="32"
-            className="w-full h-8 sm:h-9 object-contain object-left dark:invert"
-            alt="Reservify - Reserva en tu restaurante favorito"
-            fetchPriority="low"
-          />
+          <Link to={ROUTES.HOME} aria-label="Ir al inicio de Reservify">
+            <img
+              src="/logoreservify.png"
+              width="140"
+              height="32"
+              className="w-full h-8 sm:h-9 object-contain object-left dark:invert"
+              alt="Reservify - Reserva en tu restaurante favorito"
+              fetchPriority="low"
+            />
+          </Link>
         </motion.div>
 
         {/* Desktop Navigation */}

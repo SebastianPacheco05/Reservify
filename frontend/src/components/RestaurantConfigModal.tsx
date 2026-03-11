@@ -23,6 +23,7 @@ import { useToast } from "../hooks/useToast";
 import { showErrorToast } from "../lib/toastHelpers";
 import { AddressMapPicker } from "./AddressMapPicker";
 import { getApiEndpoint } from "../config/api";
+import { authFetch } from "../services/authService";
 import {
   OwnerRestaurantConfigService,
   type RestauranteConfig,
@@ -65,6 +66,13 @@ export function RestaurantConfigModal({
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteMessage, setDeleteMessage] = useState("");
+  const [deleteHasActiveReservations, setDeleteHasActiveReservations] = useState(false);
+  const [deleteCheckingReservations, setDeleteCheckingReservations] = useState(false);
+  const [deleteProcessing, setDeleteProcessing] = useState(false);
+  const [deleteActiveReservations, setDeleteActiveReservations] = useState<any[]>([]);
 
   // Form edición restaurante
   const [form, setForm] = useState({
@@ -160,6 +168,37 @@ export function RestaurantConfigModal({
   useEffect(() => {
     if (isOpen && nit) loadAll();
   }, [isOpen, nit, loadAll]);
+
+  const fetchActiveReservationsForDelete = useCallback(async () => {
+    if (!nit) return;
+    setDeleteCheckingReservations(true);
+    try {
+      const res = await authFetch(getApiEndpoint(`/data-owner/restaurantes/${nit}/reservas`), {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!res.ok) {
+        throw new Error("No se pudieron obtener las reservas del restaurante.");
+      }
+      const data = await res.json();
+      const reservas = (data.reservas as any[]) || [];
+      const activas = reservas.filter((r) => {
+        const estado = (r.estado_reserva || "").toString().toLowerCase();
+        return estado !== "cancelada";
+      });
+      setDeleteActiveReservations(activas);
+      setDeleteHasActiveReservations(activas.length > 0);
+    } catch (e) {
+      console.error(e);
+      toast({
+        title: "Error",
+        description: "No se pudieron comprobar las reservas activas. Inténtalo nuevamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleteCheckingReservations(false);
+    }
+  }, [nit, toast]);
 
   const handleSaveRestaurante = async () => {
     if (!restaurante || !nit) return;
@@ -484,6 +523,28 @@ export function RestaurantConfigModal({
                     {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                     Guardar datos
                   </Button>
+                  <div className="mt-6 border-t pt-4">
+
+                    <p className="text-xs text-muted-foreground mt-1">
+                      La accion siguiente borrara el restaurante y toda su configuracion no se podra recuperar. y todos los datos que se tuvieron no se podran conseguir otra vez.
+                      Para continuar deberas confirmar tu contraseña. Si existen reservas activas, se enviara un correo a todos los clientes afectados con el mensaje que escribas.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      className="mt-3"
+                      onClick={() => {
+                        setDeleteDialogOpen(true);
+                        setDeletePassword("");
+                        setDeleteMessage("");
+                        setDeleteHasActiveReservations(false);
+                        setDeleteActiveReservations([]);
+                        void fetchActiveReservationsForDelete();
+                      }}
+                    >
+                      Eliminar este restaurante
+                    </Button>
+                  </div>
                 </div>
               )}
 
@@ -843,6 +904,185 @@ export function RestaurantConfigModal({
           )}
           <DialogFooter>
             <Button onClick={() => setModalCredenciales(null)}>Cerrar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal: Confirmar borrado de restaurante */}
+      <Dialog open={deleteDialogOpen} onOpenChange={(open) => !open && setDeleteDialogOpen(false)}>
+        <DialogContent className="sm:max-w-[460px]" showCloseButton={true}>
+          <DialogHeader>
+            <DialogTitle>Eliminar restaurante</DialogTitle>
+            <DialogDescription>
+              Esta acción no se puede deshacer. Escribe tu contraseña para confirmar.
+              {deleteHasActiveReservations &&
+                " El restaurante tiene reservas activas; se enviará un correo a todos los clientes con el mensaje que indiques."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="grid gap-2">
+              <Label htmlFor="delete-password">Contraseña de tu cuenta</Label>
+              <Input
+                id="delete-password"
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                placeholder="••••••••"
+              />
+            </div>
+            {deleteCheckingReservations ? (
+              <p className="text-xs text-muted-foreground flex items-center gap-2">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Comprobando reservas activas...
+              </p>
+            ) : deleteHasActiveReservations ? (
+              <div className="grid gap-2">
+                <Label htmlFor="delete-message">
+                  Mensaje para clientes con reservas activas{" "}
+                  <span className="text-destructive">*</span>
+                </Label>
+                <Textarea
+                  id="delete-message"
+                  value={deleteMessage}
+                  onChange={(e) => setDeleteMessage(e.target.value)}
+                  rows={4}
+                  placeholder="Explica por qué se cancela el restaurante y la reserva (por ejemplo, cierre temporal, mantenimiento, etc.)."
+                />
+                <p className="text-xs text-muted-foreground">
+                  Este mensaje se enviará por correo a todas las personas que tienen una reserva pendiente, confirmada o en curso.
+                </p>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                No se han detectado reservas activas para este restaurante. Solo se eliminará la información del restaurante.
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              disabled={deleteProcessing}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={deleteProcessing || !deletePassword || (deleteHasActiveReservations && !deleteMessage.trim())}
+              onClick={async () => {
+                if (!nit) return;
+                const email = localStorage.getItem("email");
+                if (!email) {
+                  toast({
+                    title: "Sesión",
+                    description: "No se pudo identificar tu usuario. Cierra sesión e inicia de nuevo para continuar.",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+                setDeleteProcessing(true);
+                try {
+                  // 1) Verificar contraseña haciendo login
+                  const loginRes = await fetch(getApiEndpoint("/credenciales/login"), {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password: deletePassword }),
+                    credentials: "include",
+                  });
+                  if (!loginRes.ok) {
+                    toast({
+                      title: "Contraseña incorrecta",
+                      description: "La contraseña no es válida. Inténtalo nuevamente.",
+                      variant: "destructive",
+                    });
+                    setDeleteProcessing(false);
+                    return;
+                  }
+
+                  // 2) Si hay reservas activas, cancelarlas y enviar correo
+                  if (deleteHasActiveReservations && deleteActiveReservations.length > 0) {
+                    const motivo = deleteMessage.trim();
+                    for (const r of deleteActiveReservations) {
+                      const id = r.id_reserva;
+                      if (!id) continue;
+                      const resp = await authFetch(
+                        getApiEndpoint(`/data-owner/reservas/${id}/estado`),
+                        {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            nuevo_estado: "cancelada",
+                            motivo_cancelacion: motivo,
+                          }),
+                        }
+                      );
+                      if (!resp.ok) {
+                        const err = await resp.json().catch(() => ({}));
+                        throw new Error(
+                          err.detail ||
+                          `No se pudo cancelar la reserva ${id}. Detalle: ${resp.status}`
+                        );
+                      }
+                    }
+                  }
+
+                  // 3) Borrar el restaurante
+                  const delRes = await authFetch(getApiEndpoint("/restaurante/borrarrestaurante"), {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nit }),
+                  });
+                  if (!delRes.ok) {
+                    const err = await delRes.json().catch(() => ({}));
+                    throw new Error(err.detail || "No se pudo eliminar el restaurante.");
+                  }
+
+                  // 4) Enviar copia del mensaje al correo del usuario que inició sesión (el del login)
+                  const mensajeParaPropietario =
+                    deleteMessage.trim() ||
+                    `Has eliminado el restaurante "${restaurant?.name ?? nit}". No había reservas activas.`;
+                  try {
+                    await authFetch(getApiEndpoint("/data-owner/enviar-correo-propietario"), {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        subject: "Reservify - Copia por eliminación de restaurante",
+                        message: mensajeParaPropietario,
+                      }),
+                    });
+                  } catch {
+                    // No bloquear el flujo si falla el envío al propietario
+                  }
+
+                  toast({
+                    title: "Restaurante eliminado",
+                    description: "El restaurante y sus datos se han eliminado correctamente. Se ha enviado una copia del mensaje a tu correo electrónico.",
+                  });
+                  setDeleteDialogOpen(false);
+                  onSuccess();
+                  onClose();
+                } catch (e) {
+                  showErrorToast(
+                    toast,
+                    e,
+                    "Ocurrió un error al eliminar el restaurante. Revisa tu conexión e inténtalo más tarde."
+                  );
+                } finally {
+                  setDeleteProcessing(false);
+                }
+              }}
+            >
+              {deleteProcessing ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Eliminando...
+                </>
+              ) : (
+                "Eliminar restaurante"
+              )}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

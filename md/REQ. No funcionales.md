@@ -1,0 +1,201 @@
+### Requerimientos no funcionales (desde Excel)
+> Fuente: `md/currents/reservifyreq.v.1.0.xls.xlsx` → hoja **REQ. No funcionales**
+
+- **NF-001 – Seguridad de datos y control de acceso**
+  - **Estado:** Hecho.
+- **NF-002 – Verificación de documentos de soporte de proyecto**
+  - **Estado:** No hecho.
+- **NF-003 – Disponibilidad general del sistema**
+  - **Estado:** No hecho.
+- **NF-004 – Escalabilidad para gran cantidad de usuarios y datos**
+  - **Estado:** No hecho.
+- **NF-005 – Soporte multiusuario**
+  - **Estado:** Hecho.
+- **NF-006 – Mantenibilidad y administración de la base de datos**
+  - **Estado:** Hecho.
+- **NF-007 – Almacenamiento de registro fotográfico**
+  - **Estado:** Hecho.
+- **NF-008 – Capacidad de integrarse con otros sistemas**
+  - **Estado:** Hecho.
+- **NF-009 – Tiempo máximo de respuesta de 5 segundos para consultas**
+  - **Estado:** No hecho.
+- **NF-010 – Cambio de permisos solo por usuarios autorizados**
+  - **Estado:** Hecho.
+- **NF-011 – Disponibilidad del 99,99 %**
+  - **Estado:** No hecho.
+- **NF-012 – Uso de PostgreSQL como motor de base de datos**
+  - **Estado:** Hecho.
+- **NF-013 – Manuales de usuario estructurados**
+  - **Estado:** No hecho.
+- **NF-014 – Capacidad de procesar N transacciones por segundo**
+  - **Estado:** No hecho.
+- **NF-015 – Integración con Active Directory y Single Sign-On (SSO)**
+  - **Estado:** No hecho.
+- **NF-016 – Integración con servidores de correo para notificaciones**
+  - **Estado:** Hecho.
+- **NF-017 – Auditoría de cambios en los registros de la base de datos**
+  - **Estado:** Hecho.
+- **NF-018 – Registro de usuario, dato original/final y fecha del cambio**
+  - **Estado:** Hecho.
+- **NF-019 – Acceso rápido a menús, funciones y listas**
+  - **Estado:** Hecho.
+- **NF-020 – Integración con servicio de factura electrónica**
+  - **Estado:** No hecho.
+- **NF-021 – Parametrización en línea (reportes, tablas maestras, ayudas)**
+  - **Estado:** Hecho.
+- **NF-022 – Interacción con el portal corporativo de la Empresa**
+  - **Estado:** No hecho.
+- **NF-023 – Soporte multiusuario (reiteración)**
+  - **Estado:** Hecho.
+- **NF-024 – Sistema multicompañía y multisede**
+  - **Estado:** No hecho.
+- **NF-025 – Opción de acceso rápido a diferentes aplicaciones o módulos**
+  - **Estado:** Hecho.
+- **NF-026 – Definición de menús según perfiles de usuario**
+  - **Estado:** Hecho.
+- **NF-027 – Integración total entre módulos sin redundancia de información**
+  - **Estado:** Hecho.
+- **NF-028 – Operación vía navegador web (intranet/internet)**
+  - **Estado:** Hecho.
+- **NF-029 – Acceso web para proveedores, órdenes de compra, nómina, etc.**
+  - **Estado:** No hecho.
+- **NF-030 – Herramientas para toma de decisiones y tableros de control**
+  - **Estado:** Hecho.
+- **NF-031 – Parametrización de cantidad, frecuencia y fechas de reportes automáticos**
+  - **Estado:** No hecho.
+- **NF-032 – Exportación de reportes en múltiples formatos**
+  - **Estado:** Hecho.
+- **NF-033 – Campos definidos por el usuario en archivos maestros y transacciones**
+  - **Estado:** No hecho.
+- **NF-034 – Visualización de reportes en pantalla antes de imprimir**
+  - **Estado:** Hecho.
+- **NF-035 – Soporte de estándares de webservices (WSDL, XSLT, SOAP, WS-BPEL, XML)**
+  - **Estado:** No hecho.
+- **NF-036 – Adaptabilidad avanzada y eliminación automática de código/campos no usados**
+  - **Estado:** No hecho.
+- **NF-037 – Reportes parametrizables con validación**
+  - **Estado:** Hecho.
+- **NF-038 – Base de datos única de terceros**
+  - **Estado:** No hecho.
+- **NF-039 – Restricciones de identificación para terceros (NIT, CC, RC, CE)**
+  - **Estado:** No hecho.
+- **NF-040 – Uso de procedimientos almacenados, triggers y vistas**
+  - **Estado:** Hecho.
+- **NF-041 – Independencia entre dispositivos de almacenamiento y controladores de software**
+  - **Estado:** No hecho.
+- **NF-042 – Herramienta de integración nativa tipo ESB/colas/batch para ERP corporativo**
+  - **Estado:** No hecho.
+- **NF-043 – Ayuda en línea y tutoriales**
+  - **Estado:** No hecho.
+- **NF-044 – Módulo de parametrización de datos maestros y tipos de documentos**
+  - **Estado:** Hecho.
+- **NF-045 – Logs consolidados de transacciones por perfil y periodo**
+  - **Estado:** No hecho.
+- **NF-046 – Consultas tipo tabla dinámica y exportación de información**
+  - **Estado:** Hecho.
+- **NF-047 – Datos personales de usuarios (contacto, email, cargo, etc.)**
+  - **Estado:** Hecho.
+- **NF-048 – Restricción de acceso a rutas de backend según rol**
+  - **Estado:** Hecho.
+- **NF-049 – Validación de disponibilidad antes de confirmar una reserva**
+  - **Estado:** Hecho.
+- **NF-050 – Términos y condiciones del servicio**
+  - **Estado:** No hecho.
+- **NF-051 – Flujo transaccional integrado entre reserva, factura y pago**
+  - **Estado:** Hecho.
+- **NF-052 – Experiencia de usuario con transiciones y microinteracciones consistentes**
+  - **Estado:** Hecho.
+- **NF-053 – Sistema global de notificaciones en la interfaz**
+  - **Estado:** Hecho.
+- **NF-054 – Soporte de tema claro/oscuro coherente con el diseño**
+  - **Estado:** Hecho.
+- **NF-055 – Gestión programada de recordatorios de reservas**
+  - **Estado:** Hecho.
+- **NF-056 – Almacenamiento y consulta eficiente de correos de negocio**
+  - **Estado:** Hecho.
+- **NF-001a – Uso de hashing fuerte para contraseñas de usuarios**
+  - **Estado:** Hecho.
+- **NF-001b – Protección de rutas críticas mediante JWT y roles**
+  - **Estado:** Hecho.
+- **NF-007a – Límite de imágenes por restaurante para evitar sobrecarga**
+  - **Estado:** Hecho.
+- **NF-032a – Exportación de información en formato CSV desde la interfaz**
+  - **Estado:** Hecho.
+- **NF-034a – Vista previa en pantalla de facturas y reportes antes de descarga**
+  - **Estado:** Hecho.
+- **NF-057 – Uso de bcrypt para hashing de contraseñas**
+  - **Estado:** Hecho.
+- **NF-058 – Emisión y validación de JWT (access_token y refresh_token)**
+  - **Estado:** Hecho.
+- **NF-059 – Dependencia verificar_token en rutas protegidas**
+  - **Estado:** Hecho.
+- **NF-060 – Triggers de auditoría sobre tablas críticas**
+  - **Estado:** Hecho.
+- **NF-061 – Índice idx_mails_credencial_uid en Mails**
+  - **Estado:** Hecho.
+- **NF-062 – Índice idx_mails_id_credencial_date en Mails**
+  - **Estado:** Hecho.
+- **NF-063 – Integración con pasarela Wompi (crear transacción, webhook, consultar estado)**
+  - **Estado:** Hecho.
+- **NF-064 – Validación de integridad de webhooks Wompi (checksum)**
+  - **Estado:** Hecho.
+- **NF-065 – Integración SMTP para envío de correos**
+  - **Estado:** Hecho.
+- **NF-066 – Integración IMAP para lectura de bandeja**
+  - **Estado:** Hecho.
+- **NF-067 – Integración con Cloudinary para subida de imágenes**
+  - **Estado:** Hecho.
+- **NF-068 – Uso de Leaflet o similar para mapas**
+  - **Estado:** Hecho.
+- **NF-069 – Tabla jwt_tokens con refresh_token y expiración**
+  - **Estado:** Hecho.
+- **NF-070 – Cifrado de contraseñas de correo (SMTP/IMAP) en BD**
+  - **Estado:** Hecho.
+- **NF-071 – Tarea programada de recordatorios (timer_reserv)**
+  - **Estado:** Hecho.
+- **NF-072 – Tabla Auditoria con registro JSONB**
+  - **Estado:** Hecho.
+- **NF-073 – Función auditoria_insert_trigger para INSERT**
+  - **Estado:** Hecho.
+- **NF-074 – Función auditoria_update_trigger para UPDATE**
+  - **Estado:** Hecho.
+- **NF-075 – Función auditoria_delete_trigger para DELETE**
+  - **Estado:** Hecho.
+- **NF-076 – CORS configurado en backend**
+  - **Estado:** Hecho.
+- **NF-077 – Conexión a base de datos PostgreSQL (DATABASE_URL)**
+  - **Estado:** Hecho.
+- **NF-078 – Frontend React con enrutado (React Router)**
+  - **Estado:** Hecho.
+- **NF-079 – Backend FastAPI con enrutado por módulos**
+  - **Estado:** Hecho.
+- **NF-080 – ToastProvider/ToastContainer como sistema global de notificaciones**
+  - **Estado:** Hecho.
+- **NF-081 – Variables CSS para tema claro y oscuro (.dark)**
+  - **Estado:** Hecho.
+- **NF-082 – ProtectedRoute con verificación de rol**
+  - **Estado:** Hecho.
+- **NF-083 – Almacenamiento de tokens en localStorage (frontend)**
+  - **Estado:** Hecho.
+- **NF-084 – Trigger validar_admin_tiene_restaurante (nit NOT NULL para administrador)**
+  - **Estado:** Hecho.
+- **NF-085 – Scripts de migración en scripts/migraciones**
+  - **Estado:** Hecho.
+- **NF-086 – Rate limit o control en endpoint /contactanos**
+  - **Estado:** Hecho.
+- **NF-087 – Consentimiento de archivo de correos (consentimiento_archivo en SMTP_config/IMAP_config)**
+  - **Estado:** Hecho.
+- **NF-088 – UNIQUE refresh_token en jwt_tokens**
+  - **Estado:** Hecho.
+- **NF-089 – Password_Reset_Codes para recuperación de contraseña (tabla y lógica si existe)**
+  - **Estado:** Hecho.
+- **NF-090 – Framer Motion para animaciones en frontend**
+  - **Estado:** Hecho.
+- **NF-091 – Cookie HttpOnly para refresh token (no accesible desde JavaScript)**
+  - **Estado:** Hecho.
+- **NF-092 – Cookie SameSite=strict para refresh token**
+  - **Estado:** Hecho.
+- **NF-093 – Rechazo de tokens revocados en verificar_token**
+  - **Estado:** Hecho.
+- **NF-094 – Autorización por recurso: solo editar propias credenciales**
+  - **Estado:** Hecho.

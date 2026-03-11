@@ -61,7 +61,7 @@ CREATE TABLE "Usuario" (
     id_credencial INT NOT NULL UNIQUE,
     nacionalidad VARCHAR(20) NOT NULL DEFAULT 'sin dato',
     telefono VARCHAR(10) NOT NULL DEFAULT 'sin dato' CHECK (telefono = 'sin dato' OR telefono ~ '^[0-9]{10}$'),
-    nit DECIMAL(10, 0) NULL,  -- Solo para rol empleado: restaurante donde trabaja; dueño se vincula por Restaurante.documento
+    nit BIGINT NULL,  -- Solo para rol empleado: restaurante donde trabaja; dueño se vincula por Restaurante.documento
     FOREIGN KEY (id_rol) REFERENCES "Roles" (id_rol) ON DELETE CASCADE,
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
 );
@@ -74,7 +74,7 @@ CREATE TABLE "Categorias" (
 
 -- Tabla Restaurante: Almacena información de los restaurantes
 CREATE TABLE "Restaurante" (
-    nit DECIMAL(10, 0) PRIMARY KEY NOT NULL,  -- nit como identificador único
+    nit BIGINT PRIMARY KEY NOT NULL,  -- nit como identificador único
     direccion VARCHAR(255) NOT NULL,  -- Dirección del restaurante
     nombre_restaurante VARCHAR(50) NOT NULL,  -- Nombre del restaurante
     descripcion_restaurante VARCHAR(100) NOT NULL,  -- Descripción del restaurante
@@ -98,7 +98,7 @@ CREATE TABLE "Restaurante" (
 
 -- Tabla Imagen_referencia_restaurante: Almacena imágenes de referencia de restaurantes (máximo 15 por NIT)
 CREATE TABLE "Imagen_referencia_restaurante" (
-    nit DECIMAL(10, 0) NOT NULL,
+    nit BIGINT NOT NULL,
     url_imagen VARCHAR NOT NULL,
     orden INT NOT NULL DEFAULT 0 CHECK (orden >= 0 AND orden < 15),
     PRIMARY KEY (nit, orden),
@@ -119,7 +119,7 @@ CREATE TABLE "Mesas" (
     id_mesa SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     estado_de_disponibilidad BOOLEAN NOT NULL,  -- Estado de disponibilidad
     cant_personas INT NOT NULL CHECK (cant_personas > 0),  -- Capacidad de personas
-    nit DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
+    nit BIGINT NOT NULL,  -- Referencia al restaurante
     precio DECIMAL(10, 2) NOT NULL CHECK (precio >= 0),  -- Precio de la mesa
     FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
 );
@@ -127,7 +127,7 @@ CREATE TABLE "Mesas" (
 -- Tabla Encabezado_Factura: Almacena la información principal de las facturas
 CREATE TABLE "Encabezado_Factura" (
     id_encab_fact SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
-    nit DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
+    nit BIGINT NOT NULL,  -- Referencia al restaurante
     nombre_restaurante VARCHAR(255) NOT NULL,  -- Nombre del restaurante
     direccion VARCHAR(255) NOT NULL,  -- Dirección del restaurante (ej. Nominatim)
     ciudad VARCHAR(255) NOT NULL,  -- Ciudad
@@ -135,7 +135,7 @@ CREATE TABLE "Encabezado_Factura" (
         fecha >= CURRENT_DATE - INTERVAL '1 day'
         AND fecha <= CURRENT_DATE + INTERVAL '1 day'
     ),  -- Fecha de la factura (permite pequeñas diferencias de zona horaria)
-    documento DECIMAL(10, 0) NOT NULL,  -- Referencia al cliente
+    documento BIGINT NOT NULL,  -- Referencia al cliente
     forma_pago VARCHAR(50) NOT NULL CHECK (forma_pago IN ('Efectivo', 'Tarjeta', 'Transferencia', 'Otro', 'Pendiente')),  -- Forma de pago con validación
     precio_total DECIMAL(10, 2) NOT NULL,  -- Precio total
     FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE,
@@ -146,7 +146,7 @@ CREATE TABLE "Encabezado_Factura" (
 CREATE TABLE "Reserva" (
     id_reserva SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     id_mesa INT NOT NULL,  -- Referencia a la mesa
-    documento DECIMAL(10, 0) NOT NULL,  -- Referencia al cliente
+    documento BIGINT NOT NULL,  -- Referencia al cliente
     id_encab_fact INT,  -- Referencia a la factura
     estado_reserva VARCHAR NOT NULL DEFAULT 'no presentada'
     CHECK (estado_reserva IN (
@@ -168,7 +168,7 @@ COMMENT ON COLUMN "Reserva".ajuste IS 'Observaciones o ajuste solicitado por el 
 
 CREATE TABLE "Calculos_mensuales" (
     id_calculo SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
-    nit DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
+    nit BIGINT NOT NULL,  -- Referencia al restaurante
     mes INT NOT NULL CHECK (mes >= 1 AND mes <= 12),  -- Mes del cálculo
     anio INT NOT NULL CHECK (anio > 0),  -- Año del cálculo
     total_reservas INT NOT NULL DEFAULT 0,  -- Total de reservas del mes
@@ -180,7 +180,7 @@ CREATE TABLE "Calculos_mensuales" (
 CREATE TABLE "Comentarios" (
     id_comentario SERIAL PRIMARY KEY NOT NULL,  -- Identificador único autoincremental
     documento DECIMAL(10, 0) NOT NULL,  -- Referencia al cliente
-    nit DECIMAL(10, 0) NOT NULL,  -- Referencia al restaurante
+    nit BIGINT NOT NULL,  -- Referencia al restaurante
     comentario TEXT NOT NULL,  -- Comentario del cliente
     fecha TIMESTAMP NOT NULL DEFAULT NOW(),  -- Fecha del comentario
     calificacion INT NOT NULL DEFAULT 0 CHECK (calificacion >= 0 AND calificacion <= 5),  -- Calificación del 1 al 5 (0 = sin dato)

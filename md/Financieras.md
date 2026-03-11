@@ -1,0 +1,95 @@
+### Requerimientos financieros (desde Excel)
+> Fuente: `md/currents/reservifyreq.v.1.0.xls.xlsx` → hoja **Financieras**
+
+- **FI-001 – Facturación básica por reserva**
+  - **Estado:** Hecho.
+- **FI-002 – Asociación entre reservas, pagos y facturas**
+  - **Estado:** Hecho.
+- **FI-003 – Integración con pasarela de pagos Wompi**
+  - **Estado:** Hecho.
+- **FI-004 – Seguimiento de ingresos y métricas mensuales**
+  - **Estado:** Hecho.
+- **FI-005 – Consultas y reportes de facturación**
+  - **Estado:** Hecho.
+- **FI-006 – Auditoría de operaciones financieras**
+  - **Estado:** Hecho.
+- **FI-007 – Control de formas de pago y estados de pago**
+  - **Estado:** Hecho.
+- **FI-008 – Envío de facturas por correo**
+  - **Estado:** Hecho.
+- **FI-009 – Creación conjunta de factura y reserva desde el flujo de reserva**
+  - **Estado:** Hecho.
+- **FI-010 – Confirmación financiera de la reserva condicionada a pago aprobado**
+  - **Estado:** Hecho.
+- **FI-011 – Persistencia de datos de pasarela de pago para conciliación**
+  - **Estado:** Hecho.
+- **FI-012 – Exportación de facturación a CSV y detalle descargable en PDF**
+  - **Estado:** No hecho.
+- **FI-001a – Registro obligatorio de forma de pago en cada factura**
+  - **Estado:** Hecho.
+- **FI-001b – Registro del valor total de la factura con dos decimales**
+  - **Estado:** Hecho.
+- **FI-004a – Consolidación de ingresos por restaurante, mes y año**
+  - **Estado:** Hecho.
+- **FI-005a – Exportación de informes de facturación a CSV desde los dashboards**
+  - **Estado:** Hecho.
+- **FI-005b – Descarga de facturas individuales en formato PDF**
+  - **Estado:** Hecho.
+- **FI-013 – Campo Encabezado_Factura.nit**
+  - **Estado:** Hecho.
+- **FI-014 – Campo Encabezado_Factura.nombre_restaurante**
+  - **Estado:** Hecho.
+- **FI-015 – Campo Encabezado_Factura.direccion**
+  - **Estado:** Hecho.
+- **FI-016 – Campo Encabezado_Factura.ciudad**
+  - **Estado:** Hecho.
+- **FI-017 – Campo Encabezado_Factura.documento (cliente)**
+  - **Estado:** Hecho.
+- **FI-018 – Campo Encabezado_Factura.fecha con CHECK**
+  - **Estado:** Hecho.
+- **FI-019 – Forma de pago Efectivo**
+  - **Estado:** Hecho.
+- **FI-020 – Forma de pago Tarjeta**
+  - **Estado:** Hecho.
+- **FI-021 – Forma de pago Transferencia**
+  - **Estado:** Hecho.
+- **FI-022 – Forma de pago Otro**
+  - **Estado:** Hecho.
+- **FI-023 – Forma de pago Pendiente**
+  - **Estado:** Hecho.
+- **FI-024 – Endpoint POST /facturas/reservar para crear factura y reserva**
+  - **Estado:** Hecho.
+- **FI-025 – Endpoint GET /data-owner/facturas para listar facturas**
+  - **Estado:** Hecho.
+- **FI-026 – Endpoint GET /data-owner/facturas/{id_encab_fact} para detalle de factura**
+  - **Estado:** Hecho.
+- **FI-027 – Endpoint POST /data-owner/facturas/{id_encab_fact}/enviar para enviar factura por correo**
+  - **Estado:** Hecho.
+- **FI-028 – Flujo: crear factura → asociar reserva (id_encab_fact en Reserva)**
+  - **Estado:** Hecho.
+- **FI-029 – Flujo: confirmar reserva cuando pago Wompi aprobado**
+  - **Estado:** Hecho.
+- **FI-030 – Exportar listado de facturas a CSV desde dashboard**
+  - **Estado:** Hecho.
+- **FI-031 – Descargar detalle de factura en PDF desde dashboard**
+  - **Estado:** Hecho.
+- **FI-032 – Tabla Detalle_factura (o líneas de detalle) para ítems facturados**
+  - **Estado:** Hecho.
+- **FI-033 – Columna precio_total DECIMAL(10,2) en Encabezado_Factura**
+  - **Estado:** Hecho.
+- **FI-034 – Auditoría de Encabezado_Factura (triggers insert/update/delete)**
+  - **Estado:** Hecho.
+- **FI-035 – Tabla Calculos_mensuales con revenue y total_reservas por restaurante/mes/año**
+  - **Estado:** Hecho.
+- **FI-036 – Endpoint GET /data-owner/metricas-mensuales para métricas financieras**
+  - **Estado:** Hecho.
+- **FI-037 – Endpoint POST /wompi/crear_pago para iniciar transacción**
+  - **Estado:** Hecho.
+- **FI-038 – Endpoint POST /wompi/webhook para notificación de pago aprobado**
+  - **Estado:** Hecho.
+- **FI-039 – Endpoint GET /wompi/transaccion/{transaction_id} para consultar estado**
+  - **Estado:** Hecho.
+- **FI-040 – Encabezado_Factura FK a Restaurante y Usuario (integridad referencial)**
+  - **Estado:** Hecho.
+- **FI-041 – Creación de empleado invitado con hash de contraseña**
+  - **Estado:** Hecho.

@@ -35,7 +35,7 @@ from functions.data_owner.data_owner import (
 )
 from functions.auth.dependencies import verificar_token
 from functions.cruds.reservation_status import actualizar_estado_reserva
-from functions.email_sender.email_utils import send_email_with_config
+from functions.email_sender.email_utils import send_email_with_config, send_email
 from functions.email_sender.smtp_config_db import (
     get_smtp_config,
     get_smtp_config_para_dashboard,
@@ -50,11 +50,13 @@ from functions.email_sender.smtp_config_db import (
 from functions.email_sender.imap_inbox import fetch_inbox
 from functions.data_owner.data_owner import obtener_contexto_gestor
 from functions.cruds import restaurante as crud_restaurante, mesas as crud_mesas
+from sqlalchemy import text as sql_text
 from models import (
     ActualizarEstadoReservaSchema,
     SMTPConfigSchema,
     IMAPConfigSchema,
     ResponderCorreoSchema,
+    EnviarCorreoPropietarioSchema,
     RestauranteUpdate,
     MesaBase,
     MesaUpdate,
@@ -922,6 +924,41 @@ def responder_correo(
         )
         if not ok:
             raise HTTPException(status_code=502, detail="No se pudo enviar el correo.")
+        return {"ok": True}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/enviar-correo-propietario")
+def enviar_correo_propietario(
+    body: EnviarCorreoPropietarioSchema,
+    usuario_actual: dict = Depends(verificar_token),
+    db: Session = Depends(get_db),
+):
+    """
+    Envía un correo al email del usuario autenticado (el mismo del login).
+    Usa la configuración SMTP del .env. Útil para enviar copias al propietario.
+    """
+    try:
+        id_credencial = usuario_actual["id"]
+        row = db.execute(
+            sql_text('SELECT email FROM "Credenciales" WHERE id_credencial = :id'),
+            {"id": id_credencial},
+        ).fetchone()
+        if not row or not row[0]:
+            raise HTTPException(
+                status_code=404,
+                detail="No se encontró el correo del usuario.",
+            )
+        to_email = row[0].strip()
+        ok = send_email(to_email, body.subject, body.message)
+        if not ok:
+            raise HTTPException(
+                status_code=502,
+                detail="No se pudo enviar el correo. Revisa la configuración SMTP del servidor.",
+            )
         return {"ok": True}
     except HTTPException:
         raise
