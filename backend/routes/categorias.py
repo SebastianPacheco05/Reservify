@@ -16,6 +16,16 @@ async def listar_categorias(db: Session = Depends(get_db)):
     respuesta = categorias_queries.obtener_categorias(db)
     return {"respuesta": respuesta}
 
+
+# Público: top de categorías más usadas por los restaurantes (para el carrusel, etc.)
+@router.get("/top")
+async def top_categorias(
+    limit: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    respuesta = categorias_queries.obtener_categorias_mas_usadas(db, limit)
+    return {"respuesta": respuesta}
+
 # Rutas que requieren autenticación
 @router.post("/insertarcategoria")
 async def insertar(data: insertarCategorias, db: Session = Depends(get_db), usuario=Depends(verificar_token)):

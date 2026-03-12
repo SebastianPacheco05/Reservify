@@ -435,6 +435,31 @@ def obtener_categorias(db: Session):
     return [{"id_categoria": row[0], "nombre_categoria": row[1]} for row in rows]
 
 
+def obtener_categorias_mas_usadas(db: Session, limit: int = 20):
+    """
+    Devuelve las categorías más usadas por los restaurantes,
+    ordenadas por cantidad de restaurantes que las utilizan (desc).
+    """
+    result = db.execute(
+        text(
+            '''
+            SELECT
+                c.id_categoria,
+                c.nombre_categoria,
+                COUNT(r.nit) AS usos
+            FROM "Categorias" c
+            LEFT JOIN "Restaurante" r ON r.id_categoria = c.id_categoria
+            GROUP BY c.id_categoria, c.nombre_categoria
+            ORDER BY usos DESC, c.nombre_categoria
+            LIMIT :limit_val
+            '''
+        ),
+        {"limit_val": limit},
+    )
+    rows = result.fetchall()
+    return [{"id_categoria": row[0], "nombre_categoria": row[1]} for row in rows]
+
+
 def obtener_calculo_mensual(db: Session, id_calculo: int):
     result = db.execute(
         text(

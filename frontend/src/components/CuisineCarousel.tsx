@@ -1,122 +1,136 @@
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChefHat, Utensils, Coffee, Pizza } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "./ui/card";
 import { transitionNormal } from "../lib/animations";
+import { getApiEndpoint } from "../config/api";
+import { useToast } from "../hooks/useToast";
 
 interface CuisineType {
   name: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   color: string;
 }
 
-const cuisineTypes: CuisineType[] = [
-  {
-    name: "Italiana",
-    icon: Pizza,
-    color: "bg-blue-50 text-blue-600 border-blue-300 hover:bg-blue-100",
-  },
-  {
-    name: "Asiática",
-    icon: Utensils,
-    color: "bg-green-50 text-green-600 border-green-300 hover:bg-green-100",
-  },
-  {
-    name: "Japonesa",
-    icon: Utensils,
-    color: "bg-yellow-50 text-yellow-600 border-yellow-300 hover:bg-yellow-100",
-  },
-  {
-    name: "Mexicana",
-    icon: ChefHat,
-    color: "bg-blue-50 text-blue-700 border-blue-300 hover:bg-blue-100",
-  },
-  {
-    name: "Vegetariana",
-    icon: Coffee,
-    color: "bg-green-50 text-green-700 border-green-300 hover:bg-green-100",
-  },
-  {
-    name: "China",
-    icon: ChefHat,
-    color: "bg-yellow-50 text-yellow-800 border-yellow-400 hover:bg-yellow-100",
-  },
-  {
-    name: "India",
-    icon: Utensils,
-    color: "bg-blue-50 text-blue-800 border-blue-400 hover:bg-blue-100",
-  },
-  {
-    name: "Francesa",
-    icon: ChefHat,
-    color: "bg-green-50 text-green-600 border-green-300 hover:bg-green-100",
-  },
-  {
-    name: "Española",
-    icon: Pizza,
-    color: "bg-yellow-50 text-yellow-600 border-yellow-300 hover:bg-yellow-100",
-  },
-  {
-    name: "Tailandesa",
-    icon: Utensils,
-    color: "bg-blue-50 text-blue-900 border-blue-500 hover:bg-blue-100",
-  },
-  {
-    name: "Vietnamita",
-    icon: ChefHat,
-    color: "bg-green-50 text-green-600 border-green-300 hover:bg-green-100",
-  },
-  {
-    name: "Coreana",
-    icon: Utensils,
-    color: "bg-yellow-50 text-yellow-700 border-yellow-400 hover:bg-yellow-100",
-  },
-  {
-    name: "Griega",
-    icon: Pizza,
-    color: "bg-blue-50 text-blue-800 border-blue-500 hover:bg-blue-100",
-  },
-  {
-    name: "Turca",
-    icon: ChefHat,
-    color: "bg-green-50 text-green-700 border-green-400 hover:bg-green-100",
-  },
-  {
-    name: "Libanesa",
-    icon: Utensils,
-    color: "bg-yellow-50 text-yellow-700 border-yellow-400 hover:bg-yellow-100",
-  },
-  {
-    name: "Peruana",
-    icon: ChefHat,
-    color: "bg-blue-50 text-blue-600 border-blue-300 hover:bg-blue-100",
-  },
-  {
-    name: "Argentina",
-    icon: Pizza,
-    color: "bg-green-50 text-green-600 border-green-300 hover:bg-green-100",
-  },
+interface CategoriaFromApi {
+  id_categoria: number;
+  nombre_categoria: string;
+}
+
+interface CuisineCarouselProps {
+  onCategoryClick?: (categoria: string) => void;
+}
+
+const COLOR_CLASSES: string[] = [
+  "bg-blue-50 text-blue-700 border-blue-300 hover:bg-blue-100",
+  "bg-green-50 text-green-700 border-green-300 hover:bg-green-100",
+  "bg-yellow-50 text-yellow-700 border-yellow-400 hover:bg-yellow-100",
+  "bg-purple-50 text-purple-700 border-purple-300 hover:bg-purple-100",
+  "bg-pink-50 text-pink-700 border-pink-300 hover:bg-pink-100",
+  "bg-orange-50 text-orange-700 border-orange-300 hover:bg-orange-100",
+  "bg-teal-50 text-teal-700 border-teal-300 hover:bg-teal-100",
 ];
 
-export default function CuisineCarousel() {
+const getRandomColorClass = (): string => {
+  const idx = Math.floor(Math.random() * COLOR_CLASSES.length);
+  return COLOR_CLASSES[idx] ?? COLOR_CLASSES[0];
+};
+
+const getIconConfigForCategoria = (nombre: string): Pick<CuisineType, "icon" | "color"> => {
+  const normalized = nombre.toLowerCase();
+
+  if (normalized.includes("ital")) {
+    return {
+      icon: Pizza,
+      color: getRandomColorClass(),
+    };
+  }
+  if (normalized.includes("asia") || normalized.includes("jap") || normalized.includes("chin")) {
+    return {
+      icon: Utensils,
+      color: getRandomColorClass(),
+    };
+  }
+  if (normalized.includes("mex") || normalized.includes("lat") || normalized.includes("peru") || normalized.includes("arg")) {
+    return {
+      icon: ChefHat,
+      color: getRandomColorClass(),
+    };
+  }
+  if (normalized.includes("veg") || normalized.includes("salud")) {
+    return {
+      icon: Coffee,
+      color: getRandomColorClass(),
+    };
+  }
+
+  return {
+    icon: Utensils,
+    color: getRandomColorClass(),
+  };
+};
+
+export default function CuisineCarousel({ onCategoryClick }: CuisineCarouselProps) {
+  const { toast } = useToast();
+  const [cuisineTypes, setCuisineTypes] = useState<CuisineType[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const totalSlides = cuisineTypes.length > 0 ? Math.ceil(cuisineTypes.length / 4) : 1;
+
+  useEffect(() => {
+    const loadCategorias = async () => {
+      setIsLoading(true);
+      try {
+        const res = await fetch(getApiEndpoint("/categorias/top?limit=20"), {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        const data = await res.json();
+        const list: CategoriaFromApi[] = Array.isArray(data) ? data : (data?.respuesta ?? []);
+
+        const mapped: CuisineType[] = list.map((categoria) => {
+          const cfg = getIconConfigForCategoria(categoria.nombre_categoria);
+          return {
+            name: categoria.nombre_categoria,
+            icon: cfg.icon,
+            color: cfg.color,
+          };
+        });
+
+        setCuisineTypes(mapped);
+        setCurrentSlide(0);
+      } catch (e) {
+        console.error("Error al cargar categorías para el carrusel:", e);
+        toast({
+          title: "Error al cargar categorías",
+          description: "No se pudieron cargar los tipos de cocina. Inténtalo de nuevo más tarde.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadCategorias();
+  }, [toast]);
 
   // Funciones para el carrusel
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % Math.ceil(cuisineTypes.length / 4));
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
   };
 
   const prevSlide = () => {
     setCurrentSlide(
       (prev) =>
-        (prev - 1 + Math.ceil(cuisineTypes.length / 4)) %
-        Math.ceil(cuisineTypes.length / 4)
+        (prev - 1 + totalSlides) %
+        totalSlides
     );
   };
 
   const goToSlide = (index: number) => {
-    setCurrentSlide(index);
+    setCurrentSlide(index % totalSlides);
   };
 
   return (
@@ -183,9 +197,14 @@ export default function CuisineCarousel() {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             style={{ width: "100%" }}
           >
-            {Array.from(
-              { length: Math.ceil(cuisineTypes.length / 4) },
-              (_, slideIndex) => (
+            {cuisineTypes.length === 0 ? (
+              <div className="w-full flex-shrink-0 px-4 py-8 flex items-center justify-center">
+                <p className="text-sm sm:text-base text-muted-foreground">
+                  {isLoading ? "Cargando tipos de cocina..." : "No hay categorías disponibles por el momento."}
+                </p>
+              </div>
+            ) : (
+              Array.from({ length: totalSlides }, (_, slideIndex) => (
                 <div key={slideIndex} className="w-full flex-shrink-0 px-2 sm:px-4 md:px-8 min-w-0">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                     {cuisineTypes
@@ -204,6 +223,11 @@ export default function CuisineCarousel() {
                           >
                             <Card
                               className={`${category.color} border-2 hover:shadow-xl cursor-pointer group dark:bg-gray-400/20 transition-shadow rounded-2xl`}
+                              onClick={() => {
+                                if (onCategoryClick) {
+                                  onCategoryClick(category.name);
+                                }
+                              }}
                             >
                               <CardContent className="p-4 sm:p-6 text-center min-w-0">
                                 <IconComponent className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300" />
@@ -217,16 +241,15 @@ export default function CuisineCarousel() {
                       })}
                   </div>
                 </div>
-              )
+              ))
             )}
           </motion.div>
         </div>
 
         {/* Indicadores de navegación */}
-        <div className="flex justify-center mt-12 space-x-3">
-          {Array.from(
-            { length: Math.ceil(cuisineTypes.length / 4) },
-            (_, index) => (
+        {cuisineTypes.length > 0 && (
+          <div className="flex justify-center mt-12 space-x-3">
+            {Array.from({ length: totalSlides }, (_, index) => (
               <motion.button
                 key={index}
                 onClick={() => goToSlide(index)}
@@ -239,9 +262,9 @@ export default function CuisineCarousel() {
                 whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.9 }}
               />
-            )
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

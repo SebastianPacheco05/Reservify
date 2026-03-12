@@ -161,7 +161,7 @@ export default function Home() {
       )}
 
       <Suspense fallback={<div className="min-h-[120px]" aria-hidden="true" />}>
-        <CuisineCarousel />
+        <CuisineCarousel onCategoryClick={handleSearch} />
       </Suspense>
 
       <Suspense fallback={<div className="min-h-[280px]" aria-hidden="true" />}>
