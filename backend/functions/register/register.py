@@ -2,7 +2,6 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from psycopg2.errors import CheckViolation
 import bcrypt
 import re
 
@@ -150,13 +149,36 @@ def registrar_usuario(db: Session, email: str, password: str, nombre: str, apell
     except IntegrityError as e:
         db.rollback()
         error_msg = str(e)
-        # Detectar errores específicos de CHECK constraint para email
-        if "Credenciales_email_check" in error_msg or "check" in error_msg.lower():
+
+        # Email inválido (CHECK de Credenciales)
+        if "Credenciales_email_check" in error_msg:
             raise HTTPException(
                 status_code=400,
-                detail=f"El formato del email '{email}' no es válido. Por favor, verifica que tenga el formato correcto (ejemplo: usuario@dominio.com)"
+                detail=(
+                    f"El formato del email '{email}' no es válido. "
+                    "Por favor, verifica que tenga el formato correcto (ejemplo: usuario@dominio.com)."
+                ),
             )
-        raise HTTPException(status_code=400, detail=f"Error de integridad al registrar usuario: {error_msg}")
+
+        # Documento duplicado (PRIMARY KEY de Usuario)
+        if "Usuario_pkey" in error_msg:
+            raise HTTPException(
+                status_code=400,
+                detail="Este documento ya existe en nuestro sistema.",
+            )
+
+        # Teléfono duplicado (si existe una restricción UNIQUE sobre teléfono)
+        if "Usuario_telefono_key" in error_msg or "usuario_telefono_key" in error_msg:
+            raise HTTPException(
+                status_code=400,
+                detail="Este teléfono ya existe en nuestro sistema.",
+            )
+
+        # Cualquier otra violación de integridad: mensaje genérico sin detalles SQL
+        raise HTTPException(
+            status_code=400,
+            detail="Error de integridad al registrar usuario. Verifica que los datos no estén ya registrados.",
+        )
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error de base de datos al registrar usuario: {str(e)}")

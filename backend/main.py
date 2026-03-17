@@ -133,15 +133,13 @@ async def enviar_correo_contacto(data: EmailSchema):
 if __name__ == "__main__":
     import uvicorn
     from pathlib import Path
-    # Incluir ruta absoluta de venv para que WatchFiles excluya correctamente en Windows
-    venv_dir = Path(__file__).resolve().parent / "venv"
-    reload_excludes = ["venv", "venv/**", "**/venv/**"]
-    if venv_dir.is_dir():
-        reload_excludes.append(str(venv_dir))
+
+    BACKEND_DIR = str(Path(__file__).resolve().parent)
     uvicorn.run(
         "main:app",
         host=BACKEND_HOST,
         port=BACKEND_PORT,
         reload=True,
-        reload_excludes=reload_excludes,
+        reload_dirs=[BACKEND_DIR],
+        reload_excludes=["venv", "venv/**", "__pycache__", "**/__pycache__"],
     )

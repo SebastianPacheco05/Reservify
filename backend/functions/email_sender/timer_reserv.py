@@ -62,6 +62,8 @@ async def send2hbf(db: Session, id_reserva: int):
 
 
 async def tarea_programada():
+    # Dar tiempo al servidor para completar el arranque
+    await asyncio.sleep(60)
     while True:
         ahora = datetime.now()
         hora_actual = ahora.hour

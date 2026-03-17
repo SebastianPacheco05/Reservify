@@ -5,15 +5,9 @@ para conectar a los servidores de correo, por eso no se usa bcrypt (hash unidire
 """
 import os
 import base64
-from pathlib import Path
-from dotenv import load_dotenv
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-
-# Cargar .env de la raíz del proyecto (mismo que config.py) para tener SECRET_KEY disponible
-_ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent
-load_dotenv(_ROOT_DIR / ".env")
 
 _PREFIX_ENCRYPTED = "enc:"
 _fernet: Fernet | None = None

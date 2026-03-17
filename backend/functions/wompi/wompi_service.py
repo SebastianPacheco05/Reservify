@@ -1,13 +1,10 @@
 import os
-from dotenv import load_dotenv
 import requests
 import hashlib
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-
-load_dotenv()
 
 WOMPI_PUBLIC_KEY = os.getenv("WOMPI_PUBLIC_KEY")
 WOMPI_PRIVATE_KEY = os.getenv("WOMPI_PRIVATE_KEY")

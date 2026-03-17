@@ -2,6 +2,7 @@ import secrets
 import string
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from fastapi import HTTPException
 from functions.register.register import hash_password, validar_formato_email
 
@@ -940,52 +941,86 @@ def crear_empleado_invitado(
     Crea credencial + usuario empleado para el restaurante (solo dueño).
     Genera contraseña aleatoria. Devuelve email y password en claro para mostrarla al dueño.
     """
-    if not es_dueño_de_restaurante(id_credencial_dueno, nit, db):
-        raise HTTPException(status_code=403, detail="No eres dueño de este restaurante.")
-    if not validar_formato_email(email):
-        raise HTTPException(status_code=400, detail="El formato del email no es válido.")
-    email = email.strip().lower()
+    try:
+        if not es_dueño_de_restaurante(id_credencial_dueno, nit, db):
+            raise HTTPException(status_code=403, detail="No eres dueño de este restaurante.")
+        if not validar_formato_email(email):
+            raise HTTPException(status_code=400, detail="El formato del email no es válido.")
+        email = email.strip().lower()
 
-    # Verificar existencia de email mediante función SQL
-    row = db.execute(
-        text("SELECT fn_do_email_credencial_existe(:email)"),
-        {"email": email},
-    ).fetchone()
-    if row and row[0]:
-        raise HTTPException(status_code=400, detail="Ese correo ya está registrado.")
+        # Verificar existencia de email mediante función SQL
+        row = db.execute(
+            text("SELECT fn_do_email_credencial_existe(:email)"),
+            {"email": email},
+        ).fetchone()
+        if row and row[0]:
+            raise HTTPException(status_code=400, detail="Ese correo ya está registrado.")
 
-    password_plano = _generar_password_aleatorio()
-    password_hash = hash_password(password_plano)
-    nombre_desde_email = email.split("@")[0].replace(".", " ").strip() or "Empleado"
-    # Crear empleado invitado (Credenciales + Usuario) mediante función SQL
-    row_new = db.execute(
-        text(
-            """
-            SELECT fn_do_crear_empleado_invitado(
-                :email,
-                :password_hash,
-                :nit,
-                :nombre,
-                :apellido,
-                :tipo_doc,
-                :documento,
-                :nacionalidad,
-                :telefono
+        password_plano = _generar_password_aleatorio()
+        password_hash = hash_password(password_plano)
+        nombre_desde_email = email.split("@")[0].replace(".", " ").strip() or "Empleado"
+
+        # TODO: cuando el flujo incluya teléfono/documento del empleado, pasarlos aquí
+        row_new = db.execute(
+            text(
+                """
+                SELECT fn_do_crear_empleado_invitado(
+                    :email,
+                    :password_hash,
+                    :nit,
+                    :nombre,
+                    :apellido,
+                    :tipo_doc,
+                    :documento,
+                    :nacionalidad,
+                    :telefono
+                )
+                """
+            ),
+            {
+                "email": email,
+                "password_hash": password_hash,
+                "nit": nit,
+                "nombre": nombre_desde_email[:50],
+                "apellido": "Empleado",
+                "tipo_doc": "CC",
+                "documento": 0,
+                "nacionalidad": "",
+                "telefono": "",
+            },
+        ).fetchone()
+        id_credencial = int(row_new[0]) if row_new and row_new[0] is not None else None
+        db.commit()
+        return {"email": email, "password": password_plano, "id_credencial": id_credencial}
+
+    except IntegrityError as e:
+        db.rollback()
+        msg = str(e)
+        # Documento duplicado
+        if "Usuario_pkey" in msg:
+            raise HTTPException(
+                status_code=400,
+                detail="Este documento ya existe en nuestro sistema.",
             )
-            """
-        ),
-        {
-            "email": email,
-            "password_hash": password_hash,
-            "nit": nit,
-            "nombre": nombre_desde_email[:50],
-            "apellido": "Empleado",
-            "tipo_doc": "CC",
-            "documento": 0,
-            "nacionalidad": "",
-            "telefono": "",
-        },
-    ).fetchone()
-    id_credencial = int(row_new[0]) if row_new and row_new[0] is not None else None
-    db.commit()
-    return {"email": email, "password": password_plano, "id_credencial": id_credencial}
+        # Teléfono duplicado (si hay restricción UNIQUE)
+        if "Usuario_telefono_key" in msg or "usuario_telefono_key" in msg:
+            raise HTTPException(
+                status_code=400,
+                detail="Este teléfono ya existe en nuestro sistema.",
+            )
+        # Email duplicado (único en Credenciales)
+        if "Credenciales_email_key" in msg or "credenciales_email_key" in msg:
+            raise HTTPException(
+                status_code=400,
+                detail="Este correo ya existe en nuestro sistema.",
+            )
+        raise HTTPException(
+            status_code=400,
+            detail="No se pudo crear el empleado invitado por un problema de integridad de datos.",
+        )
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="Error de base de datos al crear el empleado invitado.",
+        )
