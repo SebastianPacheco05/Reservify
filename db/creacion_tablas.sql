@@ -60,7 +60,7 @@ CREATE TABLE "Usuario" (
     id_rol INT NOT NULL,
     id_credencial INT NOT NULL UNIQUE,
     nacionalidad VARCHAR(20) NOT NULL DEFAULT 'sin dato',
-    telefono VARCHAR(10) NOT NULL DEFAULT 'sin dato' CHECK (telefono = 'sin dato' OR telefono ~ '^[0-9]{10}$'),
+    telefono VARCHAR(10) NOT NULL DEFAULT 'sin dato' CHECK (telefono ~ '^[0-9]{10}$'),
     nit BIGINT NULL,  -- Solo para rol empleado: restaurante donde trabaja; dueño se vincula por Restaurante.documento
     FOREIGN KEY (id_rol) REFERENCES "Roles" (id_rol) ON DELETE CASCADE,
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE

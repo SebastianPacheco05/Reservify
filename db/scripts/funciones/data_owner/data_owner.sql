@@ -156,6 +156,9 @@ AS $$
 DECLARE
     v_id_rol_empleado INT;
     v_id_credencial INT;
+    v_documento DECIMAL(10,0);
+    v_telefono VARCHAR;
+    v_nacionalidad VARCHAR;
 BEGIN
     SELECT id_rol INTO v_id_rol_empleado
     FROM "Roles"
@@ -169,12 +172,32 @@ BEGIN
     VALUES (p_email, p_password_hash)
     RETURNING id_credencial INTO v_id_credencial;
 
+    -- Para empleados invitados sin documento definido usamos id_credencial
+    IF p_documento IS NULL OR p_documento <= 0 THEN
+        v_documento := v_id_credencial;
+    ELSE
+        v_documento := p_documento;
+    END IF;
+
+    -- Normalizar nacionalidad y teléfono: si vienen vacíos o NULL, usar 'sin dato'
+    IF p_telefono IS NULL OR TRIM(p_telefono) = '' THEN
+        v_telefono := 'sin dato';
+    ELSE
+        v_telefono := p_telefono;
+    END IF;
+
+    IF p_nacionalidad IS NULL OR TRIM(p_nacionalidad) = '' THEN
+        v_nacionalidad := 'sin dato';
+    ELSE
+        v_nacionalidad := p_nacionalidad;
+    END IF;
+
     INSERT INTO "Usuario" (
         id_credencial, nombre, apellido, tipo_documento, documento,
         nacionalidad, telefono, id_rol, nit
     ) VALUES (
-        v_id_credencial, p_nombre, p_apellido, p_tipo_doc, p_documento,
-        p_nacionalidad, p_telefono, v_id_rol_empleado, p_nit
+        v_id_credencial, p_nombre, p_apellido, p_tipo_doc, v_documento,
+        v_nacionalidad, v_telefono, v_id_rol_empleado, p_nit
     );
 
     RETURN v_id_credencial;
