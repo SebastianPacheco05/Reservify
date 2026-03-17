@@ -2,7 +2,7 @@ import icon_reservify from "../../public/icon_reservify.svg";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { fadeInUp, staggerContainer, transitionNormal } from "../lib/animations";
-import { ROUTES } from "../routes/config";
+import { ROUTES } from "../routes/paths";
 
 export default function Footer() {
   const linkClass = "hover:text-accent transition-colors duration-200";

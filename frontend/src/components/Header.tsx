@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { fadeInDown, transitionNormal } from "../lib/animations";
-import { ROUTES } from "../routes/config";
+import { ROUTES } from "../routes/paths";
 
 interface HeaderProps {
   isMenuOpen: boolean;

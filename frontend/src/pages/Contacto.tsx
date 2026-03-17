@@ -5,7 +5,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { sendContactEmail, type ContactFormData } from "../services/contactService";
-import { ROUTES } from "../routes/config";
+import { ROUTES } from "../routes/paths";
 
 export default function Contacto() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

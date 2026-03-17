@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import { Button } from "../components/ui/button";
-import { ROUTES } from "../routes/config";
+import { ROUTES } from "../routes/paths";
 
 export default function Privacidad() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

@@ -17,33 +17,7 @@ import Ayuda from "../pages/Ayuda";
 import Terminos from "../pages/Terminos";
 import Privacidad from "../pages/Privacidad";
 import Lost from "../pages/Lost";
-
-export const ROUTES = {
-  HOME: "/",
-  LOGIN: "/Login",
-  REGISTER: "/Registrar",
-  LOST: "/lost",
-  CONTACTO: "/contacto",
-  AYUDA: "/ayuda",
-  TERMINOS: "/terminos",
-  PRIVACIDAD: "/privacidad",
-  OWNER_DASHBOARD: "/duenodashboard",
-  ADMIN_DASHBOARD: "/admindashboard",
-  EMPLOYEE_DASHBOARD: "/EmpleadoDashboard",
-  CLIENT_DASHBOARD: "/ClienteDashboard",
-  VIEW_EMAIL: "/ver-correo/:uid",
-  RESTAURANT: "/Restaurant",
-  PERSONAL_DATA: "/Datos_personales",
-  PAYMENT_GATEWAY: "/Pasarela_pagos",
-  PAGO_EXITOSO: "/pago-exitoso",
-} as const;
-
-export const ROLE_REDIRECTS: Record<string, string> = {
-  dueno: ROUTES.OWNER_DASHBOARD,
-  administrador: ROUTES.ADMIN_DASHBOARD,
-  empleado: ROUTES.EMPLOYEE_DASHBOARD,
-  cliente: ROUTES.HOME,
-};
+import { ROUTES } from "./paths";
 
 export const getProtectedRoutes = (PageWrapper: React.FC<{ children: React.ReactNode }>) => [
   {

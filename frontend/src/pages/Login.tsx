@@ -16,7 +16,6 @@ import {
 } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { Separator } from "../components/ui/separator";
 import { useToastContext } from "../components/ToastProvider";
 import { startProactiveRefresh } from "../services/authService";
 import { getApiEndpoint } from "../config/api";

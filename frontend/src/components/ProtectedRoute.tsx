@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import { authFetch, isAuthenticated } from "../services/authService";
 import { useToastContext } from "./ToastProvider";
 import { getApiEndpoint } from "../config/api";
+import { getRoleRedirectPath, rolesMatch } from "../routes/paths";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export default function ProtectedRoute({
   const { toast } = useToastContext();
   const [isLoading, setIsLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
+  const [redirectPath, setRedirectPath] = useState<string>("/");
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -41,27 +43,28 @@ export default function ProtectedRoute({
         }
 
         const roleData = await response.json();
-        const userRole = roleData.nombre_rol?.toLowerCase() || "";
+        const userRole = roleData.nombre_rol || "";
+        setRedirectPath(getRoleRedirectPath(userRole));
 
         // Verificar si el usuario tiene el rol requerido
         // Los roles en la DB son: "dueño", "cliente", "empleado", "administrador"
         // Cada usuario solo puede acceder a su propio dashboard
         const requiredRoles = Array.isArray(requiredRole)
-          ? requiredRole.map(r => r.toLowerCase())
-          : [requiredRole.toLowerCase()];
+          ? requiredRole
+          : [requiredRole];
 
-        const hasRequiredRole = requiredRoles.includes(userRole);
+        const hasRequiredRole = requiredRoles.some((r) => rolesMatch(userRole, r));
 
         if (hasRequiredRole) {
           setHasAccess(true);
         } else {
           setHasAccess(false);
           // Mensaje personalizado según el dashboard intentado
-          const dashboardName = requiredRoles.includes("dueño")
+          const dashboardName = requiredRoles.some((r) => rolesMatch(r, "dueño"))
             ? "Dashboard de Dueño"
-            : requiredRoles.includes("administrador")
+            : requiredRoles.some((r) => rolesMatch(r, "administrador"))
               ? "Dashboard de Administrador"
-              : requiredRoles.includes("empleado")
+              : requiredRoles.some((r) => rolesMatch(r, "empleado"))
                 ? "Dashboard de Empleado"
                 : "Dashboard de Cliente";
 
@@ -103,7 +106,7 @@ export default function ProtectedRoute({
   }
 
   if (!hasAccess) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={redirectPath || "/"} replace />;
   }
 
   return <>{children}</>;
