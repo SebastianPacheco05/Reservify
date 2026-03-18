@@ -26,7 +26,7 @@ export default function PaymentGateway() {
 
     if (!reservationData) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background">
+            <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-foreground mb-4">Cargando...</h2>
                     <p className="text-muted-foreground">Preparando tu reserva</p>
