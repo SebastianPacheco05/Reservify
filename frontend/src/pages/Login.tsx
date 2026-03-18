@@ -20,6 +20,7 @@ import { useToastContext } from "../components/ToastProvider";
 import { startProactiveRefresh } from "../services/authService";
 import { getApiEndpoint } from "../config/api";
 import { useTheme } from "../components/theme-provider";
+import { ROUTES } from "../routes/paths";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -259,13 +260,19 @@ export default function Login() {
           <div className="text-center mt-8 text-xs text-muted-foreground transition-colors duration-300">
             <p>Al iniciar sesión, aceptas nuestros</p>
             <div className="space-x-4 mt-1">
-              <button className="hover:text-foreground transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded">
+              <Link
+                to={ROUTES.TERMINOS}
+                className="hover:text-foreground transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded"
+              >
                 Términos de Servicio
-              </button>
+              </Link>
               <span>•</span>
-              <button className="hover:text-foreground transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded">
+              <Link
+                to={ROUTES.PRIVACIDAD}
+                className="hover:text-foreground transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded"
+              >
                 Política de Privacidad
-              </button>
+              </Link>
             </div>
           </div>
         </div>

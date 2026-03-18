@@ -3,6 +3,7 @@
 import type React from "react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Eye,
   EyeOff,
@@ -36,9 +37,9 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { useTheme } from "../components/theme-provider";
-import { useNavigate } from "react-router-dom";
 import { useToastContext } from "../components/ToastProvider";
 import { getApiEndpoint } from "../config/api";
+import { ROUTES } from "../routes/paths";
 
 export default function Registrar() {
   const { toast } = useToastContext();
@@ -112,7 +113,7 @@ export default function Registrar() {
       navigate("/");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "No pudimos completar tu registro. Inténtalo de nuevo más tarde.";
-      // eslint-disable-next-line no-console
+
       console.error("Error en el registro:", err);
       toast({
         title: "Error en el registro",
@@ -344,16 +345,7 @@ export default function Registrar() {
                           </div>
                         </div>
 
-                        {/* Remember Me & Forgot Password */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2"></div>
-                          <button
-                            type="button"
-                            className="text-sm text-primary hover:text-secondary font-medium transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
-                          >
-                            ¿Olvidaste tu contraseña?
-                          </button>
-                        </div>
+
 
                         <Button
                           type="button"
@@ -654,13 +646,19 @@ export default function Registrar() {
           >
             <p>Al registrarte, aceptas nuestros</p>
             <div className="space-x-4 mt-1">
-              <button className="hover:text-primary transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded">
+              <Link
+                to={ROUTES.TERMINOS}
+                className="hover:text-primary transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded"
+              >
                 Términos de Servicio
-              </button>
+              </Link>
               <span>•</span>
-              <button className="hover:text-primary transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded">
+              <Link
+                to={ROUTES.PRIVACIDAD}
+                className="hover:text-primary transition-colors bg-transparent border-none p-0 underline-offset-4 hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded"
+              >
                 Política de Privacidad
-              </button>
+              </Link>
             </div>
           </motion.div>
         </motion.div>
