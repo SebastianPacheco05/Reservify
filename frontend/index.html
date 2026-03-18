@@ -28,24 +28,32 @@
     <link rel="preconnect" href="https://checkout.wompi.co" crossorigin />
     <!-- Wompi se carga en defer para no bloquear el LCP -->
     <script src="https://checkout.wompi.co/widget.js" defer></script>
+    <style>
+      /* Fallback de carga antes de que React/Tailwind inicien */
+      #app-loading {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: system-ui, sans-serif;
+        font-size: 1rem;
+        background: #f9f7f2; /* light default */
+        color: rgba(45, 49, 66, 0.75);
+      }
+      @media (prefers-color-scheme: dark) {
+        #app-loading {
+          background: #121212;
+          color: rgba(224, 224, 224, 0.8);
+        }
+      }
+    </style>
   </head>
 
   <body>
     <div id="root">
       <noscript>Activa JavaScript para usar Reservify.</noscript>
       <!-- Contenido mínimo para FCP; React lo reemplaza al cargar -->
-      <div
-        style="
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-family: system-ui, sans-serif;
-          color: #666;
-          font-size: 1rem;
-        "
-        id="app-loading"
-      >
+      <div id="app-loading">
         Cargando Reservify…
       </div>
     </div>
