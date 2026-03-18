@@ -1,4 +1,4 @@
-/* Archivo original: db/scripts/funciones/smtp_imap_triggers.sql */
+﻿/* Archivo original: db/scripts/funciones/smtp_imap_triggers.sql */
 
 CREATE OR REPLACE FUNCTION actualizar_updated_at_smtp()
 RETURNS TRIGGER AS $$

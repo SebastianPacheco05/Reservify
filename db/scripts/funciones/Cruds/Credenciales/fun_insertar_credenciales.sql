@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION insertar_credenciales(
+﻿CREATE OR REPLACE FUNCTION insertar_credenciales(
     p_email VARCHAR(100),
     p_password VARCHAR(255)
 ) RETURNS VOID AS $$

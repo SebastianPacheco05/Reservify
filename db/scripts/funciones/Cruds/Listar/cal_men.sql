@@ -7,11 +7,23 @@ RETURNS TABLE (
     revenue NUMERIC,
     total_clientes INTEGER
 )
-LANGUAGE sql
+LANGUAGE plpgsql
 AS $$
-SELECT nit, mes, anio, total_reservas, revenue, total_clientes
-FROM "Calculos_mensuales"
-WHERE id_calculo = p_id_calculo;
+BEGIN
+    RETURN QUERY
+    SELECT nit, mes, anio, total_reservas, revenue, total_clientes
+    FROM "Calculos_mensuales"
+    WHERE id_calculo = p_id_calculo;
+EXCEPTION
+    WHEN SQLSTATE '42P01' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN SQLSTATE '42703' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
 $$;
 
 CREATE OR REPLACE FUNCTION list_calculos_mensuales()
@@ -24,8 +36,20 @@ RETURNS TABLE (
     revenue NUMERIC,
     total_clientes INTEGER
 )
-LANGUAGE sql
+LANGUAGE plpgsql
 AS $$
-SELECT id_calculo, nit, mes, anio, total_reservas, revenue, total_clientes
-FROM "Calculos_mensuales";
+BEGIN
+    RETURN QUERY
+    SELECT id_calculo, nit, mes, anio, total_reservas, revenue, total_clientes
+    FROM "Calculos_mensuales";
+EXCEPTION
+    WHEN SQLSTATE '42P01' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN SQLSTATE '42703' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
 $$;

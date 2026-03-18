@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION borrar_calculo_mensual(
+﻿CREATE OR REPLACE FUNCTION borrar_calculo_mensual(
     p_id_calculo INT
 )
 RETURNS VOID AS $$

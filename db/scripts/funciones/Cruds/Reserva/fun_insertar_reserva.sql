@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION insertar_reserva(
+﻿CREATE OR REPLACE FUNCTION insertar_reserva(
     p_id_mesa INT,
     p_documento INT,
     p_id_encab_fact INT,
@@ -17,7 +17,7 @@ BEGIN
         AND horario = p_horario
         AND (estado_reserva = 'confirmada' OR estado_reserva = 'en curso' OR estado_reserva = 'finalizada')
     ) THEN
-        RAISE EXCEPTION 'La mesa ya está reservada para esta fecha y horario';
+        RAISE EXCEPTION 'La mesa ya estÃ¡ reservada para esta fecha y horario';
     END IF;
 
     INSERT INTO "Reserva" (

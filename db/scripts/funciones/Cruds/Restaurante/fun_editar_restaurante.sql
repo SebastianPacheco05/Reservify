@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION editar_restaurante(
+﻿CREATE OR REPLACE FUNCTION editar_restaurante(
     p_nit INT,
     p_direccion VARCHAR(50),
     p_nombre_restaurante VARCHAR(20),

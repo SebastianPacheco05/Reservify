@@ -1,4 +1,4 @@
-/* Archivo original: db/scripts/funciones/estadisticas_restaurante.sql */
+﻿/* Archivo original: db/scripts/funciones/estadisticas_restaurante.sql */
 
 CREATE OR REPLACE FUNCTION obtener_estadisticas_restaurante(p_nit DECIMAL)
 RETURNS TABLE (

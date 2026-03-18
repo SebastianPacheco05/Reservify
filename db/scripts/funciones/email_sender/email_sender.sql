@@ -1,4 +1,4 @@
--- Funciones SQL para operaciones de configuración SMTP/IMAP y correos (Mails)
+-- Funciones SQL para operaciones de configuraciÃ³n SMTP/IMAP y correos (Mails)
 
 -- Archivo original: db/scripts/funciones/email_sender.sql
 
@@ -11,9 +11,11 @@ RETURNS TABLE (
     from_email VARCHAR,
     consentimiento_archivo BOOLEAN
 )
-LANGUAGE sql
+LANGUAGE plpgsql
 STABLE
 AS $$
+BEGIN
+    RETURN QUERY
     SELECT host,
            port,
            usuario,
@@ -23,19 +25,45 @@ AS $$
     FROM "SMTP_config"
     WHERE id_credencial = p_id_credencial
     LIMIT 1;
+EXCEPTION
+    WHEN SQLSTATE '42P01' THEN -- undefined_table
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN SQLSTATE '42703' THEN -- undefined_column
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
 $$;
 
 
 CREATE OR REPLACE FUNCTION fn_es_smtp_config_existe(p_id_credencial INT)
 RETURNS BOOLEAN
-LANGUAGE sql
+LANGUAGE plpgsql
 STABLE
 AS $$
+DECLARE
+    v_existe BOOLEAN;
+BEGIN
     SELECT EXISTS(
         SELECT 1
         FROM "SMTP_config"
         WHERE id_credencial = p_id_credencial
-    );
+    )
+    INTO v_existe;
+
+    RETURN v_existe;
+EXCEPTION
+    WHEN SQLSTATE '42P01' THEN -- undefined_table
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN SQLSTATE '42703' THEN -- undefined_column
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
 $$;
 
 
@@ -92,6 +120,19 @@ BEGIN
             END
         WHERE id = v_id;
     END IF;
+EXCEPTION
+    WHEN not_null_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Faltan datos obligatorios.';
+    WHEN foreign_key_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Datos inválidos. Verifica e intenta nuevamente.';
+    WHEN unique_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Ya existe un registro con esos datos.';
+    WHEN check_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Datos inválidos. Verifica e intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
 END;
 $$;
 
@@ -104,9 +145,11 @@ RETURNS TABLE (
     password_encrypted VARCHAR,
     consentimiento_archivo BOOLEAN
 )
-LANGUAGE sql
+LANGUAGE plpgsql
 STABLE
 AS $$
+BEGIN
+    RETURN QUERY
     SELECT host,
            port,
            usuario,
@@ -115,19 +158,45 @@ AS $$
     FROM "IMAP_config"
     WHERE id_credencial = p_id_credencial
     LIMIT 1;
+EXCEPTION
+    WHEN SQLSTATE '42P01' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN SQLSTATE '42703' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
 $$;
 
 
 CREATE OR REPLACE FUNCTION fn_es_imap_config_existe(p_id_credencial INT)
 RETURNS BOOLEAN
-LANGUAGE sql
+LANGUAGE plpgsql
 STABLE
 AS $$
+DECLARE
+    v_existe BOOLEAN;
+BEGIN
     SELECT EXISTS(
         SELECT 1
         FROM "IMAP_config"
         WHERE id_credencial = p_id_credencial
-    );
+    )
+    INTO v_existe;
+
+    RETURN v_existe;
+EXCEPTION
+    WHEN SQLSTATE '42P01' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN SQLSTATE '42703' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
 $$;
 
 
@@ -180,6 +249,19 @@ BEGIN
             END
         WHERE id = v_id;
     END IF;
+EXCEPTION
+    WHEN not_null_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Faltan datos obligatorios.';
+    WHEN foreign_key_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Datos inválidos. Verifica e intenta nuevamente.';
+    WHEN unique_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Ya existe un registro con esos datos.';
+    WHEN check_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Datos inválidos. Verifica e intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
 END;
 $$;
 
@@ -226,6 +308,19 @@ BEGIN
         body_text = COALESCE(EXCLUDED.body_text, "Mails".body_text),
         body_html = COALESCE(EXCLUDED.body_html, "Mails".body_html),
         date_received = EXCLUDED.date_received;
+EXCEPTION
+    WHEN not_null_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Faltan datos obligatorios.';
+    WHEN foreign_key_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Datos inválidos. Verifica e intenta nuevamente.';
+    WHEN unique_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Ya existe un registro con esos datos.';
+    WHEN check_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Datos inválidos. Verifica e intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
 END;
 $$;
 
@@ -241,9 +336,11 @@ RETURNS TABLE (
     date_received TIMESTAMP,
     snippet VARCHAR
 )
-LANGUAGE sql
+LANGUAGE plpgsql
 STABLE
 AS $$
+BEGIN
+    RETURN QUERY
     SELECT imap_uid,
            from_email,
            subject,
@@ -253,6 +350,16 @@ AS $$
     WHERE id_credencial = p_id_credencial
     ORDER BY date_received DESC NULLS LAST, created_at DESC NULLS LAST
     LIMIT p_limit;
+EXCEPTION
+    WHEN SQLSTATE '42P01' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN SQLSTATE '42703' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
 $$;
 
 
@@ -271,9 +378,11 @@ RETURNS TABLE (
     date_received TIMESTAMP,
     created_at TIMESTAMP
 )
-LANGUAGE sql
+LANGUAGE plpgsql
 STABLE
 AS $$
+BEGIN
+    RETURN QUERY
     SELECT imap_uid,
            from_email,
            to_email,
@@ -287,5 +396,15 @@ AS $$
     WHERE imap_uid = p_imap_uid
       AND id_credencial = p_id_credencial
     LIMIT 1;
+EXCEPTION
+    WHEN SQLSTATE '42P01' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN SQLSTATE '42703' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
 $$;
 

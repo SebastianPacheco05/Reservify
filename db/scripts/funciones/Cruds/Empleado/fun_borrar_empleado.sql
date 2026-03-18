@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION borrar_empleado(
+﻿CREATE OR REPLACE FUNCTION borrar_empleado(
     p_documento INT
 ) RETURNS VOID AS $$
 BEGIN

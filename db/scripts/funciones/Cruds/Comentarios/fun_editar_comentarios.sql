@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION editar_comentarios(
+﻿CREATE OR REPLACE FUNCTION editar_comentarios(
     p_id_comentario INT,
 	p_comentario varchar
 ) RETURNS VOID AS $$

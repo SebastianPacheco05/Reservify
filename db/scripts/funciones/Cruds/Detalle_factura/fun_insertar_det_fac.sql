@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION insertar_detalle_factura(
+﻿CREATE OR REPLACE FUNCTION insertar_detalle_factura(
     p_descripcion VARCHAR(100)[],
     p_unidades INT[],
     p_precio_unitario DECIMAL(10,2)[],

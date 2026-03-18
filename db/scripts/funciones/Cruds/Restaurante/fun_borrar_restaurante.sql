@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION borrar_restaurante(p_nit BIGINT)
+﻿CREATE OR REPLACE FUNCTION borrar_restaurante(p_nit BIGINT)
 RETURNS VOID AS $$
 DECLARE
   v_id_rol_cliente INT;
@@ -24,7 +24,7 @@ BEGIN
     WHERE nit = p_nit;
   END IF;
 
-  -- Borrar el restaurante (las FKs con ON DELETE CASCADE se eliminarán en cascada)
+  -- Borrar el restaurante (las FKs con ON DELETE CASCADE se eliminarÃ¡n en cascada)
   DELETE FROM "Restaurante" WHERE nit = p_nit;
 END;
 $$ LANGUAGE plpgsql;

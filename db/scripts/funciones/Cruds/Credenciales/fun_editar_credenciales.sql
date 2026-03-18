@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION editar_credenciales(
+﻿CREATE OR REPLACE FUNCTION editar_credenciales(
     p_id_credencial INT,
     p_email VARCHAR(100),
     p_password VARCHAR(255)

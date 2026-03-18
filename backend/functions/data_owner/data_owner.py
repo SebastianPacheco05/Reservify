@@ -38,7 +38,10 @@ def obtener_documento_dueno(id_credencial: int, db: Session) -> int:
 
 def obtener_estadisticas_restaurante(nit: int, db: Session) -> dict:
     """Estadísticas de un solo restaurante (para administrador)."""
-    sql = text("SELECT * FROM obtener_estadisticas_restaurante(:nit)")
+    sql = text(
+        "SELECT total_restaurantes, reservas_activas, visitantes_mes, total_reservas_mes, revenue_mes, total_clientes_mes "
+        "FROM obtener_estadisticas_restaurante(:nit)"
+    )
     result = db.execute(sql, {"nit": nit}).fetchone()
     if result:
         return {
@@ -50,7 +53,10 @@ def obtener_estadisticas_restaurante(nit: int, db: Session) -> dict:
 
 def obtener_estadisticas_dueno(id_credencial: int, db: Session):
     documento_dueno = obtener_documento_dueno(id_credencial, db)
-    sql = text("SELECT * FROM obtener_estadisticas_dueno(:documento)")
+    sql = text(
+        "SELECT total_restaurantes, reservas_activas, visitantes_mes, total_reservas_mes, revenue_mes, total_clientes_mes "
+        "FROM obtener_estadisticas_dueno(:documento)"
+    )
     result = db.execute(sql, {"documento": documento_dueno}).fetchone()
     if result:
         return {

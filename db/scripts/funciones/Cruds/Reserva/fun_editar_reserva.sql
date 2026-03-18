@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION editar_reserva(
+﻿CREATE OR REPLACE FUNCTION editar_reserva(
     p_id_reserva INT,
     p_id_mesa INT,
     p_documento INT,
@@ -21,7 +21,7 @@ BEGIN
               estado_reserva = 'finalizada'
           )
     ) THEN
-        RAISE EXCEPTION 'La mesa ya está reservada para esta fecha y horario';
+        RAISE EXCEPTION 'La mesa ya estÃ¡ reservada para esta fecha y horario';
     END IF;
 
     UPDATE "Reserva"

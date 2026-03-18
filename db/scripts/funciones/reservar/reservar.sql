@@ -1,4 +1,4 @@
--- Función para registrar factura y reserva en una sola operación
+﻿-- FunciÃ³n para registrar factura y reserva en una sola operaciÃ³n
 -- Archivo original: db/scripts/funciones/reservar.sql
 
 CREATE OR REPLACE FUNCTION registrar_factura_y_reserva(

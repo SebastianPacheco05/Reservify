@@ -1,6 +1,25 @@
 ### Requerimientos de base de datos (desde Excel)
 > Fuente: `md/currents/reservifyreq.v.1.0.xls.xlsx` → hoja **REQ. funcionales db**
 
+## Convención de manejo de errores en funciones (seguridad)
+
+- **Objetivo**: evitar que el frontend reciba errores “crudos” de PostgreSQL (nombres de tablas, SQL, stack, etc.).
+- **Regla**: toda función usada por la API debe capturar errores y relanzar **solo** mensajes simples.
+- **Código estándar**: se usa `ERRCODE = 'P0001'` para errores controlados (aplicación).
+
+### Mensajes recomendados (simples)
+
+- **Error interno**: `Error interno. Intenta nuevamente.`
+- **Faltan datos** (`not_null_violation`): `Faltan datos obligatorios.`
+- **Duplicado** (`unique_violation`): `Ya existe un registro con esos datos.`
+- **Datos inválidos** (`foreign_key_violation`, `check_violation`): `Datos inválidos. Verifica e intenta nuevamente.`
+- **Formato inválido** (`data_exception`): `Formato de datos inválido.`
+
+### Nota importante (backend)
+
+Aunque la función relance un mensaje simple, si el backend hace `detail=f"...{str(e)}"`, **se puede filtrar** la sentencia SQL y parámetros.
+Por eso el backend debe exponer al cliente **solo** el `message_primary` cuando `pgcode == 'P0001'`, y si no, un mensaje genérico.
+
 - **DB-001 – Auditoría de tablas del sistema**
   - **Estado:** Hecho.
 - **DB-002 – Tabla de credenciales**

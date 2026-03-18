@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION borrar_categoria(
+﻿CREATE OR REPLACE FUNCTION borrar_categoria(
     p_id_categoria INT
 )
 RETURNS VOID AS $$
@@ -7,7 +7,7 @@ BEGIN
     WHERE id_categoria = p_id_categoria;
     
     IF NOT FOUND THEN
-        RAISE EXCEPTION 'No se encontró la categoría con ID %', p_id_categoria;
+        RAISE EXCEPTION 'No se encontrÃ³ la categorÃ­a con ID %', p_id_categoria;
     END IF;
 END;
 $$ LANGUAGE plpgsql;

@@ -1,4 +1,4 @@
-/* Archivo original: db/scripts/funciones/restaurante_y_imagenes.sql */
+﻿/* Archivo original: db/scripts/funciones/restaurante_y_imagenes.sql */
 
 CREATE OR REPLACE FUNCTION verificar_max_imagenes_referencia()
 RETURNS TRIGGER AS $$
@@ -10,7 +10,7 @@ BEGIN
     WHERE nit = NEW.nit;
     
     IF total_imagenes >= 15 THEN
-        RAISE EXCEPTION 'Máximo 15 imágenes de referencia por restaurante';
+        RAISE EXCEPTION 'MÃ¡ximo 15 imÃ¡genes de referencia por restaurante';
     END IF;
     
     RETURN NEW;

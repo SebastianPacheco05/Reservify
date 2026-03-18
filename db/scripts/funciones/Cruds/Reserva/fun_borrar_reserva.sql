@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION borrar_reserva(
+﻿CREATE OR REPLACE FUNCTION borrar_reserva(
     p_id_reserva INT
 ) RETURNS BOOLEAN AS $$
 BEGIN

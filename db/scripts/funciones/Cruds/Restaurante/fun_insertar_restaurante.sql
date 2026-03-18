@@ -1,4 +1,4 @@
--- Incluye url_imagen (imagen principal, p. ej. Cloudinary). Para imágenes de referencia usar tabla Imagen_referencia_restaurante.
+﻿-- Incluye url_imagen (imagen principal, p. ej. Cloudinary). Para imÃ¡genes de referencia usar tabla Imagen_referencia_restaurante.
 CREATE OR REPLACE FUNCTION insertar_restaurante(
     p_nit DECIMAL(10, 0),
     p_direccion VARCHAR(50),

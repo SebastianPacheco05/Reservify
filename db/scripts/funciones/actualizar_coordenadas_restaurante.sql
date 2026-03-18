@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION actualizar_coordenadas_restaurante(
+﻿CREATE OR REPLACE FUNCTION actualizar_coordenadas_restaurante(
     p_nit DECIMAL(10,0),
     p_lat DOUBLE PRECISION,
     p_lng DOUBLE PRECISION

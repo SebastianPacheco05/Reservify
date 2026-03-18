@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION borrar_credenciales(
+﻿CREATE OR REPLACE FUNCTION borrar_credenciales(
     p_id_credencial INT
 ) RETURNS VOID AS $$
 BEGIN

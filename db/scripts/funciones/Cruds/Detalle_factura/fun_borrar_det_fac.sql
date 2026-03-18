@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION borrar_detalle_factura(
+﻿CREATE OR REPLACE FUNCTION borrar_detalle_factura(
     p_id_det_fact INT
 ) RETURNS BOOLEAN AS $$
 BEGIN

@@ -1,4 +1,4 @@
--- Función corregida para insertar encabezado de factura y devolver el ID
+﻿-- FunciÃ³n corregida para insertar encabezado de factura y devolver el ID
 CREATE OR REPLACE FUNCTION insertar_enc_fac(
     p_nit INT,
     p_nombre_restaurante VARCHAR(50),

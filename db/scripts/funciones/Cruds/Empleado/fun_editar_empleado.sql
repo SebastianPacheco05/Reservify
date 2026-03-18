@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION editar_empleado(
+﻿CREATE OR REPLACE FUNCTION editar_empleado(
     p_documento INT,
     p_id_credencial INT,
     p_nombre VARCHAR(20),

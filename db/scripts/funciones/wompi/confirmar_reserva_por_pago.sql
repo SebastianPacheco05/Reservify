@@ -1,5 +1,5 @@
-/*
- * Función para confirmar una reserva cuando el pago ha sido aprobado
+﻿/*
+ * FunciÃ³n para confirmar una reserva cuando el pago ha sido aprobado
  * Archivo original: db/scripts/funciones/confirmar_reserva_por_pago.sql
  */
 

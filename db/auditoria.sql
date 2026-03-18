@@ -1,8 +1,8 @@
-/*
- * Dos auditorías en tablas distintas:
- * 1. Auditoria: usuario de la base de datos (current_user) que ejecutó la operación.
- * 2. Auditoria_Usuario: usuario final de la aplicación que realizó el cambio.
- *    La app debe establecer SET LOCAL app.usuario_id = 'documento' al inicio de cada transacción
+﻿/*
+ * Dos auditorÃ­as en tablas distintas:
+ * 1. Auditoria: usuario de la base de datos (current_user) que ejecutÃ³ la operaciÃ³n.
+ * 2. Auditoria_Usuario: usuario final de la aplicaciÃ³n que realizÃ³ el cambio.
+ *    La app debe establecer SET LOCAL app.usuario_id = 'documento' al inicio de cada transacciÃ³n
  *    para que los triggers guarden el usuario final; si no se setea, queda NULL (ej. jobs/sistema).
  */
 
@@ -71,7 +71,7 @@ DROP TRIGGER IF EXISTS "auditoria_insert_mails" ON "Mails";
 DROP TRIGGER IF EXISTS "auditoria_update_mails" ON "Mails";
 DROP TRIGGER IF EXISTS "auditoria_delete_mails" ON "Mails";
 
--- Triggers de auditoría por usuario final (segunda auditoría)
+-- Triggers de auditorÃ­a por usuario final (segunda auditorÃ­a)
 DROP TRIGGER IF EXISTS "auditoria_usuario_insert_credenciales" ON "Credenciales";
 DROP TRIGGER IF EXISTS "auditoria_usuario_update_credenciales" ON "Credenciales";
 DROP TRIGGER IF EXISTS "auditoria_usuario_delete_credenciales" ON "Credenciales";
@@ -121,7 +121,7 @@ DROP TRIGGER IF EXISTS "auditoria_usuario_insert_mails" ON "Mails";
 DROP TRIGGER IF EXISTS "auditoria_usuario_update_mails" ON "Mails";
 DROP TRIGGER IF EXISTS "auditoria_usuario_delete_mails" ON "Mails";
 
--- Eliminar tablas de auditoría
+-- Eliminar tablas de auditorÃ­a
 DROP TABLE IF EXISTS "Auditoria_Usuario";
 DROP TABLE IF EXISTS "Auditoria";
 
@@ -134,7 +134,7 @@ CREATE TABLE "Auditoria" (
     "registro" JSONB NOT NULL
 );
 
--- Tabla auditoría por usuario final (documento o identificador que setea la app)
+-- Tabla auditorÃ­a por usuario final (documento o identificador que setea la app)
 CREATE TABLE "Auditoria_Usuario" (
     "id_auditoria_usuario" SERIAL PRIMARY KEY,
     "fecha_hora" TIMESTAMP NOT NULL,
@@ -143,7 +143,7 @@ CREATE TABLE "Auditoria_Usuario" (
     "tabla" VARCHAR(255) NOT NULL,
     "registro" JSONB NOT NULL
 );
-COMMENT ON TABLE "Auditoria_Usuario" IS 'Auditoría por usuario final; usuario_app se setea con set_config(''app.usuario_id'', ...) en la transacción. En el backend: config.set_audit_user(db, documento) al inicio del request. NULL = operación de sistema/cron.';
+COMMENT ON TABLE "Auditoria_Usuario" IS 'AuditorÃ­a por usuario final; usuario_app se setea con set_config(''app.usuario_id'', ...) en la transacciÃ³n. En el backend: config.set_audit_user(db, documento) al inicio del request. NULL = operaciÃ³n de sistema/cron.';
 
 CREATE OR REPLACE FUNCTION "auditoria_insert_trigger"() RETURNS TRIGGER AS $$
 BEGIN
@@ -202,7 +202,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Funciones para auditoría por usuario final (leen app.usuario_id de la sesión)
+-- Funciones para auditorÃ­a por usuario final (leen app.usuario_id de la sesiÃ³n)
 CREATE OR REPLACE FUNCTION "auditoria_usuario_insert_trigger"() RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO "Auditoria_Usuario" (

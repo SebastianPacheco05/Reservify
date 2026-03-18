@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION borrar_clientes(
+﻿CREATE OR REPLACE FUNCTION borrar_clientes(
     p_documento INT
 ) RETURNS VOID AS $$
 BEGIN

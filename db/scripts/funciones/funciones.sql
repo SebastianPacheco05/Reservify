@@ -1,4 +1,4 @@
--- Función y trigger: limitar a 15 imágenes de referencia por restaurante
+﻿-- FunciÃ³n y trigger: limitar a 15 imÃ¡genes de referencia por restaurante
 CREATE OR REPLACE FUNCTION verificar_max_imagenes_referencia()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -9,7 +9,7 @@ BEGIN
     WHERE nit = NEW.nit;
     
     IF total_imagenes >= 15 THEN
-        RAISE EXCEPTION 'Máximo 15 imágenes de referencia por restaurante';
+        RAISE EXCEPTION 'MÃ¡ximo 15 imÃ¡genes de referencia por restaurante';
     END IF;
     
     RETURN NEW;
@@ -22,7 +22,7 @@ CREATE TRIGGER trigger_max_imagenes_ref
     EXECUTE FUNCTION verificar_max_imagenes_referencia();
 
 
--- Función y trigger: actualizar updated_at en SMTP_config
+-- FunciÃ³n y trigger: actualizar updated_at en SMTP_config
 CREATE OR REPLACE FUNCTION actualizar_updated_at_smtp()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -37,7 +37,7 @@ CREATE TRIGGER trigger_smtp_updated_at
     EXECUTE FUNCTION actualizar_updated_at_smtp();
 
 
--- Función y trigger: actualizar updated_at en IMAP_config
+-- FunciÃ³n y trigger: actualizar updated_at en IMAP_config
 CREATE OR REPLACE FUNCTION actualizar_updated_at_imap()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -52,7 +52,7 @@ CREATE TRIGGER trigger_imap_updated_at
     EXECUTE FUNCTION actualizar_updated_at_imap();
 
 
--- Función y trigger: Validar que los administradores siempre tengan un restaurante asignado (nit NOT NULL)
+-- FunciÃ³n y trigger: Validar que los administradores siempre tengan un restaurante asignado (nit NOT NULL)
 CREATE OR REPLACE FUNCTION validar_admin_tiene_restaurante()
 RETURNS TRIGGER AS $$
 DECLARE

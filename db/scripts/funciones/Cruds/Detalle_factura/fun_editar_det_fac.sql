@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION editar_detalle_factura(
+﻿CREATE OR REPLACE FUNCTION editar_detalle_factura(
     p_id_det_fact INT,
     p_descripcion VARCHAR(100),
     p_unidades INT,

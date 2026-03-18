@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Funciones y triggers relacionados con el rol administrador y la tabla Usuario.
  */
 
@@ -7,7 +7,7 @@ INSERT INTO "Roles" (nombre_rol, descripcion)
 SELECT 'administrador', 'Administra un solo restaurante'
 WHERE NOT EXISTS (SELECT 1 FROM "Roles" WHERE LOWER(TRIM(nombre_rol)) = 'administrador');
 
--- Validación: un administrador siempre debe estar vinculado a un restaurante (nit NOT NULL)
+-- ValidaciÃ³n: un administrador siempre debe estar vinculado a un restaurante (nit NOT NULL)
 CREATE OR REPLACE FUNCTION validar_admin_tiene_restaurante()
 RETURNS TRIGGER AS $$
 DECLARE

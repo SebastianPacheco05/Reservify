@@ -1,4 +1,4 @@
-/* Archivo original: db/scripts/funciones/restaurant_general_data.sql */
+﻿/* Archivo original: db/scripts/funciones/restaurant_general_data.sql */
 
 CREATE OR REPLACE FUNCTION obtener_estadisticas_dueno(p_documento_dueno DECIMAL)
 RETURNS TABLE (

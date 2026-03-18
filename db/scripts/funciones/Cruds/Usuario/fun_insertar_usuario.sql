@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION insertar_usuario(
+﻿CREATE OR REPLACE FUNCTION insertar_usuario(
     p_id_credencial INT,
     p_nombre VARCHAR(50),
     p_apellido VARCHAR(50),

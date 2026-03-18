@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION borrar_comentarios(
+﻿CREATE OR REPLACE FUNCTION borrar_comentarios(
     p_id_comentario INT
 ) RETURNS VOID AS $$
 DECLARE
@@ -15,7 +15,7 @@ BEGIN
     DELETE FROM "Comentarios"
     WHERE id_comentario = p_id_comentario;
 
-    -- Si encontramos un NIT, recalcular rating y reseñas
+    -- Si encontramos un NIT, recalcular rating y reseÃ±as
     IF v_nit IS NOT NULL THEN
         SELECT 
             COALESCE(AVG(calificacion), 0)::NUMERIC(3,1),

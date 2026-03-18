@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION existe_comentario(
+﻿CREATE OR REPLACE FUNCTION existe_comentario(
     p_documento INT,
     p_nit INT
 ) RETURNS BOOLEAN AS $$

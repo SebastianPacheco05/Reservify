@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION borrar_roles(
+﻿CREATE OR REPLACE FUNCTION borrar_roles(
     p_id_rol INT
 ) RETURNS VOID AS $$
 BEGIN

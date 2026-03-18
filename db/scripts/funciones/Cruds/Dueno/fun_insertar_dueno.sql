@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION insertar_dueno(
+﻿CREATE OR REPLACE FUNCTION insertar_dueno(
     p_documento DECIMAL,
     p_tipo_documento VARCHAR,
     p_nombre VARCHAR,
@@ -8,7 +8,7 @@ CREATE OR REPLACE FUNCTION insertar_dueno(
 )
 RETURNS VOID AS $$
 BEGIN
-    -- Inserta un nuevo usuario con rol de dueño en la tabla unificada "Usuario"
+    -- Inserta un nuevo usuario con rol de dueÃ±o en la tabla unificada "Usuario"
     INSERT INTO "Usuario" (
         documento,
         tipo_documento,

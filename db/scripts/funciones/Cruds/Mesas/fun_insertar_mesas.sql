@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION insertar_mesas(
+﻿CREATE OR REPLACE FUNCTION insertar_mesas(
     p_estado_de_disponibilidad BOOLEAN,
     p_cant_personas INT,
     p_nit INT,

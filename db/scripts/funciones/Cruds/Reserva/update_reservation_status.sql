@@ -1,4 +1,4 @@
--- Archivo original: db/scripts/funciones/update_reservation_status.sql
+﻿-- Archivo original: db/scripts/funciones/update_reservation_status.sql
 
 CREATE OR REPLACE FUNCTION update_reservation_status(
     p_id_reserva INT,
@@ -6,7 +6,7 @@ CREATE OR REPLACE FUNCTION update_reservation_status(
 ) RETURNS BOOLEAN AS $$
 BEGIN
     IF p_nuevo_estado NOT IN ('pendiente', 'confirmada', 'en curso', 'finalizada', 'cancelada', 'no presentada') THEN
-        RAISE EXCEPTION 'Estado de reserva inválido: %', p_nuevo_estado;
+        RAISE EXCEPTION 'Estado de reserva invÃ¡lido: %', p_nuevo_estado;
     END IF;
 
     UPDATE "Reserva"
@@ -16,7 +16,7 @@ BEGIN
     IF FOUND THEN
         RETURN TRUE;
     ELSE
-        RAISE EXCEPTION 'No se encontró la reserva con ID: %', p_id_reserva;
+        RAISE EXCEPTION 'No se encontrÃ³ la reserva con ID: %', p_id_reserva;
     END IF;
 END;
 $$ LANGUAGE plpgsql;

@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION editar_dueno(
+﻿CREATE OR REPLACE FUNCTION editar_dueno(
     p_documento INT,
     p_nombre VARCHAR(20),
     p_apellido VARCHAR(20),
@@ -6,7 +6,7 @@ CREATE OR REPLACE FUNCTION editar_dueno(
     p_id_credencial INT
 ) RETURNS VOID AS $$
 BEGIN
-    -- Actualiza datos de un dueño en la tabla unificada "Usuario"
+    -- Actualiza datos de un dueÃ±o en la tabla unificada "Usuario"
     UPDATE "Usuario"
     SET nombre       = p_nombre,
         apellido     = p_apellido,

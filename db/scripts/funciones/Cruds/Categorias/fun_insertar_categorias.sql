@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION insertar_categoria(
+﻿CREATE OR REPLACE FUNCTION insertar_categoria(
     p_nombre_categoria VARCHAR
 )
 RETURNS VOID AS $$

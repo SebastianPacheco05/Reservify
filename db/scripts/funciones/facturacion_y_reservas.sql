@@ -1,8 +1,8 @@
-/*
- * Funciones relacionadas con facturación y reservas.
+﻿/*
+ * Funciones relacionadas con facturaciÃ³n y reservas.
  */
 
--- Función para registrar factura y reserva en una sola operación
+-- FunciÃ³n para registrar factura y reserva en una sola operaciÃ³n
 CREATE OR REPLACE FUNCTION registrar_factura_y_reserva(
     p_nit DECIMAL(10,0),
     p_nombre_restaurante VARCHAR,
@@ -35,14 +35,14 @@ BEGIN
         p_nombre_restaurante,
         p_direccion,
         p_ciudad,
-        CURRENT_DATE,  -- Cumple la restricción de la tabla
+        CURRENT_DATE,  -- Cumple la restricciÃ³n de la tabla
         p_documento_cliente,
         p_forma_pago,
         p_precio_total
     )
     RETURNING id_encab_fact INTO v_id_encab_fact;
 
-    -- Insertar en Reserva con el id_encab_fact recién creado
+    -- Insertar en Reserva con el id_encab_fact reciÃ©n creado
     INSERT INTO "Reserva" (
         id_mesa,
         documento,

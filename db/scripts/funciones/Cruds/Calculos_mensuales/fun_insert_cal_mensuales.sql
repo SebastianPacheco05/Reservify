@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION insertar_calculo_mensual(
+﻿CREATE OR REPLACE FUNCTION insertar_calculo_mensual(
     p_nit INT,
     p_mes INT,
     p_anio INT,

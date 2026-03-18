@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION editar_roles(
+﻿CREATE OR REPLACE FUNCTION editar_roles(
     p_id_rol INT,
     p_nombre_rol VARCHAR(15),
     p_descripcion VARCHAR(100)

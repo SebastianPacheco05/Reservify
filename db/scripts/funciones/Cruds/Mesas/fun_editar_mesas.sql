@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION editar_mesas(
+﻿CREATE OR REPLACE FUNCTION editar_mesas(
     p_id_mesa INT,
     p_estado_de_disponibilidad BOOLEAN,
     p_cant_personas INT,

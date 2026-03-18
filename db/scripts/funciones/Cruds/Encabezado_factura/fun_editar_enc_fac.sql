@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION editar_enc_fac(
+﻿CREATE OR REPLACE FUNCTION editar_enc_fac(
     p_id_encab_fact INT,
     p_nit INT,
     p_nombre_restaurante VARCHAR(20),

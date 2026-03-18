@@ -2,6 +2,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from fastapi import HTTPException
 
+from backend.utils.friendly_db_errors import friendly_db_error_message
+
 
 def obtener_documento_por_email(db: Session, email: str) -> int:
     """
@@ -27,5 +29,5 @@ def obtener_documento_por_email(db: Session, email: str) -> int:
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Error al obtener documento del usuario: {str(e)}",
+            detail=friendly_db_error_message(e),
         )

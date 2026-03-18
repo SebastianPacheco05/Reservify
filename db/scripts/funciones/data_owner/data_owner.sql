@@ -8,15 +8,27 @@ RETURNS TABLE (
     nit DECIMAL(10,0),
     rol TEXT
 )
-LANGUAGE sql
+LANGUAGE plpgsql
 STABLE
 AS $$
+BEGIN
+    RETURN QUERY
     SELECT u.documento,
            u.nit,
            LOWER(TRIM(r.nombre_rol)) AS rol
     FROM "Usuario" u
     JOIN "Roles" r ON u.id_rol = r.id_rol
     WHERE u.id_credencial = p_id_credencial;
+EXCEPTION
+    WHEN SQLSTATE '42P01' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN SQLSTATE '42703' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
 $$;
 
 
@@ -31,6 +43,19 @@ BEGIN
     UPDATE "Reserva"
     SET motivo_cancelacion = p_motivo
     WHERE id_reserva = p_id_reserva;
+EXCEPTION
+    WHEN not_null_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Faltan datos obligatorios.';
+    WHEN foreign_key_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Datos inválidos. Verifica e intenta nuevamente.';
+    WHEN unique_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Ya existe un registro con esos datos.';
+    WHEN check_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Datos inválidos. Verifica e intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
 END;
 $$;
 
@@ -128,14 +153,30 @@ CREATE OR REPLACE FUNCTION fn_do_email_credencial_existe(
     p_email VARCHAR
 )
 RETURNS BOOLEAN
-LANGUAGE sql
+LANGUAGE plpgsql
 STABLE
 AS $$
+DECLARE
+    v_existe BOOLEAN;
+BEGIN
     SELECT EXISTS(
         SELECT 1
         FROM "Credenciales"
         WHERE LOWER(TRIM(email)) = LOWER(TRIM(p_email))
-    );
+    )
+    INTO v_existe;
+
+    RETURN v_existe;
+EXCEPTION
+    WHEN SQLSTATE '42P01' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN SQLSTATE '42703' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
 $$;
 
 
@@ -179,7 +220,7 @@ BEGIN
         v_documento := p_documento;
     END IF;
 
-    -- Normalizar nacionalidad y teléfono: si vienen vacíos o NULL, usar 'sin dato'
+    -- Normalizar nacionalidad y telÃ©fono: si vienen vacÃ­os o NULL, usar 'sin dato'
     IF p_telefono IS NULL OR TRIM(p_telefono) = '' THEN
         v_telefono := 'sin dato';
     ELSE

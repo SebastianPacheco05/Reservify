@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION borrar_enc_fac(
+﻿CREATE OR REPLACE FUNCTION borrar_enc_fac(
     p_id_encab_fact INT
 ) RETURNS VOID AS $$
 BEGIN

@@ -17,9 +17,11 @@ RETURNS TABLE (
     url_image VARCHAR,
     nombre_categoria VARCHAR
 )
-LANGUAGE sql
+LANGUAGE plpgsql
 STABLE
 AS $$
+BEGIN
+    RETURN QUERY
     SELECT
         r.nit,
         r.direccion,
@@ -36,5 +38,15 @@ AS $$
     INNER JOIN "Categorias" c ON c.id_categoria = r.id_categoria
     ORDER BY r.reviews DESC
     LIMIT p_limit;
+EXCEPTION
+    WHEN SQLSTATE '42P01' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN SQLSTATE '42703' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
 $$;
 

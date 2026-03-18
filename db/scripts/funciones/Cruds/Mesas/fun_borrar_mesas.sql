@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION borrar_mesas(
+﻿CREATE OR REPLACE FUNCTION borrar_mesas(
     p_id_mesa INT
 ) RETURNS VOID AS $$
 BEGIN

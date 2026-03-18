@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION editar_calculo_mensual(
+﻿CREATE OR REPLACE FUNCTION editar_calculo_mensual(
     p_id_calculo INT,
     p_nit INT,
     p_mes INT,
