@@ -362,3 +362,5 @@
 | UI-026a | Header botón Cerrar sesión con variante destructive en dropdown. | Hecho | Excel (REQ. funcionales Frontend) |
 | UI-026b | Header enlace Login con hover:scale-105 y hover:bg-primary. | Hecho | Excel (REQ. funcionales Frontend) |
 | UI-026c | Header enlace Registrar con bg-secondary y hover:bg-primary. | Hecho | Excel (REQ. funcionales Frontend) |
+
+| QA-048 | (CP #48) En páginas informativas del footer (Contacto, Ayuda, Términos y Privacidad) aparece botón “Volver al inicio”, pero **no** está especificado en requerimientos. | Fallido | Hallazgo QA: elemento de navegación implementado sin documentación. Decidir: **agregar requerimiento** o **remover botón**. |
