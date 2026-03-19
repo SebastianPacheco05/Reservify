@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from fastapi import HTTPException
 
-from backend.utils.friendly_db_errors import friendly_db_error_message
+from utils.friendly_db_errors import friendly_db_error_message
 
 
 def obtener_documento_por_email(db: Session, email: str) -> int:
