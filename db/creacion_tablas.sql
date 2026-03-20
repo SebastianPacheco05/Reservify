@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Script de creaciÃ³n de base de datos para el sistema de reservas de restaurantes
  * Este script crea todas las tablas necesarias para el funcionamiento del sistema
  * Incluye la eliminaciÃ³n de tablas existentes y la creaciÃ³n de nuevas con sus respectivas relaciones
@@ -61,7 +61,7 @@ CREATE TABLE "Usuario" (
     id_credencial INT NOT NULL UNIQUE,
     nacionalidad VARCHAR(20) NOT NULL DEFAULT 'sin dato',
     telefono VARCHAR(10) NOT NULL DEFAULT 'sin dato' CHECK (telefono ~ '^[0-9]{10}$'),
-    nit BIGINT NULL,  -- Solo para rol empleado: restaurante donde trabaja; dueÃ±o se vincula por Restaurante.documento
+    nit BIGINT NULL CHECK (nit > 8999999999 AND nit <= 99999999999),  -- Solo para rol empleado: restaurante donde trabaja; dueÃ±o se vincula por Restaurante.documento
     FOREIGN KEY (id_rol) REFERENCES "Roles" (id_rol) ON DELETE CASCADE,
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
 );
@@ -93,7 +93,16 @@ CREATE TABLE "Restaurante" (
     lng DOUBLE PRECISION NOT NULL DEFAULT 0,  -- Longitud para mostrar el restaurante en el mapa (0 = sin dato)
     foreign key (id_categoria) references "Categorias" (id_categoria) ON DELETE CASCADE,
     FOREIGN KEY (documento) REFERENCES "Usuario" (documento) ON DELETE CASCADE,
-    CHECK (horario_apertura < horario_cierre)  -- ValidaciÃ³n de horarios
+    CHECK (
+        horario_apertura <> horario_cierre
+        AND (
+            horario_apertura < horario_cierre
+            OR (
+                horario_apertura > horario_cierre
+                AND ((horario_cierre + INTERVAL '24 hours') - horario_apertura) <= INTERVAL '8 hours'
+            )
+        )
+    )  -- Permite cruce de medianoche con máximo 8 horas
 );
 
 -- Tabla Imagen_referencia_restaurante: Almacena imÃ¡genes de referencia de restaurantes (mÃ¡ximo 15 por NIT)

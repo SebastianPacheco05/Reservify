@@ -80,6 +80,7 @@ export interface ContactInfo {
 }
 
 export interface Restaurante {
+  restaurante_uid: string;
   nit: number;
   direccion: string;
   nombre_restaurante: string;
@@ -101,6 +102,7 @@ export interface BuscarRestaurante {
 
 // Interfaces para datos desde la base de datos
 export interface RestaurantDetailFromDB {
+  restaurante_uid: string;
   nit: number;
   direccion: string;
   nombre_restaurante: string;
@@ -123,7 +125,7 @@ export interface MesaFromDB {
   estado_de_disponibilidad: boolean;
   cant_personas: number;
   precio: number;
-  nit: number;
+  restaurante_uid: string;
 }
 
 export interface ComentarioFromDB {

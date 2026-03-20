@@ -8,9 +8,9 @@ import type {
   ComentarioFromDB,
 } from "../types/restaurant.types";
 
-export const useRestaurantData = (restaurantNIT?: number) => {
-  // Crear una nueva instancia del servicio cada vez que cambie el NIT
-  const service = new RestaurantDataService(restaurantNIT);
+export const useRestaurantData = (restauranteUid?: string) => {
+  // Crear una nueva instancia del servicio cada vez que cambie el UID
+  const service = new RestaurantDataService(restauranteUid);
 
   // Estados para diferentes tipos de datos
   const [restaurantInfo, setRestaurantInfo] =
@@ -27,7 +27,7 @@ export const useRestaurantData = (restaurantNIT?: number) => {
 
   // Función para cargar todos los datos
   const loadAllData = async () => {
-    if (!restaurantNIT) return;
+    if (!restauranteUid) return;
 
     setLoading({
       info: true,
@@ -73,7 +73,7 @@ export const useRestaurantData = (restaurantNIT?: number) => {
 
   useEffect(() => {
     loadAllData();
-  }, [restaurantNIT]);
+  }, [restauranteUid]);
 
   return {
     // Datos

@@ -193,7 +193,7 @@ export default function RestaurantGrid({ searchQuery }: RestaurantGridProps) {
           >
             {filteredRestaurantes.map((restaurant) => (
               <motion.div
-                key={restaurant.nit}
+                key={restaurant.restaurante_uid}
                 variants={fadeInUp}
                 transition={transitionNormal}
                 whileHover={{ y: -6 }}
@@ -273,7 +273,7 @@ export default function RestaurantGrid({ searchQuery }: RestaurantGridProps) {
                       </Badge>
                     </div>
 
-                    <Link to={`/Restaurant?nit=${restaurant.nit}`}>
+                    <Link to={`/Restaurant?uid=${restaurant.restaurante_uid}`}>
                       <Button className="w-full mt-4 text-primary-foreground bg-primary hover:bg-accent hover:text-accent-foreground transition-all duration-300 rounded-xl">
                         Ver disponibilidad
                       </Button>

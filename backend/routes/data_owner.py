@@ -245,6 +245,21 @@ def _solo_dueno(id_credencial: int, db: Session) -> None:
     obtener_documento_dueno(id_credencial, db)
 
 
+def _obtener_nit_por_uid(restaurante_uid: str, db: Session) -> int:
+    try:
+        # Compatibilidad con esquemas donde frontend usa nit como identificador.
+        return int(restaurante_uid)
+    except Exception:
+        pass
+    row = db.execute(
+        sql_text('SELECT nit FROM "Restaurante" WHERE restaurante_uid = :restaurante_uid'),
+        {"restaurante_uid": restaurante_uid},
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Restaurante no encontrado.")
+    return int(row[0])
+
+
 def _puede_gestionar_restaurante(id_credencial: int, nit: int, db: Session) -> bool:
     """
     Devuelve True si el usuario actual puede gestionar la configuración del restaurante:
@@ -262,9 +277,9 @@ def _puede_gestionar_restaurante(id_credencial: int, nit: int, db: Session) -> b
     return False
 
 
-@router.get("/restaurantes/{nit}")
+@router.get("/restaurantes/{restaurante_uid}")
 def get_restaurante_config(
-    nit: int,
+    restaurante_uid: str,
     usuario_actual: dict = Depends(verificar_token),
     db: Session = Depends(get_db),
 ):
@@ -273,6 +288,7 @@ def get_restaurante_config(
     """
     try:
         _solo_dueno(usuario_actual["id"], db)
+        nit = _obtener_nit_por_uid(restaurante_uid, db)
         data = obtener_restaurante_completo_dueno(usuario_actual["id"], nit, db)
         if not data:
             raise HTTPException(status_code=404, detail="Restaurante no encontrado o no es tuyo.")
@@ -283,9 +299,9 @@ def get_restaurante_config(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.put("/restaurantes/{nit}")
+@router.put("/restaurantes/{restaurante_uid}")
 def put_restaurante_config(
-    nit: int,
+    restaurante_uid: str,
     body: RestauranteUpdate,
     usuario_actual: dict = Depends(verificar_token),
     db: Session = Depends(get_db),
@@ -295,6 +311,7 @@ def put_restaurante_config(
     """
     try:
         _solo_dueno(usuario_actual["id"], db)
+        nit = _obtener_nit_por_uid(restaurante_uid, db)
         if body.nit != nit:
             raise HTTPException(status_code=400, detail="NIT no coincide.")
         if not es_dueño_de_restaurante(usuario_actual["id"], nit, db):
@@ -329,14 +346,15 @@ def put_restaurante_config(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/restaurantes/{nit}/mesas")
+@router.get("/restaurantes/{restaurante_uid}/mesas")
 def get_mesas_restaurante(
-    nit: int,
+    restaurante_uid: str,
     usuario_actual: dict = Depends(verificar_token),
     db: Session = Depends(get_db),
 ):
     """Lista mesas del restaurante (dueño/admin/empleado con puede_acceder)."""
     try:
+        nit = _obtener_nit_por_uid(restaurante_uid, db)
         if not puede_acceder_restaurante(usuario_actual["id"], nit, db):
             raise HTTPException(status_code=403, detail="No tienes acceso a este restaurante.")
         mesas = obtener_mesas_restaurante_gestor(usuario_actual["id"], nit, db)
@@ -347,15 +365,16 @@ def get_mesas_restaurante(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/restaurantes/{nit}/mesas")
+@router.post("/restaurantes/{restaurante_uid}/mesas")
 def post_mesa_restaurante(
-    nit: int,
+    restaurante_uid: str,
     body: MesaBase,
     usuario_actual: dict = Depends(verificar_token),
     db: Session = Depends(get_db),
 ):
     """Agregar mesa al restaurante (dueño o administrador de ese restaurante). Se ignora body.nit y se usa el nit de la URL."""
     try:
+        nit = _obtener_nit_por_uid(restaurante_uid, db)
         if not _puede_gestionar_restaurante(usuario_actual["id"], nit, db):
             raise HTTPException(
                 status_code=403,
@@ -375,9 +394,9 @@ def post_mesa_restaurante(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.put("/restaurantes/{nit}/mesas/{id_mesa}")
+@router.put("/restaurantes/{restaurante_uid}/mesas/{id_mesa}")
 def put_mesa_restaurante(
-    nit: int,
+    restaurante_uid: str,
     id_mesa: int,
     body: MesaUpdate,
     usuario_actual: dict = Depends(verificar_token),
@@ -385,6 +404,7 @@ def put_mesa_restaurante(
 ):
     """Editar mesa (dueño o administrador del restaurante)."""
     try:
+        nit = _obtener_nit_por_uid(restaurante_uid, db)
         if not _puede_gestionar_restaurante(usuario_actual["id"], nit, db):
             raise HTTPException(
                 status_code=403,
@@ -407,15 +427,16 @@ def put_mesa_restaurante(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.delete("/restaurantes/{nit}/mesas/{id_mesa}")
+@router.delete("/restaurantes/{restaurante_uid}/mesas/{id_mesa}")
 def delete_mesa_restaurante(
-    nit: int,
+    restaurante_uid: str,
     id_mesa: int,
     usuario_actual: dict = Depends(verificar_token),
     db: Session = Depends(get_db),
 ):
     """Eliminar mesa (dueño o administrador del restaurante)."""
     try:
+        nit = _obtener_nit_por_uid(restaurante_uid, db)
         if not _puede_gestionar_restaurante(usuario_actual["id"], nit, db):
             raise HTTPException(
                 status_code=403,
@@ -429,15 +450,16 @@ def delete_mesa_restaurante(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/restaurantes/{nit}/administrador")
+@router.get("/restaurantes/{restaurante_uid}/administrador")
 def get_administrador_restaurante(
-    nit: int,
+    restaurante_uid: str,
     usuario_actual: dict = Depends(verificar_token),
     db: Session = Depends(get_db),
 ):
     """Obtener el administrador asignado a este restaurante (solo dueño, un solo admin por restaurante)."""
     try:
         _solo_dueno(usuario_actual["id"], db)
+        nit = _obtener_nit_por_uid(restaurante_uid, db)
         if not es_dueño_de_restaurante(usuario_actual["id"], nit, db):
             raise HTTPException(status_code=403, detail="No eres dueño de este restaurante.")
         admin = obtener_administrador_restaurante(nit, db)
@@ -448,15 +470,16 @@ def get_administrador_restaurante(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.put("/restaurantes/{nit}/administrador")
+@router.put("/restaurantes/{restaurante_uid}/administrador")
 def put_administrador_restaurante(
-    nit: int,
+    restaurante_uid: str,
     body: AsignarAdministradorSchema,
     usuario_actual: dict = Depends(verificar_token),
     db: Session = Depends(get_db),
 ):
     """Asignar un único administrador al restaurante (solo dueño). Reemplaza al anterior si existía."""
     try:
+        nit = _obtener_nit_por_uid(restaurante_uid, db)
         asignar_administrador_restaurante(usuario_actual["id"], nit, body.id_credencial, db)
         return {"ok": True}
     except HTTPException:
@@ -515,9 +538,9 @@ def post_buscar_email(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/restaurantes/{nit}/asignar-empleado")
+@router.post("/restaurantes/{restaurante_uid}/asignar-empleado")
 def post_asignar_empleado(
-    nit: int,
+    restaurante_uid: str,
     body: AsignarEmpleadoSchema,
     usuario_actual: dict = Depends(verificar_token),
     db: Session = Depends(get_db),
@@ -525,6 +548,7 @@ def post_asignar_empleado(
     """Asigna un usuario existente como empleado del restaurante. Solo dueño."""
     try:
         _solo_dueno(usuario_actual["id"], db)
+        nit = _obtener_nit_por_uid(restaurante_uid, db)
         if not es_dueño_de_restaurante(usuario_actual["id"], nit, db):
             raise HTTPException(status_code=403, detail="No eres dueño de este restaurante.")
         asignar_empleado_existente(usuario_actual["id"], body.id_credencial, nit, db)
@@ -555,9 +579,9 @@ def post_cambiar_rol_cliente(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/restaurantes/{nit}/crear-empleado")
+@router.post("/restaurantes/{restaurante_uid}/crear-empleado")
 def post_crear_empleado(
-    nit: int,
+    restaurante_uid: str,
     body: CrearEmpleadoSchema,
     usuario_actual: dict = Depends(verificar_token),
     db: Session = Depends(get_db),
@@ -565,6 +589,7 @@ def post_crear_empleado(
     """Crea un nuevo empleado para el restaurante (email + contraseña aleatoria). Solo dueño. Devuelve email y password."""
     try:
         _solo_dueno(usuario_actual["id"], db)
+        nit = _obtener_nit_por_uid(restaurante_uid, db)
         resultado = crear_empleado_invitado(usuario_actual["id"], body.email, nit, db)
         return resultado
     except HTTPException:
@@ -573,9 +598,9 @@ def post_crear_empleado(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/restaurantes/{nit}/reservas")
+@router.get("/restaurantes/{restaurante_uid}/reservas")
 def get_reservas_por_restaurante(
-    nit: int,
+    restaurante_uid: str,
     fecha: str | None = None,
     usuario_actual: dict = Depends(verificar_token),
     db: Session = Depends(get_db)
@@ -587,6 +612,7 @@ def get_reservas_por_restaurante(
     """
     try:
         id_credencial = usuario_actual["id"]
+        nit = _obtener_nit_por_uid(restaurante_uid, db)
         if not puede_acceder_restaurante(id_credencial, nit, db):
             raise HTTPException(status_code=403, detail="No tiene acceso a este restaurante")
         reservas = obtener_reservas_por_nit(nit, db, limit=None, fecha=fecha)

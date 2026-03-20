@@ -56,7 +56,7 @@ export function RestaurantConfigModal({
   restaurant,
 }: RestaurantConfigModalProps) {
   const { toast } = useToast();
-  const nit = restaurant ? parseInt(restaurant.id, 10) : 0;
+  const restauranteUid = restaurant?.id ?? "";
 
   const [tab, setTab] = useState<TabId>("datos");
   const [restaurante, setRestaurante] = useState<RestauranteConfig | null>(null);
@@ -110,21 +110,21 @@ export function RestaurantConfigModal({
   const [modalCredenciales, setModalCredenciales] = useState<{ email: string; password: string } | null>(null);
   const [asignandoEmpleado, setAsignandoEmpleado] = useState(false);
   const [restaurantesDelDueno, setRestaurantesDelDueno] = useState<RestauranteDelDueno[]>([]);
-  const [selectedNitAsignar, setSelectedNitAsignar] = useState<number>(0);
-  const [selectedNitCrear, setSelectedNitCrear] = useState<number>(0);
+  const [selectedUidAsignar, setSelectedUidAsignar] = useState<string>("");
+  const [selectedUidCrear, setSelectedUidCrear] = useState<string>("");
   const [cambiandoRolId, setCambiandoRolId] = useState<number | null>(null);
 
   const loadAll = useCallback(async () => {
-    if (!nit || !isOpen) return;
+    if (!restauranteUid || !isOpen) return;
     setLoading(true);
     try {
       const [catRes, configRes, mesasRes, adminRes, empRes, restList] = await Promise.all([
         fetch(getApiEndpoint("/categorias/listar_categorias"), {
           headers: { "Content-Type": "application/json" },
         }).then((r) => r.json()),
-        OwnerRestaurantConfigService.getRestauranteConfig(nit),
-        OwnerRestaurantConfigService.getMesas(nit),
-        OwnerRestaurantConfigService.getAdministrador(nit),
+        OwnerRestaurantConfigService.getRestauranteConfig(restauranteUid),
+        OwnerRestaurantConfigService.getMesas(restauranteUid),
+        OwnerRestaurantConfigService.getAdministrador(restauranteUid),
         OwnerRestaurantConfigService.getEmpleados(),
         OwnerRestaurantConfigService.getRestaurantesDelDueno(),
       ]);
@@ -163,17 +163,17 @@ export function RestaurantConfigModal({
     } finally {
       setLoading(false);
     }
-  }, [nit, isOpen, toast]);
+  }, [restauranteUid, isOpen, toast]);
 
   useEffect(() => {
-    if (isOpen && nit) loadAll();
-  }, [isOpen, nit, loadAll]);
+    if (isOpen && restauranteUid) loadAll();
+  }, [isOpen, restauranteUid, loadAll]);
 
   const fetchActiveReservationsForDelete = useCallback(async () => {
-    if (!nit) return;
+    if (!restauranteUid) return;
     setDeleteCheckingReservations(true);
     try {
-      const res = await authFetch(getApiEndpoint(`/data-owner/restaurantes/${nit}/reservas`), {
+      const res = await authFetch(getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}/reservas`), {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -198,14 +198,15 @@ export function RestaurantConfigModal({
     } finally {
       setDeleteCheckingReservations(false);
     }
-  }, [nit, toast]);
+  }, [restauranteUid, toast]);
 
   const handleSaveRestaurante = async () => {
-    if (!restaurante || !nit) return;
+    if (!restaurante || !restauranteUid) return;
     setSaving(true);
     try {
       const body: RestauranteUpdateBody = {
-        nit,
+        restaurante_uid: restauranteUid,
+        nit: restaurante.nit ?? 0,
         direccion: form.direccion.trim(),
         nombre_restaurante: form.nombre_restaurante.trim(),
         descripcion_restaurante: form.descripcion_restaurante.trim(),
@@ -215,7 +216,7 @@ export function RestaurantConfigModal({
         id_categoria: form.id_categoria,
         min_anticipacion_horas: Math.max(0, Number.isFinite(form.min_anticipacion_horas) ? form.min_anticipacion_horas : 0),
       };
-      await OwnerRestaurantConfigService.putRestauranteConfig(nit, body);
+      await OwnerRestaurantConfigService.putRestauranteConfig(restauranteUid, body);
       toast({ title: "Guardado", description: "Datos del restaurante actualizados." });
       loadAll();
       onSuccess();
@@ -227,18 +228,18 @@ export function RestaurantConfigModal({
   };
 
   const handleAddMesa = async () => {
-    if (!nit) return;
+    if (!restauranteUid) return;
     setAddingMesa(true);
     try {
       const precioNum = parseFloat(newMesa.precioInput.replace(",", ".")) || 0;
-      await OwnerRestaurantConfigService.addMesa(nit, {
+      await OwnerRestaurantConfigService.addMesa(restauranteUid, {
         estado_de_disponibilidad: true,
         cant_personas: newMesa.cant_personas,
         precio: precioNum,
-        nit,
+        restaurante_uid: restauranteUid,
       });
       toast({ title: "Mesa agregada", description: "La mesa se ha añadido correctamente." });
-      const list = await OwnerRestaurantConfigService.getMesas(nit);
+      const list = await OwnerRestaurantConfigService.getMesas(restauranteUid);
       setMesas(list);
       setNewMesa({ estado_de_disponibilidad: true, cant_personas: 2, precioInput: "" });
       onSuccess();
@@ -250,19 +251,19 @@ export function RestaurantConfigModal({
   };
 
   const handleUpdateMesa = async () => {
-    if (!nit || editingMesaId == null) return;
+    if (!restauranteUid || editingMesaId == null) return;
     setAddingMesa(true);
     try {
       const precioNum = parseFloat(editMesaForm.precioInput.replace(",", ".")) || 0;
-      await OwnerRestaurantConfigService.updateMesa(nit, editingMesaId, {
+      await OwnerRestaurantConfigService.updateMesa(restauranteUid, editingMesaId, {
         id_mesa: editingMesaId,
-        nit,
+        restaurante_uid: restauranteUid,
         estado_de_disponibilidad: editMesaForm.estado_de_disponibilidad,
         cant_personas: editMesaForm.cant_personas,
         precio: precioNum,
       });
       toast({ title: "Mesa actualizada", description: "Cambios guardados." });
-      const list = await OwnerRestaurantConfigService.getMesas(nit);
+      const list = await OwnerRestaurantConfigService.getMesas(restauranteUid);
       setMesas(list);
       setEditingMesaId(null);
       onSuccess();
@@ -274,12 +275,12 @@ export function RestaurantConfigModal({
   };
 
   const handleDeleteMesa = async (id_mesa: number) => {
-    if (!nit) return;
+    if (!restauranteUid) return;
     if (!confirm("¿Eliminar esta mesa?")) return;
     try {
-      await OwnerRestaurantConfigService.deleteMesa(nit, id_mesa);
+      await OwnerRestaurantConfigService.deleteMesa(restauranteUid, id_mesa);
       toast({ title: "Mesa eliminada", description: "La mesa se ha eliminado." });
-      const list = await OwnerRestaurantConfigService.getMesas(nit);
+      const list = await OwnerRestaurantConfigService.getMesas(restauranteUid);
       setMesas(list);
       onSuccess();
     } catch (e) {
@@ -288,12 +289,12 @@ export function RestaurantConfigModal({
   };
 
   const handleAssignAdmin = async () => {
-    if (!nit || !selectedAdminId) return;
+    if (!restauranteUid || !selectedAdminId) return;
     setAssigningAdmin(true);
     try {
-      await OwnerRestaurantConfigService.putAdministrador(nit, parseInt(selectedAdminId, 10));
+      await OwnerRestaurantConfigService.putAdministrador(restauranteUid, parseInt(selectedAdminId, 10));
       toast({ title: "Administrador asignado", description: "Un solo administrador por restaurante." });
-      const admin = await OwnerRestaurantConfigService.getAdministrador(nit);
+      const admin = await OwnerRestaurantConfigService.getAdministrador(restauranteUid);
       setAdministrador(admin ?? null);
       onSuccess();
     } catch (e) {
@@ -313,10 +314,10 @@ export function RestaurantConfigModal({
     try {
       const res = await OwnerRestaurantConfigService.buscarEmail(email);
       if (res.existe && res.id_credencial != null) {
-        setSelectedNitAsignar(nit);
+        setSelectedUidAsignar(restauranteUid);
         setModalAsignarEmpleado({ id_credencial: res.id_credencial, email });
       } else {
-        setSelectedNitCrear(nit);
+        setSelectedUidCrear(restauranteUid);
         setModalCrearUsuarioConfirm({ email });
       }
     } catch (e) {
@@ -327,10 +328,10 @@ export function RestaurantConfigModal({
   };
 
   const handleConfirmarAsignarEmpleado = async () => {
-    if (!selectedNitAsignar || !modalAsignarEmpleado) return;
+    if (!selectedUidAsignar || !modalAsignarEmpleado) return;
     setAsignandoEmpleado(true);
     try {
-      await OwnerRestaurantConfigService.asignarEmpleado(selectedNitAsignar, modalAsignarEmpleado.id_credencial);
+      await OwnerRestaurantConfigService.asignarEmpleado(selectedUidAsignar, modalAsignarEmpleado.id_credencial);
       toast({ title: "Empleado asignado", description: "La persona fue asignada al restaurante." });
       setModalAsignarEmpleado(null);
       setEmpleadoEmail("");
@@ -358,10 +359,10 @@ export function RestaurantConfigModal({
   };
 
   const handleConfirmarCrearEmpleado = async () => {
-    if (!selectedNitCrear || !modalCrearUsuarioConfirm) return;
+    if (!selectedUidCrear || !modalCrearUsuarioConfirm) return;
     setCreandoEmpleado(true);
     try {
-      const { email, password } = await OwnerRestaurantConfigService.crearEmpleado(selectedNitCrear, modalCrearUsuarioConfirm.email);
+      const { email, password } = await OwnerRestaurantConfigService.crearEmpleado(selectedUidCrear, modalCrearUsuarioConfirm.email);
       setModalCrearUsuarioConfirm(null);
       setModalCredenciales({ email, password });
       setEmpleadoEmail("");
@@ -797,15 +798,15 @@ export function RestaurantConfigModal({
               <div className="grid gap-2 py-2">
                 <Label>¿A qué restaurante quieres agregarlo?</Label>
                 <Select
-                  value={selectedNitAsignar ? String(selectedNitAsignar) : ""}
-                  onValueChange={(v) => setSelectedNitAsignar(parseInt(v, 10))}
+                  value={selectedUidAsignar}
+                  onValueChange={setSelectedUidAsignar}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Elige un restaurante" />
                   </SelectTrigger>
                   <SelectContent>
                     {restaurantesDelDueno.map((r) => (
-                      <SelectItem key={r.nit} value={String(r.nit)}>
+                      <SelectItem key={r.restaurante_uid} value={r.restaurante_uid}>
                         {r.nombre_restaurante || `Restaurante ${r.nit}`}
                       </SelectItem>
                     ))}
@@ -818,7 +819,7 @@ export function RestaurantConfigModal({
             <Button type="button" variant="outline" onClick={() => setModalAsignarEmpleado(null)}>
               Cancelar
             </Button>
-            <Button onClick={handleConfirmarAsignarEmpleado} disabled={asignandoEmpleado || !selectedNitAsignar}>
+            <Button onClick={handleConfirmarAsignarEmpleado} disabled={asignandoEmpleado || !selectedUidAsignar}>
               {asignandoEmpleado ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Aceptar
             </Button>
@@ -841,15 +842,15 @@ export function RestaurantConfigModal({
               <div className="grid gap-2 py-2">
                 <Label>¿A qué restaurante quieres agregarlo?</Label>
                 <Select
-                  value={selectedNitCrear ? String(selectedNitCrear) : ""}
-                  onValueChange={(v) => setSelectedNitCrear(parseInt(v, 10))}
+                  value={selectedUidCrear}
+                  onValueChange={setSelectedUidCrear}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Elige un restaurante" />
                   </SelectTrigger>
                   <SelectContent>
                     {restaurantesDelDueno.map((r) => (
-                      <SelectItem key={r.nit} value={String(r.nit)}>
+                      <SelectItem key={r.restaurante_uid} value={r.restaurante_uid}>
                         {r.nombre_restaurante || `Restaurante ${r.nit}`}
                       </SelectItem>
                     ))}
@@ -862,7 +863,7 @@ export function RestaurantConfigModal({
             <Button type="button" variant="outline" onClick={() => setModalCrearUsuarioConfirm(null)}>
               Cancelar
             </Button>
-            <Button onClick={handleConfirmarCrearEmpleado} disabled={creandoEmpleado || !selectedNitCrear}>
+            <Button onClick={handleConfirmarCrearEmpleado} disabled={creandoEmpleado || !selectedUidCrear}>
               {creandoEmpleado ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Sí
             </Button>
@@ -972,7 +973,7 @@ export function RestaurantConfigModal({
               variant="destructive"
               disabled={deleteProcessing || !deletePassword || (deleteHasActiveReservations && !deleteMessage.trim())}
               onClick={async () => {
-                if (!nit) return;
+                if (!restauranteUid) return;
                 const email = localStorage.getItem("email");
                 if (!email) {
                   toast({
@@ -1032,7 +1033,7 @@ export function RestaurantConfigModal({
                   const delRes = await authFetch(getApiEndpoint("/restaurante/borrarrestaurante"), {
                     method: "DELETE",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ nit }),
+                    body: JSON.stringify({ restaurante_uid: restauranteUid }),
                   });
                   if (!delRes.ok) {
                     const err = await delRes.json().catch(() => ({}));
@@ -1042,7 +1043,7 @@ export function RestaurantConfigModal({
                   // 4) Enviar copia del mensaje al correo del usuario que inició sesión (el del login)
                   const mensajeParaPropietario =
                     deleteMessage.trim() ||
-                    `Has eliminado el restaurante "${restaurant?.name ?? nit}". No había reservas activas.`;
+                    `Has eliminado el restaurante "${restaurant?.name ?? restauranteUid}". No había reservas activas.`;
                   try {
                     await authFetch(getApiEndpoint("/data-owner/enviar-correo-propietario"), {
                       method: "POST",

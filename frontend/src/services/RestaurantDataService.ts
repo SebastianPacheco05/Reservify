@@ -7,15 +7,15 @@ import { API_BASE_URL } from "../config/api";
 
 export class RestaurantDataService {
   private static instance: RestaurantDataService;
-  private restaurantNIT: number;
+  private restauranteUid: string;
 
-  constructor(restaurantNIT = 0) {
-    this.restaurantNIT = restaurantNIT;
+  constructor(restauranteUid = "") {
+    this.restauranteUid = restauranteUid;
   }
 
-  public static getInstance(restaurantNIT?: number): RestaurantDataService {
+  public static getInstance(restauranteUid?: string): RestaurantDataService {
     if (!RestaurantDataService.instance) {
-      RestaurantDataService.instance = new RestaurantDataService(restaurantNIT);
+      RestaurantDataService.instance = new RestaurantDataService(restauranteUid);
     }
     return RestaurantDataService.instance;
   }
@@ -24,7 +24,7 @@ export class RestaurantDataService {
   public async getRestaurantInfo(): Promise<RestaurantDetailFromDB | null> {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/restaurante/${this.restaurantNIT}`
+        `${API_BASE_URL}/restaurante/${this.restauranteUid}`
       );
       if (!response.ok) throw new Error("Error al obtener restaurante");
       const data = await response.json();
@@ -39,7 +39,7 @@ export class RestaurantDataService {
   public async getMesas(): Promise<MesaFromDB[]> {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/mesas/restaurante/${this.restaurantNIT}`
+        `${API_BASE_URL}/mesas/restaurante/${this.restauranteUid}`
       );
       if (!response.ok) throw new Error("Error al obtener mesas");
       const data = await response.json();
@@ -54,7 +54,7 @@ export class RestaurantDataService {
   public async getComentarios(): Promise<ComentarioFromDB[]> {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/comentarios/restaurante/${this.restaurantNIT}`
+        `${API_BASE_URL}/comentarios/restaurante/${this.restauranteUid}`
       );
       if (!response.ok) throw new Error("Error al obtener comentarios");
       const data = await response.json();
@@ -70,7 +70,7 @@ export class RestaurantDataService {
     try {
       // Aquí puedes hacer una llamada al backend para obtener slots disponibles
       const response = await fetch(
-        `${API_BASE_URL}/reserva/slots-disponibles?nit=${this.restaurantNIT}&fecha=${date}`
+        `${API_BASE_URL}/reserva/slots-disponibles?restaurante_uid=${this.restauranteUid}&fecha=${date}`
       );
       if (!response.ok) throw new Error("Error al obtener slots");
       const data = await response.json();

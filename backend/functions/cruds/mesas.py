@@ -8,18 +8,18 @@ def insertar_mesas(
     db: Session,
     estado_de_disponibilidad: bool,
     cant_personas: int,
-    nit: int,
+    restaurante_uid: str,
     precio: float,
 ):
     try:
         db.execute(
             text(
-                "SELECT insertar_mesas(:estado_de_disponibilidad, :cant_personas, :nit, :precio)"
+                "SELECT insertar_mesas(:estado_de_disponibilidad, :cant_personas, :restaurante_uid, :precio)"
             ),
             {
                 "estado_de_disponibilidad": estado_de_disponibilidad,
                 "cant_personas": cant_personas,
-                "nit": nit,
+                "restaurante_uid": restaurante_uid,
                 "precio": precio,
             },
         )
@@ -44,19 +44,19 @@ def editar_mesas(
     id_mesa: int,
     estado_de_disponibilidad: bool,
     cant_personas: int,
-    nit: int,
+    restaurante_uid: str,
     precio: float,
 ):
     try:
         db.execute(
             text(
-                "SELECT editar_mesas(:id_mesa, :estado_de_disponibilidad, :cant_personas, :nit, :precio)"
+                "SELECT editar_mesas(:id_mesa, :estado_de_disponibilidad, :cant_personas, :restaurante_uid, :precio)"
             ),
             {
                 "id_mesa": id_mesa,
                 "estado_de_disponibilidad": estado_de_disponibilidad,
                 "cant_personas": cant_personas,
-                "nit": nit,
+                "restaurante_uid": restaurante_uid,
                 "precio": precio,
             },
         )

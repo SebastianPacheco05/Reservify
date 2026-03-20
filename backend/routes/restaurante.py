@@ -14,28 +14,29 @@ router = APIRouter(
 )
 
 
-def _requerir_dueno_restaurante(usuario_actual: dict, nit: int, db: Session) -> None:
-    if not es_dueño_de_restaurante(usuario_actual["id"], nit, db):
+def _requerir_dueno_restaurante(usuario_actual: dict, restaurante_uid: str, db: Session) -> None:
+    if not es_dueño_de_restaurante(usuario_actual["id"], restaurante_uid, db):
         raise HTTPException(
             status_code=403,
             detail="Solo el dueño del restaurante puede realizar esta acción.",
         )
 
 
-def _requerir_gestor_restaurante(usuario_actual: dict, nit: int, db: Session) -> None:
-    if not puede_acceder_restaurante(usuario_actual["id"], nit, db):
+def _requerir_gestor_restaurante(usuario_actual: dict, restaurante_uid: str, db: Session) -> None:
+    if not puede_acceder_restaurante(usuario_actual["id"], restaurante_uid, db):
         raise HTTPException(
             status_code=403,
             detail="No tienes permisos para gestionar este restaurante.",
         )
 
-@router.get("/{nit}")
-async def obtener_restaurante_publico(nit: int, db: Session = Depends(get_db)):
-    """Endpoint público para obtener información detallada de un restaurante por NIT"""
+@router.get("/{restaurante_uid}")
+async def obtener_restaurante_publico(restaurante_uid: str, db: Session = Depends(get_db)):
+    """Endpoint público para obtener información detallada de un restaurante por UID"""
     try:
         query = text('''
             SELECT 
-                r.nit as nit,
+                r.restaurante_uid,
+                r.nit,
                 r.direccion,
                 r.nombre_restaurante,
                 r.descripcion_restaurante,
@@ -50,9 +51,9 @@ async def obtener_restaurante_publico(nit: int, db: Session = Depends(get_db)):
                 r.lng
             FROM "Restaurante" r
             LEFT JOIN "Categorias" c ON r.id_categoria = c.id_categoria
-            WHERE r.nit = :nit
+            WHERE r.restaurante_uid = :restaurante_uid
         ''')
-        result = db.execute(query, {"nit": nit})
+        result = db.execute(query, {"restaurante_uid": restaurante_uid})
         row = result.fetchone()
 
         if not row:
@@ -64,29 +65,30 @@ async def obtener_restaurante_publico(nit: int, db: Session = Depends(get_db)):
             imagenes_ref_query = text('''
                 SELECT url_imagen
                 FROM "Imagen_referencia_restaurante"
-                WHERE nit = :nit
+                WHERE restaurante_uid = :restaurante_uid
                 ORDER BY orden ASC
             ''')
-            imagenes_ref_result = db.execute(imagenes_ref_query, {"nit": nit})
+            imagenes_ref_result = db.execute(imagenes_ref_query, {"restaurante_uid": restaurante_uid})
             imagenes_referencia = [row[0] for row in imagenes_ref_result.fetchall()]
         except Exception:
             # Si la tabla no existe, simplemente retornar lista vacía
             imagenes_referencia = []
 
-        lat_val = float(row[11]) if row[11] is not None else None
-        lng_val = float(row[12]) if row[12] is not None else None
+        lat_val = float(row[12]) if row[12] is not None else None
+        lng_val = float(row[13]) if row[13] is not None else None
         return {
-            "nit": row[0],
-            "direccion": row[1],
-            "nombre_restaurante": row[2],
-            "descripcion_restaurante": row[3],
-            "rating": float(row[4]) if row[4] else 0.0,
-            "reviews": row[5],
-            "availabletoday": row[6],
-            "horario_apertura": str(row[7]),
-            "horario_cierre": str(row[8]),
-            "url_image": row[9],
-            "nombre_categoria": row[10],
+            "restaurante_uid": str(row[0]),
+            "nit": row[1],
+            "direccion": row[2],
+            "nombre_restaurante": row[3],
+            "descripcion_restaurante": row[4],
+            "rating": float(row[5]) if row[5] else 0.0,
+            "reviews": row[6],
+            "availabletoday": row[7],
+            "horario_apertura": str(row[8]),
+            "horario_cierre": str(row[9]),
+            "url_image": row[10],
+            "nombre_categoria": row[11],
             "imagenes_referencia": imagenes_referencia,
             "lat": lat_val,
             "lng": lng_val,
@@ -164,10 +166,11 @@ async def editar(
     """
     Edita un restaurante existente. Solo el dueño del restaurante puede editarlo.
     """
-    _requerir_dueno_restaurante(usuario_actual, data.nit, db)
+    _requerir_dueno_restaurante(usuario_actual, data.restaurante_uid, db)
 
     restaurante.editar_restaurante(
         db,
+        data.restaurante_uid,
         data.nit,
         data.direccion,
         data.nombre_restaurante,
@@ -187,5 +190,5 @@ async def borrar(
     """
     Borra un restaurante. Solo el dueño del restaurante puede borrarlo.
     """
-    _requerir_dueno_restaurante(usuario_actual, data.nit, db)
-    restaurante.borrar_restaurante(db, data.nit)
+    _requerir_dueno_restaurante(usuario_actual, data.restaurante_uid, db)
+    restaurante.borrar_restaurante(db, data.restaurante_uid)

@@ -88,12 +88,12 @@ export class OwnerReservationsService {
   }
 
   /**
-   * Obtiene las reservas de un restaurante por NIT (para el modal "Ver reservas" de la card).
-   * @param nit - NIT del restaurante
+   * Obtiene las reservas de un restaurante por UID.
+   * @param restauranteUid - UID del restaurante
    * @param fecha - Opcional: YYYY-MM-DD para filtrar reservas del día
    */
   public static async getReservationsByRestaurant(
-    nit: number,
+    restauranteUid: string,
     fecha?: string
   ): Promise<ReservasResponse> {
     try {
@@ -101,8 +101,8 @@ export class OwnerReservationsService {
       if (!token) throw new Error("No se encontró token de autenticación");
 
       const url = fecha
-        ? `${API_BASE_URL}/data-owner/restaurantes/${nit}/reservas?fecha=${encodeURIComponent(fecha)}`
-        : `${API_BASE_URL}/data-owner/restaurantes/${nit}/reservas`;
+        ? `${API_BASE_URL}/data-owner/restaurantes/${restauranteUid}/reservas?fecha=${encodeURIComponent(fecha)}`
+        : `${API_BASE_URL}/data-owner/restaurantes/${restauranteUid}/reservas`;
       const response = await fetch(url, {
         method: "GET",
         headers: {

@@ -15,10 +15,20 @@ def registrar_factura_y_reserva_endpoint(
     data: FacturaReservaSchema, db: Session = Depends(get_db)
 ):
     try:
+        nit_restaurante = data.p_nit
+        if not nit_restaurante and data.p_restaurante_uid:
+            row_nit = db.execute(
+                text('SELECT nit FROM "Restaurante" WHERE restaurante_uid = :uid'),
+                {"uid": data.p_restaurante_uid},
+            ).fetchone()
+            nit_restaurante = int(row_nit[0]) if row_nit else None
+        if not nit_restaurante:
+            raise HTTPException(status_code=400, detail="No se recibió un identificador válido del restaurante.")
+
         # Validar antelación mínima del restaurante antes de registrar la reserva
         row = db.execute(
             text('SELECT min_anticipacion_horas FROM "Restaurante" WHERE nit = :nit'),
-            {"nit": data.p_nit},
+            {"nit": nit_restaurante},
         ).fetchone()
         min_anticipacion_horas = int(row[0]) if row and row[0] is not None else 0
         if min_anticipacion_horas > 0:
@@ -40,7 +50,7 @@ def registrar_factura_y_reserva_endpoint(
 
         id_encab_fact = registrar_factura_y_reserva(
             db,
-            data.p_nit,
+            nit_restaurante,
             data.p_nombre_restaurante,
             data.p_direccion,
             data.p_ciudad,

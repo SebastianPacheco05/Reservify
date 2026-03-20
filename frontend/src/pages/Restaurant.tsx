@@ -51,16 +51,16 @@ import { ModeToggle } from "../components/mode-toggle";
 export default function RestaurantPage() {
   const { toast } = useToastContext();
   const [searchParams] = useSearchParams();
-  const restaurantNIT = Number(searchParams.get("nit") || 0);
+  const restauranteUid = searchParams.get("uid") || "";
   const { restaurantInfo, mesas, comentarios, loading, getAvailableSlots } =
-    useRestaurantData(restaurantNIT);
+    useRestaurantData(restauranteUid);
 
   // Asegurar que siempre que entremos/cambiemos de restaurante, el scroll vuelva al inicio
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     }
-  }, [restaurantNIT]);
+  }, [restauranteUid]);
 
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -155,7 +155,7 @@ export default function RestaurantPage() {
             // El header Authorization se agrega automáticamente
           },
           body: JSON.stringify({
-            p_nit: restaurantNIT,
+            p_restaurante_uid: restauranteUid,
             p_nombre_restaurante: restaurantInfo?.nombre_restaurante || "",
             p_direccion: restaurantInfo?.direccion || "",
             p_ciudad: "Bogotá",
@@ -506,7 +506,7 @@ export default function RestaurantPage() {
 
             {/* Formulario de Reseña */}
             <ReviewForm
-              restaurantNIT={restaurantNIT}
+              restauranteUid={restauranteUid}
               onReviewSubmitted={() => {
                 // Recargar comentarios después de enviar reseña
                 window.location.reload();

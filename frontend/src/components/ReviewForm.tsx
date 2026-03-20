@@ -10,11 +10,11 @@ import { getApiEndpoint } from "../config/api";
 import { useToastContext } from "./ToastProvider";
 
 interface ReviewFormProps {
-  restaurantNIT: number;
+  restauranteUid: string;
   onReviewSubmitted?: () => void;
 }
 
-export default function ReviewForm({ restaurantNIT, onReviewSubmitted }: ReviewFormProps) {
+export default function ReviewForm({ restauranteUid, onReviewSubmitted }: ReviewFormProps) {
   const { toast } = useToastContext();
   const [rating, setRating] = useState<number>(0);
   const [hoveredRating, setHoveredRating] = useState<number>(0);
@@ -34,7 +34,7 @@ export default function ReviewForm({ restaurantNIT, onReviewSubmitted }: ReviewF
 
       try {
         const response = await authFetch(
-          getApiEndpoint(`/comentarios/verificar/${restaurantNIT}`)
+          getApiEndpoint(`/comentarios/verificar/${restauranteUid}`)
         );
         
         if (response.ok) {
@@ -49,7 +49,7 @@ export default function ReviewForm({ restaurantNIT, onReviewSubmitted }: ReviewF
     };
 
     checkExistingReview();
-  }, [restaurantNIT]);
+  }, [restauranteUid]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,7 +90,7 @@ export default function ReviewForm({ restaurantNIT, onReviewSubmitted }: ReviewF
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          nit: restaurantNIT,
+          restaurante_uid: restauranteUid,
           comentario: comment.trim(),
           calificacion: rating,
         }),

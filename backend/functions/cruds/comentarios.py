@@ -4,13 +4,13 @@ from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 
-def insertar_comentario(db: Session, documento: int, nit: int, comentario: str, calificacion: int = 5):
+def insertar_comentario(db: Session, documento: int, restaurante_uid: str, comentario: str, calificacion: int = 5):
     try:
         db.execute(
-            text("SELECT insertar_comentario(:documento, :nit, :comentario, :calificacion)"),
+            text("SELECT insertar_comentario(:documento, :restaurante_uid, :comentario, :calificacion)"),
             {
                 "documento": documento,
-                "nit": nit,
+                "restaurante_uid": restaurante_uid,
                 "comentario": comentario,
                 "calificacion": calificacion,
             },
@@ -28,12 +28,12 @@ def insertar_comentario(db: Session, documento: int, nit: int, comentario: str, 
         )
 
 
-def verificar_comentario_existente(db: Session, documento: int, nit: int) -> bool:
+def verificar_comentario_existente(db: Session, documento: int, restaurante_uid: str) -> bool:
     """Verifica si el usuario ya tiene un comentario para este restaurante"""
     try:
         resultado = db.execute(
-            text("SELECT existe_comentario(:documento, :nit)"),
-            {"documento": documento, "nit": nit},
+            text("SELECT existe_comentario(:documento, :restaurante_uid)"),
+            {"documento": documento, "restaurante_uid": restaurante_uid},
         ).scalar()
         return bool(resultado)
     except Exception as e:

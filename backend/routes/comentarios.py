@@ -14,8 +14,8 @@ router = APIRouter(
 )
 
 # Obtener comentarios por restaurante (público)
-@router.get("/restaurante/{nit}")
-async def obtener_comentarios_por_restaurante(nit: int, db: Session = Depends(get_db)):
+@router.get("/restaurante/{restaurante_uid}")
+async def obtener_comentarios_por_restaurante(restaurante_uid: str, db: Session = Depends(get_db)):
     try:
         query = text('''
             SELECT 
@@ -27,10 +27,10 @@ async def obtener_comentarios_por_restaurante(nit: int, db: Session = Depends(ge
                 u.apellido
             FROM "Comentarios" c
             LEFT JOIN "Usuario" u ON c.documento = u.documento
-            WHERE c.nit = :nit
+            WHERE c.restaurante_uid = :restaurante_uid
             ORDER BY c.fecha DESC
         ''')
-        result = db.execute(query, {"nit": nit})
+        result = db.execute(query, {"restaurante_uid": restaurante_uid})
         rows = result.fetchall()
         
         return [
@@ -52,16 +52,16 @@ async def obtener_comentarios_por_restaurante(nit: int, db: Session = Depends(ge
 
 
 # Verificar si el usuario ya tiene un comentario para un restaurante
-@router.get("/verificar/{nit}")
+@router.get("/verificar/{restaurante_uid}")
 async def verificar_comentario_existente(
-    nit: int,
+    restaurante_uid: str,
     db: Session = Depends(get_db),
     usuario_actual: dict = Depends(verificar_token),
 ):
     """Verifica si el usuario autenticado ya tiene un comentario para este restaurante"""
     try:
         documento = obtener_documento_por_email(db, usuario_actual["email"])
-        existe = comentarios.verificar_comentario_existente(db, documento, nit)
+        existe = comentarios.verificar_comentario_existente(db, documento, restaurante_uid)
         return {"ya_tiene_comentario": existe}
     except HTTPException:
         raise
@@ -92,7 +92,7 @@ async def crear_comentario(
         documento = obtener_documento_por_email(db, usuario_actual["email"])
         
         # Verificar si ya tiene un comentario
-        if comentarios.verificar_comentario_existente(db, documento, data.nit):
+        if comentarios.verificar_comentario_existente(db, documento, data.restaurante_uid):
             raise HTTPException(
                 status_code=400,
                 detail="Ya has dejado una reseña para este restaurante. Solo puedes dejar una reseña por restaurante.",
@@ -100,7 +100,7 @@ async def crear_comentario(
         
         # Insertar comentario
         resultado = comentarios.insertar_comentario(
-            db, documento, data.nit, data.comentario, data.calificacion
+            db, documento, data.restaurante_uid, data.comentario, data.calificacion
         )
         return resultado
     except HTTPException:
@@ -125,7 +125,7 @@ async def insertar(
     comentarios.insertar_comentario(
         db,
         documento,
-        data.nit,
+        data.restaurante_uid,
         data.comentario,
         calificacion,
     )

@@ -53,6 +53,7 @@ class DuenoDelete(BaseModel):
 
 # Restaurante
 class RestauranteBase(BaseModel):
+    restaurante_uid: Optional[str] = None
     nit: int
     direccion: str
     nombre_restaurante: str
@@ -68,6 +69,7 @@ class RestauranteBase(BaseModel):
 
 
 class RestauranteUpdate(BaseModel):
+    restaurante_uid: str
     nit: int
     direccion: str
     nombre_restaurante: str
@@ -81,14 +83,14 @@ class RestauranteUpdate(BaseModel):
 
 
 class RestauranteDelete(BaseModel):
-    nit: int
+    restaurante_uid: str
 
 
 # Mesas
 class MesaBase(BaseModel):
     estado_de_disponibilidad: bool
     cant_personas: int
-    nit: int
+    restaurante_uid: Optional[str] = None
     precio: float
 
 
@@ -392,13 +394,13 @@ class ListarCalculoMensual(BaseModel):
 # Comentarios
 class ComentarioBase(BaseModel):
     documento: int
-    nit: int
+    restaurante_uid: str
     comentario: str
     calificacion: int  # 1-5
 
 
 class ComentarioCreate(BaseModel):
-    nit: int
+    restaurante_uid: str
     comentario: str
     calificacion: int  # 1-5
 
@@ -434,7 +436,8 @@ class BuscarRestaurante(BaseModel):
 
 # Registrar Factura y Reserva
 class FacturaReservaSchema(BaseModel):
-    p_nit: int
+    p_nit: int | None = None
+    p_restaurante_uid: str | None = None
     p_nombre_restaurante: str
     p_direccion: str
     p_ciudad: str

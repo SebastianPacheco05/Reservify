@@ -13,16 +13,16 @@ router = APIRouter(
 )
 
 
-def _requerir_gestor_restaurante(usuario_actual: dict, nit: int, db: Session) -> None:
-    if not puede_acceder_restaurante(usuario_actual["id"], nit, db):
+def _requerir_gestor_restaurante(usuario_actual: dict, restaurante_uid: str, db: Session) -> None:
+    if not puede_acceder_restaurante(usuario_actual["id"], restaurante_uid, db):
         raise HTTPException(
             status_code=403,
             detail="No tienes permisos para gestionar las mesas de este restaurante.",
         )
 
-@router.get("/restaurante/{nit}")
-async def obtener_mesas_por_restaurante(nit: int, db: Session = Depends(get_db)):
-    """Endpoint público para obtener las mesas de un restaurante por NIT"""
+@router.get("/restaurante/{restaurante_uid}")
+async def obtener_mesas_por_restaurante(restaurante_uid: str, db: Session = Depends(get_db)):
+    """Endpoint público para obtener las mesas de un restaurante por UID"""
     try:
         query = text('''
             SELECT 
@@ -30,11 +30,11 @@ async def obtener_mesas_por_restaurante(nit: int, db: Session = Depends(get_db))
                 estado_de_disponibilidad,
                 cant_personas,
                 precio,
-                "nit" as nit
+                "restaurante_uid" as restaurante_uid
             FROM "Mesas"
-            WHERE "nit" = :nit
+            WHERE "restaurante_uid" = :restaurante_uid
         ''')
-        result = db.execute(query, {"nit": nit})
+        result = db.execute(query, {"restaurante_uid": restaurante_uid})
         rows = result.fetchall()
 
         return [
@@ -43,7 +43,7 @@ async def obtener_mesas_por_restaurante(nit: int, db: Session = Depends(get_db))
                 "estado_de_disponibilidad": row[1],
                 "cant_personas": row[2],
                 "precio": float(row[3]) if row[3] else 0.0,
-                "nit": row[4]
+                "restaurante_uid": str(row[4])
             }
             for row in rows
         ]
@@ -56,13 +56,13 @@ async def insertar(
     usuario_actual: dict = Depends(verificar_token),
     db: Session = Depends(get_db),
 ):
-    _requerir_gestor_restaurante(usuario_actual, data.nit, db)
+    _requerir_gestor_restaurante(usuario_actual, data.restaurante_uid, db)
 
     mesas.insertar_mesas(
         db,
         data.estado_de_disponibilidad,
         data.cant_personas,
-        data.nit,
+        data.restaurante_uid,
         data.precio,
     )
 
@@ -82,14 +82,14 @@ async def editar(
     usuario_actual: dict = Depends(verificar_token),
     db: Session = Depends(get_db),
 ):
-    _requerir_gestor_restaurante(usuario_actual, data.nit, db)
+    _requerir_gestor_restaurante(usuario_actual, data.restaurante_uid, db)
 
     mesas.editar_mesas(
         db,
         data.id_mesa,
         data.estado_de_disponibilidad,
         data.cant_personas,
-        data.nit,
+        data.restaurante_uid,
         data.precio,
     )
 
@@ -102,15 +102,15 @@ async def borrar(
     """
     Borra una mesa. Solo dueños/gestores del restaurante pueden hacerlo.
     """
-    # Obtener NIT de la mesa antes de borrar
+    # Obtener UID de restaurante de la mesa antes de borrar
     row = db.execute(
-        text('SELECT nit FROM "Mesas" WHERE id_mesa = :id_mesa'),
+        text('SELECT restaurante_uid FROM "Mesas" WHERE id_mesa = :id_mesa'),
         {"id_mesa": data.id_mesa},
     ).fetchone()
     if not row:
         raise HTTPException(status_code=404, detail="Mesa no encontrada")
 
-    nit = int(row[0])
-    _requerir_gestor_restaurante(usuario_actual, nit, db)
+    restaurante_uid = str(row[0])
+    _requerir_gestor_restaurante(usuario_actual, restaurante_uid, db)
 
     mesas.borrar_mesas(db, data.id_mesa)

@@ -1,4 +1,4 @@
-﻿CREATE OR REPLACE FUNCTION borrar_restaurante(p_nit BIGINT)
+CREATE OR REPLACE FUNCTION borrar_restaurante(p_restaurante_uid UUID)
 RETURNS VOID AS $$
 DECLARE
   v_id_rol_cliente INT;
@@ -15,16 +15,18 @@ BEGIN
     UPDATE "Usuario"
     SET
       id_rol = v_id_rol_cliente,
-      nit = NULL
-    WHERE nit = p_nit;
+      nit = NULL,
+      restaurante_uid = NULL
+    WHERE restaurante_uid = p_restaurante_uid;
   ELSE
     -- Si no existe el rol cliente, al menos desvincular el NIT
     UPDATE "Usuario"
-    SET nit = NULL
-    WHERE nit = p_nit;
+    SET nit = NULL,
+        restaurante_uid = NULL
+    WHERE restaurante_uid = p_restaurante_uid;
   END IF;
 
   -- Borrar el restaurante (las FKs con ON DELETE CASCADE se eliminarÃ¡n en cascada)
-  DELETE FROM "Restaurante" WHERE nit = p_nit;
+  DELETE FROM "Restaurante" WHERE restaurante_uid = p_restaurante_uid;
 END;
 $$ LANGUAGE plpgsql;

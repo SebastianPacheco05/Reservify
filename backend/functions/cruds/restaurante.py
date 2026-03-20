@@ -2,6 +2,45 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from datetime import datetime, timedelta
+
+
+def _parse_hora(value: str) -> datetime.time:
+    formatos = ("%H:%M:%S", "%H:%M")
+    for fmt in formatos:
+        try:
+            return datetime.strptime(value, fmt).time()
+        except ValueError:
+            continue
+    raise HTTPException(
+        status_code=400,
+        detail=f"Formato de hora inválido: {value}. Usa HH:MM o HH:MM:SS.",
+    )
+
+
+def _validar_horario_apertura_cierre(horario_apertura: str, horario_cierre: str) -> None:
+    apertura = _parse_hora(horario_apertura)
+    cierre = _parse_hora(horario_cierre)
+
+    if apertura == cierre:
+        raise HTTPException(
+            status_code=400,
+            detail="El horario de apertura no puede ser igual al de cierre.",
+        )
+
+    # Caso nocturno (cruza medianoche): máximo 8 horas de operación.
+    if apertura > cierre:
+        hoy = datetime.today().date()
+        dt_apertura = datetime.combine(hoy, apertura)
+        dt_cierre = datetime.combine(hoy + timedelta(days=1), cierre)
+        if (dt_cierre - dt_apertura) > timedelta(hours=8):
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "Cuando el horario cruza medianoche, la duración máxima "
+                    "permitida es de 8 horas."
+                ),
+            )
 
 
 def insertar_restaurante(
@@ -19,6 +58,7 @@ def insertar_restaurante(
     min_anticipacion_horas: int = 0,
 ):
     try:
+        _validar_horario_apertura_cierre(horario_apertura, horario_cierre)
         # Función con 9 parámetros: incluye url_imagen e inserta rating, reviews, availableToday en la tabla
         db.execute(
             text(
@@ -70,6 +110,7 @@ def insertar_restaurante(
 
 def editar_restaurante(
     db: Session,
+    restaurante_uid: str,
     nit: int,
     direccion: str,
     nombre_restaurante: str,
@@ -80,11 +121,13 @@ def editar_restaurante(
     id_categoria: int,
 ):
     try:
+        _validar_horario_apertura_cierre(horario_apertura, horario_cierre)
         db.execute(
             text(
-                "SELECT editar_restaurante(:nit, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :documento, :id_categoria)"
+                "SELECT editar_restaurante(:restaurante_uid, :nit, :direccion, :nombre_restaurante, :descripcion_restaurante, :horario_apertura, :horario_cierre, :documento, :id_categoria)"
             ),
             {
+                "restaurante_uid": restaurante_uid,
                 "nit": nit,
                 "direccion": direccion,
                 "nombre_restaurante": nombre_restaurante,
@@ -111,11 +154,11 @@ def editar_restaurante(
         )
 
 
-def borrar_restaurante(db: Session, nit: int):
+def borrar_restaurante(db: Session, restaurante_uid: str):
     try:
         db.execute(
-            text("SELECT borrar_restaurante(:nit)"),
-            {"nit": nit},
+            text("SELECT borrar_restaurante(:restaurante_uid)"),
+            {"restaurante_uid": restaurante_uid},
         )
         db.commit()
         raise HTTPException(

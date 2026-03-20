@@ -1,6 +1,6 @@
-﻿CREATE OR REPLACE FUNCTION insertar_comentario(
+CREATE OR REPLACE FUNCTION insertar_comentario(
     p_documento INT,
-    p_nit INT,
+    p_restaurante_uid UUID,
     p_comentario TEXT,
     p_calificacion INT DEFAULT 5
 ) RETURNS VOID AS $$
@@ -16,14 +16,14 @@ BEGIN
     -- Verificar si el usuario ya tiene un comentario para este restaurante
     IF EXISTS (
         SELECT 1 FROM "Comentarios" 
-        WHERE documento = p_documento AND nit = p_nit
+        WHERE documento = p_documento AND restaurante_uid = p_restaurante_uid
     ) THEN
         RAISE EXCEPTION 'Ya has dejado una reseÃ±a para este restaurante';
     END IF;
     
     -- Insertar comentario
-    INSERT INTO "Comentarios" (documento, nit, comentario, calificacion)
-    VALUES (p_documento, p_nit, p_comentario, p_calificacion);
+    INSERT INTO "Comentarios" (documento, restaurante_uid, comentario, calificacion)
+    VALUES (p_documento, p_restaurante_uid, p_comentario, p_calificacion);
 
     -- Recalcular rating y nÃºmero de reseÃ±as del restaurante
     SELECT 
@@ -31,12 +31,12 @@ BEGIN
         COUNT(*)
     INTO v_rating, v_reviews
     FROM "Comentarios"
-    WHERE nit = p_nit;
+    WHERE restaurante_uid = p_restaurante_uid;
 
     UPDATE "Restaurante"
     SET
         rating = v_rating,
         reviews = v_reviews
-    WHERE nit = p_nit;
+    WHERE restaurante_uid = p_restaurante_uid;
 END;
 $$ LANGUAGE plpgsql;

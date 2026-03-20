@@ -6,6 +6,7 @@ def obtener_top_restaurantes(db: Session):
         text(
             """
             SELECT
+                r.restaurante_uid,
                 nit,
                 direccion,
                 nombre_restaurante,
@@ -16,8 +17,11 @@ def obtener_top_restaurantes(db: Session):
                 horario_cierre,
                 documento,
                 url_image,
-                nombre_categoria
-            FROM fn_top_obtener_top_restaurantes(:limit)
+                c.nombre_categoria
+            FROM "Restaurante" r
+            LEFT JOIN "Categorias" c ON c.id_categoria = r.id_categoria
+            ORDER BY r.rating DESC, r.reviews DESC
+            LIMIT :limit
             """
         ),
         {"limit": 9},
