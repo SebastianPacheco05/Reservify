@@ -24,7 +24,7 @@
 - **FI-011 – Persistencia de datos de pasarela de pago para conciliación**
   - **Estado:** Hecho.
 - **FI-012 – Exportación de facturación a CSV y detalle descargable en PDF**
-  - **Estado:** No hecho.
+  - **Estado:** Hecho.
 - **FI-001A – Registro obligatorio de forma de pago en cada factura**
   - **Estado:** Hecho.
 - **FI-001B – Registro del valor total de la factura con dos decimales**

@@ -8,7 +8,7 @@
 - **Uvicorn**
   - **Concepto técnico:** Servidor ASGI ligero y muy rápido que ejecuta la aplicación FastAPI. Se encarga de recibir las peticiones HTTP, pasarlas a la app y devolver las respuestas. Soporta hot-reload en desarrollo para ver cambios al instante.
 - **SQLAlchemy**
-  - **Concepto técnico:** ORM (Object Relational Mapper) que permite interactuar con la base de datos usando objetos y clases en lugar de escribir SQL a mano. Facilita la creación de consultas complejas, migraciones y portabilidad entre motores de base de datos.
+  - **Concepto técnico:** Biblioteca usada para conexión y sesiones de base de datos desde el backend. En el proyecto se usa principalmente `Session` y consultas SQL explícitas con `text(...)`, con utilidades ORM puntuales.
 - **Pydantic**
   - **Concepto técnico:** Biblioteca Python para validación de datos usando anotaciones de tipos
 - **JWT**

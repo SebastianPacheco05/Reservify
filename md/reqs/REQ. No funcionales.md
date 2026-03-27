@@ -100,7 +100,7 @@
 - **NF-049 – Validación de disponibilidad antes de confirmar una reserva**
   - **Estado:** Hecho.
 - **NF-050 – Términos y condiciones del servicio**
-  - **Estado:** No hecho.
+  - **Estado:** Hecho.
 - **NF-051 – Flujo transaccional integrado entre reserva, factura y pago**
   - **Estado:** Hecho.
 - **NF-052 – Experiencia de usuario con transiciones y microinteracciones consistentes**
@@ -182,7 +182,7 @@
 - **NF-085 – Scripts de migración en scripts/migraciones**
   - **Estado:** Hecho.
 - **NF-086 – Rate limit o control en endpoint /contactanos**
-  - **Estado:** Hecho.
+  - **Estado:** No implementado.
 - **NF-087 – Consentimiento de archivo de correos (consentimiento_archivo en SMTP_config/IMAP_config)**
   - **Estado:** Hecho.
 - **NF-088 – UNIQUE refresh_token en jwt_tokens**

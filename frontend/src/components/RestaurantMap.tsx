@@ -108,8 +108,8 @@ export default function RestaurantMap({
         setLocationStatus("denied");
         const isSecure = typeof window !== "undefined" && window.isSecureContext;
         const msg = !isSecure
-          ? "La ubicaci?n suele requerir HTTPS en el celular. Prueba abrir la app con https:// o desde un enlace seguro."
-          : "No se pudo obtener tu ubicaci?n. Revisa que hayas permitido el acceso en el navegador.";
+          ? "La ubicación suele requerir HTTPS en el celular. Prueba abrir la app con https:// o desde un enlace seguro."
+          : "No se pudo obtener tu ubicación. Revisa que hayas permitido el acceso en el navegador.";
         setGeoError(msg);
         setUserCoords(FALLBACK_CENTER);
       },
@@ -136,9 +136,9 @@ export default function RestaurantMap({
     <div className="relative w-full rounded-4xl overflow-hidden">
       {locationStatus === "idle" && !onlyNit && (
         <div className="dark:bg-neutral-800 bg-neutral-200 text-foreground px-4 py-3 text-sm flex flex-col gap-2">
-          <p className="font-medium dark:text-white ">Para centrar el mapa en tu ubicaci?n</p>
+          <p className="font-medium dark:text-white ">Para centrar el mapa en tu ubicación</p>
           <p className="text-muted-foreground text-xs">
-            Toca el bot?n de abajo. El navegador te pedir? permiso para usar tu ubicaci?n.
+            Toca el bot?n de abajo. El navegador te pedir? permiso para usar tu ubicación.
             {!isSecure && " En el celular suele ser necesario usar la p?gina con HTTPS."}
           </p>
           <button
@@ -146,13 +146,13 @@ export default function RestaurantMap({
             onClick={requestLocation}
             className="self-start rounded-lg dark:bg-neutral-50 bg-primary dark:text-black px-4 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 touch-manipulation"
           >
-            Usar mi ubicaci?n
+            Usar mi ubicación
           </button>
         </div>
       )}
       {locationStatus === "asking" && (
         <div className="bg-muted/ text-muted-foreground px-4 py-2 text-sm">
-          Solicitando acceso a tu ubicaci?n? Acepta el permiso en tu navegador o celular.
+          Solicitando acceso a tu ubicación? Acepta el permiso en tu navegador o celular.
         </div>
       )}
       {locationStatus === "denied" || locationStatus === "unsupported" ? (
@@ -160,7 +160,7 @@ export default function RestaurantMap({
           <span>
             {locationStatus === "unsupported"
               ? "Tu navegador no soporta GPS."
-              : geoError || "Ubicaci?n no permitida. El mapa usa una ubicaci?n por defecto."}
+              : geoError || "Ubicación no permitida. El mapa usa una ubicación por defecto."}
           </span>
           <button
             type="button"
@@ -199,7 +199,7 @@ export default function RestaurantMap({
                 weight: 2,
               }}
             >
-              <Popup>Tu ubicaci?n (GPS)</Popup>
+              <Popup>Tu ubicación (GPS)</Popup>
             </CircleMarker>
           )}
           {displayedRestaurantes.map((r) => (
@@ -234,9 +234,9 @@ export default function RestaurantMap({
             type="button"
             onClick={requestLocation}
             className="rounded-lg bg-background border border-border px-3 py-2 text-sm font-medium shadow-sm hover:bg-muted touch-manipulation"
-            title="Centrar mapa en mi ubicaci?n GPS"
+            title="Centrar mapa en mi ubicación GPS"
           >
-            Centrar en mi ubicaci?n
+            Centrar en mi ubicación
           </button>
         </div>
       </div>

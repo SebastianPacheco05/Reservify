@@ -1,6 +1,8 @@
 ### Requerimientos (REQ. funcionales backend)
 
 > Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. funcionales backend**
+>
+> Nota de alineación: las rutas de recurso de restaurante usan `restaurante_uid` como identificador principal en la API actual; `nit` se conserva como identificador de negocio en datos y consultas puntuales.
 
 - **BE-001 – Control de disponibilidad de mesas y prevención de reservas duplicadas**
   - **Estado:** Hecho.
@@ -94,7 +96,7 @@
   - **Estado:** Hecho.
 - **BE-025C – PUT /usuario/editar**
   - **Estado:** Hecho.
-- **BE-026A – GET /restaurante/{nit}**
+- **BE-026A – GET /restaurante/{restaurante_uid}**
   - **Estado:** Hecho.
 - **BE-026B – POST /restaurante/insertarrestaurante**
   - **Estado:** Hecho.
@@ -102,7 +104,7 @@
   - **Estado:** Hecho.
 - **BE-026D – PUT /restaurante/editarrestaurante**
   - **Estado:** Hecho.
-- **BE-027A – GET /mesas/restaurante/{nit}**
+- **BE-027A – GET /mesas/restaurante/{restaurante_uid}**
   - **Estado:** Hecho.
 - **BE-027B – POST /mesas/insertarmesas**
   - **Estado:** Hecho.
@@ -122,7 +124,7 @@
   - **Estado:** Hecho.
 - **BE-030B – GET /detalle_factura/listar_detalles_factura**
   - **Estado:** Hecho.
-- **BE-031A – GET /comentarios/restaurante/{nit}**
+- **BE-031A – GET /comentarios/restaurante/{restaurante_uid}**
   - **Estado:** Hecho.
 - **BE-031B – POST /comentarios/crear**
   - **Estado:** Hecho.
@@ -146,29 +148,29 @@
   - **Estado:** Hecho.
 - **BE-035E – GET /data-owner/restaurantes**
   - **Estado:** Hecho.
-- **BE-035F – GET /data-owner/restaurantes/{nit}**
+- **BE-035F – GET /data-owner/restaurantes/{restaurante_uid}**
   - **Estado:** Hecho.
-- **BE-035G – PUT /data-owner/restaurantes/{nit}**
+- **BE-035G – PUT /data-owner/restaurantes/{restaurante_uid}**
   - **Estado:** Hecho.
-- **BE-035H – GET /data-owner/restaurantes/{nit}/mesas**
+- **BE-035H – GET /data-owner/restaurantes/{restaurante_uid}/mesas**
   - **Estado:** Hecho.
-- **BE-035I – POST /data-owner/restaurantes/{nit}/mesas**
+- **BE-035I – POST /data-owner/restaurantes/{restaurante_uid}/mesas**
   - **Estado:** Hecho.
-- **BE-035J – PUT /data-owner/restaurantes/{nit}/mesas/{id_mesa}**
+- **BE-035J – PUT /data-owner/restaurantes/{restaurante_uid}/mesas/{id_mesa}**
   - **Estado:** Hecho.
-- **BE-035K – DELETE /data-owner/restaurantes/{nit}/mesas/{id_mesa}**
+- **BE-035K – DELETE /data-owner/restaurantes/{restaurante_uid}/mesas/{id_mesa}**
   - **Estado:** Hecho.
-- **BE-035L – GET /data-owner/restaurantes/{nit}/administrador**
+- **BE-035L – GET /data-owner/restaurantes/{restaurante_uid}/administrador**
   - **Estado:** Hecho.
-- **BE-035M – PUT /data-owner/restaurantes/{nit}/administrador**
+- **BE-035M – PUT /data-owner/restaurantes/{restaurante_uid}/administrador**
   - **Estado:** Hecho.
-- **BE-035N – POST /data-owner/restaurantes/{nit}/crear-empleado**
+- **BE-035N – POST /data-owner/restaurantes/{restaurante_uid}/crear-empleado**
   - **Estado:** Hecho.
-- **BE-035O – POST /data-owner/restaurantes/{nit}/asignar-empleado**
+- **BE-035O – POST /data-owner/restaurantes/{restaurante_uid}/asignar-empleado**
   - **Estado:** Hecho.
 - **BE-035P – POST /data-owner/cambiar-rol-cliente**
   - **Estado:** Hecho.
-- **BE-035Q – GET /data-owner/restaurantes/{nit}/reservas**
+- **BE-035Q – GET /data-owner/restaurantes/{restaurante_uid}/reservas**
   - **Estado:** Hecho.
 - **BE-035R – PATCH /data-owner/reservas/{id_reserva}/estado**
   - **Estado:** Hecho.

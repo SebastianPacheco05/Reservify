@@ -2,15 +2,15 @@
 > Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. funcionales Frontend**
 
 - **FR-001A – Permitir buscar restaurantes por texto desde el home.**
-  - **Estado:** En observación (SI y NO marcados).
+  - **Estado:** Hecho.
 - **FR-001B – Mostrar sugerencias de búsqueda basadas en resultados del backend.**
   - **Estado:** Hecho.
 - **FR-001C – Ofrecer accesos rápidos a tipos de cocina (chips).**
-  - **Estado:** Hecho.
+  - **Estado:** Parcial (la estructura de chips rápidos existe, pero su contenido visible en SearchBar está incompleto).
 - **FR-002A – Mostrar tarjetas por tipo de cocina en un carrusel.**
   - **Estado:** Hecho.
 - **FR-002B – Incluir al menos Italiana, Japonesa, Mexicana y Vegetariana como tipos de cocina visibles.**
-  - **Estado:** En observación (SI y NO marcados).
+  - **Estado:** Parcial (las categorías visibles dependen de `/categorias/top`, no de un listado fijo garantizado en frontend).
 - **FR-003A – Mostrar una sección de restaurantes destacados.**
   - **Estado:** Hecho.
 - **FR-003B – Cada restaurante destacado debe mostrar imagen.**
@@ -31,14 +31,14 @@
   - **Estado:** Hecho.
 - **FR-005C – Cuando hay sesión, mostrar menú de perfil y opción de cerrar sesión.**
   - **Estado:** Hecho.
-- **FR-006A – Mostrar beneficio “Reserva Instantánea” como tarjeta.**
+- **FR-006A – Mostrar tarjetas de beneficios en Home (copy y diseño vigentes del componente FeaturesSection).**
   - **Estado:** Hecho.
-- **FR-006B – Mostrar beneficio “Para Todos” como tarjeta.**
+- **FR-006B – Incluir beneficios orientados a distintos casos de uso en las tarjetas de Home.**
   - **Estado:** Hecho.
-- **FR-006C – Mostrar beneficio “Los Mejores” como tarjeta.**
+- **FR-006C – Incluir beneficios sobre calidad/confianza en las tarjetas de Home.**
   - **Estado:** Hecho.
 - **FR-007A – Mostrar botón “Descargar app” en la sección final.**
-  - **Estado:** Hecho.
+  - **Estado:** No implementado en la Home actual (el componente CTASection existe pero no está montado en Home).
 - **FR-008A – Permitir acceso a sección “Acerca de”.**
   - **Estado:** Hecho.
 - **FR-008B – Permitir acceso a sección “Contacto”.**
@@ -74,13 +74,13 @@
 - **FR-014B – Mostrar en la pasarela de pago el resumen de la reserva (restaurante, mesa, fecha, hora, total) antes de procesar el pago.**
   - **Estado:** Hecho.
 - **FR-015A – Proveer un dashboard para dueños con pestañas de vista general, restaurantes, reservas, flujo diario, empleados, clientes, correos y configuración.**
-  - **Estado:** En observación (SI y NO marcados).
+  - **Estado:** Hecho.
 - **FR-015B – Proveer un dashboard para administradores centrado en un restaurante específico con métricas, reservas y facturas.**
   - **Estado:** Hecho.
 - **FR-015C – Proveer un dashboard para clientes con sección de perfil, métricas simplificadas y listado de sus reservas recientes.**
   - **Estado:** Hecho.
 - **FR-016A – Permitir a dueños y administradores ver las reservas de un restaurante agrupadas por estado en un modal.**
-  - **Estado:** En observación (SI y NO marcados).
+  - **Estado:** Parcial (confirmado en dashboard de dueño; en AdminDashboard no está integrado el mismo modal de agrupación).
 - **FR-016B – Permitir cambiar el estado de una reserva desde el modal, respetando las transiciones definidas en backend.**
   - **Estado:** Hecho.
 - **FR-016C – Solicitar y enviar al backend un motivo de cancelación cuando se cancela una reserva desde el modal.**
@@ -96,7 +96,7 @@
 - **FR-019A – Mostrar en el dashboard de dueño botones de acción rápidos para ver todas las reservas del día actual.**
   - **Estado:** Hecho.
 - **FR-019B – Permitir exportar el listado de facturas del mes actual a un archivo CSV desde el dashboard de dueño.**
-  - **Estado:** En observación (SI y NO marcados).
+  - **Estado:** Hecho.
 - **FR-019C – Permitir descargar en PDF el detalle de una factura seleccionada desde el dashboard.**
   - **Estado:** Hecho.
 - **FR-020A – Permitir a empleados acceder a una vista de correos configurados para el restaurante.**
@@ -112,15 +112,15 @@
 - **FR-021D – El componente FeaturesSection debe existir y mostrarse en Home.**
   - **Estado:** Hecho.
 - **FR-021E – El componente CTASection debe existir y mostrarse en Home.**
-  - **Estado:** Hecho.
+  - **Estado:** Parcial (CTASection existe pero actualmente no se renderiza en Home).
 - **FR-021F – El componente Footer debe existir y mostrarse en Home.**
   - **Estado:** Hecho.
 - **FR-021G – El componente DailyFlow debe existir y usarse en Dashboard.**
   - **Estado:** Hecho.
 - **FR-021H – El componente RestaurantReservationsModal debe existir y usarse en Dashboard/AdminDashboard.**
-  - **Estado:** Hecho.
+  - **Estado:** Parcial (uso confirmado en Dashboard dueño; no integrado de igual forma en AdminDashboard).
 - **FR-021I – El componente app-sidebar debe existir y mostrarse en Dashboard.**
-  - **Estado:** Hecho.
+  - **Estado:** Parcial (el archivo app-sidebar existe, pero Dashboard usa Sidebar de `components/ui/sidebar.tsx`).
 - **FR-021J – El componente CookieConsentModal debe existir y mostrarse en App.**
   - **Estado:** Hecho.
 - **FR-021K – El componente ToastContainer debe existir y mostrarse globalmente.**
@@ -139,12 +139,12 @@
   - **Estado:** Hecho.
 - **FR-021R – El componente AllReservationsModal debe existir y usarse desde Dashboard.**
   - **Estado:** Hecho.
-- **FR-022A – Texto "Reserva en tu restaurante favorito" en HeroSection.**
+- **FR-022A – Texto "Reserva tu mesa sin complicaciones" en HeroSection.**
   - **Estado:** Hecho.
 - **FR-022B – HeroSection usa gradiente from-primary/10 via-background to-accent/20.**
   - **Estado:** Hecho.
-- **FR-022C – CuisineCarousel incluye tipos Italiana, Japonesa, Mexicana, Vegetariana.**
-  - **Estado:** Hecho.
+- **FR-022C – CuisineCarousel muestra categorías provenientes del backend (`/categorias/top`) e incluye cocinas comunes cuando estén disponibles.**
+  - **Estado:** Parcial (depende de datos de categorías del backend).
 - **FR-022D – CuisineCarousel usa Card y transitionNormal de animations.**
   - **Estado:** Hecho.
 - **FR-022E – Footer enlace "Acerca de" a #acerca_de.**
@@ -221,10 +221,10 @@
   - **Estado:** Hecho.
 - **FR-025B – ROUTES.VIEW_EMAIL con parámetro :uid.**
   - **Estado:** Hecho.
-- **FR-025C – ROLE_REDIRECTS mapeo dueno, administrador, empleado, cliente.**
+- **FR-025C – getRoleRedirectPath mapea dueno, administrador, empleado y cliente.**
   - **Estado:** Hecho.
-- **FR-026A – CuisineCarousel incluye Asiática, China, India, Francesa, Española.**
-  - **Estado:** Hecho.
+- **FR-026A – CuisineCarousel soporta categorías ampliadas (ej. Asiática, China, India, Francesa, Española) según datos del backend.**
+  - **Estado:** Parcial (depende de datos de categorías del backend).
 - **FR-026B – SearchBar chips o sugerencias con tipos de cocina.**
   - **Estado:** Hecho.
 - **FR-026C – RestaurantGrid "Disponible hoy" o "Reservar mañana" según availableToday.**
@@ -237,7 +237,7 @@
   - **Estado:** Hecho.
 - **FR-028A – Header enlace "Restaurantes" con href #restaurantes.**
   - **Estado:** Hecho.
-- **FR-028B – Header componente ModeToggle para cambio de tema (claro/oscuro/sistema).**
+- **FR-028B – Header componente AnimatedThemeToggler para cambio de tema (claro/oscuro/sistema).**
   - **Estado:** Hecho.
 - **FR-028C – Header texto accesible "Abrir menú de perfil" (sr-only).**
   - **Estado:** Hecho.

@@ -39,21 +39,21 @@
 - **DB-018 – Configuración de correo con consentimiento explícito y trazabilidad**
   - **Estado:** Hecho.
 - **DB-001A – Auditoría con almacenamiento del registro completo en JSONB**
-  - **Estado:** No hecho.
+  - **Estado:** Hecho.
 - **DB-004A – Validación de teléfono con formato de 10 dígitos o valor ‘sin dato’**
-  - **Estado:** No hecho.
+  - **Estado:** Parcial (el esquema exige 10 dígitos; el default legacy `sin dato` requiere ajuste documental o de CHECK).
 - **DB-006A – Antelación mínima configurable por restaurante**
-  - **Estado:** No hecho.
+  - **Estado:** Hecho.
 - **DB-009A – Prohibición de reservas en fechas pasadas**
-  - **Estado:** No hecho.
+  - **Estado:** Hecho.
 - **DB-009B – Almacenamiento obligatorio del motivo de cancelación y ajuste**
-  - **Estado:** No hecho.
+  - **Estado:** Hecho.
 - **DB-010A – Rango válido de meses y años en cálculos mensuales**
-  - **Estado:** No hecho.
+  - **Estado:** Hecho.
 - **DB-011A – Restricción de calificación entre 0 y 5 incluida**
-  - **Estado:** No hecho.
+  - **Estado:** Hecho.
 - **DB-015A – Índice único por `refresh_token` para sesiones**
-  - **Estado:** No hecho.
+  - **Estado:** Hecho.
 - **DB-022 – Columna Credenciales.id_credencial**
   - **Estado:** Hecho.
 - **DB-023 – Columna Credenciales.email con CHECK de formato**
@@ -74,7 +74,7 @@
   - **Estado:** Hecho.
 - **DB-031 – Columna Usuario.nacionalidad con default**
   - **Estado:** Hecho.
-- **DB-032 – Columna Restaurante.nit como PK**
+- **DB-032 – Columna Restaurante.restaurante_uid como PK y nit como UNIQUE de negocio**
   - **Estado:** Hecho.
 - **DB-033 – Columna Restaurante.horario_apertura y horario_cierre con CHECK**
   - **Estado:** Hecho.
@@ -108,7 +108,7 @@
   - **Estado:** Hecho.
 - **DB-048 – Tabla Mails con imap_uid y body_html**
   - **Estado:** Hecho.
-- **DB-049 – Índice idx_imagen_ref_nit**
+- **DB-049 – Índice idx_imagen_ref_restaurante_uid**
   - **Estado:** Hecho.
 - **DB-050 – Índice idx_password_reset_codes_credencial**
   - **Estado:** Hecho.
@@ -242,7 +242,7 @@
   - **Estado:** Hecho.
 - **DB-112 – Función editar_credenciales (SQL) invocada desde backend**
   - **Estado:** Hecho.
-- **DB-113 – Auditoría de tablas del sistema**
+- **DB-113 – Auditoría por usuario final en tabla Auditoria_Usuario**
   - **Estado:** Hecho.
 - **DB-114 – Tabla Auditoria_Usuario (auditoría por usuario final de la aplicación)**
   - **Estado:** Hecho.

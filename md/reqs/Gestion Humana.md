@@ -51,13 +51,13 @@
   - **Estado:** Hecho.
 - **GU-021 – Endpoint GET /cliente/mi-perfil**
   - **Estado:** Hecho.
-- **GU-022 – Endpoint POST /data-owner/restaurantes/{nit}/crear-empleado**
+- **GU-022 – Endpoint POST /data-owner/restaurantes/{restaurante_uid}/crear-empleado**
   - **Estado:** Hecho.
-- **GU-023 – Endpoint POST /data-owner/restaurantes/{nit}/asignar-empleado**
+- **GU-023 – Endpoint POST /data-owner/restaurantes/{restaurante_uid}/asignar-empleado**
   - **Estado:** Hecho.
 - **GU-024 – Endpoint POST /data-owner/cambiar-rol-cliente**
   - **Estado:** Hecho.
-- **GU-025 – Endpoint GET /data-owner/restaurantes/{nit}/administrador**
+- **GU-025 – Endpoint GET /data-owner/restaurantes/{restaurante_uid}/administrador**
   - **Estado:** Hecho.
 - **GU-026 – Componente PersonalData para ver y editar datos personales**
   - **Estado:** Hecho.

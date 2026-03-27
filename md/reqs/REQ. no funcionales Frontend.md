@@ -23,8 +23,8 @@
   - **Estado:** Vigente.
   - **Implementación actual:** Header sticky con marca, enlace a restaurantes, toggler de tema y acciones de sesión en `Header.tsx`; búsqueda en header condicionada a rol cliente autenticado (`canSearch`).
 - **NFF-VIG-HOME-03 – Búsqueda principal por cocina/restaurante**
-  - **Estado:** Vigente.
-  - **Implementación actual:** Barra principal en `HeroSection` usa `SearchBar.tsx` con sugerencias consultando `/buscar_restaurante` (debounce y abort de request).
+  - **Estado:** Vigente con ajustes pendientes.
+  - **Implementación actual:** Barra principal en `HeroSection` usa `SearchBar.tsx` con sugerencias consultando `/buscar_restaurante` (debounce y abort de request). El contenedor de chips rápidos existe, pero su contenido visible aún está incompleto.
 - **NFF-VIG-HOME-04 – Ubicación opcional**
   - **Estado:** Vigente.
   - **Implementación actual:** Al pulsar "Usar mi ubicación actual" se habilita sección con `RestaurantMap` y scroll automático a `#mapa-ubicacion`.
