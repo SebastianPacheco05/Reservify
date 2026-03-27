@@ -1,5 +1,5 @@
-### Requerimientos financieros (desde Excel)
-> Fuente: `md/currents/reservifyreq.v.1.0.xls.xlsx` → hoja **Financieras**
+### Requerimientos — Financieras
+> Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **Financieras**
 
 - **FI-001 – Facturación básica por reserva**
   - **Estado:** Hecho.
@@ -25,15 +25,15 @@
   - **Estado:** Hecho.
 - **FI-012 – Exportación de facturación a CSV y detalle descargable en PDF**
   - **Estado:** No hecho.
-- **FI-001a – Registro obligatorio de forma de pago en cada factura**
+- **FI-001A – Registro obligatorio de forma de pago en cada factura**
   - **Estado:** Hecho.
-- **FI-001b – Registro del valor total de la factura con dos decimales**
+- **FI-001B – Registro del valor total de la factura con dos decimales**
   - **Estado:** Hecho.
-- **FI-004a – Consolidación de ingresos por restaurante, mes y año**
+- **FI-004A – Consolidación de ingresos por restaurante, mes y año**
   - **Estado:** Hecho.
-- **FI-005a – Exportación de informes de facturación a CSV desde los dashboards**
+- **FI-005A – Exportación de informes de facturación a CSV desde los dashboards**
   - **Estado:** Hecho.
-- **FI-005b – Descarga de facturas individuales en formato PDF**
+- **FI-005B – Descarga de facturas individuales en formato PDF**
   - **Estado:** Hecho.
 - **FI-013 – Campo Encabezado_Factura.nit**
   - **Estado:** Hecho.

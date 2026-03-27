@@ -1,8 +1,8 @@
-### Requerimientos no funcionales (desde Excel)
-> Fuente: `md/currents/reservifyreq.v.1.0.xls.xlsx` → hoja **REQ. No funcionales**
+### Requerimientos (REQ. No funcionales)
+> Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. No funcionales**
 
 - **NF-001 – Seguridad de datos y control de acceso**
-  - **Estado:** Hecho.
+  - **Estado:** En observación (SI y NO marcados).
 - **NF-002 – Verificación de documentos de soporte de proyecto**
   - **Estado:** No hecho.
 - **NF-003 – Disponibilidad general del sistema**
@@ -113,15 +113,15 @@
   - **Estado:** Hecho.
 - **NF-056 – Almacenamiento y consulta eficiente de correos de negocio**
   - **Estado:** Hecho.
-- **NF-001a – Uso de hashing fuerte para contraseñas de usuarios**
+- **NF-001A – Uso de hashing fuerte para contraseñas de usuarios**
   - **Estado:** Hecho.
-- **NF-001b – Protección de rutas críticas mediante JWT y roles**
+- **NF-001B – Protección de rutas críticas mediante JWT y roles**
   - **Estado:** Hecho.
-- **NF-007a – Límite de imágenes por restaurante para evitar sobrecarga**
+- **NF-007A – Límite de imágenes por restaurante para evitar sobrecarga**
   - **Estado:** Hecho.
-- **NF-032a – Exportación de información en formato CSV desde la interfaz**
+- **NF-032A – Exportación de información en formato CSV desde la interfaz**
   - **Estado:** Hecho.
-- **NF-034a – Vista previa en pantalla de facturas y reportes antes de descarga**
+- **NF-034A – Vista previa en pantalla de facturas y reportes antes de descarga**
   - **Estado:** Hecho.
 - **NF-057 – Uso de bcrypt para hashing de contraseñas**
   - **Estado:** Hecho.

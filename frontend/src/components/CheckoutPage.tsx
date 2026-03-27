@@ -1,185 +1,247 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  Building2,
+  CalendarClock,
+  CreditCard,
+  Lock,
+  ShieldCheck,
+  Sparkles,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
+import { Card, CardContent, CardHeader } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Separator } from "../components/ui/separator";
+import { useToastContext } from "./ToastProvider";
+import { Brand } from "./Brand";
+import { getApiEndpoint } from "../config/api";
+import { cn } from "../lib/utils";
 
-import { useState, useEffect } from "react"
-import { Lock, Check, AlertCircle, ChevronRight } from "lucide-react"
-import { Card } from "@/components/ui/card"
-import { getApiEndpoint } from "../config/api"
-
-interface ReservationData {
-  id_encab_fact: number
-  restaurant: any
-  mesa: any
-  guests: number
-  fecha: string
-  horario: string
+export interface ReservationData {
+  id_encab_fact: number;
+  restaurant: { nombre_restaurante?: string };
+  mesa: { id_mesa?: number; precio?: number };
+  guests: number;
+  fecha: string;
+  horario: string;
 }
 
 interface CheckoutPageProps {
-  reservationData: ReservationData
+  reservationData: ReservationData;
 }
 
-type PaymentType = "CARD" | "BANCOLOMBIA_TRANSFER"
-
 interface ValidationErrors {
-  cardNumber?: string
-  cvc?: string
-  expMonth?: string
-  expYear?: string
-  cardHolder?: string
+  cardNumber?: string;
+  cvc?: string;
+  expiry?: string;
+  cardHolder?: string;
 }
 
 export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
-  const [cardNumber, setCardNumber] = useState("")
-  const [cvc, setCvc] = useState("")
-  const [expMonth, setExpMonth] = useState("")
-  const [expYear, setExpYear] = useState("")
-  const [cardHolder, setCardHolder] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [paymentType, setPaymentType] = useState<PaymentType>("CARD")
-  const [emailCliente, setEmailCliente] = useState("")
-  const [errors, setErrors] = useState<ValidationErrors>({})
-  const [touched, setTouched] = useState<Record<string, boolean>>({})
+  const navigate = useNavigate();
+  const { toast } = useToastContext();
+
+  const [cardNumber, setCardNumber] = useState("");
+  const [cvc, setCvc] = useState("");
+  /** Dígitos MMYY; la vista se formatea como MM/YY */
+  const [expiry, setExpiry] = useState("");
+  const [cardHolder, setCardHolder] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [waitingBank, setWaitingBank] = useState(false);
+  const [emailCliente, setEmailCliente] = useState("");
+  const [errors, setErrors] = useState<ValidationErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const precio = reservationData.mesa?.precio ?? 0;
+  const nombreRestaurante = reservationData.restaurant?.nombre_restaurante ?? "Restaurante";
+
+  const fechaFormateada = useMemo(() => {
+    if (!reservationData.fecha) return "—";
+    try {
+      const d = new Date(reservationData.fecha);
+      if (Number.isNaN(d.getTime())) return reservationData.fecha;
+      return d.toLocaleDateString("es-CO", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+    } catch {
+      return reservationData.fecha;
+    }
+  }, [reservationData.fecha]);
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token")
+    const token = localStorage.getItem("access_token");
     if (token) {
       try {
-        const tokenPayload = JSON.parse(atob(token.split(".")[1]))
-        setEmailCliente(tokenPayload.sub)
-      } catch (error) {
-        console.error("Error al extraer email del token:", error)
+        const tokenPayload = JSON.parse(atob(token.split(".")[1]));
+        setEmailCliente(tokenPayload.sub ?? "");
+      } catch {
+        /* ignore */
       }
     }
-  }, [])
+  }, []);
 
   const validateCard = () => {
-    const newErrors: ValidationErrors = {}
-
+    const newErrors: ValidationErrors = {};
     if (!cardNumber || cardNumber.replace(/\s/g, "").length !== 16) {
-      newErrors.cardNumber = "El número debe tener 16 dígitos"
+      newErrors.cardNumber = "16 dígitos";
     }
     if (!cvc || cvc.length !== 3) {
-      newErrors.cvc = "CVC debe tener 3 dígitos"
+      newErrors.cvc = "3 dígitos";
     }
-    if (!expMonth || Number.parseInt(expMonth) < 1 || Number.parseInt(expMonth) > 12) {
-      newErrors.expMonth = "Mes inválido (01-12)"
-    }
-    if (!expYear || expYear.length !== 4 || Number.parseInt(expYear) < new Date().getFullYear()) {
-      newErrors.expYear = "Año expirado o inválido"
+    const expDigits = expiry.replace(/\D/g, "");
+    if (expDigits.length !== 4) {
+      newErrors.expiry = "MM/YY completo";
+    } else {
+      const mm = Number.parseInt(expDigits.slice(0, 2), 10);
+      const yy = Number.parseInt(expDigits.slice(2, 4), 10);
+      if (mm < 1 || mm > 12) {
+        newErrors.expiry = "Mes 01–12";
+      } else {
+        const fullYear = 2000 + yy;
+        const now = new Date();
+        const curY = now.getFullYear();
+        const curM = now.getMonth() + 1;
+        if (fullYear < curY || (fullYear === curY && mm < curM)) {
+          newErrors.expiry = "Tarjeta vencida";
+        }
+      }
     }
     if (!cardHolder || cardHolder.trim().length < 3) {
-      newErrors.cardHolder = "Nombre debe tener al menos 3 caracteres"
+      newErrors.cardHolder = "Nombre como en la tarjeta";
     }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+  const formatExpiryMMYY = (value: string) => {
+    const d = value.replace(/\D/g, "").slice(0, 4);
+    if (d.length <= 2) return d;
+    return `${d.slice(0, 2)}/${d.slice(2)}`;
+  };
 
   const formatCardNumber = (value: string) => {
-    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "")
-    const matches = v.match(/\d{4,16}/g)
-    const match = (matches && matches[0]) || ""
-    const parts = []
-
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4))
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+    const match = (v.match(/\d{4,16}/g) && v.match(/\d{4,16}/g)![0]) || "";
+    const parts: string[] = [];
+    for (let i = 0; i < match.length; i += 4) {
+      parts.push(match.substring(i, i + 4));
     }
-
-    if (parts.length) {
-      return parts.join(" ")
-    } else {
-      return value
-    }
-  }
+    return parts.length ? parts.join(" ") : value;
+  };
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCardNumber(formatCardNumber(e.target.value))
-    setTouched({ ...touched, cardNumber: true })
-  }
+    setCardNumber(formatCardNumber(e.target.value));
+    setTouched((t) => ({ ...t, cardNumber: true }));
+  };
 
   const consultarEstadoTransaccion = async (transactionId: string): Promise<string | null> => {
     try {
       const response = await fetch(getApiEndpoint(`/wompi/transaccion/${transactionId}`), {
         method: "GET",
         headers: { "Content-Type": "application/json" },
-      })
-
-      if (!response.ok) {
-        return null
-      }
-
-      const result = await response.json()
-      return result.data?.status || null
-    } catch (error) {
-      console.error("Error al consultar estado:", error)
-      return null
+      });
+      if (!response.ok) return null;
+      const result = await response.json();
+      return result.data?.status ?? null;
+    } catch {
+      return null;
     }
-  }
+  };
 
-  const pollTransactionStatus = async (transactionId: string): Promise<void> => {
-    const maxAttempts = 60 // 5 minutos con intervalos de 5 segundos
-    let attempts = 0
+  const pollTransactionStatus = (transactionId: string): void => {
+    setWaitingBank(true);
+    const maxAttempts = 60;
+    let attempts = 0;
 
     const pollInterval = setInterval(async () => {
-      attempts++
-      const status = await consultarEstadoTransaccion(transactionId)
+      attempts++;
+      const status = await consultarEstadoTransaccion(transactionId);
 
       if (status === "APPROVED") {
-        clearInterval(pollInterval)
-        alert("¡Pago exitoso! Tu reserva ha sido confirmada")
-        sessionStorage.removeItem("pendingReservation")
-        window.location.href = "/"
+        clearInterval(pollInterval);
+        setLoading(false);
+        setWaitingBank(false);
+        sessionStorage.removeItem("pendingReservation");
+        toast({
+          title: "Pago confirmado",
+          description: "Tu reserva quedó registrada. Te enviaremos los detalles por correo.",
+          variant: "success",
+        });
+        window.location.href = "/";
       } else if (status === "DECLINED") {
-        clearInterval(pollInterval)
-        setLoading(false)
-        alert("El pago fue rechazado. Por favor intenta con otra tarjeta")
+        clearInterval(pollInterval);
+        setLoading(false);
+        setWaitingBank(false);
+        toast({
+          title: "Pago rechazado",
+          description: "Prueba con otra tarjeta.",
+          variant: "destructive",
+        });
       } else if (status === "VOIDED" || status === "ERROR") {
-        clearInterval(pollInterval)
-        setLoading(false)
-        alert("Error al procesar el pago. Por favor intenta de nuevo")
+        clearInterval(pollInterval);
+        setLoading(false);
+        setWaitingBank(false);
+        toast({
+          title: "No se pudo completar el pago",
+          description: "Intenta de nuevo en unos minutos.",
+          variant: "destructive",
+        });
       } else if (attempts >= maxAttempts) {
-        clearInterval(pollInterval)
-        setLoading(false)
-        alert("Tiempo de espera agotado. Por favor verifica el estado de tu pago más tarde")
+        clearInterval(pollInterval);
+        setLoading(false);
+        setWaitingBank(false);
+        toast({
+          title: "Tiempo de espera agotado",
+          description: "Revisa más tarde el estado de tu pago en tu banco o contacto.",
+          variant: "warning",
+        });
       }
-      // Si es PENDING, continuar polling
-    }, 5000) // Consultar cada 5 segundos
-  }
+    }, 5000);
+  };
 
   const handlePayment = async () => {
     if (!emailCliente) {
-      alert("No se pudo obtener el email del cliente")
-      return
+      toast({
+        title: "Sesión incompleta",
+        description: "No encontramos tu correo. Vuelve a iniciar sesión.",
+        variant: "warning",
+      });
+      return;
     }
 
-    if (paymentType === "CARD" && !validateCard()) {
-      return
+    if (!validateCard()) {
+      toast({
+        title: "Revisa los datos de la tarjeta",
+        description: "Corrige los campos antes de continuar.",
+        variant: "warning",
+      });
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      let paymentMethod: any
-      if (paymentType === "CARD") {
-        const expYearShort = expYear.toString().slice(-2)
-        const expMonthPadded = expMonth.toString().padStart(2, "0")
-
-        paymentMethod = {
-          type: "CARD",
-          card_number: cardNumber.replace(/\s/g, ""),
-          cvc,
-          exp_month: expMonthPadded,
-          exp_year: expYearShort,
-          card_holder: cardHolder,
-          installments: 1,
-        }
-      } else {
-        paymentMethod = {
-          type: "BANCOLOMBIA_TRANSFER",
-          payment_description: `Pago reserva ${reservationData.id_encab_fact}`,
-        }
-      }
+      const expDigits = expiry.replace(/\D/g, "");
+      const expMonthPadded = expDigits.slice(0, 2);
+      const expYearShort = expDigits.slice(2, 4);
+      const paymentMethod = {
+        type: "CARD",
+        card_number: cardNumber.replace(/\s/g, ""),
+        cvc,
+        exp_month: expMonthPadded,
+        exp_year: expYearShort,
+        card_holder: cardHolder,
+        installments: 1,
+      };
 
       const response = await fetch(getApiEndpoint("/wompi/crear_pago"), {
         method: "POST",
@@ -190,432 +252,375 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
           correo_cliente: emailCliente,
           payment_method: paymentMethod,
         }),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.detail || "Error en la solicitud de pago")
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || "Error al iniciar el pago");
       }
 
-      const result = await response.json()
+      const result = await response.json();
 
-      // Si hay async_payment_url (pagos asíncronos como BANCOLOMBIA_TRANSFER), redirigir
       if (result.data?.payment_method?.extra?.async_payment_url) {
-        window.location.href = result.data.payment_method.extra.async_payment_url
-        return
+        window.location.href = result.data.payment_method.extra.async_payment_url;
+        return;
       }
 
-      // Si la reserva ya fue confirmada (transacción APPROVED inmediatamente)
       if (result.reserva_confirmada === true) {
-        alert("¡Pago exitoso! Tu reserva ha sido confirmada")
-        sessionStorage.removeItem("pendingReservation")
-        window.location.href = "/"
-        return
+        sessionStorage.removeItem("pendingReservation");
+        toast({
+          title: "Pago confirmado",
+          description: "Tu reserva está lista.",
+          variant: "success",
+        });
+        window.location.href = "/";
+        return;
       }
 
-      const httpStatus = result.http_status_code
-      const tieneData = result.data && result.data !== null
-      const transactionStatus = result.data?.status
-      const transactionId = result.transaction_id || result.data?.id
+      const httpStatus = result.http_status_code;
+      const tieneData = result.data && result.data !== null;
+      const transactionStatus = result.data?.status;
+      const transactionId = result.transaction_id || result.data?.id;
 
-      // Si la transacción fue creada exitosamente
       if ((httpStatus === 200 || httpStatus === 201) && tieneData) {
-        // Si el estado es APPROVED, confirmar inmediatamente
         if (transactionStatus === "APPROVED") {
-          alert("¡Pago exitoso! Tu reserva ha sido confirmada")
-          sessionStorage.removeItem("pendingReservation")
-          window.location.href = "/"
-          return
+          sessionStorage.removeItem("pendingReservation");
+          toast({
+            title: "Pago confirmado",
+            description: "Tu reserva está lista.",
+            variant: "success",
+          });
+          window.location.href = "/";
+          return;
         }
 
-        // Si el estado es DECLINED o ERROR, mostrar error
         if (transactionStatus === "DECLINED") {
-          setLoading(false)
-          alert("El pago fue rechazado. Por favor intenta con otra tarjeta")
-          return
+          setLoading(false);
+          toast({
+            title: "Pago rechazado",
+            description: "El banco no autorizó la transacción.",
+            variant: "destructive",
+          });
+          return;
         }
 
         if (transactionStatus === "ERROR") {
-          setLoading(false)
-          alert("Error al procesar el pago. Por favor intenta de nuevo")
-          return
+          setLoading(false);
+          toast({
+            title: "Error en el pago",
+            description: "Intenta de nuevo.",
+            variant: "destructive",
+          });
+          return;
         }
 
-        // Si el estado es PENDING y tenemos transaction_id, iniciar polling
         if (transactionStatus === "PENDING" && transactionId) {
-          await pollTransactionStatus(transactionId)
-          return
+          pollTransactionStatus(transactionId);
+          return;
         }
 
-        // Si no tenemos transaction_id pero la transacción fue creada, esperar webhook
         if (transactionId) {
-          alert("Tu pago está siendo procesado. Te notificaremos cuando se complete.")
-          setLoading(false)
-          return
+          toast({
+            title: "Procesando pago",
+            description: "Te avisaremos cuando se confirme.",
+            variant: "default",
+          });
+          setLoading(false);
+          return;
         }
       }
 
-      // Si llegamos aquí sin manejar el caso, mostrar mensaje genérico
-      setLoading(false)
-      alert("Pago procesado. Estado: " + (transactionStatus || "PENDIENTE"))
+      setLoading(false);
+      toast({
+        title: "Estado del pago",
+        description: String(transactionStatus ?? "PENDIENTE"),
+        variant: "default",
+      });
     } catch (err) {
-      setLoading(false)
-      const errorMessage = err instanceof Error ? err.message : "Error desconocido en el pago"
-      alert(`Error en el pago: ${errorMessage}`)
-      console.error("Error completo:", err)
+      setLoading(false);
+      setWaitingBank(false);
+      const msg = err instanceof Error ? err.message : "Error desconocido";
+      toast({ title: "No se pudo procesar", description: msg, variant: "destructive" });
     }
-  }
+  };
 
-  const isCardFormValid = cardNumber && cvc && expMonth && expYear && cardHolder && Object.keys(errors).length === 0
+  const cardReady =
+    cardNumber.replace(/\s/g, "").length === 16 &&
+    cvc.length === 3 &&
+    expiry.replace(/\D/g, "").length === 4 &&
+    cardHolder.trim().length >= 3;
+
+  const canSubmit = Boolean(emailCliente) && !loading && !waitingBank && cardReady;
+
+  const goBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else window.location.href = "/";
+  };
+
+  const inputError = (field: keyof ValidationErrors) =>
+    touched[field] && errors[field] ? "border-destructive focus-visible:ring-destructive/30" : "";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background p-6 sm:p-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-3">Completa tu reserva</h1>
-          <p className="text-lg sm:text-xl text-muted-foreground">Revisa los detalles y elige tu método de pago</p>
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="sticky top-0 z-30 border-b border-border/80 bg-background/95 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+          <button
+            type="button"
+            onClick={goBack}
+            className="inline-flex items-center gap-2 rounded-xl px-2 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Volver</span>
+          </button>
+          <div className="flex items-center gap-2">
+            <Brand variant="full" className="h-7 w-auto object-contain" alt="Reservify" />
+            <span className="hidden text-sm font-semibold sm:inline">Pago con tarjeta</span>
+          </div>
+          <div className="flex items-center gap-1.5 rounded-full border border-border/80 bg-muted/40 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+            <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+            Wompi
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:py-10">
+        <div className="mb-6 lg:mb-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Checkout</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">Paga tu reserva</h1>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Solo aceptamos tarjeta débito o crédito. El cobro lo procesa Wompi de forma segura.
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* Payment Form */}
-          <div className="md:col-span-2 space-y-8">
-            {/* Reservation Summary Card */}
-            <Card className="overflow-hidden border-0 shadow-xl">
-              <div className="bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 border-b border-primary/30 p-8">
-                <h2 className="text-2xl font-bold text-foreground">Resumen de tu reserva</h2>
+        <div className="grid gap-8 lg:grid-cols-12 lg:gap-10 lg:items-start">
+          {/* Columna izquierda: resumen + formulario */}
+          <div className="space-y-6 lg:col-span-7">
+            {/* Resumen en una fila densa */}
+            <section
+              aria-label="Resumen de la reserva"
+              className="grid gap-3 sm:grid-cols-3 sm:gap-4"
+            >
+              <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm sm:col-span-1">
+                <div className="flex items-start gap-2.5">
+                  <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                      Restaurante
+                    </p>
+                    <p className="truncate text-sm font-semibold">{nombreRestaurante}</p>
+                    <p className="text-xs text-muted-foreground">Factura #{reservationData.id_encab_fact}</p>
+                  </div>
+                </div>
               </div>
-              <div className="p-8 space-y-6">
-                <div className="grid grid-cols-2 gap-6">
+              <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm">
+                <div className="flex items-start gap-2.5">
+                  <CalendarClock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                   <div>
-                    <p className="text-sm text-muted-foreground font-medium mb-2">Restaurante</p>
-                    <p className="text-lg font-semibold text-foreground">
-                      {reservationData.restaurant?.nombre_restaurante}
+                    <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                      Fecha y hora
+                    </p>
+                    <p className="text-sm font-medium leading-snug">{fechaFormateada}</p>
+                    <p className="text-sm text-muted-foreground">{reservationData.horario}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm">
+                <div className="flex items-start gap-2.5">
+                  <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                  <div>
+                    <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                      Mesa
+                    </p>
+                    <p className="text-sm font-medium">#{reservationData.mesa?.id_mesa ?? "—"}</p>
+                    <p className="text-sm text-muted-foreground">{reservationData.guests} personas</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <Card className="border-border/80 shadow-sm">
+              <CardHeader className="border-b border-border/60 px-4 py-4 sm:px-6 sm:py-5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <CreditCard className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="text-base font-semibold">Datos de la tarjeta</p>
+                    <p className="text-xs text-muted-foreground">
+                      Los datos viajan cifrados; no guardamos tu número completo.
                     </p>
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground font-medium mb-2">Mesa</p>
-                    <p className="text-lg font-semibold text-foreground">#{reservationData.mesa?.id_mesa}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground font-medium mb-2">Fecha</p>
-                    <p className="text-lg font-semibold text-foreground">{reservationData.fecha}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground font-medium mb-2">Hora</p>
-                    <p className="text-lg font-semibold text-foreground">{reservationData.horario}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-sm text-muted-foreground font-medium mb-2">Comensales</p>
-                    <p className="text-lg font-semibold text-foreground">{reservationData.guests} personas</p>
-                  </div>
                 </div>
-                <div className="border-t border-border pt-6">
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg text-muted-foreground font-medium">Total a pagar:</span>
-                    <span className="text-3xl font-bold text-primary">
-                      ${reservationData.mesa?.precio?.toLocaleString()} COP
-                    </span>
-                  </div>
+              </CardHeader>
+              <CardContent className="space-y-5 p-4 sm:p-6">
+                <div className="space-y-2">
+                  <Label htmlFor="cc-num">Número de tarjeta</Label>
+                  <Input
+                    id="cc-num"
+                    inputMode="numeric"
+                    autoComplete="cc-number"
+                    placeholder="0000 0000 0000 0000"
+                    value={cardNumber}
+                    onChange={handleCardNumberChange}
+                    onBlur={() => setTouched((t) => ({ ...t, cardNumber: true }))}
+                    maxLength={19}
+                    className={cn("h-12 font-mono text-base tracking-wide sm:max-w-xl", inputError("cardNumber"))}
+                  />
+                  {errors.cardNumber && touched.cardNumber && (
+                    <p className="flex items-center gap-1 text-xs text-destructive">
+                      <AlertCircle className="h-3.5 w-3.5" />
+                      {errors.cardNumber}
+                    </p>
+                  )}
                 </div>
-              </div>
-            </Card>
 
-            {/* Payment Method Selection */}
-            <Card className="border-0 shadow-xl overflow-hidden">
-              <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border-b border-border p-8">
-                <h2 className="text-2xl font-bold text-foreground">Método de pago</h2>
-              </div>
-              <div className="p-6 space-y-4">
-                {/* Card Payment Option */}
-                <button
-                  onClick={() => {
-                    setPaymentType("CARD")
-                    setErrors({})
-                  }}
-                  className={`w-full text-left p-6 rounded-xl border-2 transition-all ${paymentType === "CARD"
-                      ? "border-primary bg-primary/10 shadow-lg shadow-primary/20"
-                      : "border-border bg-card hover:border-primary/50 hover:bg-muted/50"
-                    }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-lg font-semibold text-foreground">Tarjeta de crédito o débito</p>
-                      <p className="text-sm text-muted-foreground mt-1">Visa, Mastercard, Amex</p>
-                    </div>
-                    <div
-                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${paymentType === "CARD" ? "border-primary bg-primary" : "border-muted-foreground/30"
-                        }`}
-                    >
-                      {paymentType === "CARD" && <Check className="w-4 h-4 text-primary-foreground" />}
-                    </div>
-                  </div>
-                </button>
-
-                {/* Bank Transfer Option */}
-                <button
-                  onClick={() => {
-                    setPaymentType("BANCOLOMBIA_TRANSFER")
-                    setErrors({})
-                  }}
-                  className={`w-full text-left p-6 rounded-xl border-2 transition-all ${paymentType === "BANCOLOMBIA_TRANSFER"
-                      ? "border-secondary bg-secondary/10 shadow-lg shadow-secondary/20"
-                      : "border-border bg-card hover:border-secondary/50 hover:bg-muted/50"
-                    }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-lg font-semibold text-foreground">Botón Bancolombia</p>
-                      <p className="text-sm text-muted-foreground mt-1">Transferencia bancaria segura</p>
-                    </div>
-                    <div
-                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${paymentType === "BANCOLOMBIA_TRANSFER" ? "border-secondary bg-secondary" : "border-muted-foreground/30"
-                        }`}
-                    >
-                      {paymentType === "BANCOLOMBIA_TRANSFER" && <Check className="w-4 h-4 text-secondary-foreground" />}
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </Card>
-
-            {/* Card Form */}
-            {paymentType === "CARD" && (
-              <Card className="border-0 shadow-xl overflow-hidden">
-                <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 border-b border-border p-8">
-                  <h2 className="text-2xl font-bold text-foreground">Información de la tarjeta</h2>
+                <div className="space-y-2">
+                  <Label htmlFor="cc-name">Titular</Label>
+                  <Input
+                    id="cc-name"
+                    autoComplete="cc-name"
+                    placeholder="NOMBRE COMO EN LA TARJETA"
+                    value={cardHolder}
+                    onChange={(e) => {
+                      setCardHolder(e.target.value.toUpperCase());
+                      setTouched((t) => ({ ...t, cardHolder: true }));
+                    }}
+                    onBlur={() => setTouched((t) => ({ ...t, cardHolder: true }))}
+                    className={cn("h-12 uppercase sm:max-w-xl", inputError("cardHolder"))}
+                  />
+                  {errors.cardHolder && touched.cardHolder && (
+                    <p className="text-xs text-destructive">{errors.cardHolder}</p>
+                  )}
                 </div>
-                <div className="p-8 space-y-6">
-                  {/* Card Number */}
-                  <div>
-                    <label className="block text-base font-medium text-foreground mb-3">Número de tarjeta</label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="0000 0000 0000 0000"
-                        value={cardNumber}
-                        onChange={handleCardNumberChange}
-                        onBlur={() => setTouched({ ...touched, cardNumber: true })}
-                        maxLength={19}
-                        className={`w-full px-5 py-4 text-lg rounded-xl border-2 outline-none transition-all ${errors.cardNumber && touched.cardNumber
-                            ? "border-destructive bg-destructive/10"
-                            : "border-input bg-background focus:border-primary focus:ring-2 focus:ring-primary/20"
-                          }`}
-                      />
-                    </div>
-                    {errors.cardNumber && touched.cardNumber && (
-                      <div className="flex items-center gap-2 mt-2 text-destructive">
-                        <AlertCircle className="w-5 h-5" />
-                        <span className="text-sm">{errors.cardNumber}</span>
-                      </div>
-                    )}
-                  </div>
 
-                  {/* Card Holder */}
-                  <div>
-                    <label className="block text-base font-medium text-foreground mb-3">Nombre del titular</label>
-                    <input
-                      type="text"
-                      placeholder="JUAN PEREZ"
-                      value={cardHolder}
+                <div className="flex max-w-xl flex-col gap-4 sm:flex-row sm:items-end sm:gap-5">
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <Label htmlFor="cc-exp">Vencimiento</Label>
+                    <Input
+                      id="cc-exp"
+                      inputMode="numeric"
+                      autoComplete="cc-exp"
+                      placeholder="MM/YY"
+                      value={expiry}
                       onChange={(e) => {
-                        setCardHolder(e.target.value.toUpperCase())
-                        setTouched({ ...touched, cardHolder: true })
+                        setExpiry(formatExpiryMMYY(e.target.value));
+                        setTouched((t) => ({ ...t, expiry: true }));
                       }}
-                      onBlur={() => setTouched({ ...touched, cardHolder: true })}
-                      className={`w-full px-5 py-4 text-lg rounded-xl border-2 outline-none transition-all ${errors.cardHolder && touched.cardHolder
-                          ? "border-destructive bg-destructive/10"
-                          : "border-input bg-background focus:border-primary focus:ring-2 focus:ring-primary/20"
-                        }`}
+                      onBlur={() => setTouched((t) => ({ ...t, expiry: true }))}
+                      maxLength={5}
+                      className={cn("h-12 font-mono text-center tracking-widest sm:text-left", inputError("expiry"))}
                     />
-                    {errors.cardHolder && touched.cardHolder && (
-                      <div className="flex items-center gap-2 mt-2 text-destructive">
-                        <AlertCircle className="w-5 h-5" />
-                        <span className="text-sm">{errors.cardHolder}</span>
-                      </div>
+                    {errors.expiry && touched.expiry && (
+                      <p className="text-xs text-destructive">{errors.expiry}</p>
                     )}
                   </div>
-
-                  {/* Expiry and CVC */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-base font-medium text-foreground mb-3">Mes</label>
-                      <input
-                        type="text"
-                        placeholder="MM"
-                        value={expMonth}
-                        onChange={(e) => {
-                          const val = e.target.value.slice(0, 2)
-                          setExpMonth(val)
-                          setTouched({ ...touched, expMonth: true })
-                        }}
-                        onBlur={() => setTouched({ ...touched, expMonth: true })}
-                        maxLength={2}
-                        className={`w-full px-4 py-4 text-lg rounded-xl border-2 outline-none transition-all text-center ${errors.expMonth && touched.expMonth
-                            ? "border-destructive bg-destructive/10"
-                            : "border-input bg-background focus:border-primary focus:ring-2 focus:ring-primary/20"
-                          }`}
-                      />
-                      {errors.expMonth && touched.expMonth && (
-                        <p className="text-xs text-destructive mt-2">{errors.expMonth}</p>
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-base font-medium text-foreground mb-3">Año</label>
-                      <input
-                        type="text"
-                        placeholder="YYYY"
-                        value={expYear}
-                        onChange={(e) => {
-                          const val = e.target.value.slice(0, 4)
-                          setExpYear(val)
-                          setTouched({ ...touched, expYear: true })
-                        }}
-                        onBlur={() => setTouched({ ...touched, expYear: true })}
-                        maxLength={4}
-                        className={`w-full px-4 py-4 text-lg rounded-xl border-2 outline-none transition-all text-center ${errors.expYear && touched.expYear
-                            ? "border-destructive bg-destructive/10"
-                            : "border-input bg-background focus:border-primary focus:ring-2 focus:ring-primary/20"
-                          }`}
-                      />
-                      {errors.expYear && touched.expYear && (
-                        <p className="text-xs text-destructive mt-2">{errors.expYear}</p>
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-base font-medium text-foreground mb-3">CVC</label>
-                      <input
-                        type="text"
-                        placeholder="CVC"
-                        value={cvc}
-                        onChange={(e) => {
-                          const val = e.target.value.slice(0, 3)
-                          setCvc(val)
-                          setTouched({ ...touched, cvc: true })
-                        }}
-                        onBlur={() => setTouched({ ...touched, cvc: true })}
-                        maxLength={3}
-                        className={`w-full px-4 py-4 text-lg rounded-xl border-2 outline-none transition-all text-center ${errors.cvc && touched.cvc
-                            ? "border-destructive bg-destructive/10"
-                            : "border-input bg-background focus:border-primary focus:ring-2 focus:ring-primary/20"
-                          }`}
-                      />
-                      {errors.cvc && touched.cvc && <p className="text-xs text-destructive mt-2">{errors.cvc}</p>}
-                    </div>
-                  </div>
-
-                  <div className="bg-primary/10 border border-primary/30 rounded-xl p-5 flex items-start gap-3">
-                    <Lock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-foreground font-medium">Tu información de pago está encriptada y es 100% segura</p>
+                  <div className="w-full space-y-2 sm:w-32 sm:shrink-0">
+                    <Label htmlFor="cc-cvc">CVC</Label>
+                    <Input
+                      id="cc-cvc"
+                      inputMode="numeric"
+                      autoComplete="cc-csc"
+                      placeholder="•••"
+                      value={cvc}
+                      onChange={(e) => {
+                        setCvc(e.target.value.slice(0, 3));
+                        setTouched((t) => ({ ...t, cvc: true }));
+                      }}
+                      onBlur={() => setTouched((t) => ({ ...t, cvc: true }))}
+                      maxLength={3}
+                      className={cn("h-12 text-center font-mono", inputError("cvc"))}
+                    />
                   </div>
                 </div>
-              </Card>
-            )}
 
-            {/* Bank Transfer Info */}
-            {paymentType === "BANCOLOMBIA_TRANSFER" && (
-              <Card className="border-0 shadow-xl overflow-hidden border-l-4 border-l-secondary">
-                <div className="bg-secondary/10 p-8">
-                  <div className="flex items-start gap-4">
-                    <div className="bg-secondary/20 p-3 rounded-xl">
-                      <Check className="w-6 h-6 text-secondary" />
-                    </div>
-                    <div>
-                      <p className="text-lg font-semibold text-foreground">Serás redirigido a Bancolombia</p>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Completarás el pago de forma segura en la plataforma de Bancolombia. No compartes tus datos
-                        bancarios con nosotros.
-                      </p>
-                    </div>
-                  </div>
+                <div className="flex items-start gap-2 rounded-xl border border-border bg-muted/30 px-3 py-3 text-xs text-muted-foreground sm:text-sm">
+                  <Lock className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  No compartas tu CVC por WhatsApp ni teléfono. Reservify nunca te pedirá la clave por correo.
                 </div>
-              </Card>
-            )}
+              </CardContent>
+            </Card>
+
+            <div className="lg:hidden">
+              <Button
+                type="button"
+                size="lg"
+                className="h-12 w-full rounded-xl text-base font-semibold"
+                disabled={!canSubmit}
+                onClick={handlePayment}
+              >
+                {loading || waitingBank ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    {waitingBank ? "Esperando confirmación…" : "Procesando…"}
+                  </>
+                ) : (
+                  <>Pagar ${precio.toLocaleString("es-CO")} COP</>
+                )}
+              </Button>
+            </div>
           </div>
 
-          {/* Sidebar - Total and Payment Button */}
-          <div className="md:col-span-1">
-            <Card className="sticky top-8 border-0 shadow-xl overflow-hidden">
-              <div className="bg-gradient-to-br from-primary via-primary/90 to-secondary p-8 text-primary-foreground">
-                <p className="text-base font-medium opacity-95 mb-3">Total a pagar</p>
-                <p className="text-5xl font-bold">${reservationData.mesa?.precio?.toLocaleString()} COP</p>
-              </div>
-              <div className="p-6 space-y-5">
-                <button
-                  onClick={handlePayment}
-                  disabled={loading || !emailCliente || (paymentType === "CARD" && !isCardFormValid)}
-                  className={`w-full py-4 px-6 rounded-xl text-lg font-bold flex items-center justify-center gap-3 transition-all shadow-lg ${loading || !emailCliente || (paymentType === "CARD" && !isCardFormValid)
-                      ? "bg-muted text-muted-foreground cursor-not-allowed"
-                      : "bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:from-primary/90 hover:to-secondary/90 active:scale-95 shadow-primary/30"
-                    }`}
-                >
-                  {loading ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                      Procesando...
-                    </>
-                  ) : (
-                    <>
-                      Confirmar pago
-                      <ChevronRight className="w-5 h-5" />
-                    </>
-                  )}
-                </button>
-
-                <div className="text-sm text-muted-foreground text-center flex items-center justify-center gap-2">
-                  <Lock className="w-4 h-4" />
-                  Pagos seguros con encriptación
+          {/* Columna derecha: total fijo */}
+          <aside className="lg:col-span-5">
+            <div className="lg:sticky lg:top-20">
+              <Card className="overflow-hidden border-border/80 shadow-md">
+                <div className="bg-gradient-to-br from-foreground to-foreground/95 px-6 py-8 text-background">
+                  <p className="text-xs font-medium uppercase tracking-wider opacity-90">Total a pagar</p>
+                  <p className="mt-2 text-4xl font-bold tabular-nums tracking-tight sm:text-5xl">
+                    ${precio.toLocaleString("es-CO")}
+                  </p>
+                  <p className="mt-2 text-xs opacity-85">COP · Reserva de mesa</p>
                 </div>
-
-                {paymentType === "CARD" && (
-                  <div className="pt-5 border-t border-border space-y-3">
-                    <p className="text-sm font-semibold text-foreground mb-3">Estado del formulario:</p>
-                    <div className="space-y-2.5 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-3">
-                        {cardNumber && touched.cardNumber && !errors.cardNumber ? (
-                          <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                        ) : (
-                          <div className="w-4 h-4 rounded-full bg-muted-foreground/30 flex-shrink-0" />
-                        )}
-                        <span>Número de tarjeta</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        {cardHolder && touched.cardHolder && !errors.cardHolder ? (
-                          <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                        ) : (
-                          <div className="w-4 h-4 rounded-full bg-muted-foreground/30 flex-shrink-0" />
-                        )}
-                        <span>Titular</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        {expMonth &&
-                          expYear &&
-                          touched.expMonth &&
-                          touched.expYear &&
-                          !errors.expMonth &&
-                          !errors.expYear ? (
-                          <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                        ) : (
-                          <div className="w-4 h-4 rounded-full bg-muted-foreground/30 flex-shrink-0" />
-                        )}
-                        <span>Fecha de expiración</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        {cvc && touched.cvc && !errors.cvc ? (
-                          <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                        ) : (
-                          <div className="w-4 h-4 rounded-full bg-muted-foreground/30 flex-shrink-0" />
-                        )}
-                        <span>CVC</span>
-                      </div>
-                    </div>
+                <CardContent className="space-y-5 p-6">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Correo de la cuenta</p>
+                    <p className="mt-1 break-all text-sm font-medium">
+                      {emailCliente || <span className="text-destructive">No disponible — inicia sesión</span>}
+                    </p>
                   </div>
-                )}
-              </div>
-            </Card>
+                  <Separator />
+                  <Button
+                    type="button"
+                    size="lg"
+                    className="hidden h-12 w-full rounded-xl text-base font-semibold lg:inline-flex"
+                    disabled={!canSubmit}
+                    onClick={handlePayment}
+                  >
+                    {loading || waitingBank ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        {waitingBank ? "Confirmando…" : "Procesando…"}
+                      </>
+                    ) : (
+                      "Confirmar pago"
+                    )}
+                  </Button>
+                  <p className="hidden text-center text-[11px] leading-relaxed text-muted-foreground lg:block">
+                    Al pagar aceptas los términos del procesador Wompi. Cargo único por esta reserva.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </aside>
+        </div>
+      </main>
+
+      {(loading || waitingBank) && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 backdrop-blur-sm"
+          role="alertdialog"
+          aria-busy="true"
+          aria-label="Procesando pago"
+        >
+          <div className="mx-4 max-w-sm rounded-2xl border border-border bg-card p-6 text-center shadow-xl">
+            <Loader2 className="mx-auto h-10 w-10 animate-spin text-primary" />
+            <p className="mt-4 font-semibold text-foreground">
+              {waitingBank ? "Esperando respuesta del banco" : "Procesando tu pago"}
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              No cierres esta ventana. Puede tardar unos segundos.
+            </p>
           </div>
         </div>
-      </div>
+      )}
     </div>
-  )
+  );
 }

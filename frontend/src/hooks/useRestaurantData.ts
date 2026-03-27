@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { RestaurantDataService } from "../services/RestaurantDataService";
 import type {
   RestaurantDetailFromDB,
@@ -9,8 +9,8 @@ import type {
 } from "../types/restaurant.types";
 
 export const useRestaurantData = (restauranteUid?: string) => {
-  // Crear una nueva instancia del servicio cada vez que cambie el UID
-  const service = new RestaurantDataService(restauranteUid);
+  const uid = restauranteUid ?? "";
+  const service = useMemo(() => new RestaurantDataService(uid), [uid]);
 
   // Estados para diferentes tipos de datos
   const [restaurantInfo, setRestaurantInfo] =
@@ -26,7 +26,7 @@ export const useRestaurantData = (restauranteUid?: string) => {
   });
 
   // Función para cargar todos los datos
-  const loadAllData = async () => {
+  const loadAllData = useCallback(async () => {
     if (!restauranteUid) return;
 
     setLoading({
@@ -59,21 +59,24 @@ export const useRestaurantData = (restauranteUid?: string) => {
         comentarios: false,
       });
     }
-  };
+  }, [restauranteUid, service]);
 
   // Función para obtener horarios disponibles
-  const getAvailableSlots = async (date: string) => {
-    try {
-      return await service.getAvailableTimeSlots(date);
-    } catch (error) {
-      console.error("Error getting available slots:", error);
-      return [];
-    }
-  };
+  const getAvailableSlots = useCallback(
+    async (date: string) => {
+      try {
+        return await service.getAvailableTimeSlots(date);
+      } catch (error) {
+        console.error("Error getting available slots:", error);
+        return [];
+      }
+    },
+    [service],
+  );
 
   useEffect(() => {
-    loadAllData();
-  }, [restauranteUid]);
+    void loadAllData();
+  }, [loadAllData]);
 
   return {
     // Datos

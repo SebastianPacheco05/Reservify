@@ -4,9 +4,11 @@ Sistema de reservas para restaurantes.
 """
 from contextlib import asynccontextmanager
 import asyncio
+import logging
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
@@ -99,6 +101,40 @@ app.add_middleware(
 # Responde 200 a OPTIONS (preflight) antes que el CORS; así evitamos 400 si el origen no coincidía.
 app.add_middleware(OptionalPreflightMiddleware)
 
+# Asegurar cabeceras CORS también en respuestas de error (p.ej. 500 por BD).
+logger = logging.getLogger(__name__)
+
+
+def _cors_headers_for_request(request: Request) -> dict[str, str]:
+    origin = (request.headers.get("origin") or "").strip().rstrip("/")
+    allow_origin = origin if _origin_allowed(origin) else (CORS_ORIGINS[0] if CORS_ORIGINS else "")
+    if not allow_origin:
+        return {}
+    # Con allow_credentials=True no conviene retornar "*".
+    return {
+        "Access-Control-Allow-Origin": allow_origin,
+        "Access-Control-Allow-Credentials": "true",
+    }
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+        headers=_cors_headers_for_request(request),
+    )
+
+
+@app.exception_handler(Exception)
+async def internal_exception_handler(request: Request, exc: Exception):
+    logger.exception("Unhandled exception")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Error interno del servidor"},
+        headers=_cors_headers_for_request(request),
+    )
+
 # Routers (restaurante y mesas tienen rutas mixtas público/protegido)
 app.include_router(credenciales_router, prefix="/credenciales")
 app.include_router(roles_router)
@@ -132,14 +168,29 @@ async def enviar_correo_contacto(data: EmailSchema):
 
 if __name__ == "__main__":
     import uvicorn
+    import os
     from pathlib import Path
 
     BACKEND_DIR = str(Path(__file__).resolve().parent)
+    # Si tu `venv` vive dentro de `backend/`, el auto-reload puede entrar en bucle en Windows.
+    # Para activarlo explícitamente: `set DEV_RELOAD=1` (PowerShell: `$env:DEV_RELOAD="1"`).
+    DEV_RELOAD = os.getenv("DEV_RELOAD", "0").strip().lower() in {"1", "true", "yes", "y"}
     uvicorn.run(
         "main:app",
         host=BACKEND_HOST,
         port=BACKEND_PORT,
-        reload=True,
+        reload=DEV_RELOAD,
         reload_dirs=[BACKEND_DIR],
-        reload_excludes=["venv", "venv/**", "__pycache__", "**/__pycache__"],
+        # En Windows, WatchFiles puede seguir cambios dentro de `backend/venv/...` si no se excluye con globs recursivos.
+        reload_excludes=[
+            "venv",
+            "venv/**",
+            "**/venv/**",
+            ".venv",
+            ".venv/**",
+            "**/.venv/**",
+            "__pycache__",
+            "**/__pycache__/**",
+            "*.pyc",
+        ],
     )

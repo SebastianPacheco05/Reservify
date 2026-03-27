@@ -30,7 +30,8 @@ async def obtener_mesas_por_restaurante(restaurante_uid: str, db: Session = Depe
                 estado_de_disponibilidad,
                 cant_personas,
                 precio,
-                "restaurante_uid" as restaurante_uid
+                "restaurante_uid" as restaurante_uid,
+                descripcion
             FROM "Mesas"
             WHERE "restaurante_uid" = :restaurante_uid
         ''')
@@ -43,7 +44,8 @@ async def obtener_mesas_por_restaurante(restaurante_uid: str, db: Session = Depe
                 "estado_de_disponibilidad": row[1],
                 "cant_personas": row[2],
                 "precio": float(row[3]) if row[3] else 0.0,
-                "restaurante_uid": str(row[4])
+                "restaurante_uid": str(row[4]),
+                "descripcion": row[5] or "",
             }
             for row in rows
         ]
@@ -64,6 +66,7 @@ async def insertar(
         data.cant_personas,
         data.restaurante_uid,
         data.precio,
+        data.descripcion,
     )
 
 @router.get("/listar_mesa")
@@ -91,6 +94,7 @@ async def editar(
         data.cant_personas,
         data.restaurante_uid,
         data.precio,
+        data.descripcion,
     )
 
 @router.delete("/borrarmesas")

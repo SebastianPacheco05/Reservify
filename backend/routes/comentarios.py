@@ -27,7 +27,7 @@ async def obtener_comentarios_por_restaurante(restaurante_uid: str, db: Session 
                 u.apellido
             FROM "Comentarios" c
             LEFT JOIN "Usuario" u ON c.documento = u.documento
-            WHERE c.restaurante_uid = :restaurante_uid
+            WHERE c.restaurante_uid = CAST(:restaurante_uid AS uuid)
             ORDER BY c.fecha DESC
         ''')
         result = db.execute(query, {"restaurante_uid": restaurante_uid})

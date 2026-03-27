@@ -7,7 +7,9 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 def insertar_comentario(db: Session, documento: int, restaurante_uid: str, comentario: str, calificacion: int = 5):
     try:
         db.execute(
-            text("SELECT insertar_comentario(:documento, :restaurante_uid, :comentario, :calificacion)"),
+            text(
+                "SELECT insertar_comentario(:documento, CAST(:restaurante_uid AS uuid), :comentario, :calificacion)"
+            ),
             {
                 "documento": documento,
                 "restaurante_uid": restaurante_uid,
@@ -32,7 +34,7 @@ def verificar_comentario_existente(db: Session, documento: int, restaurante_uid:
     """Verifica si el usuario ya tiene un comentario para este restaurante"""
     try:
         resultado = db.execute(
-            text("SELECT existe_comentario(:documento, :restaurante_uid)"),
+            text("SELECT existe_comentario(:documento, CAST(:restaurante_uid AS uuid))"),
             {"documento": documento, "restaurante_uid": restaurante_uid},
         ).scalar()
         return bool(resultado)

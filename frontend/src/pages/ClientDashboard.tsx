@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -14,9 +15,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Badge } from "../components/ui/badge";
 import { EditProfileModal } from "../components/edit_profile_modal";
 import { AllReservationsModal } from "../components/AllReservationsModal";
-import { User, Phone, FileText, Globe, Calendar, Clock, Users, UtensilsCrossed } from "lucide-react";
+import {
+  User,
+  Phone,
+  FileText,
+  Globe,
+  Calendar,
+  Clock,
+  Users,
+  UtensilsCrossed,
+  Search,
+} from "lucide-react";
 import { authFetch } from "../services/authService";
 import { getApiEndpoint } from "../config/api";
+import { AnimatedThemeToggler } from "../components/ui/animated-theme-toggler";
+import { Input } from "../components/ui/input";
 
 interface Cliente {
   id_cliente: number;
@@ -52,11 +65,13 @@ interface Metricas {
 }
 
 export default function ClientDashboard() {
+  const navigate = useNavigate();
   const [cliente, setCliente] = useState<Cliente | null>(null);
   const [reservas, setReservas] = useState<Reserva[]>([]);
   const [metricas, setMetricas] = useState<Metricas | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAllReservationsModalOpen, setIsAllReservationsModalOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingReservas, setIsLoadingReservas] = useState(true);
   const [isLoadingMetricas, setIsLoadingMetricas] = useState(true);
@@ -215,25 +230,55 @@ export default function ClientDashboard() {
         transition={{ duration: 0.3 }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 py-6">
+            <div className="flex items-center space-x-4 min-w-0">
               <Avatar className="h-12 w-12">
                 <AvatarImage src="/placeholder.svg?height=48&width=48" />
                 <AvatarFallback className="bg-primary text-primary-foreground">
                   {initials}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground truncate">Dashboard</h1>
                 <p className="text-muted-foreground">Bienvenido, {cliente.nombre1}</p>
               </div>
             </div>
-            <Button
-              onClick={() => setIsEditModalOpen(true)}
-              className="bg-primary hover:bg-primary/90"
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const q = searchValue.trim();
+                if (!q) return;
+                navigate(`/buscar?q=${encodeURIComponent(q)}`);
+              }}
+              className="relative w-full sm:w-[320px] self-end sm:self-auto"
             >
-              Editar perfil
-            </Button>
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                placeholder="Buscar restaurantes..."
+                className="pl-9 pr-24 h-10 rounded-xl bg-background/60 border-border/60 focus-visible:ring-primary/30"
+                aria-label="Buscar restaurantes"
+              />
+              <Button
+                type="submit"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 rounded-lg px-3"
+                variant="secondary"
+              >
+                Buscar
+              </Button>
+            </form>
+
+            <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+              <AnimatedThemeToggler />
+              <Button
+                onClick={() => setIsEditModalOpen(true)}
+                className="bg-primary hover:bg-primary/90 min-h-10 rounded-xl transition-all duration-200 hover:scale-[1.02]"
+              >
+                Editar perfil
+              </Button>
+            </div>
           </div>
         </div>
       </motion.div>

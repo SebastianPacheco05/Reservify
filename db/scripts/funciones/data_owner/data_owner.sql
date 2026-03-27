@@ -70,7 +70,18 @@ AS $$
 DECLARE
     v_id_rol_admin INT;
     v_id_rol_empleado INT;
+    v_restaurante_uid UUID;
+    v_admin_anterior_id_credencial INT;
 BEGIN
+    SELECT restaurante_uid INTO v_restaurante_uid
+    FROM "Restaurante"
+    WHERE nit = p_nit
+    LIMIT 1;
+
+    IF v_restaurante_uid IS NULL THEN
+        RAISE EXCEPTION 'No existe restaurante para el NIT indicado';
+    END IF;
+
     SELECT id_rol INTO v_id_rol_admin
     FROM "Roles"
     WHERE LOWER(TRIM(nombre_rol)) = 'administrador';
@@ -83,20 +94,63 @@ BEGIN
         RAISE EXCEPTION 'Roles administrador/empleado no configurados';
     END IF;
 
-    UPDATE "Usuario"
-    SET id_rol = v_id_rol_empleado,
-        nit = NULL
-    WHERE nit = p_nit
-      AND id_rol = v_id_rol_admin
-      AND id_credencial <> p_id_credencial_admin;
+    -- admin actual del restaurante (si existe)
+    SELECT ar.id_credencial INTO v_admin_anterior_id_credencial
+    FROM "Administrador_restaurante" ar
+    WHERE ar.restaurante_uid = v_restaurante_uid
+    LIMIT 1;
 
+    -- quitar asignación anterior de ese restaurante
+    DELETE FROM "Administrador_restaurante"
+    WHERE restaurante_uid = v_restaurante_uid;
+
+    -- asignar nuevo admin a este restaurante
+    INSERT INTO "Administrador_restaurante" (id_credencial, restaurante_uid)
+    VALUES (p_id_credencial_admin, v_restaurante_uid)
+    ON CONFLICT (id_credencial, restaurante_uid) DO NOTHING;
+
+    -- asegurar rol administrador para el nuevo usuario, y nit en NULL
     UPDATE "Usuario"
     SET id_rol = v_id_rol_admin,
-        nit = p_nit
+        nit = NULL
     WHERE id_credencial = p_id_credencial_admin;
+
+    -- si el admin anterior ya no administra ningún restaurante, degradarlo a empleado sin nit
+    IF v_admin_anterior_id_credencial IS NOT NULL
+       AND v_admin_anterior_id_credencial <> p_id_credencial_admin THEN
+        IF NOT EXISTS (
+            SELECT 1
+            FROM "Administrador_restaurante"
+            WHERE id_credencial = v_admin_anterior_id_credencial
+        ) THEN
+            UPDATE "Usuario"
+            SET id_rol = v_id_rol_empleado,
+                nit = NULL
+            WHERE id_credencial = v_admin_anterior_id_credencial
+              AND id_rol = v_id_rol_admin;
+        END IF;
+    END IF;
 END;
 $$;
 
+CREATE OR REPLACE FUNCTION fn_do_listar_nits_administrador(
+    p_id_credencial INT
+)
+RETURNS TABLE (
+    nit DECIMAL(10,0),
+    restaurante_uid UUID
+)
+LANGUAGE plpgsql
+STABLE
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT r.nit::DECIMAL(10,0), r.restaurante_uid
+    FROM "Administrador_restaurante" ar
+    JOIN "Restaurante" r ON r.restaurante_uid = ar.restaurante_uid
+    WHERE ar.id_credencial = p_id_credencial;
+END;
+$$;
 
 CREATE OR REPLACE FUNCTION fn_do_cambiar_rol_a_cliente(
     p_id_credencial INT

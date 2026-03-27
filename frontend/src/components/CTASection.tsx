@@ -8,33 +8,34 @@ export default function CTASection() {
 
   return (
     <motion.section
-      className="bg-gradient-to-r from-primary via-secondary to-accent text-primary-foreground py-16 sm:py-20 md:py-24 px-4 sm:px-6 relative overflow-hidden"
+      className="relative overflow-hidden px-4 py-16 sm:px-6 sm:py-20 md:py-24 bg-[#090a0f] text-white"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
     >
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
-      <div className="max-w-4xl mx-auto text-center relative z-10">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_50%,rgba(255,106,0,0.35),transparent_45%),radial-gradient(circle_at_85%_40%,rgba(236,72,153,0.28),transparent_42%)]" />
+      <div className="relative z-10 max-w-5xl mx-auto rounded-[2rem] border border-white/10 bg-black/30 backdrop-blur-xl px-6 py-12 sm:px-10 sm:py-14 md:px-16 md:py-16 text-center shadow-[0_24px_60px_rgba(0,0,0,0.35)]">
         <motion.h3
-          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 break-words"
+          className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 break-words tracking-tight"
           variants={fadeInUp}
           initial="initial"
           whileInView="animate"
           viewport={{ once: true }}
           transition={transitionNormal}
         >
-          ¿Listo para tu próxima experiencia culinaria?
+          Tu próxima mesa está a un toque
         </motion.h3>
         <motion.p
-          className="text-base sm:text-lg md:text-xl mb-8 sm:mb-10 opacity-90 px-2"
+          className="text-base sm:text-lg md:text-xl mb-8 sm:mb-10 text-white/80 px-2 max-w-2xl mx-auto"
           variants={fadeInUp}
           initial="initial"
           whileInView="animate"
           viewport={{ once: true }}
           transition={{ ...transitionNormal, delay: 0.1 }}
         >
-          Miles de mesas disponibles en los mejores restaurantes de tu ciudad
+          Descubre lugares increíbles, filtra según tu plan y confirma en minutos sin llamadas ni
+          complicaciones.
         </motion.p>
         <motion.div
           className="flex flex-col sm:flex-row gap-4 justify-center"
@@ -47,7 +48,7 @@ export default function CTASection() {
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
             <Button
               size="lg"
-              className="border-2 border-background bg-background text-foreground hover:bg-muted hover:border-primary font-semibold rounded-xl px-8 py-6 text-lg transition-all duration-300 shadow-xl"
+              className="rounded-xl px-8 py-6 text-base sm:text-lg font-semibold bg-white text-zinc-900 hover:bg-white/90 border border-white shadow-lg shadow-black/30 transition-all duration-300"
               type="button"
               onClick={() =>
                 toast({

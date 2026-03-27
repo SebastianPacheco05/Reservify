@@ -1,4 +1,4 @@
-﻿/* Archivo original: db/scripts/funciones/restaurante_y_imagenes.sql */
+/* Archivo original: db/scripts/funciones/restaurante_y_imagenes.sql */
 
 CREATE OR REPLACE FUNCTION verificar_max_imagenes_referencia()
 RETURNS TRIGGER AS $$
@@ -7,12 +7,12 @@ DECLARE
 BEGIN
     SELECT COUNT(*) INTO total_imagenes
     FROM "Imagen_referencia_restaurante"
-    WHERE nit = NEW.nit;
-    
+    WHERE restaurante_uid = NEW.restaurante_uid;
+
     IF total_imagenes >= 15 THEN
         RAISE EXCEPTION 'MÃ¡ximo 15 imÃ¡genes de referencia por restaurante';
     END IF;
-    
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -45,13 +45,13 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION insertar_imagen_referencia_restaurante(
-    p_nit DECIMAL(10, 0),
+    p_restaurante_uid UUID,
     p_url_imagen VARCHAR,
     p_orden INT DEFAULT 0
 ) RETURNS VOID AS $$
 BEGIN
-    INSERT INTO "Imagen_referencia_restaurante" (nit, url_imagen, orden)
-    VALUES (p_nit, p_url_imagen, p_orden);
+    INSERT INTO "Imagen_referencia_restaurante" (restaurante_uid, url_imagen, orden)
+    VALUES (p_restaurante_uid, p_url_imagen, p_orden);
 END;
 $$ LANGUAGE plpgsql;
 

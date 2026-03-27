@@ -1,8 +1,8 @@
 export const ROUTES = {
   HOME: "/",
+  SEARCH: "/buscar",
   LOGIN: "/Login",
   REGISTER: "/Registrar",
-  LOST: "/lost",
   CONTACTO: "/contacto",
   AYUDA: "/ayuda",
   TERMINOS: "/terminos",

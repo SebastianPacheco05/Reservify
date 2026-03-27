@@ -4,10 +4,54 @@ import type {
   ComentarioFromDB,
 } from "../types/restaurant.types";
 import { API_BASE_URL } from "../config/api";
+import { isCompleteISODate } from "../lib/dateValidators";
 
 export class RestaurantDataService {
   private static instance: RestaurantDataService;
   private restauranteUid: string;
+
+  private parseTimeToMinutes(timeStr: string): number | null {
+    // Acepta "HH:MM" o "HH:MM:SS"
+    const clean = (timeStr || "").trim();
+    if (!clean) return null;
+    const parts = clean.split(":");
+    if (parts.length < 2) return null;
+    const hh = Number.parseInt(parts[0], 10);
+    const mm = Number.parseInt(parts[1], 10);
+    if (!Number.isFinite(hh) || !Number.isFinite(mm)) return null;
+    if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return null;
+    return hh * 60 + mm;
+  }
+
+  private formatMinutesToTime(totalMinutes: number): string {
+    const minutesInDay = 24 * 60;
+    const normalized = ((totalMinutes % minutesInDay) + minutesInDay) % minutesInDay;
+    const hh = Math.floor(normalized / 60)
+      .toString()
+      .padStart(2, "0");
+    const mm = (normalized % 60).toString().padStart(2, "0");
+    return `${hh}:${mm}`;
+  }
+
+  private build30MinSlots(
+    horarioApertura?: string | null,
+    horarioCierre?: string | null
+  ): string[] {
+    const open = this.parseTimeToMinutes(horarioApertura || "");
+    const close = this.parseTimeToMinutes(horarioCierre || "");
+    if (open == null || close == null) return [];
+
+    // Si cierra "antes" que abre, interpretamos cruce de medianoche.
+    let end = close;
+    if (end < open) end += 24 * 60;
+
+    // Evitar bucles infinitos por datos malos: máximo 48 slots (24h a 30min).
+    const slots: string[] = [];
+    for (let t = open; t <= end && slots.length < 48; t += 30) {
+      slots.push(this.formatMinutesToTime(t));
+    }
+    return slots;
+  }
 
   constructor(restauranteUid = "") {
     this.restauranteUid = restauranteUid;
@@ -67,29 +111,32 @@ export class RestaurantDataService {
 
   // Método para obtener horarios disponibles basados en las mesas disponibles
   public async getAvailableTimeSlots(date: string): Promise<string[]> {
+    if (!isCompleteISODate(date)) {
+      return [];
+    }
     try {
-      // Aquí puedes hacer una llamada al backend para obtener slots disponibles
       const response = await fetch(
         `${API_BASE_URL}/reserva/slots-disponibles?restaurante_uid=${this.restauranteUid}&fecha=${date}`
       );
-      if (!response.ok) throw new Error("Error al obtener slots");
-      const data = await response.json();
-      return data;
+      if (response.ok) {
+        const data = await response.json();
+        // Si el backend devuelve slots válidos, priorizamos esa respuesta.
+        if (Array.isArray(data) && data.length > 0) return data;
+      }
     } catch (error) {
       console.error("Error:", error);
-      // Fallback: generar slots basados en horario del restaurante
-      return [
-        "12:00",
-        "12:30",
-        "13:00",
-        "13:30",
-        "14:00",
-        "20:00",
-        "20:30",
-        "21:00",
-        "21:30",
-        "22:00",
-      ];
+    }
+
+    // Fallback dinámico: generar intervalos de 30 minutos según horario del restaurante.
+    try {
+      const info = await this.getRestaurantInfo();
+      const slots = this.build30MinSlots(
+        info?.horario_apertura ?? "",
+        info?.horario_cierre ?? ""
+      );
+      return slots;
+    } catch {
+      return [];
     }
   }
 }

@@ -429,7 +429,13 @@ def consultar_transaccion(transaction_id: str) -> dict:
     if response.status_code == 200:
         data = response.json()
         print(f"  ✅ Transacción encontrada")
-        print(f"  Estado: {data.get('data', {}).get('status', 'N/A')}")
+        trans_data = data.get("data", {}) if isinstance(data, dict) else {}
+        print(f"  Estado: {trans_data.get('status', 'N/A')}")
+        # Cuando Wompi falla suele acompañarlo con status_message u otro objeto de error.
+        if trans_data.get("status_message"):
+            print(f"  status_message: {trans_data.get('status_message')}")
+        if isinstance(data, dict) and data.get("error"):
+            print(f"  error: {data.get('error')}")
         print("=" * 80)
         return data
     else:

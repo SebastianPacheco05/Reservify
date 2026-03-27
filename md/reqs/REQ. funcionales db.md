@@ -1,24 +1,6 @@
-### Requerimientos de base de datos (desde Excel)
-> Fuente: `md/currents/reservifyreq.v.1.0.xls.xlsx` → hoja **REQ. funcionales db**
+### Requerimientos (REQ. funcionales db)
 
-## Convención de manejo de errores en funciones (seguridad)
-
-- **Objetivo**: evitar que el frontend reciba errores “crudos” de PostgreSQL (nombres de tablas, SQL, stack, etc.).
-- **Regla**: toda función usada por la API debe capturar errores y relanzar **solo** mensajes simples.
-- **Código estándar**: se usa `ERRCODE = 'P0001'` para errores controlados (aplicación).
-
-### Mensajes recomendados (simples)
-
-- **Error interno**: `Error interno. Intenta nuevamente.`
-- **Faltan datos** (`not_null_violation`): `Faltan datos obligatorios.`
-- **Duplicado** (`unique_violation`): `Ya existe un registro con esos datos.`
-- **Datos inválidos** (`foreign_key_violation`, `check_violation`): `Datos inválidos. Verifica e intenta nuevamente.`
-- **Formato inválido** (`data_exception`): `Formato de datos inválido.`
-
-### Nota importante (backend)
-
-Aunque la función relance un mensaje simple, si el backend hace `detail=f"...{str(e)}"`, **se puede filtrar** la sentencia SQL y parámetros.
-Por eso el backend debe exponer al cliente **solo** el `message_primary` cuando `pgcode == 'P0001'`, y si no, un mensaje genérico.
+> Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. funcionales db**
 
 - **DB-001 – Auditoría de tablas del sistema**
   - **Estado:** Hecho.
@@ -56,21 +38,21 @@ Por eso el backend debe exponer al cliente **solo** el `message_primary` cuando 
   - **Estado:** Hecho.
 - **DB-018 – Configuración de correo con consentimiento explícito y trazabilidad**
   - **Estado:** Hecho.
-- **DB-001a – Auditoría con almacenamiento del registro completo en JSONB**
+- **DB-001A – Auditoría con almacenamiento del registro completo en JSONB**
   - **Estado:** No hecho.
-- **DB-004a – Validación de teléfono con formato de 10 dígitos o valor ‘sin dato’**
+- **DB-004A – Validación de teléfono con formato de 10 dígitos o valor ‘sin dato’**
   - **Estado:** No hecho.
-- **DB-006a – Antelación mínima configurable por restaurante**
+- **DB-006A – Antelación mínima configurable por restaurante**
   - **Estado:** No hecho.
-- **DB-009a – Prohibición de reservas en fechas pasadas**
+- **DB-009A – Prohibición de reservas en fechas pasadas**
   - **Estado:** No hecho.
-- **DB-009b – Almacenamiento obligatorio del motivo de cancelación y ajuste**
+- **DB-009B – Almacenamiento obligatorio del motivo de cancelación y ajuste**
   - **Estado:** No hecho.
-- **DB-010a – Rango válido de meses y años en cálculos mensuales**
+- **DB-010A – Rango válido de meses y años en cálculos mensuales**
   - **Estado:** No hecho.
-- **DB-011a – Restricción de calificación entre 0 y 5 incluida**
+- **DB-011A – Restricción de calificación entre 0 y 5 incluida**
   - **Estado:** No hecho.
-- **DB-015a – Índice único por `refresh_token` para sesiones**
+- **DB-015A – Índice único por `refresh_token` para sesiones**
   - **Estado:** No hecho.
 - **DB-022 – Columna Credenciales.id_credencial**
   - **Estado:** Hecho.
@@ -259,4 +241,8 @@ Por eso el backend debe exponer al cliente **solo** el `message_primary` cuando 
 - **DB-111 – Columna jwt_tokens.revoked para invalidar sesiones**
   - **Estado:** Hecho.
 - **DB-112 – Función editar_credenciales (SQL) invocada desde backend**
+  - **Estado:** Hecho.
+- **DB-113 – Auditoría de tablas del sistema**
+  - **Estado:** Hecho.
+- **DB-114 – Tabla Auditoria_Usuario (auditoría por usuario final de la aplicación)**
   - **Estado:** Hecho.

@@ -97,7 +97,7 @@ export function RestaurantReservationsModal({
     if (!restaurant?.id) return;
     setLoading(true);
     try {
-      const res = await OwnerReservationsService.getReservationsByRestaurant(Number(restaurant.id));
+      const res = await OwnerReservationsService.getReservationsByRestaurant(restaurant.id);
       setReservas(res.reservas || []);
     } catch (e) {
       console.error(e);
@@ -165,7 +165,7 @@ export function RestaurantReservationsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[920px] max-h-[90vh] overflow-hidden flex flex-col p-0">
+      <DialogContent className="w-[95vw] sm:max-w-[920px] max-h-[90vh] overflow-hidden flex flex-col p-0">
         <DialogHeader className="px-6 pt-6 pb-2 border-b">
           <DialogTitle>Reservas — {restaurant?.name ?? "Restaurante"}</DialogTitle>
           <DialogDescription>
@@ -173,9 +173,9 @@ export function RestaurantReservationsModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden flex min-h-0">
+        <div className="flex-1 overflow-hidden flex flex-col lg:flex-row min-h-0">
           {/* Listado por secciones */}
-          <div className="w-1/2 border-r overflow-y-auto p-4 space-y-6">
+          <div className="w-full lg:w-1/2 lg:border-r overflow-y-auto p-4 space-y-6">
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -220,7 +220,7 @@ export function RestaurantReservationsModal({
           </div>
 
           {/* Detalle de la reserva seleccionada */}
-          <div className="w-1/2 overflow-y-auto p-4 bg-muted/20">
+          <div className="w-full lg:w-1/2 overflow-y-auto p-4 bg-muted/20 border-t lg:border-t-0">
             {selectedReserva ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">

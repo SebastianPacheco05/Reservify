@@ -126,6 +126,7 @@ export interface MesaFromDB {
   cant_personas: number;
   precio: number;
   restaurante_uid: string;
+  descripcion?: string;
 }
 
 export interface ComentarioFromDB {

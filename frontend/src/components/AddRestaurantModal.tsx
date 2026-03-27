@@ -378,7 +378,7 @@ export function AddRestaurantModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px]" showCloseButton={true}>
+      <DialogContent className="w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-y-auto" showCloseButton={true}>
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Agregar restaurante</DialogTitle>
@@ -389,7 +389,7 @@ export function AddRestaurantModal({
 
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="nit">NIT *</Label>
                   <Input
@@ -496,7 +496,7 @@ export function AddRestaurantModal({
               onSelect={(address) => update("direccion", address)}
             />
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="horario_apertura">Hora de apertura *</Label>
                 <Input
@@ -625,7 +625,7 @@ export function AddRestaurantModal({
             </div>
 
             <Dialog open={showVerImagenesRef} onOpenChange={(open) => !open && setShowVerImagenesRef(false)}>
-              <DialogContent className="sm:max-w-[480px]" showCloseButton={true}>
+              <DialogContent className="w-[95vw] sm:max-w-[480px]" showCloseButton={true}>
                 <DialogHeader>
                   <DialogTitle>Imágenes de referencia</DialogTitle>
                   <DialogDescription>
@@ -637,7 +637,7 @@ export function AddRestaurantModal({
                     No hay imágenes agregadas. Usa &quot;Agregar imagen&quot; en el formulario.
                   </p>
                 ) : (
-                  <div className="grid grid-cols-3 gap-3 max-h-[320px] overflow-y-auto py-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[320px] overflow-y-auto py-2">
                     {form.imagenes_referencia.map((url, index) => (
                       <div key={url} className="relative group rounded-lg border overflow-hidden bg-muted aspect-square">
                         <img

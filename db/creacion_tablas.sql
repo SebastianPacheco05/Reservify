@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS "Comentarios";
 DROP TABLE IF EXISTS "Calculos_mensuales";
 DROP TABLE IF EXISTS "Imagen_referencia_restaurante";
 DROP TABLE IF EXISTS "Mesas";
+DROP TABLE IF EXISTS "Administrador_restaurante";
 DROP TABLE IF EXISTS "Encabezado_Factura";
 DROP TABLE IF EXISTS "Restaurante";
 DROP TABLE IF EXISTS "Mails";
@@ -22,6 +23,9 @@ DROP TABLE IF EXISTS "Usuario";
 DROP TABLE IF EXISTS "Categorias";
 DROP TABLE IF EXISTS "Roles";
 DROP TABLE IF EXISTS "Credenciales";
+
+-- Extensión para generar UUID aleatorio con gen_random_uuid()
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 
 -- Tabla Credenciales: Almacena la informaciÃ³n de autenticaciÃ³n de usuarios
@@ -52,6 +56,7 @@ ON CONFLICT (id_rol) DO NOTHING;
 -- Tabla Usuario: Almacena todos los usuarios del sistema (cliente, dueÃ±o, empleado) segÃºn id_rol
 -- DueÃ±o: vinculado a restaurantes por Restaurante.documento = Usuario.documento
 -- Empleado: vinculado a un restaurante por Usuario.nit (restaurante donde trabaja)
+-- Administrador: vinculado por tabla puente Administrador_restaurante
 CREATE TABLE "Usuario" (
     documento DECIMAL(10, 0) PRIMARY KEY NOT NULL CHECK (documento > 0),
     tipo_documento VARCHAR(15) NOT NULL CHECK (tipo_documento IN ('CC', 'CE', 'TI', 'Pasaporte')),
@@ -61,7 +66,7 @@ CREATE TABLE "Usuario" (
     id_credencial INT NOT NULL UNIQUE,
     nacionalidad VARCHAR(20) NOT NULL DEFAULT 'sin dato',
     telefono VARCHAR(10) NOT NULL DEFAULT 'sin dato' CHECK (telefono ~ '^[0-9]{10}$'),
-    nit BIGINT NULL CHECK (nit > 8999999999 AND nit <= 99999999999),  -- Solo para rol empleado: restaurante donde trabaja; dueÃ±o se vincula por Restaurante.documento
+    nit BIGINT NULL CHECK (nit > 8999999999 AND nit <= 99999999999),  -- Solo para rol empleado; administradores usan tabla puente
     FOREIGN KEY (id_rol) REFERENCES "Roles" (id_rol) ON DELETE CASCADE,
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
 );
@@ -74,7 +79,8 @@ CREATE TABLE "Categorias" (
 
 -- Tabla Restaurante: Almacena informaciÃ³n de los restaurantes
 CREATE TABLE "Restaurante" (
-    nit BIGINT PRIMARY KEY NOT NULL,  -- nit como identificador Ãºnico
+    restaurante_uid UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),  -- identificador aleatorio real del restaurante
+    nit BIGINT UNIQUE NOT NULL,  -- identificador de negocio (NIT), ya no es PK
     direccion VARCHAR(255) NOT NULL,  -- DirecciÃ³n del restaurante
     nombre_restaurante VARCHAR(50) NOT NULL,  -- Nombre del restaurante
     descripcion_restaurante VARCHAR(100) NOT NULL,  -- DescripciÃ³n del restaurante
@@ -105,21 +111,35 @@ CREATE TABLE "Restaurante" (
     )  -- Permite cruce de medianoche con máximo 8 horas
 );
 
--- Tabla Imagen_referencia_restaurante: Almacena imÃ¡genes de referencia de restaurantes (mÃ¡ximo 15 por NIT)
-CREATE TABLE "Imagen_referencia_restaurante" (
-    nit BIGINT NOT NULL,
-    url_imagen VARCHAR NOT NULL,
-    orden INT NOT NULL DEFAULT 0 CHECK (orden >= 0 AND orden < 15),
-    PRIMARY KEY (nit, orden),
-    FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
+-- Tabla Administrador_restaurante: relación administrador <-> restaurante
+-- Un administrador puede gestionar múltiples restaurantes; cada restaurante tiene un único administrador.
+CREATE TABLE "Administrador_restaurante" (
+    id_credencial INT NOT NULL,
+    restaurante_uid UUID NOT NULL,
+    PRIMARY KEY (id_credencial, restaurante_uid),
+    UNIQUE (restaurante_uid),
+    FOREIGN KEY (id_credencial) REFERENCES "Usuario" (id_credencial) ON DELETE CASCADE,
+    FOREIGN KEY (restaurante_uid) REFERENCES "Restaurante" (restaurante_uid) ON DELETE CASCADE
 );
 
--- Crear Ã­ndice para bÃºsquedas rÃ¡pidas por NIT
-CREATE INDEX idx_imagen_ref_nit ON "Imagen_referencia_restaurante" (nit);
+CREATE INDEX idx_admin_restaurante_id_credencial ON "Administrador_restaurante" (id_credencial);
+CREATE INDEX idx_admin_restaurante_uid ON "Administrador_restaurante" (restaurante_uid);
 
--- Comentarios para documentaciÃ³n
-COMMENT ON TABLE "Imagen_referencia_restaurante" IS 'Almacena imÃ¡genes de referencia de restaurantes (mÃ¡ximo 15 por NIT)';
-COMMENT ON COLUMN "Imagen_referencia_restaurante".nit IS 'NIT del restaurante';
+COMMENT ON TABLE "Administrador_restaurante" IS 'Relación administrador-restaurante (admin multi-local, un admin por restaurante).';
+
+-- Tabla Imagen_referencia_restaurante: imÃ¡genes de referencia por restaurante (mÃ¡ximo 15 por restaurante_uid)
+CREATE TABLE "Imagen_referencia_restaurante" (
+    restaurante_uid UUID NOT NULL,
+    url_imagen VARCHAR NOT NULL,
+    orden INT NOT NULL DEFAULT 0 CHECK (orden >= 0 AND orden < 15),
+    PRIMARY KEY (restaurante_uid, orden),
+    FOREIGN KEY (restaurante_uid) REFERENCES "Restaurante" (restaurante_uid) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_imagen_ref_restaurante_uid ON "Imagen_referencia_restaurante" (restaurante_uid);
+
+COMMENT ON TABLE "Imagen_referencia_restaurante" IS 'ImÃ¡genes de referencia por restaurante (PK restaurante_uid + orden; mÃ¡x. 15)';
+COMMENT ON COLUMN "Imagen_referencia_restaurante".restaurante_uid IS 'FK al restaurante (UUID)';
 COMMENT ON COLUMN "Imagen_referencia_restaurante".url_imagen IS 'URL de la imagen (Cloudinary)';
 COMMENT ON COLUMN "Imagen_referencia_restaurante".orden IS 'Orden de la imagen (0-14)';
 
@@ -128,9 +148,12 @@ CREATE TABLE "Mesas" (
     id_mesa SERIAL PRIMARY KEY NOT NULL,  -- Identificador Ãºnico autoincremental
     estado_de_disponibilidad BOOLEAN NOT NULL,  -- Estado de disponibilidad
     cant_personas INT NOT NULL CHECK (cant_personas > 0),  -- Capacidad de personas
-    nit BIGINT NOT NULL,  -- Referencia al restaurante
+    nit BIGINT NOT NULL,  -- Referencia al restaurante (NIT de negocio)
+    restaurante_uid UUID NOT NULL,  -- Misma fila que Restaurante.restaurante_uid (evita ambigÃ¼edad en APIs)
     precio DECIMAL(10, 2) NOT NULL CHECK (precio >= 0),  -- Precio de la mesa
-    FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
+    descripcion VARCHAR(255) NOT NULL DEFAULT 'sin dato',  -- DescripciÃ³n de la mesa
+    FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE,
+    FOREIGN KEY (restaurante_uid) REFERENCES "Restaurante" (restaurante_uid) ON DELETE CASCADE
 );
 
 -- Tabla Encabezado_Factura: Almacena la informaciÃ³n principal de las facturas
@@ -189,13 +212,15 @@ CREATE TABLE "Calculos_mensuales" (
 CREATE TABLE "Comentarios" (
     id_comentario SERIAL PRIMARY KEY NOT NULL,  -- Identificador Ãºnico autoincremental
     documento DECIMAL(10, 0) NOT NULL,  -- Referencia al cliente
-    nit BIGINT NOT NULL,  -- Referencia al restaurante
+    restaurante_uid UUID NOT NULL,  -- Misma fila que Restaurante.restaurante_uid
     comentario TEXT NOT NULL,  -- Comentario del cliente
     fecha TIMESTAMP NOT NULL DEFAULT NOW(),  -- Fecha del comentario
     calificacion INT NOT NULL DEFAULT 0 CHECK (calificacion >= 0 AND calificacion <= 5),  -- CalificaciÃ³n del 1 al 5 (0 = sin dato)
     FOREIGN KEY (documento) REFERENCES "Usuario" (documento) ON DELETE CASCADE,
-    FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
+    FOREIGN KEY (restaurante_uid) REFERENCES "Restaurante" (restaurante_uid) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_comentarios_restaurante_uid ON "Comentarios" (restaurante_uid);
 
 -- Tabla JWT_Tokens: Una fila por sesiÃ³n. token = access token, refresh_token = token de refresco.
 -- Permite renovar el access token sin cerrar sesiÃ³n buscando por refresh_token.

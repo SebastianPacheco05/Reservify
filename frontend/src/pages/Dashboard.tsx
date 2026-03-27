@@ -26,6 +26,7 @@ import { authFetch } from "../services/authService";
 import { getApiEndpoint } from "../config/api";
 import { useToastContext } from "../components/ToastProvider";
 import { showErrorToast } from "../lib/toastHelpers";
+import { AnimatedThemeToggler } from "../components/ui/animated-theme-toggler";
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -140,16 +141,25 @@ export default function Dashboard() {
       const data = await res.json();
       const list = data.restaurantes || [];
       setRestaurants(
-        list.map((r: { nit: number; nombre_restaurante: string; url_image?: string; rating?: number }) => ({
-          id: String(r.nit),
-          name: r.nombre_restaurante,
-          location: "",
-          cuisine: "",
-          rating: r.rating ?? 0,
-          totalTables: 0,
-          status: "active" as const,
-          image: r.url_image?.trim() || "/vite.svg",
-        }))
+        list.map(
+          (r: {
+            restaurante_uid: string;
+            nit: number;
+            nombre_restaurante: string;
+            url_image?: string;
+            rating?: number;
+          }) => ({
+            id: r.restaurante_uid,
+            nit: r.nit,
+            name: r.nombre_restaurante,
+            location: "",
+            cuisine: "",
+            rating: r.rating ?? 0,
+            totalTables: 0,
+            status: "active" as const,
+            image: r.url_image?.trim() || "/vite.svg",
+          })
+        )
       );
     } catch (error) {
       console.error("Error al cargar restaurantes:", error);
@@ -577,16 +587,19 @@ export default function Dashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
         >
-          <header className="mb-8">
-            <p className="text-sm font-medium text-muted-foreground mb-1">
-              {getSectionTitle(activeTab)}
-            </p>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-              {getGreeting()}
-            </h1>
-            <p className="text-muted-foreground mt-1 max-w-xl">
-              Gestiona tus restaurantes, reservas y facturación desde un solo lugar.
-            </p>
+          <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">
+                {getSectionTitle(activeTab)}
+              </p>
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+                {getGreeting()}
+              </h1>
+              <p className="text-muted-foreground mt-1 max-w-xl">
+                Gestiona tus restaurantes, reservas y facturación desde un solo lugar.
+              </p>
+            </div>
+            <AnimatedThemeToggler className="shrink-0" />
           </header>
 
           {renderContent()}

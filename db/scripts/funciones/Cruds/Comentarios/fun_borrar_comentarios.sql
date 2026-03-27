@@ -1,34 +1,27 @@
-﻿CREATE OR REPLACE FUNCTION borrar_comentarios(
-    p_id_comentario INT
-) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION borrar_comentario(p_id_comentario INT) RETURNS VOID AS $$
 DECLARE
-    v_nit INT;
-    v_rating NUMERIC(3,1);
+    v_uid UUID;
+    v_rating NUMERIC(3, 1);
     v_reviews INT;
 BEGIN
-    -- Obtener el NIT del comentario antes de borrarlo
-    SELECT nit INTO v_nit
+    SELECT restaurante_uid INTO v_uid
     FROM "Comentarios"
     WHERE id_comentario = p_id_comentario;
 
-    -- Borrar comentario
     DELETE FROM "Comentarios"
     WHERE id_comentario = p_id_comentario;
 
-    -- Si encontramos un NIT, recalcular rating y reseÃ±as
-    IF v_nit IS NOT NULL THEN
-        SELECT 
-            COALESCE(AVG(calificacion), 0)::NUMERIC(3,1),
+    IF v_uid IS NOT NULL THEN
+        SELECT
+            COALESCE(AVG(calificacion), 0)::NUMERIC(3, 1),
             COUNT(*)
         INTO v_rating, v_reviews
         FROM "Comentarios"
-        WHERE nit = v_nit;
+        WHERE restaurante_uid = v_uid;
 
         UPDATE "Restaurante"
-        SET
-            rating = v_rating,
-            reviews = v_reviews
-        WHERE nit = v_nit;
+        SET rating = v_rating, reviews = v_reviews
+        WHERE restaurante_uid = v_uid;
     END IF;
 END;
 $$ LANGUAGE plpgsql;

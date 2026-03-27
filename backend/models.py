@@ -92,6 +92,7 @@ class MesaBase(BaseModel):
     cant_personas: int
     restaurante_uid: Optional[str] = None
     precio: float
+    descripcion: str = "sin dato"
 
 
 class MesaUpdate(MesaBase):

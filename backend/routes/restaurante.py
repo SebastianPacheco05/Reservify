@@ -15,7 +15,14 @@ router = APIRouter(
 
 
 def _requerir_dueno_restaurante(usuario_actual: dict, restaurante_uid: str, db: Session) -> None:
-    if not es_dueño_de_restaurante(usuario_actual["id"], restaurante_uid, db):
+    row = db.execute(
+        text('SELECT nit FROM "Restaurante" WHERE restaurante_uid = :restaurante_uid'),
+        {"restaurante_uid": restaurante_uid},
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Restaurante no encontrado.")
+    nit = int(row[0])
+    if not es_dueño_de_restaurante(usuario_actual["id"], nit, db):
         raise HTTPException(
             status_code=403,
             detail="Solo el dueño del restaurante puede realizar esta acción.",
@@ -23,7 +30,14 @@ def _requerir_dueno_restaurante(usuario_actual: dict, restaurante_uid: str, db: 
 
 
 def _requerir_gestor_restaurante(usuario_actual: dict, restaurante_uid: str, db: Session) -> None:
-    if not puede_acceder_restaurante(usuario_actual["id"], restaurante_uid, db):
+    row = db.execute(
+        text('SELECT nit FROM "Restaurante" WHERE restaurante_uid = :restaurante_uid'),
+        {"restaurante_uid": restaurante_uid},
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Restaurante no encontrado.")
+    nit = int(row[0])
+    if not puede_acceder_restaurante(usuario_actual["id"], nit, db):
         raise HTTPException(
             status_code=403,
             detail="No tienes permisos para gestionar este restaurante.",
@@ -59,19 +73,18 @@ async def obtener_restaurante_publico(restaurante_uid: str, db: Session = Depend
         if not row:
             raise HTTPException(status_code=404, detail="Restaurante no encontrado")
 
-        # Obtener imágenes de referencia ordenadas por orden (si la tabla existe)
+        uid_str = str(row[0])
         imagenes_referencia = []
         try:
             imagenes_ref_query = text('''
                 SELECT url_imagen
                 FROM "Imagen_referencia_restaurante"
-                WHERE restaurante_uid = :restaurante_uid
+                WHERE restaurante_uid = CAST(:restaurante_uid AS uuid)
                 ORDER BY orden ASC
             ''')
-            imagenes_ref_result = db.execute(imagenes_ref_query, {"restaurante_uid": restaurante_uid})
-            imagenes_referencia = [row[0] for row in imagenes_ref_result.fetchall()]
+            imagenes_ref_result = db.execute(imagenes_ref_query, {"restaurante_uid": uid_str})
+            imagenes_referencia = [r[0] for r in imagenes_ref_result.fetchall()]
         except Exception:
-            # Si la tabla no existe, simplemente retornar lista vacía
             imagenes_referencia = []
 
         lat_val = float(row[12]) if row[12] is not None else None

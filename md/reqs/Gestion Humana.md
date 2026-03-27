@@ -1,5 +1,5 @@
-### Gestión de usuarios / gestión humana (desde Excel)
-> Fuente: `md/currents/reservifyreq.v.1.0.xls.xlsx` → hoja **Gestion Humana**
+### Requerimientos — Gestion Humana
+> Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **Gestion Humana**
 
 - **GU-001 – Registro y autenticación de usuarios**
   - **Estado:** Hecho.
@@ -19,13 +19,13 @@
   - **Estado:** Hecho.
 - **GU-009 – Gestión interactiva de empleados y administradores por parte del dueño**
   - **Estado:** Hecho.
-- **GU-001a – Almacenamiento encriptado de contraseñas de acceso**
+- **GU-001A – Almacenamiento encriptado de contraseñas de acceso**
   - **Estado:** Hecho.
-- **GU-002a – Asociación estricta de cada usuario a un rol único**
+- **GU-002A – Asociación estricta de cada usuario a un rol único**
   - **Estado:** Hecho.
-- **GU-003a – Consulta del perfil del cliente autenticado desde el frontend**
+- **GU-003A – Consulta del perfil del cliente autenticado desde el frontend**
   - **Estado:** Hecho.
-- **GU-004a – Vinculación de empleados a un restaurante específico por NIT**
+- **GU-004A – Vinculación de empleados a un restaurante específico por NIT**
   - **Estado:** Hecho.
 - **GU-010 – Campo perfil: nombre editable**
   - **Estado:** Hecho.

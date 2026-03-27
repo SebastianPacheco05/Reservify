@@ -2,8 +2,8 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link rel="apple-touch-icon" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/icon_reservify.svg" />
+    <link rel="apple-touch-icon" href="/icon_reservify.svg" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover"
@@ -24,6 +24,12 @@
     />
     <meta name="robots" content="index, follow" />
     <title>Reservify – Reserva en tu restaurante favorito</title>
+    <!-- Google Sans (única tipografía del proyecto) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap");
+    </style>
     <!-- Preconnect a orígenes externos para reducir latencia -->
     <link rel="preconnect" href="https://checkout.wompi.co" crossorigin />
     <!-- Wompi se carga en defer para no bloquear el LCP -->
@@ -35,7 +41,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: system-ui, sans-serif;
+        font-family: "Google Sans", system-ui, sans-serif;
         font-size: 1rem;
         background: #f9f7f2; /* light default */
         color: rgba(45, 49, 66, 0.75);

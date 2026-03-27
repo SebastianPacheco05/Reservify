@@ -192,6 +192,20 @@ export default function Terminos() {
                 pudieran resultar aplicables.
               </p>
             </section>
+
+            <section className="space-y-2">
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground">
+                11. Protección de datos personales
+              </h2>
+              <p>
+                El tratamiento de datos personales de los usuarios de Reservify se
+                realiza conforme a la Ley 1581 de 2012 y sus normas reglamentarias en
+                Colombia. Al usar la plataforma, declaras conocer y aceptar la
+                Política de Privacidad, donde se detalla el alcance del tratamiento,
+                las finalidades, los derechos del titular y los canales para ejercer
+                consultas y reclamos de Habeas Data.
+              </p>
+            </section>
           </div>
         </div>
       </section>

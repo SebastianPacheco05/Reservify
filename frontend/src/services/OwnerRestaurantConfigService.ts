@@ -1,7 +1,10 @@
 import { getApiEndpoint } from "../config/api";
 import { authFetch } from "./authService";
 
-async function throwOnError(res: Response, fallbackError: string): Promise<never> {
+async function throwOnError(
+  res: Response,
+  fallbackError: string,
+): Promise<never> {
   const err = await res.json().catch(() => ({}));
   throw new Error((err as { detail?: string })?.detail || fallbackError);
 }
@@ -41,6 +44,7 @@ export interface MesaConfig {
   cant_personas: number;
   restaurante_uid: string;
   precio: number;
+  descripcion?: string;
 }
 
 export interface MesaAddBody {
@@ -48,6 +52,7 @@ export interface MesaAddBody {
   cant_personas: number;
   restaurante_uid: string;
   precio: number;
+  descripcion: string;
 }
 
 export interface MesaUpdateBody extends MesaAddBody {
@@ -81,90 +86,158 @@ export interface RestauranteDelDueno {
 
 export const OwnerRestaurantConfigService = {
   async getRestaurantesDelDueno(): Promise<RestauranteDelDueno[]> {
-    const res = await authFetch(getApiEndpoint("/data-owner/restaurantes"), { method: "GET" });
+    const res = await authFetch(getApiEndpoint("/data-owner/restaurantes"), {
+      method: "GET",
+    });
     if (!res.ok) return [];
     const data = await res.json();
     const list = data?.restaurantes ?? [];
-    return list.map((r: { restaurante_uid: string; nit: number; nombre_restaurante?: string }) => ({
-      restaurante_uid: r.restaurante_uid,
-      nit: r.nit,
-      nombre_restaurante: r.nombre_restaurante ?? "",
-    }));
+    return list.map(
+      (r: {
+        restaurante_uid: string;
+        nit: number;
+        nombre_restaurante?: string;
+      }) => ({
+        restaurante_uid: r.restaurante_uid,
+        nit: r.nit,
+        nombre_restaurante: r.nombre_restaurante ?? "",
+      }),
+    );
   },
 
-  async getRestauranteConfig(restauranteUid: string): Promise<RestauranteConfig | null> {
-    const res = await authFetch(getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}`), { method: "GET" });
+  async getRestauranteConfig(
+    restauranteUid: string,
+  ): Promise<RestauranteConfig | null> {
+    const res = await authFetch(
+      getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}`),
+      { method: "GET" },
+    );
     if (!res.ok) return null;
     const data = await res.json();
     return data?.restaurante ?? data ?? null;
   },
 
-  async putRestauranteConfig(restauranteUid: string, body: RestauranteUpdateBody): Promise<void> {
-    const res = await authFetch(getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}`), {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+  async putRestauranteConfig(
+    restauranteUid: string,
+    body: RestauranteUpdateBody,
+  ): Promise<void> {
+    const res = await authFetch(
+      getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}`),
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      },
+    );
     if (!res.ok) await throwOnError(res, "Error al guardar restaurante");
   },
 
   async getMesas(restauranteUid: string): Promise<MesaConfig[]> {
-    const res = await authFetch(getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}/mesas`), { method: "GET" });
+    const res = await authFetch(
+      getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}/mesas`),
+      { method: "GET" },
+    );
     if (!res.ok) return [];
     const data = await res.json();
     return data?.mesas ?? [];
   },
 
   async addMesa(restauranteUid: string, body: MesaAddBody): Promise<void> {
-    const res = await authFetch(getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}/mesas`), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok && res.status !== 201) await throwOnError(res, "Error al agregar mesa");
+    const res = await authFetch(
+      getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}/mesas`),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      },
+    );
+    if (!res.ok && res.status !== 201)
+      await throwOnError(res, "Error al agregar mesa");
   },
 
-  async updateMesa(restauranteUid: string, id_mesa: number, body: MesaUpdateBody): Promise<void> {
-    const res = await authFetch(getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}/mesas/${id_mesa}`), {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...body, id_mesa }),
-    });
+  async updateMesa(
+    restauranteUid: string,
+    id_mesa: number,
+    body: MesaUpdateBody,
+  ): Promise<void> {
+    const res = await authFetch(
+      getApiEndpoint(
+        `/data-owner/restaurantes/${restauranteUid}/mesas/${id_mesa}`,
+      ),
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...body, id_mesa }),
+      },
+    );
     if (!res.ok) await throwOnError(res, "Error al editar mesa");
   },
 
   async deleteMesa(restauranteUid: string, id_mesa: number): Promise<void> {
-    const res = await authFetch(getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}/mesas/${id_mesa}`), {
-      method: "DELETE",
-    });
+    const res = await authFetch(
+      getApiEndpoint(
+        `/data-owner/restaurantes/${restauranteUid}/mesas/${id_mesa}`,
+      ),
+      {
+        method: "DELETE",
+      },
+    );
     if (!res.ok) await throwOnError(res, "Error al eliminar mesa");
   },
 
-  async getAdministrador(restauranteUid: string): Promise<AdministradorConfig | null> {
-    const res = await authFetch(getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}/administrador`), { method: "GET" });
+  async getAdministrador(
+    restauranteUid: string,
+  ): Promise<AdministradorConfig | null> {
+    const res = await authFetch(
+      getApiEndpoint(
+        `/data-owner/restaurantes/${restauranteUid}/administrador`,
+      ),
+      { method: "GET" },
+    );
     if (!res.ok) return null;
     const data = await res.json();
     return data?.administrador ?? null;
   },
 
-  async putAdministrador(restauranteUid: string, id_credencial: number): Promise<void> {
-    const res = await authFetch(getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}/administrador`), {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id_credencial }),
-    });
+  async putAdministrador(
+    restauranteUid: string,
+    id_credencial: number,
+  ): Promise<void> {
+    const res = await authFetch(
+      getApiEndpoint(
+        `/data-owner/restaurantes/${restauranteUid}/administrador`,
+      ),
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id_credencial }),
+      },
+    );
     if (!res.ok) await throwOnError(res, "Error al asignar administrador");
   },
 
   async getEmpleados(): Promise<EmpleadoAsignable[]> {
-    const res = await authFetch(getApiEndpoint("/data-owner/empleados"), { method: "GET" });
+    const res = await authFetch(getApiEndpoint("/data-owner/empleados"), {
+      method: "GET",
+    });
     if (!res.ok) return [];
     const data = await res.json();
     return data?.empleados ?? [];
   },
 
-  async buscarEmail(email: string): Promise<{ existe: boolean; id_credencial?: number; nombre?: string; apellido?: string }> {
-    const res = await authFetch(getApiEndpoint("/data-owner/buscar-email"), {
+  async buscarEmail(
+    email: string,
+    restauranteUid?: string,
+  ): Promise<{
+    existe: boolean;
+    id_credencial?: number;
+    nombre?: string;
+    apellido?: string;
+  }> {
+    const qs = restauranteUid
+      ? `?restaurante_uid=${encodeURIComponent(restauranteUid)}`
+      : "";
+    const res = await authFetch(getApiEndpoint(`/data-owner/buscar-email${qs}`), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email.trim() }),
@@ -173,30 +246,49 @@ export const OwnerRestaurantConfigService = {
     return res.json();
   },
 
-  async asignarEmpleado(restauranteUid: string, id_credencial: number): Promise<void> {
-    const res = await authFetch(getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}/asignar-empleado`), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id_credencial }),
-    });
+  async asignarEmpleado(
+    restauranteUid: string,
+    id_credencial: number,
+  ): Promise<void> {
+    const res = await authFetch(
+      getApiEndpoint(
+        `/data-owner/restaurantes/${restauranteUid}/asignar-empleado`,
+      ),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id_credencial }),
+      },
+    );
     if (!res.ok) await throwOnError(res, "Error al asignar empleado");
   },
 
   async cambiarRolACliente(id_credencial: number): Promise<void> {
-    const res = await authFetch(getApiEndpoint("/data-owner/cambiar-rol-cliente"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id_credencial }),
-    });
+    const res = await authFetch(
+      getApiEndpoint("/data-owner/cambiar-rol-cliente"),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id_credencial }),
+      },
+    );
     if (!res.ok) await throwOnError(res, "Error al cambiar rol a cliente");
   },
 
-  async crearEmpleado(restauranteUid: string, email: string): Promise<{ email: string; password: string }> {
-    const res = await authFetch(getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}/crear-empleado`), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email.trim() }),
-    });
+  async crearEmpleado(
+    restauranteUid: string,
+    email: string,
+  ): Promise<{ email: string; password: string }> {
+    const res = await authFetch(
+      getApiEndpoint(
+        `/data-owner/restaurantes/${restauranteUid}/crear-empleado`,
+      ),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      },
+    );
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.detail || "Error al crear empleado");

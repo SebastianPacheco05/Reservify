@@ -21,50 +21,98 @@ export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
         const getIcon = () => {
           switch (toast.variant) {
             case 'success':
-              return <CheckCircle className="h-4 w-4 text-green-600" />;
+              return (
+                <CheckCircle
+                  className="h-4 w-4 text-primary"
+                  aria-hidden="true"
+                />
+              );
             case 'destructive':
-              return <XCircle className="h-4 w-4 text-red-600" />;
+              return (
+                <XCircle
+                  className="h-4 w-4 text-secondary"
+                  aria-hidden="true"
+                />
+              );
             case 'warning':
-              return <AlertCircle className="h-4 w-4 text-yellow-600" />;
+              return (
+                <AlertCircle
+                  className="h-4 w-4 text-secondary"
+                  aria-hidden="true"
+                />
+              );
             default:
-              return <Info className="h-4 w-4 text-blue-600" />;
+              return (
+                <Info
+                  className="h-4 w-4 text-primary"
+                  aria-hidden="true"
+                />
+              );
           }
         };
 
         const getVariantClass = () => {
-          // Fondo según tipo de mensaje, pero siempre texto en negro
+          // Estilo unificado con paleta naranja/rojo, manteniendo texto legible en light/dark
           switch (toast.variant) {
             case 'success':
-              return 'border-green-200 bg-green-50 text-black';
+              return [
+                'border-primary/25',
+                'bg-primary/10',
+                'text-foreground',
+                'backdrop-blur-md',
+                'shadow-[0_0_22px_rgba(255,106,0,0.18)]',
+                'dark:shadow-[0_0_30px_rgba(255,106,0,0.22)]',
+              ].join(' ');
             case 'destructive':
-              return 'border-red-200 bg-red-50 text-black';
+              return [
+                'border-secondary/30',
+                'bg-secondary/10',
+                'text-foreground',
+                'backdrop-blur-md',
+                'shadow-[0_0_22px_rgba(255,45,85,0.22)]',
+                'dark:shadow-[0_0_30px_rgba(255,45,85,0.25)]',
+              ].join(' ');
             case 'warning':
-              return 'border-yellow-200 bg-yellow-50 text-black';
+              return [
+                'border-secondary/30',
+                'bg-secondary/10',
+                'text-foreground',
+                'backdrop-blur-md',
+                'shadow-[0_0_22px_rgba(255,45,85,0.18)]',
+                'dark:shadow-[0_0_30px_rgba(255,45,85,0.22)]',
+              ].join(' ');
             default:
-              return 'border-blue-200 bg-blue-50 text-black';
+              return [
+                'border-primary/25',
+                'bg-primary/10',
+                'text-foreground',
+                'backdrop-blur-md',
+                'shadow-[0_0_20px_rgba(255,106,0,0.16)]',
+                'dark:shadow-[0_0_28px_rgba(255,106,0,0.20)]',
+              ].join(' ');
           }
         };
 
         return (
           <Alert
             key={toast.id}
-            className={`${getVariantClass()} shadow-lg animate-in slide-in-from-right-full duration-300`}
+            className={`${getVariantClass()} animate-in slide-in-from-right-full duration-300`}
           >
             <div className="flex items-start gap-3">
               {getIcon()}
               <div className="flex-1">
-                <AlertTitle className="font-medium text-black">
+                <AlertTitle className="font-semibold text-foreground">
                   {toast.title}
                 </AlertTitle>
                 {toast.description && (
-                  <AlertDescription className="mt-1 text-black">
+                  <AlertDescription className="mt-1 text-foreground/80">
                     {toast.description}
                   </AlertDescription>
                 )}
               </div>
               <button
                 onClick={() => onRemove(toast.id)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-foreground/50 hover:text-foreground/80 transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>

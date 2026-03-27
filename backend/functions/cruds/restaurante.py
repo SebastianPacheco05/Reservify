@@ -77,14 +77,31 @@ def insertar_restaurante(
             },
         )
         db.commit()
-        # Imágenes de referencia (opcional: si la tabla/función no existe, no fallar la petición)
+        # Imágenes de referencia por restaurante_uid (función SQL espera UUID)
         if imagenes_referencia:
             try:
+                uid_row = db.execute(
+                    text('SELECT restaurante_uid FROM "Restaurante" WHERE nit = :nit'),
+                    {"nit": nit},
+                ).fetchone()
+                if not uid_row or uid_row[0] is None:
+                    raise HTTPException(
+                        status_code=500,
+                        detail="No se obtuvo restaurante_uid tras insertar el restaurante.",
+                    )
+                restaurante_uid_str = str(uid_row[0])
                 for orden, url in enumerate(imagenes_referencia[:15]):
                     if url and str(url).strip():
                         db.execute(
-                            text("SELECT insertar_imagen_referencia_restaurante(:nit, :url_imagen, :orden)"),
-                            {"nit": nit, "url_imagen": url.strip(), "orden": orden},
+                            text(
+                                "SELECT insertar_imagen_referencia_restaurante("
+                                "CAST(:restaurante_uid AS uuid), :url_imagen, :orden)"
+                            ),
+                            {
+                                "restaurante_uid": restaurante_uid_str,
+                                "url_imagen": url.strip(),
+                                "orden": orden,
+                            },
                         )
                 db.commit()
             except SQLAlchemyError:
@@ -157,7 +174,7 @@ def editar_restaurante(
 def borrar_restaurante(db: Session, restaurante_uid: str):
     try:
         db.execute(
-            text("SELECT borrar_restaurante(:restaurante_uid)"),
+            text("SELECT borrar_restaurante(CAST(:restaurante_uid AS uuid))"),
             {"restaurante_uid": restaurante_uid},
         )
         db.commit()

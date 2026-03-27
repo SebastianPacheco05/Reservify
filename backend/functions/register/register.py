@@ -4,6 +4,9 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import bcrypt
 import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def hash_password(password: str):
@@ -181,4 +184,22 @@ def registrar_usuario(db: Session, email: str, password: str, nombre: str, apell
         )
     except SQLAlchemyError as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Error de base de datos al registrar usuario: {str(e)}")
+        # Nunca exponer detalles internos (psycopg2/PLpgSQL) al frontend.
+        error_msg = str(e) if e is not None else ""
+        logger.exception("Error de base de datos al registrar usuario")
+
+        if "Ya existe un registro con esos datos" in error_msg:
+            raise HTTPException(status_code=400, detail="Ya existe un usuario con esos datos.")
+        if "Faltan datos obligatorios" in error_msg:
+            raise HTTPException(status_code=400, detail="Faltan datos obligatorios.")
+        if "Formato de datos inválido" in error_msg:
+            raise HTTPException(status_code=400, detail="Datos inválidos. Verifica la información e intenta nuevamente.")
+        if "Datos inválidos. Verifica e intenta nuevamente." in error_msg:
+            raise HTTPException(status_code=400, detail="Datos inválidos. Verifica la información e intenta nuevamente.")
+        if "Error interno. Intenta nuevamente." in error_msg:
+            raise HTTPException(status_code=400, detail="No pudimos completar tu registro. Inténtalo de nuevo más tarde.")
+
+        raise HTTPException(
+            status_code=500,
+            detail="No pudimos completar tu registro. Inténtalo de nuevo más tarde.",
+        )

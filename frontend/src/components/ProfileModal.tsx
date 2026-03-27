@@ -265,7 +265,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="sm:max-w-[900px] lg:max-w-[1000px] max-h-[90vh] overflow-hidden flex flex-col p-0 bg-gradient-to-br from-muted via-background to-accent/20 dark:from-background dark:via-muted dark:to-secondary/20 border-2 border-primary/30 dark:border-primary/50 shadow-2xl">
+        <DialogContent className="w-[95vw] sm:max-w-[900px] lg:max-w-[1000px] max-h-[90vh] overflow-hidden flex flex-col p-0 bg-gradient-to-br from-muted via-background to-accent/20 dark:from-background dark:via-muted dark:to-secondary/20 border-2 border-primary/30 dark:border-primary/50 shadow-2xl">
           <div className="bg-gradient-to-r from-primary via-secondary to-accent p-6 text-primary-foreground">
             <DialogHeader className="space-y-2">
               <DialogTitle className="text-3xl font-bold">Mi Perfil</DialogTitle>
@@ -389,7 +389,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
           )}
 
           {activeTab === "reservas" && (
-            <div className="flex-1 overflow-hidden flex flex-col px-6 pb-6">
+            <div className="flex-1 overflow-hidden flex flex-col px-4 sm:px-6 pb-4 sm:pb-6">
               <div className="flex gap-3 mb-6 flex-wrap bg-card/80 backdrop-blur-sm p-4 rounded-xl border border-border shadow-md">
                 {["todos", "pendiente", "confirmada", "cancelada"].map((estado) => (
                   <Button
@@ -490,7 +490,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
 
       {/* Modal de motivo de cancelación (ver detalle) */}
       <Dialog open={!!cancelModalReserva} onOpenChange={(open) => !open && setCancelModalReserva(null)}>
-        <DialogContent className="sm:max-w-lg bg-gradient-to-br from-muted via-background to-destructive/10 dark:from-background dark:via-muted dark:to-destructive/20 border-2 border-destructive/50 shadow-2xl">
+        <DialogContent className="w-[95vw] sm:max-w-lg bg-gradient-to-br from-muted via-background to-destructive/10 dark:from-background dark:via-muted dark:to-destructive/20 border-2 border-destructive/50 shadow-2xl">
           <div className="bg-gradient-to-r from-destructive via-secondary to-destructive p-6 text-background rounded-t-lg -m-6 mb-4">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold">Reserva Cancelada</DialogTitle>
@@ -516,7 +516,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
 
       {/* Modal para cancelar mi reserva */}
       <Dialog open={!!cancelTarget} onOpenChange={(open) => !open && !isCancelling && setCancelTarget(null)}>
-        <DialogContent className="sm:max-w-lg bg-card border border-border shadow-xl">
+        <DialogContent className="w-[95vw] sm:max-w-lg bg-card border border-border shadow-xl">
           <DialogHeader>
             <DialogTitle>Cancelar reserva</DialogTitle>
             <DialogDescription>

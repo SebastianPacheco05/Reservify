@@ -14,37 +14,39 @@ Este servicio proporciona renovación automática de tokens JWT cuando expiran, 
 ### Importar el servicio
 
 ```typescript
-import { authFetch, logout, isAuthenticated } from '../services/authService';
+import { authFetch, logout, isAuthenticated } from "../services/authService";
 ```
 
 ### Reemplazar fetch con authFetch
 
 **Antes:**
+
 ```typescript
 const token = localStorage.getItem("access_token");
-const response = await fetch("http://localhost:5080/api/endpoint", {
+const response = await fetch("http://localhost:9900/api/endpoint", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${token}`
+    Authorization: `Bearer ${token}`,
   },
-  body: JSON.stringify(data)
+  body: JSON.stringify(data),
 });
 ```
 
 **Después:**
+
 ```typescript
-import { getApiEndpoint } from '../config/api';
-import { authFetch } from '../services/authService';
+import { getApiEndpoint } from "../config/api";
+import { authFetch } from "../services/authService";
 
 // authFetch agrega automáticamente el token de autorización
 // getApiEndpoint construye la URL desde VITE_API_URL del .env
 const response = await authFetch(getApiEndpoint("/api/endpoint"), {
   method: "POST",
   headers: {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
   },
-  body: JSON.stringify(data)
+  body: JSON.stringify(data),
 });
 ```
 
@@ -53,17 +55,17 @@ const response = await authFetch(getApiEndpoint("/api/endpoint"), {
 ### 1. Petición GET autenticada
 
 ```typescript
-import { authFetch } from '../services/authService';
-import { getApiEndpoint } from '../config/api';
+import { authFetch } from "../services/authService";
+import { getApiEndpoint } from "../config/api";
 
 const fetchUserData = async () => {
   try {
     const response = await authFetch(getApiEndpoint("/usuarios/perfil"));
-    
+
     if (!response.ok) {
       throw new Error("Error al obtener datos del usuario");
     }
-    
+
     const data = await response.json();
     return data;
   } catch (error) {
@@ -75,23 +77,23 @@ const fetchUserData = async () => {
 ### 2. Petición POST autenticada
 
 ```typescript
-import { authFetch } from '../services/authService';
-import { getApiEndpoint } from '../config/api';
+import { authFetch } from "../services/authService";
+import { getApiEndpoint } from "../config/api";
 
 const updateProfile = async (profileData) => {
   try {
     const response = await authFetch(getApiEndpoint("/editarcliente"), {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(profileData)
+      body: JSON.stringify(profileData),
     });
-    
+
     if (!response.ok) {
       throw new Error("Error al actualizar perfil");
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error("Error:", error);
@@ -102,7 +104,7 @@ const updateProfile = async (profileData) => {
 ### 3. Cerrar sesión
 
 ```typescript
-import { logout } from '../services/authService';
+import { logout } from "../services/authService";
 
 const handleLogout = () => {
   logout(); // Limpia todos los tokens y redirige a /login
@@ -119,7 +121,7 @@ const MyComponent = () => {
     // Redirigir al login o mostrar mensaje
     return <Navigate to="/login" />;
   }
-  
+
   // Resto del componente...
 };
 ```
@@ -150,31 +152,34 @@ Para migrar código existente, sigue estos pasos:
 ### Paso 1: Importar authFetch
 
 ```typescript
-import { authFetch } from '../services/authService';
+import { authFetch } from "../services/authService";
 ```
 
 ### Paso 2: Reemplazar fetch por authFetch
 
 Busca todas las instancias de:
+
 ```typescript
 const token = localStorage.getItem("access_token");
 fetch(url, {
   headers: {
-    "Authorization": `Bearer ${token}`
-  }
-})
+    Authorization: `Bearer ${token}`,
+  },
+});
 ```
 
 Y reemplázalas con:
+
 ```typescript
 authFetch(url, {
   // headers sin Authorization, se agrega automáticamente
-})
+});
 ```
 
 ### Paso 3: Eliminar código de manejo manual de tokens
 
 Ya no necesitas:
+
 - Obtener el token manualmente con `localStorage.getItem("access_token")`
 - Agregar el header `Authorization` manualmente
 - Manejar errores 401 manualmente
@@ -189,9 +194,8 @@ Ya no necesitas:
 ## Seguridad
 
 Para mayor seguridad en producción:
+
 1. Considera usar httpOnly cookies para almacenar tokens
 2. Implementa CSRF protection
 3. Usa HTTPS siempre
 4. Implementa rate limiting en el backend para el endpoint de refresh
-
-

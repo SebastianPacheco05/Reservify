@@ -7,7 +7,7 @@
 // Validar que VITE_API_URL esté definida
 const getApiUrl = (): string => {
   const apiUrl = import.meta.env.VITE_API_URL;
-  
+
   if (!apiUrl) {
     const error = `
       ❌ ERROR: VITE_API_URL no está definida en las variables de entorno.
@@ -16,16 +16,18 @@ const getApiUrl = (): string => {
       VITE_API_URL=http://tu-host:tu-puerto
       
       Ejemplo:
-      VITE_API_URL=http://localhost:5080
+      VITE_API_URL=http://localhost:9900  
       o
-      VITE_API_URL=http://10.5.213.111:5080
+      VITE_API_URL=http://10.5.213.111:9900
     `;
     console.error(error);
-    throw new Error("VITE_API_URL no está configurada. Revisa el archivo .env en la raíz del proyecto.");
+    throw new Error(
+      "VITE_API_URL no está configurada. Revisa el archivo .env en la raíz del proyecto.",
+    );
   }
-  
+
   // Eliminar barra final si existe para evitar dobles barras
-  return apiUrl.replace(/\/$/, '');
+  return apiUrl.replace(/\/$/, "");
 };
 
 /**
@@ -37,18 +39,20 @@ export const API_BASE_URL = getApiUrl();
 /**
  * Función helper para construir URLs completas de endpoints
  * @param endpoint - Ruta del endpoint (ej: "/credenciales/login")
- * @returns URL completa (ej: "http://localhost:5080/credenciales/login")
+ * @returns URL completa (ej: "http://localhost:9900/credenciales/login")
  */
 export const getApiEndpoint = (endpoint: string): string => {
   // Asegurar que el endpoint empiece con /
-  const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const normalizedEndpoint = endpoint.startsWith("/")
+    ? endpoint
+    : `/${endpoint}`;
   return `${API_BASE_URL}${normalizedEndpoint}`;
 };
 
 // Log de configuración (solo en desarrollo)
 if (import.meta.env.DEV) {
-  console.log('🔧 Configuración de API cargada:', {
+  console.log("🔧 Configuración de API cargada:", {
     API_BASE_URL,
-    fuente: 'variables de entorno (.env raíz)',
+    fuente: "variables de entorno (.env raíz)",
   });
 }

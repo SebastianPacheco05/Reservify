@@ -4,11 +4,10 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import { ScrollVelocityContainer, ScrollVelocityRow } from "./ui/scroll-based-velocity";
 import { useEffect, useState, useRef } from "react";
 import type { Restaurante } from "../types/restaurant.types";
 import {
-  fadeInUp,
-  staggerContainer,
   transitionNormal,
 } from "../lib/animations";
 import { getApiEndpoint } from "../config/api";
@@ -50,8 +49,8 @@ export default function RestaurantGrid({ searchQuery }: RestaurantGridProps) {
           data:
             | Restaurante[]
             | {
-                respuesta?: Restaurante[];
-              },
+              respuesta?: Restaurante[];
+            },
         ) => {
           const list = Array.isArray(data) ? data : (data?.respuesta ?? []);
           setRestaurantes(list);
@@ -127,11 +126,11 @@ export default function RestaurantGrid({ searchQuery }: RestaurantGridProps) {
           transition={transitionNormal}
         >
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Restaurantes Destacados
+            Restaurantes recomendados
           </h3>
           <div className="flex flex-col items-center gap-2">
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Los favoritos de nuestra comunidad
+              Una selección pensada para que reserves con confianza
             </p>
             {searchQuery && searchQuery.trim() && (
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm border border-primary/30">
@@ -184,105 +183,112 @@ export default function RestaurantGrid({ searchQuery }: RestaurantGridProps) {
         )}
 
         {!loading && !error && filteredRestaurantes.length > 0 && (
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true, margin: "-50px" }}
-          >
-            {filteredRestaurantes.map((restaurant) => (
-              <motion.div
-                key={restaurant.restaurante_uid}
-                variants={fadeInUp}
-                transition={transitionNormal}
-                whileHover={{ y: -6 }}
-                className="h-full"
+          <div className="relative">
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-14 sm:w-20 bg-gradient-to-r from-background/95 to-transparent z-10" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-14 sm:w-20 bg-gradient-to-l from-background/95 to-transparent z-10" />
+
+            <ScrollVelocityContainer>
+              <ScrollVelocityRow
+                baseVelocity={5}
+                direction={1}
+                draggable
+                className="py-2 cursor-grab active:cursor-grabbing"
               >
-                <Card className="overflow-hidden hover:shadow-2xl transition-all duration-500 group cursor-pointer border-2 border-border hover:border-primary rounded-2xl h-full">
-                  <div className="relative">
-                    <img
-                      src={restaurant.url_image}
-                      alt={restaurant.nombre_restaurante}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute top-4 right-4">
-                      <Badge
-                        variant={
-                          restaurant.availabletoday ? "default" : "secondary"
-                        }
-                        className={`${
-                          restaurant.availabletoday
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted text-muted-foreground"
-                        } transition-all duration-300 group-hover:scale-105`}
-                      >
-                        {restaurant.availabletoday
-                          ? "Disponible hoy"
-                          : "Reservar mañana"}
-                      </Badge>
-                    </div>
-                  </div>
-
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
-                        {restaurant.nombre_restaurante}
-                      </h4>
-                      <span className="text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300">
-                        {restaurant.priceRange ?? "$$"}
-                      </span>
-                    </div>
-
-                    <p className="text-muted-foreground mb-3 group-hover:text-foreground transition-colors duration-300 line-clamp-2 sm:line-clamp-3">
-                      {restaurant.descripcion_restaurante ?? "Sin descripción"}
-                    </p>
-
-                    <div className="flex items-center mb-3">
-                      <Star className="w-4 h-4 text-primary fill-current group-hover:scale-110 transition-transform duration-300" />
-                      <span className="ml-1 font-medium group-hover:text-primary transition-colors duration-300">
-                        {restaurant.rating}
-                      </span>
-                      <span className="ml-1 text-muted-foreground">
-                        ({restaurant.reviews} reseñas)
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-muted-foreground">
-                        {restaurant.horario_apertura} -{" "}
-                        {restaurant.horario_cierre}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center text-muted-foreground group-hover:text-foreground transition-colors duration-300">
-                        <MapPin className="w-4 h-4 mr-1" />
-                        <span
-                          className="text-sm truncate max-w-[180px] sm:max-w-none"
-                          title={restaurant.direccion}
-                        >
-                          {restaurant.direccion}
-                        </span>
+                {filteredRestaurantes.map((restaurant, index) => (
+                  <motion.div
+                    key={`${restaurant.restaurante_uid}-${index}`}
+                    transition={transitionNormal}
+                    whileHover={{ y: -6 }}
+                    className="h-full px-2 sm:px-3"
+                  >
+                    <Card className="overflow-hidden hover:shadow-2xl transition-all duration-500 group cursor-pointer border-2 border-border hover:border-primary rounded-2xl h-full w-[290px] sm:w-[340px] md:w-[360px]">
+                      <div className="relative">
+                        <img
+                          src={restaurant.url_image}
+                          alt={restaurant.nombre_restaurante}
+                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute top-4 right-4">
+                          <Badge
+                            variant={
+                              restaurant.availabletoday ? "default" : "secondary"
+                            }
+                            className={`${restaurant.availabletoday
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground"
+                              } transition-all duration-300 group-hover:scale-105`}
+                          >
+                            {restaurant.availabletoday
+                              ? "Disponible hoy"
+                              : "Reservar mañana"}
+                          </Badge>
+                        </div>
                       </div>
-                      <Badge
-                        variant="outline"
-                        className="border-primary/50 text-primary group-hover:border-primary group-hover:text-primary transition-all duration-300"
-                      >
-                        {restaurant.nombre_categoria}
-                      </Badge>
-                    </div>
 
-                    <Link to={`/Restaurant?uid=${restaurant.restaurante_uid}`}>
-                      <Button className="w-full mt-4 text-primary-foreground bg-primary hover:bg-accent hover:text-accent-foreground transition-all duration-300 rounded-xl">
-                        Ver disponibilidad
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
+                      <CardContent className="p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300 line-clamp-1">
+                            {restaurant.nombre_restaurante}
+                          </h4>
+                          <span className="text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300">
+                            {restaurant.priceRange ?? "$$"}
+                          </span>
+                        </div>
+
+                        <p className="text-muted-foreground mb-3 group-hover:text-foreground transition-colors duration-300 line-clamp-2 sm:line-clamp-3">
+                          {restaurant.descripcion_restaurante ?? "Sin descripción"}
+                        </p>
+
+                        <div className="flex items-center mb-3">
+                          <Star className="w-4 h-4 text-primary fill-current group-hover:scale-110 transition-transform duration-300" />
+                          <span className="ml-1 font-medium group-hover:text-primary transition-colors duration-300">
+                            {restaurant.rating}
+                          </span>
+                          <span className="ml-1 text-muted-foreground">
+                            ({restaurant.reviews} reseñas)
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-muted-foreground">
+                            {restaurant.horario_apertura} -{" "}
+                            {restaurant.horario_cierre}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center text-muted-foreground group-hover:text-foreground transition-colors duration-300">
+                            <MapPin className="w-4 h-4 mr-1" />
+                            <span
+                              className="text-sm truncate max-w-[180px] sm:max-w-none"
+                              title={restaurant.direccion}
+                            >
+                              {restaurant.direccion}
+                            </span>
+                          </div>
+                          <Badge
+                            variant="outline"
+                            className="border-primary/50 text-primary group-hover:border-primary group-hover:text-primary transition-all duration-300"
+                          >
+                            {restaurant.nombre_categoria}
+                          </Badge>
+                        </div>
+
+                        <Button
+                          asChild
+                          className="w-full mt-4 rounded-xl bg-primary text-primary-foreground transition-all duration-300 hover:bg-accent/90 hover:text-primary-foreground focus-visible:ring-primary/40"
+                        >
+                          <Link to={`/Restaurant?uid=${restaurant.restaurante_uid}`}>
+                            Ver disponibilidad
+                          </Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </ScrollVelocityRow>
+            </ScrollVelocityContainer>
+          </div>
         )}
       </div>
     </section>

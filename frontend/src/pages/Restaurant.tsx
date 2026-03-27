@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -39,17 +39,30 @@ import {
   CreditCard,
   UserCircle,
   ArrowLeft,
+  Search,
+  Info,
+  Images,
+  Map as MapIcon,
+  MessageSquare,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  X,
 } from "lucide-react";
 
+import { cn } from "../lib/utils";
+import { isCompleteISODate } from "../lib/dateValidators";
 import { useRestaurantData } from "../hooks/useRestaurantData";
 import { useToastContext } from "../components/ToastProvider";
 import { getApiEndpoint } from "../config/api";
 import RestaurantMap from "../components/RestaurantMap";
 import ReviewForm from "../components/ReviewForm";
-import { ModeToggle } from "../components/mode-toggle";
+import { AnimatedThemeToggler } from "../components/ui/animated-theme-toggler";
+import { Brand } from "../components/Brand";
 
 export default function RestaurantPage() {
   const { toast } = useToastContext();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const restauranteUid = searchParams.get("uid") || "";
   const { restaurantInfo, mesas, comentarios, loading, getAvailableSlots } =
@@ -64,25 +77,108 @@ export default function RestaurantPage() {
 
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [canSearch, setCanSearch] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    const rawRole = localStorage.getItem("tipo_usuario") ?? "";
+    const normalized = rawRole
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+    setCanSearch(!!token && normalized === "cliente");
+  }, []);
   const [reservationData, setReservationData] = useState({
     date: "",
     time: "",
     guests: "",
     mesaId: "",
   });
+  const [detailTab, setDetailTab] = useState<"resumen" | "fotos" | "mapa" | "reseñas">("resumen");
+  const [descExpanded, setDescExpanded] = useState(false);
+  /** Índice de imagen abierta en el visor a pantalla completa; null = cerrado */
+  const [photoLightboxIndex, setPhotoLightboxIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (detailTab !== "fotos") setPhotoLightboxIndex(null);
+  }, [detailTab]);
+
+  // Capacidad de personas según la mesa seleccionada (para limitar el dropdown).
+  const selectedMesa = reservationData.mesaId
+    ? mesas.find((m) => m.id_mesa.toString() === reservationData.mesaId)
+    : null;
+  const selectedMesaCantPersonas = selectedMesa?.cant_personas ?? 0;
+
+  // Fallback si todavía no hay mesa seleccionada: usamos el máximo global de las mesas del restaurante.
+  const globalMaxGuests = Math.max(
+    0,
+    ...mesas.map((m) => Number(m.cant_personas ?? 0) || 0),
+  );
+  const maxGuests = selectedMesaCantPersonas > 0 ? selectedMesaCantPersonas : globalMaxGuests > 0 ? globalMaxGuests : 1;
+
+  // Si el usuario cambia la mesa y el número de comensales supera la capacidad,
+  // ajustamos automáticamente para mantener la reserva válida.
+  useEffect(() => {
+    if (!reservationData.mesaId) return;
+    if (selectedMesaCantPersonas <= 0) return;
+    if (!reservationData.guests) return;
+
+    const currentGuests = parseInt(reservationData.guests, 10);
+    if (Number.isNaN(currentGuests)) return;
+
+    if (currentGuests > selectedMesaCantPersonas) {
+      setReservationData((prev) => ({
+        ...prev,
+        guests: String(selectedMesaCantPersonas),
+      }));
+    }
+  }, [reservationData.mesaId, reservationData.guests, selectedMesaCantPersonas]);
+
   // Promedio de reseñas: si hay comentarios se calcula desde ellos; si no, se usa el rating del backend
   const ratingPromedio =
     comentarios.length > 0
       ? comentarios.reduce((acc, c) => acc + c.calificacion, 0) / comentarios.length
       : (restaurantInfo?.rating ?? 0);
 
-  const handleDateChange = async (date: string) => {
-    setReservationData({ ...reservationData, date });
-    if (date) {
-      const slots = await getAvailableSlots(date);
-      setAvailableSlots(slots);
-    }
+  /** Espera 1 s tras dejar de cambiar la fecha y solo pide slots si YYYY-MM-DD es válida. */
+  const SLOTS_DEBOUNCE_MS = 1000;
+
+  const handleDateChange = (date: string) => {
+    setReservationData((prev) => ({
+      ...prev,
+      date,
+      time: "",
+    }));
   };
+
+  useEffect(() => {
+    const raw = reservationData.date?.trim() ?? "";
+
+    if (!raw) {
+      setAvailableSlots([]);
+      return;
+    }
+
+    if (!isCompleteISODate(raw)) {
+      setAvailableSlots([]);
+      return;
+    }
+
+    let cancelled = false;
+    const timer = window.setTimeout(async () => {
+      const slots = await getAvailableSlots(raw);
+      if (!cancelled) {
+        setAvailableSlots(slots);
+      }
+    }, SLOTS_DEBOUNCE_MS);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [reservationData.date, getAvailableSlots]);
 
   const handleBackToHome = () => {
     // Redirige a "/" y fuerza recarga de la página
@@ -221,19 +317,18 @@ export default function RestaurantPage() {
             <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft className="h-5 w-5" /> Volver
             </Link>
-            <ModeToggle />
+            <AnimatedThemeToggler />
           </div>
         </header>
-        <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-8">
-          <Skeleton className="h-[28rem] w-full rounded-2xl" />
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-              <Skeleton className="h-24 w-full rounded-xl" />
-              <Skeleton className="h-40 w-full rounded-xl" />
-              <Skeleton className="h-64 w-full rounded-xl" />
+        <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-5">
+          <Skeleton className="h-48 sm:h-52 w-full rounded-2xl" />
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_22rem] gap-6">
+            <div className="space-y-4 order-2 xl:order-1">
+              <Skeleton className="h-11 w-full rounded-xl" />
+              <Skeleton className="h-56 w-full rounded-2xl" />
             </div>
-            <div className="space-y-6">
-              <Skeleton className="h-80 w-full rounded-xl" />
+            <div className="order-1 xl:order-2">
+              <Skeleton className="h-72 w-full rounded-xl" />
             </div>
           </div>
         </div>
@@ -250,7 +345,7 @@ export default function RestaurantPage() {
             <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft className="h-5 w-5" /> Volver
             </Link>
-            <ModeToggle />
+            <AnimatedThemeToggler />
           </div>
         </header>
         <div className="max-w-7xl mx-auto p-4 sm:p-6">
@@ -284,23 +379,52 @@ export default function RestaurantPage() {
           <button
             type="button"
             onClick={handleBackToHome}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-medium rounded-lg px-3 py-2 hover:bg-accent/50"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-medium rounded-xl px-3 py-2 hover:bg-primary/10 hover:shadow-[0_0_0_1px_rgba(255,106,0,0.22)]"
           >
             <ArrowLeft className="h-5 w-5" />
             <span className="hidden sm:inline">Volver al inicio</span>
             <span className="sm:hidden">Volver</span>
           </button>
           <div className="flex items-center gap-2">
-            <img src="/logoreservify.png" alt="Reservify" className="h-8 dark:invert" />
-            <ModeToggle />
+            {canSearch && (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const q = searchValue.trim();
+                  if (!q) return;
+                  navigate(`/buscar?q=${encodeURIComponent(q)}`);
+                  setSearchValue("");
+                }}
+                className="relative w-[160px] sm:w-[220px]"
+              >
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  placeholder="Buscar..."
+                  className="pl-9 pr-10 h-9 rounded-xl bg-card/70 border-border/60 focus-visible:ring-primary/30"
+                  aria-label="Buscar restaurantes"
+                />
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 rounded-lg px-2"
+                  variant="secondary"
+                >
+                  Ir
+                </Button>
+              </form>
+            )}
+            <Brand variant="full" className="h-8 w-auto object-contain" alt="Reservify" />
+            <AnimatedThemeToggler />
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8 lg:space-y-10">
-        {/* Hero imagen */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-8 space-y-5">
+        {/* Hero compacto: menos altura para ver reserva y pestañas antes */}
         {restaurantInfo && (
-          <div className="relative h-72 sm:h-80 md:h-96 rounded-2xl overflow-hidden group shadow-xl ring-1 ring-border/50">
+          <div className="relative h-44 sm:h-52 md:h-56 rounded-2xl overflow-hidden group shadow-lg ring-1 ring-border/50">
             {restaurantInfo.url_image && restaurantInfo.url_image.trim() ? (
               <img
                 src={restaurantInfo.url_image}
@@ -322,8 +446,8 @@ export default function RestaurantPage() {
               </div>
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white">
-              <h1 className="text-3xl sm:text-4xl font-bold drop-shadow-lg">
+            <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-5 text-white">
+              <h1 className="text-2xl sm:text-3xl font-bold drop-shadow-lg leading-tight">
                 {restaurantInfo.nombre_restaurante}
               </h1>
               <div className="flex items-center gap-3 mt-2 flex-wrap">
@@ -345,324 +469,324 @@ export default function RestaurantPage() {
           </div>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-8 lg:gap-10">
-          {/* Información Principal */}
-          <div className="lg:col-span-2 space-y-6 lg:space-y-8">
-            {/* Descripción */}
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(300px,22rem)] gap-6 xl:gap-8 xl:items-start">
+          {/* Columna principal: pestañas para menos scroll vertical */}
+          <div className="order-2 xl:order-1 space-y-4 min-w-0">
             {restaurantInfo && (
-              <Card className="border-border bg-card shadow-sm overflow-hidden">
-                <CardContent className="">
-                  <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-                    {restaurantInfo.descripcion_restaurante}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Galería de Imágenes de Referencia */}
-            {restaurantInfo && (
-              <Card className="border-border bg-card shadow-sm overflow-hidden">
-                <CardHeader>
-                  <CardTitle className="text-foreground">Galería de Imágenes</CardTitle>
-                  <CardDescription className="text-muted-foreground">
-                    {restaurantInfo.imagenes_referencia?.length
-                      ? `${restaurantInfo.imagenes_referencia.length} ${restaurantInfo.imagenes_referencia.length === 1 ? "imagen" : "imágenes"} de referencia`
-                      : "Imágenes de referencia del restaurante"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {restaurantInfo.imagenes_referencia && restaurantInfo.imagenes_referencia.length > 0 ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3">
-                      {restaurantInfo.imagenes_referencia.map((url, index) => (
-                        <div
-                          key={`${url}-${index}`}
-                          className="aspect-square rounded-lg overflow-hidden bg-muted border border-border"
-                        >
-                          <img
-                            src={url}
-                            alt={`Imagen de referencia ${index + 1} - ${restaurantInfo.nombre_restaurante}`}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                            referrerPolicy="no-referrer"
-                            onError={(e) => {
-                              const t = e.target as HTMLImageElement;
-                              t.onerror = null;
-                              t.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect fill='%23e5e7eb' width='200' height='200'/%3E%3Ctext x='100' y='100' fill='%23999' text-anchor='middle' dy='.3em' font-size='14'%3EImagen no disponible%3C/text%3E%3C/svg%3E";
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="rounded-lg border border-dashed border-muted-foreground/30 bg-muted/30 aspect-video flex items-center justify-center min-h-[200px]">
-                      <p className="text-muted-foreground text-center px-4">
-                        Este restaurante aún no tiene imágenes de referencia.
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Información de Contacto */}
-            {restaurantInfo && (
-              <Card className="border-border bg-card shadow-sm">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-foreground">
-                    <MapPin className="h-5 w-5 text-primary" />
-                    <span>Información del Restaurante</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                      <MapPin className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-medium text-foreground">Dirección</p>
-                        <p className="text-muted-foreground text-sm mt-0.5">
-                          {restaurantInfo.direccion}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                      <Clock className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-medium text-foreground">Horarios</p>
-                        <p className="text-muted-foreground text-sm mt-0.5">
-                          {restaurantInfo.horario_apertura} – {restaurantInfo.horario_cierre}
-                        </p>
-                      </div>
-                    </div>
+              <>
+                <div
+                  role="tablist"
+                  aria-label="Secciones del restaurante"
+                  className="sticky top-[4.5rem] z-20 -mx-1 px-1 py-2 bg-background/95 backdrop-blur-md border-b border-border/80 xl:static xl:bg-transparent xl:backdrop-blur-none xl:border-0 xl:px-0"
+                >
+                  <div className="flex gap-1 overflow-x-auto pb-1">
+                    {(
+                      [
+                        { id: "resumen" as const, label: "Resumen", Icon: Info },
+                        { id: "fotos" as const, label: "Fotos", Icon: Images },
+                        { id: "mapa" as const, label: "Mapa", Icon: MapIcon },
+                        { id: "reseñas" as const, label: "Reseñas", Icon: MessageSquare },
+                      ] as const
+                    ).map(({ id, label, Icon }) => (
+                      <button
+                        key={id}
+                        type="button"
+                        role="tab"
+                        aria-selected={detailTab === id}
+                        onClick={() => setDetailTab(id)}
+                        className={cn(
+                          "inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
+                          detailTab === id
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground",
+                        )}
+                      >
+                        <Icon className="h-4 w-4 shrink-0" />
+                        {label}
+                      </button>
+                    ))}
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                </div>
 
-            {/* Mapa del Restaurante (solo este NIT) */}
-            {restaurantInfo && (
-              <Card className="border-border bg-card shadow-sm overflow-hidden">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-foreground">
-                    <MapPin className="h-5 w-5 text-primary" />
-                    <span>Ubicación en el mapa</span>
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground">
-                    Visualiza la ubicación exacta de este restaurante.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <RestaurantMap
-                    onlyNit={restaurantInfo.nit}
-                    initialCenter={
-                      restaurantInfo.lat != null && restaurantInfo.lng != null
-                        ? { lat: restaurantInfo.lat, lng: restaurantInfo.lng }
-                        : undefined
-                    }
-                  />
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Mesas Disponibles */}
-            {!loading.mesas && mesas.length > 0 && (
-              <Card className="border-border bg-card shadow-sm">
-                <CardHeader>
-                  <CardTitle className="text-foreground">Mesas Disponibles</CardTitle>
-                  <CardDescription className="text-muted-foreground">
-                    Seleccione una mesa para su reserva
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-3 gap-4">
-                    {mesas
-                      .filter((mesa) => mesa.estado_de_disponibilidad)
-                      .map((mesa) => (
-                        <div
-                          key={mesa.id_mesa}
-                          className="border border-border rounded-xl p-4 hover:shadow-md hover:border-primary/30 bg-card transition-all duration-200 cursor-pointer"
+                <div className="rounded-2xl border border-border/80 bg-card/50 p-4 sm:p-5 shadow-sm">
+                  {detailTab === "resumen" && (
+                    <div className="space-y-5">
+                      <div>
+                        <p
+                          className={cn(
+                            "text-sm leading-relaxed text-muted-foreground",
+                            !descExpanded && "line-clamp-4",
+                          )}
                         >
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-semibold text-foreground">
-                              Mesa #{mesa.id_mesa}
-                            </h4>
-                            <Badge variant="secondary" className="text-xs">
-                              Disponible
-                            </Badge>
+                          {restaurantInfo.descripcion_restaurante}
+                        </p>
+                        {(restaurantInfo.descripcion_restaurante?.length ?? 0) > 220 && (
+                          <button
+                            type="button"
+                            onClick={() => setDescExpanded(!descExpanded)}
+                            className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                          >
+                            {descExpanded ? "Ver menos" : "Ver más"}
+                            <ChevronDown
+                              className={cn("h-4 w-4 transition-transform", descExpanded && "rotate-180")}
+                            />
+                          </button>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="flex gap-2 rounded-xl border border-border bg-muted/40 p-3 text-sm">
+                          <MapPin className="h-4 w-4 shrink-0 text-primary mt-0.5" />
+                          <div>
+                            <p className="font-medium text-foreground">Dirección</p>
+                            <p className="text-muted-foreground mt-0.5">{restaurantInfo.direccion}</p>
                           </div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <Users className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm text-muted-foreground">
-                              {mesa.cant_personas} personas
-                            </span>
+                        </div>
+                        <div className="flex gap-2 rounded-xl border border-border bg-muted/40 p-3 text-sm">
+                          <Clock className="h-4 w-4 shrink-0 text-primary mt-0.5" />
+                          <div>
+                            <p className="font-medium text-foreground">Horario</p>
+                            <p className="text-muted-foreground mt-0.5">
+                              {restaurantInfo.horario_apertura} – {restaurantInfo.horario_cierre}
+                            </p>
                           </div>
-                          <p className="font-bold text-lg text-primary">
-                            ${mesa.precio.toFixed(2)}
+                        </div>
+                      </div>
+                      {!loading.mesas && mesas.length > 0 && (
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+                            Mesas del restaurante
                           </p>
-                        </div>
-                      ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Formulario de Reseña */}
-            <ReviewForm
-              restauranteUid={restauranteUid}
-              onReviewSubmitted={() => {
-                // Recargar comentarios después de enviar reseña
-                window.location.reload();
-              }}
-            />
-
-            {/* Reseñas */}
-            {!loading.comentarios && comentarios.length > 0 && (
-              <Card className="overflow-hidden border-border bg-card shadow-sm">
-                <CardHeader className="bg-gradient-to-r from-primary/10 to-accent/10 border-b border-border">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="flex items-center gap-2 text-2xl text-foreground">
-                        <Star className="h-6 w-6 text-primary fill-primary" />
-                        <span>Reseñas de Clientes</span>
-                      </CardTitle>
-                      <CardDescription className="mt-2 text-base text-muted-foreground">
-                        {comentarios.length}{" "}
-                        {comentarios.length === 1 ? "reseña" : "reseñas"} de
-                        nuestros clientes
-                      </CardDescription>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-3xl font-bold text-primary">
-                        {ratingPromedio.toFixed(1)}
-                      </div>
-                      <div className="flex items-center justify-end mt-1">
-                        {renderStars(Math.round(ratingPromedio))}
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    {comentarios.map((comentario, index) => {
-                      const fecha = new Date(comentario.fecha);
-                      const fechaFormateada = fecha.toLocaleDateString("es-ES", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      });
-                      const tiempoRelativo = (() => {
-                        const ahora = new Date();
-                        const diffMs = ahora.getTime() - fecha.getTime();
-                        const diffDias = Math.floor(
-                          diffMs / (1000 * 60 * 60 * 24),
-                        );
-                        if (diffDias === 0) return "Hoy";
-                        if (diffDias === 1) return "Ayer";
-                        if (diffDias < 7) return `Hace ${diffDias} días`;
-                        if (diffDias < 30)
-                          return `Hace ${Math.floor(diffDias / 7)} semanas`;
-                        if (diffDias < 365)
-                          return `Hace ${Math.floor(diffDias / 30)} meses`;
-                        return `Hace ${Math.floor(diffDias / 365)} años`;
-                      })();
-
-                      return (
-                        <div
-                          key={comentario.id_comentario}
-                          className="group relative bg-card rounded-xl border border-border p-5 hover:shadow-lg hover:border-primary/30 transition-all duration-300"
-                        >
-                          <div className="flex items-start space-x-4">
-                            {/* Avatar */}
-                            <div className="flex-shrink-0">
-                              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground font-semibold text-lg shadow-md">
-                                <UserCircle className="w-10 h-10" />
-                              </div>
-                            </div>
-
-                            {/* Contenido */}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between mb-2">
-                                <div>
-                                  <div className="flex items-center space-x-2 mb-1">
-                                    <h4 className="font-semibold text-foreground">
-                                      {[comentario.nombre, comentario.apellido].filter(Boolean).join(" ") || `Cliente ${index + 1}`}
-                                    </h4>
-                                    <Badge
-                                      variant="secondary"
-                                      className="text-xs bg-primary/10 text-primary"
-                                    >
-                                      Verificado
-                                    </Badge>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <div className="flex items-center">
-                                      {renderStars(comentario.calificacion)}
-                                    </div>
-                                    <span className="text-sm font-medium text-muted-foreground">
-                                      {comentario.calificacion}.0
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="text-right flex-shrink-0">
-                                  <div className="text-sm font-medium text-foreground">
-                                    {tiempoRelativo}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    {fechaFormateada}
-                                  </div>
-                                </div>
-                              </div>
-
-                              <p className="text-muted-foreground leading-relaxed mt-3">
-                                {comentario.comentario}
-                              </p>
-
-                              {/* Indicador de calificación */}
-                              <div className="mt-4 pt-4 border-t border-border">
-                                <div className="flex items-center space-x-2">
-                                  <div
-                                    className={`px-3 py-1 rounded-full text-xs font-medium ${comentario.calificacion >= 4
-                                      ? "bg-primary/10 text-primary"
-                                      : comentario.calificacion >= 3
-                                        ? "bg-accent/20 text-accent-foreground"
-                                        : "bg-destructive/10 text-destructive"
+                          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+                            {mesas.map((mesa) => (
+                              <div
+                                key={mesa.id_mesa}
+                                className="min-w-[220px] shrink-0 rounded-xl border border-border bg-background px-3 py-2 text-left shadow-sm"
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <p className="text-xs font-semibold text-foreground">Mesa #{mesa.id_mesa}</p>
+                                  <span
+                                    className={`text-[10px] px-1.5 py-0.5 rounded-full border ${mesa.estado_de_disponibilidad
+                                        ? "border-emerald-500/40 text-emerald-400"
+                                        : "border-rose-500/40 text-rose-400"
                                       }`}
                                   >
-                                    {comentario.calificacion >= 4
-                                      ? "Excelente"
-                                      : comentario.calificacion >= 3
-                                        ? "Bueno"
-                                        : "Regular"}
-                                  </div>
+                                    {mesa.estado_de_disponibilidad ? "Disponible" : "No disponible"}
+                                  </span>
                                 </div>
+                                <p className="text-[11px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                                  <Users className="h-3 w-3" />
+                                  {mesa.cant_personas} pers.
+                                </p>
+                                <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
+                                  {mesa.descripcion?.trim() || "Sin descripción"}
+                                </p>
+                                <p className="text-sm font-bold text-primary mt-1">${mesa.precio.toFixed(2)}</p>
                               </div>
-                            </div>
+                            ))}
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+                      )}
+                    </div>
+                  )}
 
-            {/* Mensaje cuando no hay comentarios */}
-            {!loading.comentarios && comentarios.length === 0 && (
-              <Card className="border-border bg-card shadow-sm">
-                <CardContent className="py-12 text-center">
-                  <Star className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    Aún no hay reseñas
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Sé el primero en dejar una reseña sobre este restaurante
-                  </p>
-                </CardContent>
-              </Card>
+                  {detailTab === "fotos" && restaurantInfo && (() => {
+                    const gallery = restaurantInfo.imagenes_referencia ?? [];
+                    if (gallery.length === 0) {
+                      return (
+                        <p className="text-sm text-muted-foreground text-center py-8">
+                          Este restaurante aún no tiene imágenes de referencia.
+                        </p>
+                      );
+                    }
+                    const total = gallery.length;
+                    return (
+                      <>
+                        <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+                          <p className="text-sm font-medium text-foreground">Galería</p>
+                          <p className="text-xs text-muted-foreground">
+                            {total} {total === 1 ? "foto" : "fotos"} · Toca una para ampliarla
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+                          {gallery.map((url, index) => (
+                            <button
+                              key={`${url}-${index}`}
+                              type="button"
+                              onClick={() => setPhotoLightboxIndex(index)}
+                              className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-border bg-muted text-left shadow-sm transition-all hover:border-primary/40 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                            >
+                              <img
+                                src={url}
+                                alt={`${restaurantInfo.nombre_restaurante} — foto ${index + 1} de ${total}`}
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                                referrerPolicy="no-referrer"
+                                loading="lazy"
+                                onError={(e) => {
+                                  const t = e.target as HTMLImageElement;
+                                  t.onerror = null;
+                                  t.src =
+                                    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect fill='%23e5e7eb' width='200' height='200'/%3E%3C/svg%3E";
+                                }}
+                              />
+                              <span className="sr-only">Abrir imagen {index + 1} en grande</span>
+                            </button>
+                          ))}
+                        </div>
+
+                        <Dialog
+                          open={photoLightboxIndex !== null}
+                          onOpenChange={(open) => !open && setPhotoLightboxIndex(null)}
+                        >
+                          <DialogContent
+                            showCloseButton={false}
+                            className="max-h-[95vh] w-[min(100vw-1rem,56rem)] max-w-[calc(100vw-1rem)] gap-0 border-border/80 bg-background/95 p-0 sm:p-0 overflow-hidden"
+                          >
+                            <div className="flex items-center justify-between gap-2 border-b border-border/80 bg-muted/30 px-3 py-2 sm:px-4">
+                              <DialogTitle className="text-sm font-medium text-foreground">
+                                {restaurantInfo.nombre_restaurante}
+                                {photoLightboxIndex !== null && (
+                                  <span className="ml-2 font-normal text-muted-foreground">
+                                    · {photoLightboxIndex + 1} / {total}
+                                  </span>
+                                )}
+                              </DialogTitle>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="shrink-0 rounded-full"
+                                onClick={() => setPhotoLightboxIndex(null)}
+                                aria-label="Cerrar galería"
+                              >
+                                <X className="h-5 w-5" />
+                              </Button>
+                            </div>
+                            <div className="relative flex min-h-0 flex-1 items-center justify-center bg-black/90 p-2 sm:p-4">
+                              {photoLightboxIndex !== null && (
+                                <img
+                                  src={gallery[photoLightboxIndex]}
+                                  alt=""
+                                  className="max-h-[min(78vh,720px)] w-full object-contain"
+                                  referrerPolicy="no-referrer"
+                                />
+                              )}
+                              {photoLightboxIndex !== null && total > 1 && (
+                                <>
+                                  <Button
+                                    type="button"
+                                    variant="secondary"
+                                    size="icon"
+                                    className="absolute left-1 top-1/2 h-10 w-10 -translate-y-1/2 rounded-full border border-border/80 bg-background/90 shadow-md sm:left-2"
+                                    onClick={() =>
+                                      setPhotoLightboxIndex((i) =>
+                                        i === null ? null : i === 0 ? total - 1 : i - 1,
+                                      )
+                                    }
+                                    aria-label="Foto anterior"
+                                  >
+                                    <ChevronLeft className="h-5 w-5" />
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="secondary"
+                                    size="icon"
+                                    className="absolute right-1 top-1/2 h-10 w-10 -translate-y-1/2 rounded-full border border-border/80 bg-background/90 shadow-md sm:right-2"
+                                    onClick={() =>
+                                      setPhotoLightboxIndex((i) =>
+                                        i === null ? null : i === total - 1 ? 0 : i + 1,
+                                      )
+                                    }
+                                    aria-label="Foto siguiente"
+                                  >
+                                    <ChevronRight className="h-5 w-5" />
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      </>
+                    );
+                  })()}
+
+                  {detailTab === "mapa" && restaurantInfo && (
+                    <div className="rounded-xl overflow-hidden border border-border -m-1">
+                      <RestaurantMap
+                        onlyNit={restaurantInfo.nit}
+                        mapHeightClassName="h-[200px] sm:h-[240px]"
+                        initialCenter={
+                          restaurantInfo.lat != null && restaurantInfo.lng != null
+                            ? { lat: restaurantInfo.lat, lng: restaurantInfo.lng }
+                            : undefined
+                        }
+                      />
+                    </div>
+                  )}
+
+                  {detailTab === "reseñas" && (
+                    <div className="space-y-4 max-h-[min(520px,70vh)] overflow-y-auto pr-1 -mr-1">
+                      <ReviewForm
+                        restauranteUid={restauranteUid}
+                        onReviewSubmitted={() => window.location.reload()}
+                      />
+                      {!loading.comentarios && comentarios.length > 0 && (
+                        <div className="space-y-3 pt-2 border-t border-border">
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="text-sm font-semibold text-foreground">
+                              {comentarios.length}{" "}
+                              {comentarios.length === 1 ? "opinión" : "opiniones"} · {ratingPromedio.toFixed(1)}
+                            </p>
+                            <div className="flex">{renderStars(Math.round(ratingPromedio))}</div>
+                          </div>
+                          {comentarios.map((comentario, index) => {
+                            const fecha = new Date(comentario.fecha);
+                            const fechaFormateada = fecha.toLocaleDateString("es-ES", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            });
+                            return (
+                              <div
+                                key={comentario.id_comentario}
+                                className="rounded-xl border border-border bg-background/80 p-4 text-sm"
+                              >
+                                <div className="flex items-start justify-between gap-2 mb-2">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <UserCircle className="h-8 w-8 shrink-0 text-primary" />
+                                    <div className="min-w-0">
+                                      <p className="font-medium text-foreground truncate">
+                                        {[comentario.nombre, comentario.apellido].filter(Boolean).join(" ") ||
+                                          `Cliente ${index + 1}`}
+                                      </p>
+                                      <div className="flex items-center gap-1 mt-0.5">
+                                        {renderStars(comentario.calificacion)}
+                                        <span className="text-xs text-muted-foreground">{comentario.calificacion}.0</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <span className="text-xs text-muted-foreground shrink-0">{fechaFormateada}</span>
+                                </div>
+                                <p className="text-muted-foreground leading-relaxed">{comentario.comentario}</p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                      {!loading.comentarios && comentarios.length === 0 && (
+                        <p className="text-sm text-muted-foreground text-center py-6">
+                          Aún no hay reseñas. ¡Sé el primero!
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </div>
 
-          {/* Formulario de Reserva */}
-          <div className="space-y-6">
-            <Card className="sticky top-24 border-border bg-card shadow-lg">
+          {/* Reserva: primero en móvil para menos scroll hasta reservar */}
+          <div className="order-1 xl:order-2 space-y-4">
+            <Card className="xl:sticky xl:top-20 border-border bg-card shadow-lg ring-1 ring-border/40">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-foreground">
                   <Calendar className="h-5 w-5 text-primary" />
@@ -671,7 +795,7 @@ export default function RestaurantPage() {
                 <CardDescription className="text-muted-foreground">Reserve su mesa ahora</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="date">Fecha</Label>
                     <Input
@@ -682,15 +806,24 @@ export default function RestaurantPage() {
                       required
                     />
                   </div>
-                  <div>
+                  <div className="space-y-1.5">
                     <Label htmlFor="time">Hora</Label>
                     <Select
+                      key={reservationData.date || "sin-fecha"}
+                      value={reservationData.time || undefined}
                       onValueChange={(value) =>
-                        setReservationData({ ...reservationData, time: value })
+                        setReservationData((prev) => ({ ...prev, time: value }))
                       }
+                      disabled={!reservationData.date}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar" />
+                      <SelectTrigger id="time" className="w-full">
+                        <SelectValue
+                          placeholder={
+                            reservationData.date
+                              ? "Seleccionar hora"
+                              : "Primero elige una fecha"
+                          }
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {availableSlots.map((slot) => (
@@ -700,27 +833,18 @@ export default function RestaurantPage() {
                         ))}
                       </SelectContent>
                     </Select>
+                    {reservationData.date && availableSlots.length === 0 && (
+                      <p className="text-xs text-amber-600 dark:text-amber-500">
+                        No hay franjas generadas para este día. Comprueba que el horario de
+                        apertura/cierre del restaurante esté bien configurado.
+                      </p>
+                    )}
+                    {!reservationData.date && (
+                      <p className="text-xs text-muted-foreground">
+                        Las horas se cargan después de elegir la fecha.
+                      </p>
+                    )}
                   </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="guests">Número de Comensales</Label>
-                  <Select
-                    onValueChange={(value) =>
-                      setReservationData({ ...reservationData, guests: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-                        <SelectItem key={num} value={num.toString()}>
-                          {num} {num === 1 ? "persona" : "personas"}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                 </div>
 
                 <div>
@@ -749,6 +873,36 @@ export default function RestaurantPage() {
                   </Select>
                 </div>
 
+                <div>
+                  <Label htmlFor="guests">Número de Comensales</Label>
+                  <Select
+                    value={reservationData.guests || undefined}
+                    onValueChange={(value) =>
+                      setReservationData({ ...reservationData, guests: value })
+                    }
+                    disabled={!reservationData.mesaId}
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          reservationData.mesaId
+                            ? "Seleccionar"
+                            : "Seleccione una mesa primero"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: maxGuests }, (_, idx) => idx + 1).map(
+                        (num) => (
+                          <SelectItem key={num} value={num.toString()}>
+                            {num} {num === 1 ? "persona" : "personas"}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                   <DialogTrigger asChild>
                     <Button className="w-full" size="lg">
@@ -756,7 +910,7 @@ export default function RestaurantPage() {
                       Hacer Pago de Reserva
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[500px]">
+                  <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>Confirmar Pago de Reserva</DialogTitle>
                       <DialogDescription>
@@ -855,18 +1009,14 @@ export default function RestaurantPage() {
               </CardContent>
             </Card>
 
-            {/* Información Adicional */}
-            <Card className="border-border bg-card shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-foreground">Información Importante</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm text-muted-foreground">
-                <p>• Las reservas se confirman tras el pago</p>
-                <p>• Cancelaciones gratuitas hasta 2 horas antes</p>
-                <p>• Mesa reservada por 2 horas máximo</p>
-                <p>• Aceptamos todas las tarjetas de crédito</p>
-              </CardContent>
-            </Card>
+            <div className="rounded-xl border border-dashed border-border/80 bg-muted/20 px-3 py-3 text-[11px] leading-snug text-muted-foreground">
+              <p className="font-medium text-foreground mb-1.5">Antes de pagar</p>
+              <ul className="space-y-1 list-disc list-inside">
+                <li>Confirmación al completar el pago</li>
+                <li>Cancelación gratis hasta 2 h antes</li>
+                <li>Mesa hasta 2 h · tarjetas aceptadas</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

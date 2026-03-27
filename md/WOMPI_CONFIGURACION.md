@@ -16,11 +16,13 @@ WOMPI_INTEGRITY_SECRET=test_integrity_vsIcBDLshYnhxtRbXcxA7XcM@yoXvfC
 ### ⚠️ IMPORTANTE: Configuración del Webhook en Wompi
 
 Según el panel de Wompi, la URL de eventos está configurada como:
+
 ```
 https://7654d8ac0c1e.ngrok-free.app/
 ```
 
 **DEBE actualizarse a:**
+
 ```
 https://7654d8ac0c1e.ngrok-free.app/wompi/webhook
 ```
@@ -88,11 +90,13 @@ curl -X POST https://7654d8ac0c1e.ngrok-free.app/wompi/webhook \
 **Estado:** El servidor no puede resolver el DNS de `sandbox.wompi.co`
 
 **Soluciones aplicadas:**
+
 1. ✅ Manejo de errores mejorado con mensajes específicos
 2. ✅ Sesión de requests con reintentos automáticos
 3. ✅ Script de diagnóstico creado
 
 **Próximos pasos:**
+
 1. Verificar configuración DNS del servidor
 2. Probar con DNS públicos (8.8.8.8, 1.1.1.1)
 3. Verificar firewall/proxy

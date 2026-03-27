@@ -66,21 +66,27 @@ export default defineConfig(({ mode }) => {
       VITE_API_URL=http://tu-host:tu-puerto
       
       Ejemplo:
-      VITE_API_URL=http://localhost:5080
+      VITE_API_URL=http://localhost:9900
       o
-      VITE_API_URL=http://10.5.213.111:5080
+      VITE_API_URL=http://10.5.213.111:9900
       
       El proyecto no puede iniciarse sin esta configuración.
     `;
     console.error(errorMessage);
-    throw new Error("VITE_API_URL no está configurada. Revisa el archivo .env en la raíz del proyecto.");
+    throw new Error(
+      "VITE_API_URL no está configurada. Revisa el archivo .env en la raíz del proyecto.",
+    );
   }
 
   console.log("🔧 Configuración del servidor:", {
     host: finalEnv.VITE_FRONTEND_HOST || "localhost",
     port: finalEnv.VITE_FRONTEND_PORT || "5173",
     apiUrl: finalEnv.VITE_API_URL,
-    fuente: rootEnv.VITE_API_URL ? "raíz (.env)" : frontendEnv.VITE_API_URL ? "frontend (.env)" : "default",
+    fuente: rootEnv.VITE_API_URL
+      ? "raíz (.env)"
+      : frontendEnv.VITE_API_URL
+        ? "frontend (.env)"
+        : "default",
   });
 
   return {

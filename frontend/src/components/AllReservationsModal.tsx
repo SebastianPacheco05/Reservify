@@ -184,7 +184,7 @@ export function AllReservationsModal({ isOpen, onClose, fechaInicial }: AllReser
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[900px] max-h-[85vh] overflow-hidden flex flex-col">
+      <DialogContent className="w-[95vw] sm:max-w-[900px] max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>Todas las Reservas</DialogTitle>
           <DialogDescription>
@@ -221,7 +221,7 @@ export function AllReservationsModal({ isOpen, onClose, fechaInicial }: AllReser
                 )}
               </div>
               
-              <div className="flex gap-2">
+            <div className="flex gap-2 overflow-x-auto pb-1">
                 <Button
                   variant={estadoFilter === "todos" ? "default" : "outline"}
                   size="sm"
@@ -258,9 +258,9 @@ export function AllReservationsModal({ isOpen, onClose, fechaInicial }: AllReser
                 filteredReservas.map((reserva) => (
                   <div
                     key={reserva.id_reserva}
-                    className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
                   >
-                    <div className="flex items-center space-x-4 flex-1">
+                    <div className="flex items-start sm:items-center space-x-4 flex-1 min-w-0">
                       <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                         <UtensilsCrossed className="h-6 w-6 text-primary" />
                       </div>
@@ -297,7 +297,7 @@ export function AllReservationsModal({ isOpen, onClose, fechaInicial }: AllReser
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                    <div className="flex items-center gap-2 sm:ml-4 flex-shrink-0 self-end sm:self-auto">
                       {puedeActivar(reserva) && (
                         <Button
                           size="sm"

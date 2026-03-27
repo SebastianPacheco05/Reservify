@@ -25,6 +25,7 @@ import type { Restaurant } from "../types/dashboard";
 import { InvoiceDetailModal } from "../components/InvoiceDetailModal";
 import { useToastContext } from "../components/ToastProvider";
 import { showErrorToast } from "../lib/toastHelpers";
+import { AnimatedThemeToggler } from "../components/ui/animated-theme-toggler";
 
 function todayISO(): string {
   return new Date().toISOString().slice(0, 10);
@@ -65,7 +66,7 @@ function getGreeting(): string {
 function getSectionTitle(tab: string): string {
   const titles: Record<string, string> = {
     overview: "Resumen",
-    restaurants: "Mi Restaurante",
+    restaurants: "Mis Restaurantes",
     reservations: "Reservas",
     invoices: "Facturación",
     flow: "Flujo diario",
@@ -77,6 +78,7 @@ function getSectionTitle(tab: string): string {
 }
 
 interface RestauranteGestor {
+  restaurante_uid: string;
   nit: number;
   nombre_restaurante: string;
 }
@@ -89,7 +91,8 @@ export default function AdminDashboard() {
     reservas_activas: 0,
     revenue_mes: 0,
   });
-  const [restaurante, setRestaurante] = useState<RestauranteGestor | null>(null);
+  const [restaurantes, setRestaurantes] = useState<RestauranteGestor[]>([]);
+  const [selectedRestauranteUid, setSelectedRestauranteUid] = useState<string>("");
   const [reservas, setReservas] = useState<Reserva[]>([]);
   const [isLoadingMetrics, setIsLoadingMetrics] = useState(true);
   const [isLoadingRestaurante, setIsLoadingRestaurante] = useState(true);
@@ -130,8 +133,11 @@ export default function AdminDashboard() {
           headers: { "Content-Type": "application/json" },
         });
         const data = await res.json();
-        const list = data.restaurantes || [];
-        if (list.length > 0) setRestaurante(list[0]);
+        const list = Array.isArray(data.restaurantes) ? data.restaurantes : [];
+        setRestaurantes(list);
+        if (list.length > 0) {
+          setSelectedRestauranteUid((prev) => prev || list[0].restaurante_uid);
+        }
       } catch (error) {
         console.error("Error al cargar restaurante:", error);
       } finally {
@@ -140,6 +146,11 @@ export default function AdminDashboard() {
     };
     loadRestaurante();
   }, []);
+
+  const restauranteSeleccionado =
+    restaurantes.find((r) => r.restaurante_uid === selectedRestauranteUid) ??
+    restaurantes[0] ??
+    null;
 
   useEffect(() => {
     const loadReservas = async () => {
@@ -276,38 +287,66 @@ export default function AdminDashboard() {
         return (
           <div className="space-y-6">
             <p className="text-sm text-muted-foreground">
-              Administras un solo restaurante
+              Administra varios restaurantes desde este panel.
             </p>
             {isLoadingRestaurante ? (
               <Skeleton className="h-[140px] rounded-xl" />
-            ) : restaurante ? (
-              <div className="rounded-xl border bg-card p-6 shadow-sm">
-                <h3 className="text-lg font-semibold text-foreground">{restaurante.nombre_restaurante}</h3>
-                <p className="text-sm text-muted-foreground mt-1">NIT: {restaurante.nit}</p>
-                <div className="mt-4">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() =>
-                      setConfigModalRestaurant({
-                        id: String(restaurante.nit),
-                        name: restaurante.nombre_restaurante,
-                        location: "",
-                        cuisine: "",
-                        rating: 0,
-                        totalTables: 0,
-                        status: "active",
-                        image: "/vite.svg",
-                      })
-                    }
+            ) : restaurantes.length > 0 ? (
+              <>
+                <div className="max-w-md">
+                  <label className="text-xs font-medium text-muted-foreground">Restaurante activo</label>
+                  <select
+                    value={restauranteSeleccionado?.restaurante_uid ?? ""}
+                    onChange={(e) => setSelectedRestauranteUid(e.target.value)}
+                    className="mt-1 w-full rounded-xl border bg-background px-3 py-2 text-sm"
                   >
-                    Configurar restaurante
-                  </Button>
+                    {restaurantes.map((r) => (
+                      <option key={r.restaurante_uid} value={r.restaurante_uid}>
+                        {r.nombre_restaurante} (NIT: {r.nit})
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {restaurantes.map((r) => (
+                    <div
+                      key={r.restaurante_uid}
+                      className={`rounded-xl border bg-card p-6 shadow-sm ${
+                        restauranteSeleccionado?.restaurante_uid === r.restaurante_uid
+                          ? "border-primary/60 ring-1 ring-primary/30"
+                          : ""
+                      }`}
+                    >
+                      <h3 className="text-lg font-semibold text-foreground">{r.nombre_restaurante}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">NIT: {r.nit}</p>
+                      <div className="mt-4">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            setConfigModalRestaurant({
+                              id: r.restaurante_uid,
+                              nit: r.nit,
+                              name: r.nombre_restaurante,
+                              location: "",
+                              cuisine: "",
+                              rating: 0,
+                              totalTables: 0,
+                              status: "active",
+                              image: "/vite.svg",
+                            })
+                          }
+                        >
+                          Configurar restaurante
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             ) : (
               <div className="rounded-xl border bg-card p-8 text-center">
-                <p className="text-muted-foreground">No tienes un restaurante asignado.</p>
+                <p className="text-muted-foreground">No tienes restaurantes asignados.</p>
               </div>
             )}
           </div>
@@ -456,16 +495,19 @@ export default function AdminDashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
         >
-          <header className="mb-8">
-            <p className="text-sm font-medium text-muted-foreground mb-1">
-              {getSectionTitle(activeTab)}
-            </p>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-              {getGreeting()}
-            </h1>
-            <p className="text-muted-foreground mt-1 max-w-xl">
-              Gestiona tu restaurante, reservas y facturación desde un solo lugar.
-            </p>
+          <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">
+                {getSectionTitle(activeTab)}
+              </p>
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+                {getGreeting()}
+              </h1>
+              <p className="text-muted-foreground mt-1 max-w-xl">
+                Gestiona tus restaurantes, reservas y facturación desde un solo lugar.
+              </p>
+            </div>
+            <AnimatedThemeToggler className="shrink-0" />
           </header>
 
           {renderContent()}

@@ -10,17 +10,27 @@ def insertar_mesas(
     cant_personas: int,
     restaurante_uid: str,
     precio: float,
+    descripcion: str,
 ):
     try:
+        # Casts explícitos: si hay varias sobrecargas en PostgreSQL, el 3er arg como texto
+        # queda "unknown" y provoca AmbiguousFunction; uuid + numeric(10,2) fija la firma.
         db.execute(
             text(
-                "SELECT insertar_mesas(:estado_de_disponibilidad, :cant_personas, :restaurante_uid, :precio)"
+                "SELECT insertar_mesas("
+                "CAST(:estado_de_disponibilidad AS boolean), "
+                "CAST(:cant_personas AS integer), "
+                "CAST(:restaurante_uid AS uuid), "
+                "CAST(:precio AS numeric(10,2)), "
+                "CAST(:descripcion AS varchar(255))"
+                ")"
             ),
             {
                 "estado_de_disponibilidad": estado_de_disponibilidad,
                 "cant_personas": cant_personas,
                 "restaurante_uid": restaurante_uid,
                 "precio": precio,
+                "descripcion": descripcion,
             },
         )
         db.commit()
@@ -46,11 +56,19 @@ def editar_mesas(
     cant_personas: int,
     restaurante_uid: str,
     precio: float,
+    descripcion: str,
 ):
     try:
         db.execute(
             text(
-                "SELECT editar_mesas(:id_mesa, :estado_de_disponibilidad, :cant_personas, :restaurante_uid, :precio)"
+                "SELECT editar_mesas("
+                "CAST(:id_mesa AS integer), "
+                "CAST(:estado_de_disponibilidad AS boolean), "
+                "CAST(:cant_personas AS integer), "
+                "CAST(:restaurante_uid AS uuid), "
+                "CAST(:precio AS numeric(10,2)), "
+                "CAST(:descripcion AS varchar(255))"
+                ")"
             ),
             {
                 "id_mesa": id_mesa,
@@ -58,6 +76,7 @@ def editar_mesas(
                 "cant_personas": cant_personas,
                 "restaurante_uid": restaurante_uid,
                 "precio": precio,
+                "descripcion": descripcion,
             },
         )
         db.commit()

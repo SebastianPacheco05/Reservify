@@ -25,6 +25,7 @@ import { EmployeeBalanceService } from "../services/EmployeeBalanceService";
 import { OwnerReservationsService, type Reserva } from "../services/OwnerReservationsService";
 import type { MiRestauranteInfo, MiBalanceResponse } from "../types/dashboard";
 import type { Table, Reservation } from "../types/employee";
+import { AnimatedThemeToggler } from "../components/ui/animated-theme-toggler";
 
 function todayISO(): string {
   return new Date().toISOString().slice(0, 10);
@@ -94,7 +95,7 @@ export default function EmployeeDashboard() {
   const [cancelando, setCancelando] = useState(false);
 
   const MAX_MOTIVO = 250;
-  const nit = restaurant?.nit;
+  const restauranteUid = restaurant?.restaurante_uid;
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
@@ -105,10 +106,13 @@ export default function EmployeeDashboard() {
       ]);
       setRestaurant(restInfo ?? null);
       setMiBalance(balance);
-      if (restInfo?.nit) {
+      if (restInfo?.restaurante_uid) {
         const [mesasRes, reservasRes] = await Promise.all([
-          authFetch(getApiEndpoint(`/data-owner/restaurantes/${restInfo.nit}/mesas`), { method: "GET", headers: { "Content-Type": "application/json" } }),
-          OwnerReservationsService.getReservationsByRestaurant(restInfo.nit, todayISO()),
+          authFetch(getApiEndpoint(`/data-owner/restaurantes/${restInfo.restaurante_uid}/mesas`), {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }),
+          OwnerReservationsService.getReservationsByRestaurant(restInfo.restaurante_uid, todayISO()),
         ]);
         const mesasData = await mesasRes.json();
         setTables((mesasData.mesas ?? []).map(mapMesaToTable));
@@ -129,10 +133,10 @@ export default function EmployeeDashboard() {
   }, [loadData]);
 
   const refreshReservations = useCallback(async () => {
-    if (!nit) return;
-    const res = await OwnerReservationsService.getReservationsByRestaurant(nit, todayISO());
+    if (!restauranteUid) return;
+    const res = await OwnerReservationsService.getReservationsByRestaurant(restauranteUid, todayISO());
     setReservations((res.reservas ?? []).map(mapReservaToReservation));
-  }, [nit]);
+  }, [restauranteUid]);
 
   const handleConfirmReservation = useCallback(async (id: string) => {
     try {
@@ -238,16 +242,19 @@ export default function EmployeeDashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
         >
-          <header className="mb-8">
-            <p className="text-sm font-medium text-muted-foreground mb-1">
-              {getSectionTitle(activeTab)}
-            </p>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-              {getGreeting()}
-            </h1>
-            <p className="text-muted-foreground mt-1 max-w-xl">
-              Gestiona mesas, reservas y cuentas del día desde un solo lugar.
-            </p>
+          <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">
+                {getSectionTitle(activeTab)}
+              </p>
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+                {getGreeting()}
+              </h1>
+              <p className="text-muted-foreground mt-1 max-w-xl">
+                Gestiona mesas, reservas y cuentas del día desde un solo lugar.
+              </p>
+            </div>
+            <AnimatedThemeToggler className="shrink-0" />
           </header>
 
           {renderContent()}

@@ -1,5 +1,8 @@
 export interface Restaurant {
+  /** UUID del restaurante (rutas /data-owner/restaurantes/{uid}). */
   id: string
+  /** NIT; las reservas por restaurante del dueño siguen filtrando por nit. */
+  nit: number
   name: string
   location: string
   cuisine: string
@@ -58,6 +61,7 @@ export interface MiBalanceResponse {
 }
 
 export interface MiRestauranteInfo {
+  restaurante_uid: string
   nit: number
   nombre_restaurante: string
   direccion: string

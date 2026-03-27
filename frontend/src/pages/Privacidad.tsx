@@ -48,10 +48,11 @@ export default function Privacidad() {
             </div>
             <div className="space-y-3">
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
-                Política de Privacidad
+                Política de Protección de Datos Personales
               </h1>
               <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
-                Te explicamos cómo tratamos tus datos personales en Reservify.
+                Te explicamos cómo tratamos tus datos personales en Reservify, en
+                cumplimiento de la Ley 1581 de 2012 en Colombia.
               </p>
             </div>
           </header>
@@ -59,7 +60,18 @@ export default function Privacidad() {
           <div className="bg-background/80 backdrop-blur-xl border border-border rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl text-sm sm:text-base leading-relaxed text-muted-foreground">
             <section className="space-y-2">
               <h2 className="text-lg sm:text-xl font-semibold text-foreground">
-                1. Responsable del tratamiento
+                1. Marco normativo aplicable
+              </h2>
+              <p>
+                Esta política se rige por la Ley 1581 de 2012 de Protección de Datos
+                Personales en Colombia, el Decreto 1377 de 2013 y demás normas que
+                las modifiquen, adicionen o sustituyan.
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground">
+                2. Responsable del tratamiento
               </h2>
               <p>
                 El responsable del tratamiento de tus datos es Reservify, plataforma
@@ -71,7 +83,7 @@ export default function Privacidad() {
 
             <section className="space-y-2">
               <h2 className="text-lg sm:text-xl font-semibold text-foreground">
-                2. Datos que recopilamos
+                3. Datos que recopilamos
               </h2>
               <p>
                 Recopilamos datos de identificación (nombre, apellidos, documento
@@ -85,7 +97,7 @@ export default function Privacidad() {
 
             <section className="space-y-2">
               <h2 className="text-lg sm:text-xl font-semibold text-foreground">
-                3. Finalidades del tratamiento
+                4. Finalidades del tratamiento
               </h2>
               <p>
                 Utilizamos tus datos para: (i) gestionar tus reservas, (ii) permitir
@@ -100,7 +112,7 @@ export default function Privacidad() {
 
             <section className="space-y-2">
               <h2 className="text-lg sm:text-xl font-semibold text-foreground">
-                4. Base legal
+                5. Base legal
               </h2>
               <p>
                 Tratamos tus datos principalmente sobre la base de la ejecución del
@@ -109,11 +121,17 @@ export default function Privacidad() {
                 comerciales utilizamos tu consentimiento, que podrás retirar en
                 cualquier momento.
               </p>
+              <p>
+                En Colombia, el tratamiento de datos personales se realiza conforme a
+                la Ley 1581 de 2012 y sus normas reglamentarias, en especial el
+                Decreto 1377 de 2013 y las disposiciones que lo modifiquen,
+                adicionen o sustituyan.
+              </p>
             </section>
 
             <section className="space-y-2">
               <h2 className="text-lg sm:text-xl font-semibold text-foreground">
-                5. Cesión de datos a restaurantes y terceros
+                6. Cesión de datos a restaurantes y terceros
               </h2>
               <p>
                 Compartimos con los restaurantes únicamente la información necesaria
@@ -128,7 +146,7 @@ export default function Privacidad() {
 
             <section className="space-y-2">
               <h2 className="text-lg sm:text-xl font-semibold text-foreground">
-                6. Plazo de conservación
+                7. Plazo de conservación
               </h2>
               <p>
                 Conservaremos tus datos durante el tiempo necesario para prestar el
@@ -141,20 +159,38 @@ export default function Privacidad() {
 
             <section className="space-y-2">
               <h2 className="text-lg sm:text-xl font-semibold text-foreground">
-                7. Derechos de los usuarios
+                8. Derechos de los usuarios
               </h2>
               <p>
-                Puedes ejercer tus derechos de acceso, rectificación, supresión,
-                oposición, limitación del tratamiento y portabilidad de tus datos,
-                así como revocar tu consentimiento, contactándonos a través del
-                formulario de contacto. También puedes actualizar parte de tu
-                información directamente desde tu perfil de usuario.
+                En calidad de titular de datos personales y de conformidad con la Ley
+                1581 de 2012, puedes ejercer tus derechos de acceso, actualización,
+                rectificación y supresión de tus datos, revocar la autorización
+                otorgada y presentar consultas o reclamos por presuntas infracciones
+                al régimen de protección de datos personales.
+              </p>
+              <p>
+                Para ejercer estos derechos, puedes contactarnos mediante el
+                formulario de contacto de la plataforma. También puedes actualizar
+                parte de tu información directamente desde tu perfil de usuario.
               </p>
             </section>
 
             <section className="space-y-2">
               <h2 className="text-lg sm:text-xl font-semibold text-foreground">
-                8. Seguridad de la información
+                9. Consultas y reclamos (Habeas Data)
+              </h2>
+              <p>
+                Las consultas y reclamos relacionados con tus datos personales serán
+                atendidos en los términos y plazos previstos por la Ley 1581 de 2012
+                y las normas que la reglamentan. Cuando no sea posible atender tu
+                solicitud de inmediato, te informaremos los motivos y la fecha
+                estimada de respuesta.
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground">
+                10. Seguridad de la información
               </h2>
               <p>
                 Implementamos medidas técnicas y organizativas razonables para
@@ -167,7 +203,7 @@ export default function Privacidad() {
 
             <section className="space-y-2">
               <h2 className="text-lg sm:text-xl font-semibold text-foreground">
-                9. Uso de cookies y tecnologías similares
+                11. Uso de cookies y tecnologías similares
               </h2>
               <p>
                 Utilizamos cookies y tecnologías similares para recordar tus
@@ -180,7 +216,7 @@ export default function Privacidad() {
 
             <section className="space-y-2">
               <h2 className="text-lg sm:text-xl font-semibold text-foreground">
-                10. Cambios en la política de privacidad
+                12. Cambios en la política de privacidad
               </h2>
               <p>
                 Podemos actualizar esta Política de Privacidad para adaptarla a

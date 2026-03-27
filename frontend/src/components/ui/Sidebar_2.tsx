@@ -14,6 +14,7 @@ import {
 import { Button } from "./button";
 import { cn } from "@/lib/utils";
 import { logout } from "@/services/authService";
+import { Brand } from "../Brand";
 
 interface SidebarProps {
   activeTab: string;
@@ -88,9 +89,13 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
       >
         <div className="p-6 border-b border-border shrink-0">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold text-lg shadow-sm">
-              R
-            </div>
+            <Brand
+              variant="icon"
+              className="h-10 w-10 rounded-lg bg-primary p-1.5 text-primary-foreground shadow-sm"
+              alt="Reservify"
+              invertOnDark={false}
+              fetchPriority="low"
+            />
             <div>
               <h2 className="text-lg font-semibold tracking-tight text-foreground">Reservify</h2>
               <p className="text-xs text-muted-foreground">Panel de empleado</p>

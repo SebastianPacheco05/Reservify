@@ -57,6 +57,16 @@ export function RestaurantConfigModal({
 }: RestaurantConfigModalProps) {
   const { toast } = useToast();
   const restauranteUid = restaurant?.id ?? "";
+  const roleRaw =
+    (typeof window !== "undefined"
+      ? localStorage.getItem("tipo_usuario")
+      : "") ?? "";
+  const normalizedRole = roleRaw
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  const canAssignAdmin = normalizedRole === "dueno" || normalizedRole === "dueño";
 
   const [tab, setTab] = useState<TabId>("datos");
   const [restaurante, setRestaurante] = useState<RestauranteConfig | null>(null);
@@ -92,10 +102,16 @@ export function RestaurantConfigModal({
     estado_de_disponibilidad: true,
     cant_personas: 2,
     precioInput: "",
+    descripcion: "",
   });
   const [addingMesa, setAddingMesa] = useState(false);
   const [editingMesaId, setEditingMesaId] = useState<number | null>(null);
-  const [editMesaForm, setEditMesaForm] = useState({ cant_personas: 2, precioInput: "", estado_de_disponibilidad: true });
+  const [editMesaForm, setEditMesaForm] = useState({
+    cant_personas: 2,
+    precioInput: "",
+    estado_de_disponibilidad: true,
+    descripcion: "",
+  });
 
   // Asignar administrador
   const [selectedAdminId, setSelectedAdminId] = useState<string>("");
@@ -130,11 +146,17 @@ export function RestaurantConfigModal({
       ]);
 
       const catList = Array.isArray(catRes) ? catRes : catRes?.respuesta ?? [];
+      const nitActual = (configRes?.nit ?? restaurant?.nit ?? null) as number | null;
+      const empList = Array.isArray(empRes) ? empRes : [];
+      const empleadosDelRestaurante =
+        nitActual != null
+          ? empList.filter((e) => Number(e.nit) === Number(nitActual))
+          : empList;
       setCategorias(catList);
       setRestaurante(configRes ?? null);
       setMesas(Array.isArray(mesasRes) ? mesasRes : []);
       setAdministrador(adminRes ?? null);
-      setEmpleados(Array.isArray(empRes) ? empRes : []);
+      setEmpleados(empleadosDelRestaurante);
       setRestaurantesDelDueno(Array.isArray(restList) ? restList : []);
 
       if (configRes) {
@@ -150,6 +172,17 @@ export function RestaurantConfigModal({
           documento: configRes.documento ?? 0,
           min_anticipacion_horas: configRes.min_anticipacion_horas ?? 0,
         });
+      } else {
+        setForm({
+          nombre_restaurante: restaurant?.name ?? "",
+          descripcion_restaurante: "",
+          direccion: "",
+          horario_apertura: "",
+          horario_cierre: "",
+          id_categoria: 0,
+          documento: 0,
+          min_anticipacion_horas: 0,
+        });
       }
       if (adminRes) setSelectedAdminId(String(adminRes.id_credencial));
       else setSelectedAdminId("");
@@ -163,7 +196,7 @@ export function RestaurantConfigModal({
     } finally {
       setLoading(false);
     }
-  }, [restauranteUid, isOpen, toast]);
+  }, [restauranteUid, isOpen, toast, restaurant?.name]);
 
   useEffect(() => {
     if (isOpen && restauranteUid) loadAll();
@@ -201,12 +234,21 @@ export function RestaurantConfigModal({
   }, [restauranteUid, toast]);
 
   const handleSaveRestaurante = async () => {
-    if (!restaurante || !restauranteUid) return;
+    if (!restauranteUid) return;
+    const nitRestaurante = restaurante?.nit ?? restaurant?.nit;
+    if (nitRestaurante == null) {
+      toast({
+        title: "Faltan datos",
+        description: "No hay NIT del restaurante. Recarga la página o vuelve a abrir desde el listado.",
+        variant: "destructive",
+      });
+      return;
+    }
     setSaving(true);
     try {
       const body: RestauranteUpdateBody = {
         restaurante_uid: restauranteUid,
-        nit: restaurante.nit ?? 0,
+        nit: nitRestaurante,
         direccion: form.direccion.trim(),
         nombre_restaurante: form.nombre_restaurante.trim(),
         descripcion_restaurante: form.descripcion_restaurante.trim(),
@@ -229,6 +271,15 @@ export function RestaurantConfigModal({
 
   const handleAddMesa = async () => {
     if (!restauranteUid) return;
+    const descripcionLimpia = newMesa.descripcion.trim();
+    if (!descripcionLimpia) {
+      toast({
+        title: "Descripción requerida",
+        description: "Debes escribir una descripción para la mesa.",
+        variant: "destructive",
+      });
+      return;
+    }
     setAddingMesa(true);
     try {
       const precioNum = parseFloat(newMesa.precioInput.replace(",", ".")) || 0;
@@ -237,11 +288,12 @@ export function RestaurantConfigModal({
         cant_personas: newMesa.cant_personas,
         precio: precioNum,
         restaurante_uid: restauranteUid,
+        descripcion: descripcionLimpia,
       });
       toast({ title: "Mesa agregada", description: "La mesa se ha añadido correctamente." });
       const list = await OwnerRestaurantConfigService.getMesas(restauranteUid);
       setMesas(list);
-      setNewMesa({ estado_de_disponibilidad: true, cant_personas: 2, precioInput: "" });
+      setNewMesa({ estado_de_disponibilidad: true, cant_personas: 2, precioInput: "", descripcion: "" });
       onSuccess();
     } catch (e) {
       showErrorToast(toast, e, "Error al agregar mesa.");
@@ -252,6 +304,15 @@ export function RestaurantConfigModal({
 
   const handleUpdateMesa = async () => {
     if (!restauranteUid || editingMesaId == null) return;
+    const descripcionLimpia = editMesaForm.descripcion.trim();
+    if (!descripcionLimpia) {
+      toast({
+        title: "Descripción requerida",
+        description: "Debes escribir una descripción para la mesa.",
+        variant: "destructive",
+      });
+      return;
+    }
     setAddingMesa(true);
     try {
       const precioNum = parseFloat(editMesaForm.precioInput.replace(",", ".")) || 0;
@@ -261,6 +322,7 @@ export function RestaurantConfigModal({
         estado_de_disponibilidad: editMesaForm.estado_de_disponibilidad,
         cant_personas: editMesaForm.cant_personas,
         precio: precioNum,
+        descripcion: descripcionLimpia,
       });
       toast({ title: "Mesa actualizada", description: "Cambios guardados." });
       const list = await OwnerRestaurantConfigService.getMesas(restauranteUid);
@@ -312,7 +374,7 @@ export function RestaurantConfigModal({
     }
     setBuscandoEmail(true);
     try {
-      const res = await OwnerRestaurantConfigService.buscarEmail(email);
+      const res = await OwnerRestaurantConfigService.buscarEmail(email, restauranteUid);
       if (res.existe && res.id_credencial != null) {
         setSelectedUidAsignar(restauranteUid);
         setModalAsignarEmpleado({ id_credencial: res.id_credencial, email });
@@ -416,8 +478,19 @@ export function RestaurantConfigModal({
             </div>
           ) : (
             <>
-              {tab === "datos" && restaurante && (
+              {tab === "datos" && (
                 <div className="space-y-4">
+                  {!restaurante && (
+                    <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-muted-foreground">
+                      <p className="font-medium text-foreground">Detalle no disponible</p>
+                      <p className="mt-1">
+                        Los campos siguientes usan datos mínimos del listado. Pulsa reintentar para volver a cargar desde el servidor.
+                      </p>
+                      <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => void loadAll()}>
+                        Reintentar carga
+                      </Button>
+                    </div>
+                  )}
                   <div className="grid gap-2">
                     <Label>Nombre del restaurante</Label>
                     <Input
@@ -578,6 +651,16 @@ export function RestaurantConfigModal({
                         className="w-24"
                       />
                     </div>
+                    <div className="grid gap-1">
+                      <Label className="text-xs">Descripción</Label>
+                      <Input
+                        type="text"
+                        placeholder="Ej: Mesa familiar"
+                        value={newMesa.descripcion}
+                        onChange={(e) => setNewMesa((p) => ({ ...p, descripcion: e.target.value }))}
+                        className="w-48"
+                      />
+                    </div>
                     <p className="text-xs text-muted-foreground">Nuevas mesas se crean disponibles por defecto.</p>
                     <Button size="sm" onClick={handleAddMesa} disabled={addingMesa}>
                       {addingMesa ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
@@ -615,6 +698,13 @@ export function RestaurantConfigModal({
                                 }}
                                 className="w-24"
                               />
+                              <Input
+                                type="text"
+                                placeholder="Ej: Mesa familiar"
+                                value={editMesaForm.descripcion}
+                                onChange={(e) => setEditMesaForm((p) => ({ ...p, descripcion: e.target.value }))}
+                                className="w-64"
+                              />
                               <label className="flex items-center gap-1 text-sm">
                                 <input
                                   type="checkbox"
@@ -634,10 +724,15 @@ export function RestaurantConfigModal({
                             </>
                           ) : (
                             <>
-                              <span className="text-sm">
-                                Mesa {m.id_mesa} — {m.cant_personas} personas, ${m.precio}
-                                {m.estado_de_disponibilidad ? " · Disponible" : " · No disponible"}
-                              </span>
+                              <div className="min-w-0">
+                                <span className="text-sm">
+                                  Mesa {m.id_mesa} — {m.cant_personas} personas, ${m.precio}
+                                  {m.estado_de_disponibilidad ? " · Disponible" : " · No disponible"}
+                                </span>
+                                {m.descripcion ? (
+                                  <div className="text-xs text-muted-foreground truncate">{m.descripcion}</div>
+                                ) : null}
+                              </div>
                               <div className="flex gap-1">
                                 <Button
                                   size="icon"
@@ -649,6 +744,7 @@ export function RestaurantConfigModal({
                                       cant_personas: m.cant_personas,
                                       precioInput: m.precio != null ? String(m.precio) : "",
                                       estado_de_disponibilidad: m.estado_de_disponibilidad,
+                                      descripcion: m.descripcion ?? "",
                                     });
                                   }}
                                   aria-label="Editar mesa"
@@ -676,38 +772,49 @@ export function RestaurantConfigModal({
 
               {tab === "admin" && (
                 <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    Solo puedes tener un administrador por restaurante. Asigna a un empleado que ya trabaje en alguno de
-                    tus restaurantes.
-                  </p>
-                  {administrador && (
-                    <div className="p-3 rounded-lg border bg-muted/30">
-                      <Label className="text-xs text-muted-foreground">Administrador actual</Label>
-                      <p className="font-medium">
-                        {administrador.nombre} {administrador.apellido}
+                  {canAssignAdmin && (
+                    <>
+                      <p className="text-sm text-muted-foreground">
+                        Solo puedes tener un administrador por restaurante. Asigna a un empleado que ya trabaje en alguno de
+                        tus restaurantes.
                       </p>
-                      <p className="text-sm text-muted-foreground">{administrador.email}</p>
+                      {administrador && (
+                        <div className="p-3 rounded-lg border bg-muted/30">
+                          <Label className="text-xs text-muted-foreground">Administrador actual</Label>
+                          <p className="font-medium">
+                            {administrador.nombre} {administrador.apellido}
+                          </p>
+                          <p className="text-sm text-muted-foreground">{administrador.email}</p>
+                        </div>
+                      )}
+                      <div className="grid gap-2">
+                        <Label>Asignar administrador</Label>
+                        <Select value={selectedAdminId} onValueChange={setSelectedAdminId}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecciona un empleado" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {empleados.map((emp) => (
+                              <SelectItem key={emp.id_credencial} value={String(emp.id_credencial)}>
+                                {emp.nombre} {emp.apellido} — {emp.email} ({emp.nombre_rol})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button onClick={handleAssignAdmin} disabled={!selectedAdminId || assigningAdmin}>
+                          {assigningAdmin ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                          Asignar administrador
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                  {!canAssignAdmin && (
+                    <div className="p-3 rounded-lg border bg-muted/30">
+                      <p className="text-sm text-muted-foreground">
+                        La asignación de administrador está disponible solo para el dueño del restaurante.
+                      </p>
                     </div>
                   )}
-                  <div className="grid gap-2">
-                    <Label>Asignar administrador</Label>
-                    <Select value={selectedAdminId} onValueChange={setSelectedAdminId}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona un empleado" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {empleados.map((emp) => (
-                          <SelectItem key={emp.id_credencial} value={String(emp.id_credencial)}>
-                            {emp.nombre} {emp.apellido} — {emp.email} ({emp.nombre_rol})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Button onClick={handleAssignAdmin} disabled={!selectedAdminId || assigningAdmin}>
-                      {assigningAdmin ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                      Asignar administrador
-                    </Button>
-                  </div>
 
                   <div className="border-t pt-4 mt-4 space-y-2">
                     <Label>Empleados y administradores</Label>

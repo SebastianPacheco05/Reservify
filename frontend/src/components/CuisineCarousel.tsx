@@ -23,13 +23,10 @@ interface CuisineCarouselProps {
 }
 
 const COLOR_CLASSES: string[] = [
-  "bg-blue-50 text-blue-700 border-blue-300 hover:bg-blue-100",
-  "bg-green-50 text-green-700 border-green-300 hover:bg-green-100",
-  "bg-yellow-50 text-yellow-700 border-yellow-400 hover:bg-yellow-100",
-  "bg-purple-50 text-purple-700 border-purple-300 hover:bg-purple-100",
-  "bg-pink-50 text-pink-700 border-pink-300 hover:bg-pink-100",
-  "bg-orange-50 text-orange-700 border-orange-300 hover:bg-orange-100",
-  "bg-teal-50 text-teal-700 border-teal-300 hover:bg-teal-100",
+  "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20",
+  "bg-secondary/10 text-secondary border-secondary/20 hover:bg-secondary/20",
+  "bg-accent/10 text-accent border-accent/20 hover:bg-accent/20",
+  "bg-muted/40 text-foreground border-border/50 hover:bg-muted/60",
 ];
 
 const getRandomColorClass = (): string => {
@@ -140,7 +137,7 @@ export default function CuisineCarousel({ onCategoryClick }: CuisineCarouselProp
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={transitionNormal}
-        className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 sm:mb-12 text-center text-black dark:text-white"
+        className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 sm:mb-12 text-center text-foreground"
       >
         Tipos de Cocina
       </motion.h3>
@@ -151,7 +148,7 @@ export default function CuisineCarousel({ onCategoryClick }: CuisineCarouselProp
           onClick={prevSlide}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          className="absolute left-0 sm:left-4 top-[calc(50%-2rem)] transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-blue-600 hover:text-blue-700 rounded-full p-2.5 sm:p-4 shadow-xl hover:shadow-2xl transition-colors border-2 border-blue-300 dark:border-blue-600 dark:bg-gray-800/90"
+          className="absolute left-0 sm:left-4 top-[calc(50%-2rem)] transform -translate-y-1/2 z-10 bg-background/90 hover:bg-background text-primary hover:text-primary rounded-full p-2.5 sm:p-4 shadow-xl hover:shadow-2xl transition-colors border-2 border-primary/30 dark:border-primary/40 dark:bg-muted/30"
         >
           <svg
             className="w-5 h-5 sm:w-7 sm:h-7"
@@ -172,7 +169,7 @@ export default function CuisineCarousel({ onCategoryClick }: CuisineCarouselProp
           onClick={nextSlide}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          className="absolute right-0 sm:right-4 top-[calc(50%-2rem)] transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-blue-600 hover:text-blue-700 rounded-full p-2.5 sm:p-4 shadow-xl hover:shadow-2xl transition-colors border-2 border-blue-300 dark:border-blue-600 dark:bg-gray-800/90"
+          className="absolute right-0 sm:right-4 top-[calc(50%-2rem)] transform -translate-y-1/2 z-10 bg-background/90 hover:bg-background text-primary hover:text-primary rounded-full p-2.5 sm:p-4 shadow-xl hover:shadow-2xl transition-colors border-2 border-primary/30 dark:border-primary/40 dark:bg-muted/30"
         >
           <svg
             className="w-5 h-5 sm:w-7 sm:h-7"
@@ -222,7 +219,7 @@ export default function CuisineCarousel({ onCategoryClick }: CuisineCarouselProp
                             transition={{ ...transitionNormal, delay: index * 0.05 }}
                           >
                             <Card
-                              className={`${category.color} border-2 hover:shadow-xl cursor-pointer group dark:bg-gray-400/20 transition-shadow rounded-2xl`}
+                              className={`${category.color} border-2 hover:shadow-xl cursor-pointer group dark:bg-muted/30 transition-shadow rounded-2xl`}
                               onClick={() => {
                                 if (onCategoryClick) {
                                   onCategoryClick(category.name);
@@ -255,8 +252,8 @@ export default function CuisineCarousel({ onCategoryClick }: CuisineCarouselProp
                 onClick={() => goToSlide(index)}
                 className={`w-4 h-4 rounded-full transition-colors ${
                   index === currentSlide
-                    ? "bg-blue-600"
-                    : "bg-blue-300 hover:bg-blue-400 dark:bg-gray-600 dark:hover:bg-gray-500"
+                    ? "bg-primary"
+                    : "bg-primary/30 hover:bg-primary/50 dark:bg-primary/20 dark:hover:bg-primary/30"
                 }`}
                 animate={{ scale: index === currentSlide ? 1.25 : 1 }}
                 whileHover={{ scale: 1.15 }}

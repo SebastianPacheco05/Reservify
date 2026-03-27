@@ -1,4 +1,5 @@
 import Home from "../pages/Home";
+import Search from "../pages/Search";
 import Login from "../pages/Login";
 import Registrar from "../pages/registrar";
 import Dashboard from "../pages/Dashboard";
@@ -16,7 +17,7 @@ import Contacto from "../pages/Contacto";
 import Ayuda from "../pages/Ayuda";
 import Terminos from "../pages/Terminos";
 import Privacidad from "../pages/Privacidad";
-import Lost from "../pages/Lost";
+import { Navigate } from "react-router-dom";
 import { ROUTES } from "./paths";
 
 export const getProtectedRoutes = (PageWrapper: React.FC<{ children: React.ReactNode }>) => [
@@ -64,9 +65,10 @@ export const getProtectedRoutes = (PageWrapper: React.FC<{ children: React.React
 
 export const getPublicRoutes = (PageWrapper: React.FC<{ children: React.ReactNode }>) => [
   { path: ROUTES.HOME, element: <PageWrapper><Home /></PageWrapper> },
+  { path: ROUTES.SEARCH, element: <PageWrapper><Search /></PageWrapper> },
   { path: ROUTES.LOGIN, element: <PageWrapper><Login /></PageWrapper> },
   { path: ROUTES.REGISTER, element: <PageWrapper><Registrar /></PageWrapper> },
-  { path: ROUTES.LOST, element: <PageWrapper><Lost /></PageWrapper> },
+  { path: "/lost", element: <Navigate to={ROUTES.LOGIN} replace /> },
   { path: ROUTES.CONTACTO, element: <PageWrapper><Contacto /></PageWrapper> },
   { path: ROUTES.AYUDA, element: <PageWrapper><Ayuda /></PageWrapper> },
   { path: ROUTES.TERMINOS, element: <PageWrapper><Terminos /></PageWrapper> },
