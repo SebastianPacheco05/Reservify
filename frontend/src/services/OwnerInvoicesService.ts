@@ -121,47 +121,161 @@ export class OwnerInvoicesService {
       throw new Error("No se pudo obtener el detalle de la factura");
     }
     const { jsPDF } = await import("jspdf");
-    const doc = new jsPDF();
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
     const enc = data.encabezado;
-    let y = 20;
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const margin = 16;
+    const contentW = pageW - margin * 2;
+    const lineH = 4.2;
 
-    doc.setFontSize(18);
-    doc.text(`Factura FAC-${enc.id_encab_fact}`, 14, y);
+    const formatCOP = (n: number) =>
+      new Intl.NumberFormat("es-CO", {
+        style: "currency",
+        currency: "COP",
+        maximumFractionDigits: 0,
+      }).format(Math.round(Number(n) || 0));
+
+    const displayName = (enc.nombre_restaurante || "Restaurante")
+      .replace(/\s*__TEST_FACTURA_KEEP__\s*/g, "")
+      .trim();
+
+    const addressBlock = [enc.direccion, enc.ciudad].filter(Boolean).join(", ");
+
+    // —— Cabecera con marca ——
+    const headerH = 38;
+    doc.setFillColor(30, 41, 59);
+    doc.rect(0, 0, pageW, headerH, "F");
+    doc.setFillColor(249, 115, 22);
+    doc.rect(0, headerH - 2, pageW, 2, "F");
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("RESERVIFY", margin, 14);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(203, 213, 225);
+    doc.text("Facturación electrónica", margin, 19);
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.text(`FAC-${enc.id_encab_fact}`, pageW - margin, 16, { align: "right" });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(`Emisión: ${enc.fecha}`, pageW - margin, 24, { align: "right" });
+
+    let y = headerH + 10;
+    doc.setTextColor(15, 23, 42);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.text(displayName, margin, y);
+    y += 7;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(71, 85, 105);
+    doc.text(`NIT ${enc.nit}`, margin, y);
+    y += 5;
+
+    const addrLines = doc.splitTextToSize(addressBlock || "—", contentW);
+    doc.text(addrLines, margin, y);
+    y += addrLines.length * lineH + 6;
+
+    doc.setDrawColor(226, 232, 240);
+    doc.setLineWidth(0.3);
+    doc.line(margin, y, pageW - margin, y);
+    y += 8;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(100, 116, 139);
+    doc.text("DATOS DEL CLIENTE", margin, y);
+    y += 5;
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(51, 65, 85);
+    doc.text(`Documento: ${enc.documento}`, margin, y);
+    y += 5;
+    doc.text(`Forma de pago: ${enc.forma_pago}`, margin, y);
     y += 10;
 
-    doc.setFontSize(11);
-    doc.text(`${enc.nombre_restaurante}`, 14, y);
-    y += 6;
-    doc.text(`NIT: ${enc.nit}`, 14, y);
-    y += 6;
-    doc.text(`${enc.direccion}, ${enc.ciudad}`, 14, y);
-    y += 6;
-    doc.text(`Fecha: ${enc.fecha}`, 14, y);
-    y += 6;
-    doc.text(`Forma de pago: ${enc.forma_pago}`, 14, y);
-    y += 12;
+    // Columnas tabla (mm desde borde izquierdo)
+    const colDesc = margin;
+    const colQty = pageW - margin - 62;
+    const colUnit = pageW - margin - 40;
+    const colSub = pageW - margin;
+    const maxDescW = colQty - colDesc - 4;
 
-    if (data.detalles && data.detalles.length > 0) {
-      doc.setFontSize(12);
-      doc.text("Detalle", 14, y);
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(margin, y - 4, contentW, 9, 1, 1, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(71, 85, 105);
+    doc.text("DESCRIPCIÓN", colDesc + 2, y);
+    doc.text("CANT.", colQty, y, { align: "right" });
+    doc.text("P. UNIT.", colUnit, y, { align: "right" });
+    doc.text("SUBTOTAL", colSub, y, { align: "right" });
+    y += 7;
+    doc.setDrawColor(226, 232, 240);
+    doc.line(margin, y, pageW - margin, y);
+    y += 4;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(30, 41, 59);
+
+    const detalles = data.detalles?.length ? data.detalles : [];
+    if (detalles.length === 0) {
+      doc.setTextColor(148, 163, 184);
+      doc.text("Sin líneas de detalle.", colDesc + 2, y);
       y += 8;
-      doc.setFontSize(10);
-      data.detalles.forEach((d) => {
-        if (y > 270) {
+    } else {
+      detalles.forEach((d) => {
+        if (y > pageH - 45) {
           doc.addPage();
           y = 20;
         }
-        doc.text(`${d.descripcion}`, 14, y);
-        doc.text(String(d.unidades), 120, y);
-        doc.text(`$${(d.precio_unitario ?? 0).toLocaleString()}`, 140, y);
-        doc.text(`$${(d.precio_total ?? 0).toLocaleString()}`, 170, y);
-        y += 7;
+        const desc = d.descripcion || "—";
+        const descLines = doc.splitTextToSize(desc, maxDescW);
+        const blockH = Math.max(descLines.length * lineH, lineH + 1);
+        let lineY = y;
+        descLines.forEach((line: string) => {
+          doc.text(line, colDesc + 2, lineY);
+          lineY += lineH;
+        });
+        doc.text(String(d.unidades), colQty, y, { align: "right" });
+        doc.text(formatCOP(d.precio_unitario ?? 0), colUnit, y, { align: "right" });
+        doc.text(formatCOP(d.precio_total ?? 0), colSub, y, { align: "right" });
+        y += blockH + 2;
+        doc.setDrawColor(241, 245, 249);
+        doc.line(margin, y, pageW - margin, y);
+        y += 3;
       });
-      y += 5;
     }
 
+    if (y > pageH - 35) {
+      doc.addPage();
+      y = 20;
+    }
+    y += 4;
+    doc.setFillColor(255, 247, 237);
+    doc.roundedRect(pageW - margin - 78, y - 5, 78, 12, 1.5, 1.5, "F");
     doc.setFont("helvetica", "bold");
-    doc.text(`Total: $${(enc.precio_total ?? 0).toLocaleString()}`, 14, y);
+    doc.setFontSize(11);
+    doc.setTextColor(194, 65, 12);
+    doc.text("TOTAL", pageW - margin - 74, y + 1);
+    doc.text(formatCOP(enc.precio_total ?? 0), colSub, y + 1, { align: "right" });
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(148, 163, 184);
+    doc.text(
+      "Este documento fue generado en Reservify. Conserve una copia para sus registros.",
+      pageW / 2,
+      pageH - 12,
+      { align: "center" },
+    );
 
     doc.save(`Factura-FAC-${enc.id_encab_fact}.pdf`);
   }
