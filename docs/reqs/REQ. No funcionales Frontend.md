@@ -1,249 +1,212 @@
-### Requerimientos (REQ. funcionales Frontend)
-> Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. funcionales Frontend**
+### Requerimientos no funcionales (Frontend)
 
-- **FR-001A – Permitir buscar restaurantes por texto desde el home.**
+> Complementan el inventario **NF-xxx** del Excel (hoja *REQ. No funcionales*; ver sección al final). Los requisitos de **pantallas, textos y flujos de UI** están en [REQ. funcionales Frontend.md](REQ.%20funcionales%20Frontend.md) (incluye **NFF-xxx** y **NFF-VIG-***). Otros NF: [REQ. No funcionales backend.md](REQ.%20No%20funcionales%20backend.md), [REQ. No funcionales db.md](REQ.%20No%20funcionales%20db.md).
+>
+> **Convención de IDs:** aquí se usa el prefijo **NFE-** (*No funcionales — entrega SPA*) para la **capa técnica** (`frontend/`). No confundir con **NFF-001…** / **NFF-VIG-*** del otro archivo.
+
+> **Nota:** Cada ítem describe el comportamiento **implementado o ausente** en el código actual (abril 2026).
+
+---
+
+#### Plataforma, build y configuración
+
+- **NFE-001 – Stack de la SPA**
+  - **Descripción:** Aplicación **React 19** con **Vite 6**, **TypeScript** y compilación con **@vitejs/plugin-react-swc** (`package.json`, `vite.config.ts`, `main.tsx`).
+  - **Estado:** Hecho.
+
+- **NFE-002 – Variables de entorno `VITE_*`**
+  - **Descripción:** La URL del backend se toma de **`VITE_API_URL`** (obligatoria en build y arranque); `vite.config.ts` y `src/config/api.ts` validan su presencia y cargan `.env` desde la raíz del repo (`envDir`). Host/puerto del dev server pueden mapearse desde el `.env` raíz (`VITE_FRONTEND_HOST`, `VITE_FRONTEND_PORT`).
+  - **Estado:** Hecho.
+
+- **NFE-003 – Alias de importación**
+  - **Descripción:** Resolución `@` → `src` en Vite (`vite.config.ts`).
+  - **Estado:** Hecho.
+
+---
+
+#### Comunicación con el API y sesión
+
+- **NFE-004 – Cliente HTTP y credenciales**
+  - **Descripción:** Uso de **`fetch`** nativo; las peticiones autenticadas pasan por **`authFetch`** en `services/authService.ts` con **`credentials: "include"`** para enviar cookies (p. ej. refresh) y cabecera **Bearer** desde `localStorage` (`access_token`).
+  - **Estado:** Hecho.
+
+- **NFE-005 – Renovación proactiva de tokens**
+  - **Descripción:** Tras login se llama **`startProactiveRefresh`** (`App.tsx`); la lógica de refresh y reintento en 401 está en `authService.ts`.
+  - **Estado:** Hecho.
+
+- **NFE-006 – Caché de datos con TanStack Query**
+  - **Descripción:** `QueryClientProvider` en `main.tsx` con `queryClient` en `lib/queryClient.ts` (`staleTime`, `gcTime`, `refetchOnWindowFocus: false`, `retry: 1`).
+  - **Estado:** Hecho.
+
+---
+
+#### Enrutado y shell de aplicación
+
+- **NFE-007 – Enrutado del lado del cliente**
+  - **Descripción:** **React Router DOM** con **`BrowserRouter`** y rutas definidas en `routes/config.tsx` / `paths.ts` (rutas públicas y protegidas por rol).
+  - **Estado:** Hecho.
+
+- **NFE-008 – Modo estricto de React**
+  - **Descripción:** Árbol envuelto en **`StrictMode`** (`main.tsx`).
+  - **Estado:** Hecho.
+
+---
+
+#### Estilos, tema y assets
+
+- **NFE-009 – Tailwind CSS y componentes headless**
+  - **Descripción:** **Tailwind CSS v4** con plugin Vite (`@tailwindcss/vite`); componentes **Radix UI** y utilidades tipo shadcn (`package.json`, `index.css`).
+  - **Estado:** Hecho.
+
+- **NFE-010 – Tema claro / oscuro / sistema**
+  - **Descripción:** **`ThemeProvider`** con persistencia en `localStorage` (`storageKey="vite-ui-theme"`) y toggler en cabecera (`main.tsx`, `Header`).
+  - **Estado:** Hecho.
+
+- **NFE-011 – Idioma del documento**
+  - **Descripción:** `index.html` declara **`lang="es"`**; no hay librería i18n para múltiples idiomas en runtime.
+  - **Estado:** Hecho (español fijo en UI).
+
+---
+
+#### Rendimiento del bundle
+
+- **NFE-012 – División de código en build**
+  - **Descripción:** `manualChunks` separa **framer-motion** y **leaflet/react-leaflet** en chunks propios; **`cssCodeSplit: true`** (`vite.config.ts`).
+  - **Estado:** Hecho.
+
+---
+
+#### Calidad de código y pruebas
+
+- **NFE-013 – ESLint**
+  - **Descripción:** Script **`npm run lint`** con ESLint 9 y plugins React (`package.json`).
+  - **Estado:** Hecho.
+
+- **NFE-014 – Pruebas automatizadas (unitarias / e2e)**
+  - **Descripción:** No hay scripts **`test`**, Vitest, Cypress ni Playwright en el `package.json` del frontend.
+  - **Estado:** No implementado.
+
+---
+
+#### Robustez y experiencia ante fallos
+
+- **NFE-015 – Límite global de errores de render (Error Boundary)**
+  - **Descripción:** No hay **React Error Boundary** genérico envolviendo la app; un fallo en un componente puede descuadrar la vista sin pantalla de recuperación dedicada.
+  - **Estado:** No implementado.
+
+- **NFE-016 – Notificaciones en pantalla**
+  - **Descripción:** **`ToastProvider`** y toasts globales para feedback de acciones (`App.tsx`, hooks de toast).
+  - **Estado:** Hecho.
+
+---
+
+#### Mapas, PDF y animación
+
+- **NFE-017 – Mapas embebidos**
+  - **Descripción:** **Leaflet** + **react-leaflet** para vistas de mapa (dependencias pesadas separadas en chunk, ver NFE-012).
   - **Estado:** Hecho.
-- **FR-001B – Mostrar sugerencias de búsqueda basadas en resultados del backend.**
+
+- **NFE-018 – PDF en cliente**
+  - **Descripción:** **jspdf** para exportaciones tipo factura desde dashboards (`package.json`).
   - **Estado:** Hecho.
-- **FR-001C – Ofrecer accesos rápidos a tipos de cocina (chips).**
-  - **Estado:** Parcial (la estructura de chips rápidos existe, pero su contenido visible en SearchBar está incompleto).
-- **FR-002A – Mostrar tarjetas por tipo de cocina en un carrusel.**
+
+- **NFE-019 – Animaciones de interfaz**
+  - **Descripción:** **framer-motion** (y **motion**) para transiciones de página y componentes (`App.tsx`, varias páginas).
   - **Estado:** Hecho.
-- **FR-002B – Incluir al menos Italiana, Japonesa, Mexicana y Vegetariana como tipos de cocina visibles.**
-  - **Estado:** Parcial (las categorías visibles dependen de `/categorias/top`, no de un listado fijo garantizado en frontend).
-- **FR-003A – Mostrar una sección de restaurantes destacados.**
+
+---
+
+#### Privacidad, almacenamiento local y desarrollo
+
+- **NFE-020 – Consentimiento de cookies y datos en `sessionStorage`**
+  - **Descripción:** **`CookieConsentModal`** en `App.tsx`; flujo de reserva/pago usa **`sessionStorage`** para datos pendientes (p. ej. pasarela) según implementación de PaymentGateway.
   - **Estado:** Hecho.
-- **FR-003B – Cada restaurante destacado debe mostrar imagen.**
+
+- **NFE-021 – Servidor de desarrollo y hosts permitidos**
+  - **Descripción:** `server.allowedHosts` incluye un dominio **ngrok** de ejemplo en `vite.config.ts` (útil para pruebas; revisar en despliegues reales).
+  - **Estado:** Hecho (ajustar host según entorno).
+
+---
+
+#### Accesibilidad, SEO y PWA
+
+- **NFE-022 – Accesibilidad**
+  - **Descripción:** Radix aporta patrones accesibles; hay uso puntual de textos solo para lectores de pantalla (p. ej. en cabecera). No hay auditoría formal WCAG ni suite de pruebas a11y en el repo.
+  - **Estado:** Parcial.
+
+- **NFE-023 – Metadatos y viewport**
+  - **Descripción:** `index.html` incluye viewport, meta description, theme-color y robots básicos.
   - **Estado:** Hecho.
-- **FR-003C – Cada restaurante destacado debe mostrar nombre y categoría.**
+
+- **NFE-024 – Aplicación web progresiva (PWA)**
+  - **Descripción:** No hay **service worker** ni manifiesto PWA integrado en el build estándar.
+  - **Estado:** No implementado.
+
+---
+
+#### Seguridad en el cliente
+
+- **NFE-025 – Cabeceras de seguridad HTTP (CSP, etc.)**
+  - **Descripción:** Las políticas **CSP**, **HSTS** u otras cabeceras dependen del servidor estático o proxy frente al build; no están definidas en el código del frontend.
+  - **Estado:** No implementado (responsabilidad del despliegue).
+
+---
+
+#### Índice Excel — hoja «REQ. No funcionales» (NF asignados a interfaz / SPA)
+
+> Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. No funcionales**. Cada **NF** aparece **una sola vez** en el conjunto de tres archivos (`backend`, `db`, `Frontend`).
+
+- **NF-013 – Manuales de usuario estructurados**
+  - **Estado:** No hecho.
+- **NF-019 – Acceso rápido a menús, funciones y listas**
   - **Estado:** Hecho.
-- **FR-003D – Cada restaurante destacado debe mostrar calificación y reseñas.**
+- **NF-021 – Parametrización en línea (reportes, tablas maestras, ayudas)**
   - **Estado:** Hecho.
-- **FR-003E – Cada restaurante destacado debe mostrar disponibilidad.**
+- **NF-025 – Opción de acceso rápido a diferentes aplicaciones o módulos**
   - **Estado:** Hecho.
-- **FR-004A – Mostrar botón “Ver disponibilidad” en cada restaurante destacado.**
+- **NF-026 – Definición de menús según perfiles de usuario**
   - **Estado:** Hecho.
-- **FR-004B – Al hacer clic en “Ver disponibilidad”, navegar al detalle del restaurante.**
+- **NF-028 – Operación vía navegador web (intranet/internet)**
   - **Estado:** Hecho.
-- **FR-005A – Mostrar botón “Iniciar Sesión” en la barra superior cuando no hay sesión.**
+- **NF-030 – Herramientas para toma de decisiones y tableros de control**
   - **Estado:** Hecho.
-- **FR-005B – Mostrar botón “Registrarse” en la barra superior cuando no hay sesión.**
+- **NF-032 – Exportación de reportes en múltiples formatos**
   - **Estado:** Hecho.
-- **FR-005C – Cuando hay sesión, mostrar menú de perfil y opción de cerrar sesión.**
+- **NF-034 – Visualización de reportes en pantalla antes de imprimir**
   - **Estado:** Hecho.
-- **FR-006A – Mostrar tarjetas de beneficios en Home (copy y diseño vigentes del componente FeaturesSection).**
+- **NF-036 – Adaptabilidad avanzada y eliminación automática de código/campos no usados**
+  - **Estado:** No hecho.
+- **NF-037 – Reportes parametrizables con validación**
   - **Estado:** Hecho.
-- **FR-006B – Incluir beneficios orientados a distintos casos de uso en las tarjetas de Home.**
+- **NF-043 – Ayuda en línea y tutoriales**
+  - **Estado:** No hecho.
+- **NF-044 – Módulo de parametrización de datos maestros y tipos de documentos**
   - **Estado:** Hecho.
-- **FR-006C – Incluir beneficios sobre calidad/confianza en las tarjetas de Home.**
+- **NF-046 – Consultas tipo tabla dinámica y exportación de información**
   - **Estado:** Hecho.
-- **FR-007A – Mostrar botón “Descargar app” en la sección final.**
-  - **Estado:** No implementado en la Home actual (el componente CTASection existe pero no está montado en Home).
-- **FR-008A – Permitir acceso a sección “Acerca de”.**
+- **NF-050 – Términos y condiciones del servicio**
   - **Estado:** Hecho.
-- **FR-008B – Permitir acceso a sección “Contacto”.**
+- **NF-052 – Experiencia de usuario con transiciones y microinteracciones consistentes**
   - **Estado:** Hecho.
-- **FR-008C – Permitir acceso a “Ayuda”.**
+- **NF-053 – Sistema global de notificaciones en la interfaz**
   - **Estado:** Hecho.
-- **FR-008D – Permitir acceso a “Términos”.**
+- **NF-054 – Soporte de tema claro/oscuro coherente con el diseño**
   - **Estado:** Hecho.
-- **FR-008E – Permitir acceso a “Privacidad”.**
+- **NF-068 – Uso de Leaflet o similar para mapas**
   - **Estado:** Hecho.
-- **FR-009A – Proveer una interfaz moderna con componentes reutilizables y secciones claras.**
+- **NF-078 – Frontend React con enrutado (React Router)**
   - **Estado:** Hecho.
-- **FR-010A – La UI debe adaptarse a móviles, tablets y escritorio (responsive).**
+- **NF-080 – ToastProvider/ToastContainer como sistema global de notificaciones**
   - **Estado:** Hecho.
-- **FR-010B – El menú debe tener versión móvil colapsable.**
+- **NF-081 – Variables CSS para tema claro y oscuro (.dark)**
   - **Estado:** Hecho.
-- **FR-010C – La grilla de destacados debe adaptarse por breakpoints.**
+- **NF-082 – ProtectedRoute con verificación de rol**
   - **Estado:** Hecho.
-- **FR-011A – Proteger sesiones usando tokens (JWT) en el frontend.**
+- **NF-083 – Almacenamiento de tokens en localStorage (frontend)**
   - **Estado:** Hecho.
-- **FR-011B – Renovar tokens de forma proactiva.**
+- **NF-090 – Framer Motion para animaciones en frontend**
   - **Estado:** Hecho.
-- **FR-012A – Ser compatible con navegadores modernos (stack estándar).**
+- **NF-032A – Exportación de información en formato CSV desde la interfaz**
   - **Estado:** Hecho.
-- **FR-013A – Permitir al usuario completar un flujo de reserva con selección de fecha, hora, número de comensales y mesa desde la vista de restaurante.**
-  - **Estado:** Hecho.
-- **FR-013B – Generar una reserva y su factura asociada desde el frontend mediante una única llamada al endpoint de backend.**
-  - **Estado:** Hecho.
-- **FR-013C – Guardar en el navegador los datos de la reserva pendiente para continuar el flujo en la pasarela de pagos.**
-  - **Estado:** Hecho.
-- **FR-014A – Cargar la página de pasarela de pago solo si existen datos de reserva pendiente almacenados.**
-  - **Estado:** Hecho.
-- **FR-014B – Mostrar en la pasarela de pago el resumen de la reserva (restaurante, mesa, fecha, hora, total) antes de procesar el pago.**
-  - **Estado:** Hecho.
-- **FR-015A – Proveer un dashboard para dueños con pestañas de vista general, restaurantes, reservas, flujo diario, empleados, clientes, correos y configuración.**
-  - **Estado:** Hecho.
-- **FR-015B – Proveer un dashboard para administradores centrado en un restaurante específico con métricas, reservas y facturas.**
-  - **Estado:** Hecho.
-- **FR-015C – Proveer un dashboard para clientes con sección de perfil, métricas simplificadas y listado de sus reservas recientes.**
-  - **Estado:** Hecho.
-- **FR-016A – Permitir a dueños y administradores ver las reservas de un restaurante agrupadas por estado en un modal.**
-  - **Estado:** Parcial (confirmado en dashboard de dueño; en AdminDashboard no está integrado el mismo modal de agrupación).
-- **FR-016B – Permitir cambiar el estado de una reserva desde el modal, respetando las transiciones definidas en backend.**
-  - **Estado:** Hecho.
-- **FR-016C – Solicitar y enviar al backend un motivo de cancelación cuando se cancela una reserva desde el modal.**
-  - **Estado:** Hecho.
-- **FR-017A – Permitir configurar credenciales de correo (SMTP/IMAP) desde el dashboard.**
-  - **Estado:** Hecho.
-- **FR-017B – Permitir visualizar la bandeja de correos asociados a la cuenta configurada.**
-  - **Estado:** Hecho.
-- **FR-018A – Mostrar en la UI un mapa con la ubicación del restaurante seleccionado.**
-  - **Estado:** Hecho.
-- **FR-018B – Permitir al usuario ver en una vista de mapa la distribución de restaurantes con marcadores.**
-  - **Estado:** Hecho.
-- **FR-019A – Mostrar en el dashboard de dueño botones de acción rápidos para ver todas las reservas del día actual.**
-  - **Estado:** Hecho.
-- **FR-019B – Permitir exportar el listado de facturas del mes actual a un archivo CSV desde el dashboard de dueño.**
-  - **Estado:** Hecho.
-- **FR-019C – Permitir descargar en PDF el detalle de una factura seleccionada desde el dashboard.**
-  - **Estado:** Hecho.
-- **FR-020A – Permitir a empleados acceder a una vista de correos configurados para el restaurante.**
-  - **Estado:** Hecho.
-- **FR-020B – Permitir a empleados acceder a una vista de configuración de correo (SMTP/IMAP) si tienen permisos.**
-  - **Estado:** Hecho.
-- **FR-021A – El componente HeroSection debe existir y mostrarse en Home.**
-  - **Estado:** Hecho.
-- **FR-021B – El componente SearchBar debe existir y mostrarse en Home.**
-  - **Estado:** Hecho.
-- **FR-021C – El componente CuisineCarousel debe existir y mostrarse en Home.**
-  - **Estado:** Hecho.
-- **FR-021D – El componente FeaturesSection debe existir y mostrarse en Home.**
-  - **Estado:** Hecho.
-- **FR-021E – El componente CTASection debe existir y mostrarse en Home.**
-  - **Estado:** Parcial (CTASection existe pero actualmente no se renderiza en Home).
-- **FR-021F – El componente Footer debe existir y mostrarse en Home.**
-  - **Estado:** Hecho.
-- **FR-021G – El componente DailyFlow debe existir y usarse en Dashboard.**
-  - **Estado:** Hecho.
-- **FR-021H – El componente RestaurantReservationsModal debe existir y usarse en Dashboard/AdminDashboard.**
-  - **Estado:** Parcial (uso confirmado en Dashboard dueño; no integrado de igual forma en AdminDashboard).
-- **FR-021I – El componente app-sidebar debe existir y mostrarse en Dashboard.**
-  - **Estado:** Parcial (el archivo app-sidebar existe, pero Dashboard usa Sidebar de `components/ui/sidebar.tsx`).
-- **FR-021J – El componente CookieConsentModal debe existir y mostrarse en App.**
-  - **Estado:** Hecho.
-- **FR-021K – El componente ToastContainer debe existir y mostrarse globalmente.**
-  - **Estado:** Hecho.
-- **FR-021L – El componente CheckoutPage debe existir y mostrarse en PaymentGateway.**
-  - **Estado:** Hecho.
-- **FR-021M – El componente EmailConfigSection debe existir en Dashboard.**
-  - **Estado:** Hecho.
-- **FR-021N – El componente EmailsSection debe existir en Dashboard.**
-  - **Estado:** Hecho.
-- **FR-021O – El componente AddRestaurantModal debe existir y usarse desde Dashboard.**
-  - **Estado:** Hecho.
-- **FR-021P – El componente RestaurantConfigModal debe existir y usarse desde Dashboard.**
-  - **Estado:** Hecho.
-- **FR-021Q – El componente InvoiceDetailModal debe existir y usarse desde Dashboard.**
-  - **Estado:** Hecho.
-- **FR-021R – El componente AllReservationsModal debe existir y usarse desde Dashboard.**
-  - **Estado:** Hecho.
-- **FR-022A – Texto "Reserva tu mesa sin complicaciones" en HeroSection.**
-  - **Estado:** Hecho.
-- **FR-022B – HeroSection usa gradiente from-primary/10 via-background to-accent/20.**
-  - **Estado:** Hecho.
-- **FR-022C – CuisineCarousel muestra categorías provenientes del backend (`/categorias/top`) e incluye cocinas comunes cuando estén disponibles.**
-  - **Estado:** Parcial (depende de datos de categorías del backend).
-- **FR-022D – CuisineCarousel usa Card y transitionNormal de animations.**
-  - **Estado:** Hecho.
-- **FR-022E – Footer enlace "Acerca de" a #acerca_de.**
-  - **Estado:** Hecho.
-- **FR-022F – Footer enlace "Contacto".**
-  - **Estado:** Hecho.
-- **FR-022G – Texto "Hacer Reserva" en Restaurant.**
-  - **Estado:** Hecho.
-- **FR-022H – Texto "Resumen de Reserva" en Restaurant.**
-  - **Estado:** Hecho.
-- **FR-022I – Texto "Hacer Pago de Reserva" y "Confirmar Pago de Reserva" en Restaurant.**
-  - **Estado:** Hecho.
-- **FR-022J – reservation-summary muestra "Resumen de Reserva".**
-  - **Estado:** Hecho.
-- **FR-022K – metric-cards label "Reservas activas".**
-  - **Estado:** Hecho.
-- **FR-022L – dasbboard-stats título "Reservas Hoy".**
-  - **Estado:** Hecho.
-- **FR-022M – Sidebar_2 ítem "Reservas" con icono Calendar.**
-  - **Estado:** Hecho.
-- **FR-022N – Reservations_2 texto "Reservas de hoy".**
-  - **Estado:** Hecho.
-- **FR-022O – AllReservationsModal título "Todas las Reservas".**
-  - **Estado:** Hecho.
-- **FR-022P – ProfileModal pestaña "Reservas".**
-  - **Estado:** Hecho.
-- **FR-022Q – ProfileModal diálogo "Reserva Cancelada".**
-  - **Estado:** Hecho.
-- **FR-022R – Header alt "Reservify - Reserva en tu restaurante favorito".**
-  - **Estado:** Hecho.
-- **FR-023A – InvoiceDetailModal debe existir y mostrar detalle de factura.**
-  - **Estado:** Hecho.
-- **FR-023B – AddRestaurantModal campos nombre, categoría, dirección, horarios, imagen.**
-  - **Estado:** Hecho.
-- **FR-023C – RestaurantConfigModal sección mesas (agregar, editar, eliminar).**
-  - **Estado:** Hecho.
-- **FR-023D – RestaurantConfigModal sección administrador.**
-  - **Estado:** Hecho.
-- **FR-023E – RestaurantConfigModal sección asignar empleado.**
-  - **Estado:** Hecho.
-- **FR-023F – EmailConfigSection configuración SMTP e IMAP.**
-  - **Estado:** Hecho.
-- **FR-023G – EmailsSection listado de correos con opción ver detalle.**
-  - **Estado:** Hecho.
-- **FR-023H – PaymentGateway lee pendingReservation de sessionStorage.**
-  - **Estado:** Hecho.
-- **FR-023I – CheckoutPage recibe reservationData y muestra resumen.**
-  - **Estado:** Hecho.
-- **FR-023J – payment-section validación "Campos incompletos" y "Error en el pago".**
-  - **Estado:** Hecho.
-- **FR-024A – Dashboard tab "Vista general" o equivalente.**
-  - **Estado:** Hecho.
-- **FR-024B – Dashboard tab restaurantes.**
-  - **Estado:** Hecho.
-- **FR-024C – Dashboard tab reservas.**
-  - **Estado:** Hecho.
-- **FR-024D – Dashboard tab flujo diario.**
-  - **Estado:** Hecho.
-- **FR-024E – Dashboard tab empleados.**
-  - **Estado:** Hecho.
-- **FR-024F – Dashboard tab clientes.**
-  - **Estado:** Hecho.
-- **FR-024G – Dashboard tab correos.**
-  - **Estado:** Hecho.
-- **FR-024H – Dashboard tab configuración.**
-  - **Estado:** Hecho.
-- **FR-024I – AdminDashboard métricas y reservas recientes.**
-  - **Estado:** Hecho.
-- **FR-024J – ProfileModal (Home / menú usuario): perfil y reservas del cliente.**
-  - **Estado:** Hecho.
-- **FR-024K – EmployeeDashboard reservas del día y acciones.**
-  - **Estado:** Hecho.
-- **FR-025A – getProtectedRoutes devuelve rutas con ProtectedRoute y requiredRole.**
-  - **Estado:** Hecho.
-- **FR-025B – ROUTES.VIEW_EMAIL con parámetro :uid.**
-  - **Estado:** Hecho.
-- **FR-025C – getRoleRedirectPath mapea dueno, administrador, empleado y cliente (cliente → Home).**
-  - **Estado:** Hecho.
-- **FR-026A – CuisineCarousel soporta categorías ampliadas (ej. Asiática, China, India, Francesa, Española) según datos del backend.**
-  - **Estado:** Parcial (depende de datos de categorías del backend).
-- **FR-026B – SearchBar chips o sugerencias con tipos de cocina.**
-  - **Estado:** Hecho.
-- **FR-026C – RestaurantGrid "Disponible hoy" o "Reservar mañana" según availableToday.**
-  - **Estado:** Hecho.
-- **FR-027A – Componente PageWrapper con animación de transición.**
-  - **Estado:** Hecho.
-- **FR-027B – useToast hook disponible globalmente.**
-  - **Estado:** Hecho.
-- **FR-027C – sessionStorage pendingReservation con datos de reserva para pasarela.**
-  - **Estado:** Hecho.
-- **FR-028A – Header enlace "Restaurantes" con href #restaurantes.**
-  - **Estado:** Hecho.
-- **FR-028B – Header componente AnimatedThemeToggler para cambio de tema (claro/oscuro/sistema).**
-  - **Estado:** Hecho.
-- **FR-028C – Header texto accesible "Abrir menú de perfil" (sr-only).**
-  - **Estado:** Hecho.
-- **FR-028D – Header logo con fetchPriority="low" y dark:invert.**
-  - **Estado:** Hecho.
-- **FR-028E – Header barra con bg-background/95 y backdrop-blur-xl.**
-  - **Estado:** Hecho.
-- **FR-028F – Header animación fadeInDown en la barra.**
+- **NF-034A – Vista previa en pantalla de facturas y reportes antes de descarga**
   - **Estado:** Hecho.

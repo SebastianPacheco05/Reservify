@@ -2,19 +2,20 @@
 
 > **Aclaración:** La hoja Excel se llama *REQ. no funcionales Frontend*, pero el contenido describe **lo que el usuario ve e interactúa** (pantallas, flujos, estilos). En documentación se tratan como **requisitos funcionales de UI/UX**.
 
-> **Revisión:** Cada ítem conserva el ID histórico **NFF-xxx** y se añade **Implementación actual** según el código en `frontend/src` (marzo 2026).
+> **Revisión:** Cada ítem conserva el ID histórico **NFF-xxx** y se añade **Implementación actual** según el código en `frontend/src` (abril 2026).
 
-> Fuente original: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. no funcionales Frontend**.
+> Fuente original: Excel *REQ. no funcionales Frontend* (libro `reservifyreq.v.1.3.xls.xlsx`; en el repo puede estar bajo `md/docs/files/` u otra carpeta de documentación).
 
 - **NFF-000 – COLOR DE FONDO DE LA PAGINA WEB**
   - **Concepto:** Mediante el uso de CSS, se aplica la propiedad ‘background’ con valores específicos para crear un efecto de degradado. Se inicia con un color azul oscuro (rgb 3, 64, 138) en la parte superior. Luego, se utiliza rgba 189,206, 234, 0.817 para suavizar la tonalidad azul oscuro y obtener un tono más claro, creando así un degradado entre estas dos tonalidades. Finalmente, se añade rgba 255, 255, 255, 0.946 para obtener una tonalidad blanca, logrando así una transición armoniosa entre los tres colores.
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
   - **Implementación actual:** El fondo global usa variables en `index.css` (`--background` #F9F7F2, `--primary` #FF6A00, `--secondary` #FF2D55). El hero (`HeroSection.tsx`) aplica `bg-gradient-to-b from-primary/10 via-background to-accent/20`, no el degradado RGB del texto legacy.
 
-### Bloque vigente (marzo 2026)
+### Bloque vigente (abril 2026)
 
-> Este bloque reemplaza funcionalmente los requerimientos legacy de Home, Login, Registro, `/Restaurant?uid` y Pasarela.  
-> **Derogados por cambios de frontend:** `NFF-001..NFF-104` y `NFF-684..NFF-791`.
+> Este bloque reemplaza funcionalmente los requerimientos legacy de Home, Login, Registro, `/buscar`, `/Restaurant?uid` y Pasarela.  
+> **Derogados por cambios de frontend:** `NFF-001..NFF-104` y `NFF-684..NFF-791`.  
+> **Cambio 2026:** no existe `ClientDashboard`; el rol **cliente** usa Home + `ProfileModal` (ver **NFF-VIG-CLIENT**).
 
 - **NFF-VIG-HOME-01 – Estructura de Home**
   - **Estado:** Vigente.
@@ -34,6 +35,19 @@
 - **NFF-VIG-HOME-06 – Tema claro/oscuro por tokens**
   - **Estado:** Vigente.
   - **Implementación actual:** Toggling por clase `.dark`, variables CSS en `index.css` y utilidades Tailwind; no se exigen hex fijos del Excel legacy.
+
+- **NFF-VIG-SEARCH-01 – Ruta pública `/buscar` (`ROUTES.SEARCH`)**
+  - **Estado:** Vigente.
+  - **Implementación actual:** Página `Search.tsx`; entrada típica desde el header del cliente con `?q=...` o enlaces internos.
+- **NFF-VIG-SEARCH-02 – Parámetros de URL y estado**
+  - **Estado:** Vigente.
+  - **Implementación actual:** `useSearchParams`: `q` (texto buscado), `page` (≥1), `per_page` (acotado 1–50, default 30). Sincronización del input con la query.
+- **NFF-VIG-SEARCH-03 – Resultados paginados vía API**
+  - **Estado:** Vigente.
+  - **Implementación actual:** `GET /top/paginado?q=&page=&per_page=` (`getApiEndpoint`); `AbortController` para cancelar peticiones al cambiar filtros; estados carga, error y lista vacía.
+- **NFF-VIG-SEARCH-04 – Cáscara de página**
+  - **Estado:** Vigente.
+  - **Implementación actual:** Misma cabecera/pie que el resto del sitio (`Header`, `Footer`), tarjetas de restaurante y paginación numérica en la misma vista.
 
 - **NFF-VIG-LOGIN-01 – Inicio de sesión con correo y contraseña**
   - **Estado:** Vigente.
@@ -104,8 +118,24 @@
 - **NFF-VIG-PAY-06 – Limpieza y cierre de flujo**
   - **Estado:** Vigente.
   - **Implementación actual:** En pago aprobado se elimina `pendingReservation`, se notifica y se redirige a home.
+- **NFF-VIG-PAY-07 – Pantalla de pago exitoso (Wompi async / retorno)**
+  - **Estado:** Vigente.
+  - **Implementación actual:** Ruta `/pago-exitoso` (`PagoExitoso.tsx`), lectura opcional de `transaction_id` / `reference` en query, cuenta regresiva y limpieza de `sessionStorage` antes de volver a `/`.
 
-> **Nota de vigencia:** los ítems `NFF-001..NFF-104` quedan como histórico y están reemplazados por el bloque **NFF-VIG-HOME / NFF-VIG-LOGIN / NFF-VIG-REG** de esta sección.
+- **NFF-VIG-CLIENT-01 – Sin dashboard dedicado para cliente; Home como hub**
+  - **Estado:** Vigente.
+  - **Implementación actual:** Tras login, el backend envía `redirect_to: "/"` para rol cliente; `getRoleRedirectPath('cliente')` → `ROUTES.HOME` en `routes/paths.ts`. No hay ruta `/ClienteDashboard` ni `ProtectedRoute` solo-cliente.
+- **NFF-VIG-CLIENT-02 – Perfil, reservas y cancelación vía modal**
+  - **Estado:** Vigente.
+  - **Implementación actual:** `ProfileModal.tsx`: pestañas perfil/reservas, `GET /cliente/mi-perfil`, `GET /cliente/mis-reservas`, `PUT /cliente/editarcliente`, `PUT /credenciales/editarcredencial`, cancelación con `PATCH /cliente/mis-reservas/{id}/cancelar`. Acceso desde cabecera (`Header`, `AuthPageShell`, `Home`).
+- **NFF-VIG-CLIENT-03 – Página `/Datos_personales`**
+  - **Estado:** Parcial (placeholder).
+  - **Implementación actual:** `PersonalData.tsx` en ruta `ROUTES.PERSONAL_DATA`; UI mínima. La edición principal del cliente está en `ProfileModal`, no aquí.
+- **NFF-VIG-APP-01 – Cookies, CORS-friendly y enforcer de rol**
+  - **Estado:** Vigente.
+  - **Implementación actual:** `CookieConsentModal` montado en `App.tsx`; `RoleEnforcer` redirige dueño/admin/empleado desde `/` hacia su dashboard (`paths.ts`, `isPrivilegedRole`).
+
+> **Nota de vigencia:** los ítems `NFF-001..NFF-104` quedan como histórico y están reemplazados por el bloque **NFF-VIG-HOME / NFF-VIG-SEARCH / NFF-VIG-LOGIN / NFF-VIG-REG** de esta sección.
 
 - **NFF-001 – PÁGINA PRINCIPAL O PÁGINA DE BIENVENIDA modo claro – En la parte superior izquierda contiene el logo**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
@@ -2839,7 +2869,7 @@ Escritorio:3 tarjetas por fila.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
   - **Implementación actual:** Vista en dashboards (`AdminDashboard.tsx`, `Dashboard.tsx`, `employee-dashboard.tsx`) con sidebar (`app-sidebar.tsx` / `Sidebar_2.tsx`) y componentes de métricas/tablas; colores y copy pueden no coincidir con los valores hex del Excel; tema claro/oscuro vía tokens.
 
-> **Nota de vigencia:** los ítems `NFF-684..NFF-791` quedan como histórico y están reemplazados por el bloque **NFF-VIG-HOME / NFF-VIG-REST / NFF-VIG-PAY** del inicio del documento.
+> **Nota de vigencia:** los ítems `NFF-684..NFF-791` quedan como histórico y están reemplazados por el bloque **NFF-VIG-HOME / NFF-VIG-SEARCH / NFF-VIG-REST / NFF-VIG-PAY / NFF-VIG-CLIENT / NFF-VIG-APP** del inicio del documento.
 
 - **NFF-684 – Cliente (Home Page Principal) - modo oscuro – Barra de navegación (Navbar): Fondo negro sólido con logo "Reservify" a la izquierda; enlaces a "Restaurantes", selector de modo oscuro (icono luna) y botón de perfil a la derecha.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
@@ -2971,55 +3001,55 @@ Escritorio:3 tarjetas por fila.**
 
 - **NFF-716 – Cliente (Aparto descripcion y reserva de restaurante) - modo oscuro – Barra superior de navegación: Enlace "Volver al inicio" con flecha a la izquierda y logo "Reservify" con selector de modo a la derecha.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-717 – Cliente (Aparto descripcion y reserva de restaurante) - modo oscuro – Contenedor de descripción: Recuadro con fondo gris muy oscuro y texto descriptivo en blanco/gris claro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-718 – Cliente (Aparto descripcion y reserva de restaurante) - modo oscuro – Sección "Galería de Imágenes": Título en blanco y grid de imágenes de referencia con bordes redondeados (border-radius 8px).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-719 – Cliente (Aparto descripcion y reserva de restaurante) - modo oscuro – Card de Reserva (Sidebar): Fondo gris oscuro con título "Hacer Reserva" e icono de calendario; incluye campos de selección para fecha, hora, comensales y mesa.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-720 – Cliente (Aparto descripcion y reserva de restaurante) - modo oscuro – Botón "Hacer Pago de Reserva": Fondo rojo intenso (#991b1b), texto blanco bold e icono de billetera/tarjeta a la izquierda.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-721 – Cliente (Aparto descripcion y reserva de restaurante) - modo oscuro – Card de "Información Importante": Fondo gris oscuro con lista de viñetas sobre políticas de pago, cancelación (2 horas) y tiempo de reserva.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-722 – Cliente (Aparto descripcion y reserva de restaurante) - modo oscuro – Bloques de Información del Restaurante: Contenedores con iconos rojos para "Dirección" y "Horarios", con texto detallado en blanco y gris.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-723 – Cliente (Aparto descripcion y reserva de restaurante) - modo oscuro – Sección de Mapa: Título "Ubicación en el mapa" e instrucciones en gris; mapa interactivo con pin azul y botones de ubicación ("Usar mi ubicación" en blanco).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-724 – Cliente (Aparto descripcion y reserva de restaurante) - modo oscuro – Sección "Mesas Disponibles": Título blanco y tarjetas individuales con nombre de mesa, badge amarillo "Disponible", capacidad y precio destacado en rojo.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-725 – Cliente (Aparto descripcion y reserva de restaurante) - modo oscuro – Sección "Deja tu Reseña": Selector de 5 estrellas lineales, área de texto (textarea) con fondo negro y botón "Enviar Reseña" en rojo oscuro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-726 – Cliente (Aparto descripcion y reserva de restaurante) - modo oscuro – Aviso de Reseñas Vacías: Icono de estrella grande y texto "Aún no hay reseñas" centrado en color gris claro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-727 – Cliente (Aparto descripcion y reserva de restaurante) - modo oscuro – Fondo general de la página: Color negro sólido (#0a0a0a) con espaciado amplio entre secciones (gap).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-728 – Cliente (Aparto descripcion y reserva de restaurante) - modo claro – Fondo general de la página: Color crema o beige muy claro (#f5f5f4 aprox.).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-729 – Cliente (Aparto descripcion y reserva de restaurante) - modo claro – Banner principal (Hero): Imagen con bordes redondeados, nombre del restaurante "prueba" en blanco, calificación de estrellas (0.0), categoría y badge naranja "Disponible hoy".**
   - **Estado:** Parcial — ver nota.
@@ -3027,323 +3057,323 @@ Escritorio:3 tarjetas por fila.**
 
 - **NFF-730 – Cliente (Aparto descripcion y reserva de restaurante) - modo claro – Barra superior de navegación: Enlace "Volver al inicio" con flecha gris, logo "Reservify" central e icono de sol (selector de modo) a la derecha.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-731 – Cliente (Aparto descripcion y reserva de restaurante) - modo claro – Contenedor de descripción: Recuadro con fondo blanco, bordes redondeados y texto descriptivo en gris oscuro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-732 – Cliente (Aparto descripcion y reserva de restaurante) - modo claro – Sección "Galería de Imágenes": Título en azul oscuro y grid de imágenes de referencia con bordes redondeados (border-radius 8px) en contenedor blanco.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-733 – Cliente (Aparto descripcion y reserva de restaurante) - modo claro – Card de Reserva (Sidebar): Fondo blanco con sombra suave, título "Hacer Reserva" e icono de calendario naranja; incluye selectores para fecha, hora y comensales.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-734 – Cliente (Aparto descripcion y reserva de restaurante) - modo claro – Botón "Hacer Pago de Reserva": Fondo naranja vibrante, texto blanco bold e icono de billetera a la izquierda.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-735 – Cliente (Aparto descripcion y reserva de restaurante) - modo claro – Card de "Información Importante": Fondo blanco con viñetas en gris oscuro detallando políticas de pago, cancelación y tiempo de estancia.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-736 – Cliente (Aparto descripcion y reserva de restaurante) - modo claro – Bloques de Información del Restaurante: Contenedores con fondo crema suave e iconos naranjas para "Dirección" y "Horarios".**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-737 – Cliente (Aparto descripcion y reserva de restaurante) - modo claro – Sección de Mapa: Título "Ubicación en el mapa"; incluye botón naranja "Usar mi ubicación" y mapa interactivo con pin azul.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-738 – Cliente (Aparto descripcion y reserva de restaurante) - modo claro – Sección "Mesas Disponibles": Tarjetas blancas individuales con badge verde "Disponible", capacidad de personas y precio destacado en color naranja.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-739 – Cliente (Aparto descripcion y reserva de restaurante) - modo claro – Sección "Deja tu Reseña": Selector de 5 estrellas lineales, área de texto blanca con borde gris y botón naranja suave "Enviar Reseña".**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-740 – Cliente (Aparto descripcion y reserva de restaurante) - modo claro – Aviso de Reseñas Vacías: Icono de estrella gris y texto "Aún no hay reseñas" centrado en color gris oscuro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-741 – Cliente (Modal de confirmacionde reserva) - modo claro – Cabecera del modal: Título "Confirmar Pago de Reserva" en azul oscuro bold con un icono de cierre "x" en la esquina superior derecha.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-742 – Cliente (Modal de confirmacionde reserva) - modo claro – Subtítulo instructivo: Texto "Revise los detalles de su reserva antes de proceder al pago" en gris medio bajo el título principal.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-743 – Cliente (Modal de confirmacionde reserva) - modo claro – Tarjeta de resumen (Resumen de Reserva): Contenedor interno con fondo beige suave, borde gris tenue y border-radius de 12px.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-744 – Cliente (Modal de confirmacionde reserva) - modo claro – Título del resumen: Texto "Resumen de Reserva" en azul oscuro con peso bold.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-745 – Cliente (Modal de confirmacionde reserva) - modo claro – Listado de detalles: Etiquetas a la izquierda ("Restaurante:", "Fecha:", etc.) en gris oscuro y valores a la derecha en negro bold.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-746 – Cliente (Modal de confirmacionde reserva) - modo claro – Campos incluidos en resumen: Restaurante, Fecha, Hora, Comensales y Mesa específica.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-747 – Cliente (Modal de confirmacionde reserva) - modo claro – Separador visual: Línea horizontal delgada de color gris que divide los detalles del monto total.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-748 – Cliente (Modal de confirmacionde reserva) - modo claro – Sección de Total: Etiqueta "Total a Pagar:" en azul oscuro bold y monto "$100000.00" en color naranja vibrante con tamaño de fuente grande.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-749 – Cliente (Modal de confirmacionde reserva) - modo claro – Nota al pie: Texto "* El pago se procesará en la siguiente pantalla" en gris medio y tamaño de fuente pequeño.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-750 – Cliente (Modal de confirmacionde reserva) - modo claro – Botón "Cancelar": Fondo blanco, borde gris oscuro, texto en gris oscuro y border-radius de 8px.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-751 – Cliente (Modal de confirmacionde reserva) - modo claro – Botón "Proceder al Pago": Fondo naranja vibrante, texto blanco bold y border-radius de 8px.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-752 – Cliente (Modal de confirmacionde reserva) - modo claro – Estructura general: Fondo beige muy claro con bordes redondeados y sombra sutil sobre el overlay.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-753 – Cliente (Modal de confirmacionde reserva) - modo oscuro – Cabecera del modal: Título "Confirmar Pago de Reserva" en blanco puro con peso bold y un icono de cierre "x" en la esquina superior derecha.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-754 – Cliente (Modal de confirmacionde reserva) - modo oscuro – Subtítulo instructivo: Texto "Revise los detalles de su reserva antes de proceder al pago" en gris claro bajo el título principal.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-755 – Cliente (Modal de confirmacionde reserva) - modo oscuro – Tarjeta de resumen (Resumen de Reserva): Contenedor interno con fondo negro, borde gris oscuro muy tenue y border-radius de aproximadamente 12px.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-756 – Cliente (Modal de confirmacionde reserva) - modo oscuro – Título del resumen: Texto "Resumen de Reserva" en blanco con peso bold.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-757 – Cliente (Modal de confirmacionde reserva) - modo oscuro – Listado de detalles: Etiquetas a la izquierda ("Restaurante:", "Fecha:", etc.) en gris claro y valores a la derecha en blanco puro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-758 – Cliente (Modal de confirmacionde reserva) - modo oscuro – Campos incluidos en resumen: Restaurante, Fecha, Hora, Comensales y Mesa específica (incluyendo capacidad).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-759 – Cliente (Modal de confirmacionde reserva) - modo oscuro – Separador visual: Línea horizontal delgada de color gris oscuro que divide los detalles del monto total.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-760 – Cliente (Modal de confirmacionde reserva) - modo oscuro – Sección de Total: Etiqueta "Total a Pagar:" en blanco y monto "$100000.00" en color rojo intenso.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-761 – Cliente (Modal de confirmacionde reserva) - modo oscuro – Nota al pie: Texto "* El pago se procesará en la siguiente pantalla" en gris claro y tamaño de fuente pequeño.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-762 – Cliente (Modal de confirmacionde reserva) - modo oscuro – Botón "Cancelar": Fondo negro, borde blanco fino, texto en blanco y border-radius de 8px.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-763 – Cliente (Modal de confirmacionde reserva) - modo oscuro – Botón "Proceder al Pago": Fondo rojo oscuro sólido (#991b1b), texto blanco bold y border-radius de 8px.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-764 – Cliente (Modal de confirmacionde reserva) - modo oscuro – Estructura general: Fondo gris carbón muy oscuro con bordes redondeados sobre un overlay negro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-765 – Cliente (Pasarela de pagos) - modo claro – Fondo general de la página: Color crema o beige muy claro (#f5f5f4 aprox.).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-766 – Cliente (Pasarela de pagos) - modo claro – Título principal "Completa tu reserva": Texto en azul oscuro profundo, peso bold y fuente sans-serif de gran tamaño.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-767 – Cliente (Pasarela de pagos) - modo claro – Subtítulo instructivo: Texto "Revisa los detalles y elige tu método de pago" en gris oscuro debajo del título.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-768 – Cliente (Pasarela de pagos) - modo claro – Tarjeta "Resumen de tu reserva": Fondo blanco, border-radius de 12px y encabezado con un ligero degradado naranja/crema.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-769 – Cliente (Pasarela de pagos) - modo claro – Detalles del resumen (Restaurante, Mesa, Fecha, Hora, Comensales): Etiquetas en gris y valores en negro con peso bold, organizados en grid.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-770 – Cliente (Pasarela de pagos) - modo claro – Valor total en resumen: Texto "$X COP" en naranja vibrante y peso bold en la parte inferior de la tarjeta.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-771 – Cliente (Pasarela de pagos) - modo claro – Tarjeta "Método de pago": Fondo blanco con opciones de selección radial (Radio buttons).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-772 – Cliente (Pasarela de pagos) - modo claro – Opción seleccionada (Tarjeta): Fondo naranja muy tenue, borde naranja suave y check de color naranja.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-773 – Cliente (Pasarela de pagos) - modo claro – Tarjeta "Información de la tarjeta": Fondo blanco con campos de entrada (Inputs) para Número, Nombre, Mes, Año y CVC.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-774 – Cliente (Pasarela de pagos) - modo claro – Cajas de entrada (Inputs): Fondo gris muy claro, bordes redondeados y placeholders en gris tenue.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-775 – Cliente (Pasarela de pagos) - modo claro – Aviso de seguridad inferior: Bloque con fondo naranja claro, icono de candado y texto "Tu información de pago está encriptada...".**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-776 – Cliente (Pasarela de pagos) - modo claro – Sidebar de pago (Derecha): Bloque flotante con fondo degradado naranja/verde que muestra el monto total "$100.000 COP" en blanco.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-777 – Cliente (Pasarela de pagos) - modo claro – Botón "Confirmar pago": Fondo beige/gris claro con icono de flecha, texto en gris oscuro y border-radius de 8px.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-778 – Cliente (Pasarela de pagos) - modo claro – Checklist de estado del formulario: Lista de puntos en gris con etiquetas ("Número de tarjeta", "Titular", etc.) debajo del botón de confirmación.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-779 – Cliente (Pasarela de pagos) - modo oscuro – Fondo general de la página: Color negro sólido o gris carbón muy oscuro (#0a0a0a).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-780 – Cliente (Pasarela de pagos) - modo oscuro – Título principal "Completa tu reserva": Texto en blanco puro, peso bold y fuente sans-serif de gran tamaño.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-781 – Cliente (Pasarela de pagos) - modo oscuro – Subtítulo instructivo: Texto en gris claro debajo del título ("Revisa los detalles y elige tu método de pago").**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-782 – Cliente (Pasarela de pagos) - modo oscuro – Tarjeta "Resumen de tu reserva": Fondo gris muy oscuro, border-radius de 12px y un degradado sutil en la parte superior (tonos ocres/rojos).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-783 – Cliente (Pasarela de pagos) - modo oscuro – Detalles del resumen (Restaurante, Mesa, Fecha, Hora, Comensales): Etiquetas en gris claro y valores en blanco con peso bold.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-784 – Cliente (Pasarela de pagos) - modo oscuro – Valor total en resumen: Texto "$100.000 COP" en color rojo intenso y peso bold.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-785 – Cliente (Pasarela de pagos) - modo oscuro – Tarjeta "Método de pago": Fondo gris oscuro con opciones de selección radial; la opción seleccionada tiene un borde y check rojo.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-786 – Cliente (Pasarela de pagos) - modo oscuro – Tarjeta "Información de la tarjeta": Fondo gris muy oscuro con campos de entrada (Inputs) integrados.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-787 – Cliente (Pasarela de pagos) - modo oscuro – Cajas de entrada (Inputs): Fondo negro sólido, bordes gris oscuro sutiles y texto/placeholders en gris claro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-788 – Cliente (Pasarela de pagos) - modo oscuro – Aviso de seguridad inferior: Bloque con fondo rojo muy oscuro, icono de candado y texto de encriptación en gris claro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-789 – Cliente (Pasarela de pagos) - modo oscuro – Sidebar de pago (Derecha): Bloque con degradado de rojo oscuro a granate que destaca el monto total "$100.000 COP" en blanco.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-790 – Cliente (Pasarela de pagos) - modo oscuro – Botón "Confirmar pago": Fondo gris oscuro con icono de flecha, texto en gris claro y border-radius de 8px.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-791 – Cliente (Pasarela de pagos) - modo oscuro – Checklist de estado del formulario: Lista de puntos grises con etiquetas ("Número de tarjeta", "Titular", etc.) debajo del botón de confirmación.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-792 – Cliente (Centro de ayuda) - modo oscuro – Fondo general de la página: Color negro sólido o gris carbón muy oscuro (#0a0a0a).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-793 – Cliente (Centro de ayuda) - modo oscuro – Títulos principales: Texto en blanco puro, peso bold y fuente sans-serif de gran tamaño.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-794 – Cliente (Centro de ayuda) - modo oscuro – Subtítulos e instrucciones: Texto en gris claro debajo de los títulos principales.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-795 – Cliente (Centro de ayuda) - modo oscuro – Contenedores de información: Fondo gris muy oscuro, border-radius de 12px y degradados sutiles en tonos ocres/rojos.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-796 – Cliente (Centro de ayuda) - modo oscuro – Detalles y etiquetas: Etiquetas en gris claro y valores en blanco con peso bold.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-797 – Cliente (Centro de ayuda) - modo oscuro – Resaltado de valores críticos: Texto de montos o totales en color rojo intenso y peso bold.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-798 – Cliente (Centro de ayuda) - modo oscuro – Elementos de selección: Fondo gris oscuro con bordes y checks en color rojo para la opción seleccionada.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-799 – Cliente (Centro de ayuda) - modo oscuro – Campos de entrada (Inputs): Fondo negro sólido, bordes gris oscuro sutiles y texto/placeholders en gris claro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-800 – Cliente (Centro de ayuda) - modo oscuro – Bloques de seguridad: Fondo rojo muy oscuro con iconos de candado y texto en gris claro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-801 – Cliente (Centro de ayuda) - modo oscuro – Barras laterales de acción: Bloques con degradado de rojo oscuro a granate para destacar acciones finales.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-802 – Cliente (Centro de ayuda) - modo oscuro – Botones de acción: Fondo gris oscuro, bordes redondeados de 8px e iconos de dirección/flecha.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-803 – Cliente (Centro de ayuda) - modo oscuro – Indicadores de estado: Listas de puntos grises con etiquetas descriptivas bajo los botones principales.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-804 – Cliente (Centro de ayuda) - modo claro – Fondo general de la página: Degradado radial suave en tonos crema/beige claro hacia blanco.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-805 – Cliente (Centro de ayuda) - modo claro – Títulos principales: Texto en color azul marino oscuro (#2d3748) para alto contraste.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-806 – Cliente (Centro de ayuda) - modo claro – Subtítulos e instrucciones: Texto en gris medio para diferenciar la jerarquía informativa.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-807 – Cliente (Centro de ayuda) - modo claro – Contenedores de información: Fondo blanco sólido, border-radius de 12px y sombra paralela (drop shadow) sutil.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-808 – Cliente (Centro de ayuda) - modo claro – Cuerpo de texto: Texto en gris oscuro con interlineado amplio (aprox. 1.5) para legibilidad.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-809 – Cliente (Centro de ayuda) - modo claro – Barra de navegación (Navbar): Fondo blanco/transparente con elementos alineados a los extremos (Logo e Interacciones).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-810 – Cliente (Centro de ayuda) - modo claro – Botones de sesión: Botón "Iniciar Sesión" con borde sólido; botón "Registrarse" con fondo verde pastel (#a8c2b1 aprox).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
@@ -3351,163 +3381,163 @@ Escritorio:3 tarjetas por fila.**
 
 - **NFF-811 – Cliente (Centro de ayuda) - modo claro – Selector de tema: Icono de sol/brillo centrado para control de alternancia entre modos (Light/Dark).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-812 – Cliente (Centro de ayuda) - modo claro – Botón de retorno: Botón "Volver al inicio" con fondo gris muy claro y bordes redondeados (8px).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-813 – Cliente (Centro de ayuda) - modo claro – Efectos decorativos: Partículas mínimas dispersas en el fondo para añadir profundidad visual.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-814 – Cliente (Contáctanos) - modo claro – Fondo de la página: Degradado radial suave en tonos beige/crema claro hacia blanco.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-815 – Cliente (Contáctanos) - modo claro – Contenedor del Formulario: Fondo blanco sólido, border-radius de 12px y sombra sutil (drop shadow) para efecto de elevación.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-816 – Cliente (Contáctanos) - modo claro – Campos de Entrada (Inputs/Textarea): Fondo gris muy claro, bordes finos en gris suave y texto de ejemplo (placeholder) en gris medio.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-817 – Cliente (Contáctanos) - modo claro – Tipografía de Etiquetas: Texto en color azul marino oscuro (#2d3748), peso bold y alineación superior a los campos.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-818 – Cliente (Contáctanos) - modo claro – Botón de Acción Principal: Fondo naranja vibrante (#ff7043 aprox.) con texto en blanco y bordes redondeados (8px).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-819 – Cliente (Contáctanos) - modo claro – Iconografía en Inputs: Uso de iconos lineales (ej. sobre de correo) en color verde esmeralda suave dentro de los campos específicos.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-820 – Cliente (Contáctanos) - modo claro – Área de Mensaje: Campo de texto multilínea (textarea) con tirador de redimensionamiento sutil en la esquina inferior derecha.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-821 – Cliente (Contáctanos) - modo claro – Distribución de Campos: Diseño de dos columnas para datos personales (Nombre/Correo) y una columna completa para Asunto y Mensaje.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-822 – Cliente (Contáctanos) - modo claro – Botón de Navegación Superior: Botón "Volver al inicio" con fondo gris claro, centrado sobre el título principal.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-823 – Cliente (Contáctanos) - modo claro – Estilo de Texto de Cabecera: Título "Contáctanos" en azul oscuro profundo, seguido de un párrafo descriptivo en gris oscuro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-824 – Cliente (Contáctanos) - modo oscuro – Fondo general de la página: Color negro sólido o gris carbón muy oscuro (#0a0a0a) con partículas decorativas tenues.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-825 – Cliente (Contáctanos) - modo oscuro – Contenedor del Formulario: Fondo gris muy oscuro, border-radius de 12px y borde perimetral sutil en gris oscuro para definición.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-826 – Cliente (Contáctanos) - modo oscuro – Campos de Entrada (Inputs/Textarea): Fondo negro sólido, bordes finos en gris oscuro y texto/placeholders en gris claro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-827 – Cliente (Contáctanos) - modo oscuro – Tipografía de Etiquetas: Texto en blanco puro o gris muy claro, peso bold y fuente sans-serif.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-828 – Cliente (Contáctanos) - modo oscuro – Botón de Acción Principal: Fondo rojo granate/oscuro (#b71c1c aprox.) con texto en blanco y bordes redondeados de 8px.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-829 – Cliente (Contáctanos) - modo oscuro – Iconografía en Inputs: Icono de correo en color verde esmeralda brillante dentro del campo "Correo electrónico".**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-830 – Cliente (Contáctanos) - modo oscuro – Área de Mensaje: Campo de texto multilínea con altura expandida y tirador de redimensionamiento sutil.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-831 – Cliente (Contáctanos) - modo oscuro – Efecto de Fondo: Degradado radial tenue en tonos tierra/ocre que emana desde la parte inferior para dar profundidad.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-832 – Cliente (Contáctanos) - modo oscuro – Botones de Sesión (Navbar): Botón "Registrarse" con fondo ocre/dorado y botón "Iniciar Sesión" en blanco puro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-833 – Cliente (Contáctanos) - modo oscuro – Cabecera de Página: Título "Contáctanos" en blanco bold de gran tamaño y párrafo descriptivo en gris claro centrado.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-834 – Cliente (Terminos y condiciones de uso) - modo oscuro – Fondo de la página: Color negro sólido o gris carbón muy oscuro (#0a0a0a) con degradado ocre inferior.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-835 – Cliente (Terminos y condiciones de uso) - modo oscuro – Contenedor Legal: Fondo gris muy oscuro, border-radius de 12px y padding interno amplio para facilitar la lectura extensa.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-836 – Cliente (Terminos y condiciones de uso) - modo oscuro – Título Principal: Texto "Términos y Condiciones de Uso" en blanco puro, peso bold y tamaño de fuente destacado.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-837 – Cliente (Terminos y condiciones de uso) - modo oscuro – Indicador de Versión: Texto de "Última actualización" en gris claro, centrado y con tamaño de fuente reducido debajo del título.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-838 – Cliente (Terminos y condiciones de uso) - modo oscuro – Numeración de Secciones: Títulos de sección (1 al 10) en blanco puro, peso bold para facilitar la navegación visual.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-839 – Cliente (Terminos y condiciones de uso) - modo oscuro – Cuerpo del Texto: Texto en gris claro con interlineado (line-height) optimizado para lectura de documentos legales largos.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-840 – Cliente (Terminos y condiciones de uso) - modo oscuro – Acentos de Color: Botón "Registrarse" en ocre/dorado y botón "Iniciar Sesión" en blanco para mantener la consistencia de marca.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-841 – Cliente (Terminos y condiciones de uso) - modo oscuro – Barra de Navegación: Fondo transparente con logotipo "Reservify" y controles de tema (luna) visibles en la parte superior.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-842 – Cliente (Terminos y condiciones de uso) - modo oscuro – Botón de Navegación Secundaria: Botón "Volver al inicio" con fondo gris oscuro y bordes redondeados, ubicado sobre el título.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-843 – Cliente (Terminos y condiciones de uso) - modo oscuro – Efectos Visuales: Partículas mínimas en el fondo para mantener la estética "espacial" o de profundidad de la plataforma.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-844 – Cliente (Terminos y condiciones de uso) - modo claro – Fondo de la página: Degradado radial suave en tonos beige/crema claro hacia blanco.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-845 – Cliente (Terminos y condiciones de uso) - modo claro – Contenedor Legal: Fondo blanco sólido, border-radius de 12px y sombra sutil (drop shadow) para separación del fondo.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-846 – Cliente (Terminos y condiciones de uso) - modo claro – Título Principal: Texto "Términos y Condiciones de Uso" en azul marino oscuro (#2d3748) y peso bold.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-847 – Cliente (Terminos y condiciones de uso) - modo claro – Indicador de Versión: Texto de "Última actualización" en gris medio, centrado bajo el título principal.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-848 – Cliente (Terminos y condiciones de uso) - modo claro – Numeración de Secciones: Títulos de sección (1 al 10) en color oscuro y peso bold para resaltar la estructura del documento.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-849 – Cliente (Terminos y condiciones de uso) - modo claro – Cuerpo del Texto: Texto en gris oxford oscuro con interlineado amplio para mejorar la lectura de cláusulas legales.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-850 – Cliente (Terminos y condiciones de uso) - modo claro – Barra de Navegación (Navbar): Fondo blanco/transparente con logotipo "Reservify" y controles alineados a los extremos.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-851 – Cliente (Terminos y condiciones de uso) - modo claro – Botones de Sesión: Botón "Iniciar Sesión" con borde definido; botón "Registrarse" con fondo verde pastel (#a8c2b1).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
@@ -3515,35 +3545,35 @@ Escritorio:3 tarjetas por fila.**
 
 - **NFF-852 – Cliente (Terminos y condiciones de uso) - modo claro – Selector de Tema: Icono de sol/brillo centrado indicando el estado activo del modo claro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-853 – Cliente (Terminos y condiciones de uso) - modo claro – Espaciado Táctil: Margen interno (padding) amplio para evitar que el texto toque los bordes del contenedor blanco.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-854 – Cliente (Politica y privacidad) - modo claro – Fondo de la página: Degradado radial suave en tonos beige/crema claro hacia blanco.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-855 – Cliente (Politica y privacidad) - modo claro – Contenedor Principal: Fondo blanco sólido, border-radius de 12px y sombra sutil para profundidad.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-856 – Cliente (Politica y privacidad) - modo claro – Título de Sección: Texto "Política de Privacidad" en color azul marino oscuro (#2d3748) y peso bold.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-857 – Cliente (Politica y privacidad) - modo claro – Bajada de Título: Texto descriptivo breve en gris medio centrado debajo del título principal.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-858 – Cliente (Politica y privacidad) - modo claro – Estructura de Puntos: Numeración (1 al 10) en color oscuro y peso bold para facilitar la navegación rápida.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-859 – Cliente (Politica y privacidad) - modo claro – Cuerpo de Texto: Texto en gris oxford con interlineado (line-height) generoso para mejorar la legibilidad.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-860 – Cliente (Politica y privacidad) - modo claro – Barra de Navegación (Navbar): Logotipo "Reservify" a la izquierda; botones "Iniciar Sesión" (oscuro) y "Registrarse" (verde pastel) a la derecha.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
@@ -3551,52 +3581,140 @@ Escritorio:3 tarjetas por fila.**
 
 - **NFF-861 – Cliente (Politica y privacidad) - modo claro – Selector de Tema: Icono de sol/brillo centrado en el Navbar para control de alternancia lumínica.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-862 – Cliente (Politica y privacidad) - modo claro – Márgenes Internos: Padding amplio dentro del contenedor para evitar que el texto se acerque a los bordes curvos.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-863 – Cliente (Politica y privacidad) - modo claro – Consistencia Visual: Uso de la misma paleta de colores crema y blanco empleada en la página de Términos y Condiciones.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-874 – Cliente (Politica y privacidad) - modo oscuro – Fondo de la página: Color negro sólido (#0a0a0a) con degradado ocre/tierra en la parte inferior.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-875 – Cliente (Politica y privacidad) - modo oscuro – Contenedor Principal: Fondo gris muy oscuro, border-radius de 12px y borde sutil para definición sobre el fondo negro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-876 – Cliente (Politica y privacidad) - modo oscuro – Título de Sección: Texto "Política de Privacidad" en blanco puro, peso bold y fuente sans-serif.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-877 – Cliente (Politica y privacidad) - modo oscuro – Bajada de Título: Texto descriptivo en gris claro centrado debajo del título principal para contexto inmediato.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-878 – Cliente (Politica y privacidad) - modo oscuro – Estructura de Puntos: Títulos numerados (1 al 10) en blanco puro y peso bold para resaltar la jerarquía legal.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-879 – Cliente (Politica y privacidad) - modo oscuro – Cuerpo de Texto: Texto en gris claro con interlineado (line-height) amplio para facilitar la lectura de párrafos densos.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-880 – Cliente (Politica y privacidad) - modo oscuro – Barra de Navegación (Navbar): Logotipo "Reservify" (blanco); botones de acción "Iniciar Sesión" (blanco) y "Registrarse" (ocre/dorado).**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-881 – Cliente (Politica y privacidad) - modo oscuro – Selector de Tema: Icono de luna en el Navbar indicando el estado activo del modo oscuro.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-882 – Cliente (Politica y privacidad) - modo oscuro – Márgenes Internos: Espaciado (padding) generoso para evitar que el texto toque los bordes del contenedor.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
 
 - **NFF-883 – Cliente (Politica y privacidad) - modo oscuro – Elementos Decorativos: Partículas mínimas dispersas en el fondo para mantener la coherencia estética del sitio.**
   - **Estado:** Cubierto en la medida del diseño actual (ver implementación).
-  - **Implementación actual:** Revisado frente a `frontend/src` (marzo 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+  - **Implementación actual:** Revisado frente a `frontend/src` (abril 2026). Los valores pixel-perfect del Excel pueden diferir; la implementación usa **Google Sans**, variables `--primary` / `--secondary` / `--background` en `index.css` y utilidades Tailwind.
+
+---
+
+## Anexo – Inventario código vs requisitos (revisión exhaustiva, abril 2026)
+
+Este anexo contrasta **todo el árbol relevante de `frontend/src`** (rutas, páginas, modales/diálogos, shell de app) con el documento. Los miles de ítems **NFF-xxx** legacy siguen siendo trazabilidad frente al Excel; la **verdad operativa** del producto está en el **bloque NFF-VIG-*** y en esta tabla.
+
+### 1. Rutas (`routes/config.tsx` + `routes/paths.ts`)
+
+| Ruta | Página / componente | Protección |
+|------|---------------------|------------|
+| `/` | `Home.tsx` | Pública |
+| `/buscar` | `Search.tsx` | Pública |
+| `/Login` | `Login.tsx` | Pública |
+| `/Registrar` | `registrar.tsx` | Pública |
+| `/contacto`, `/ayuda`, `/terminos`, `/privacidad` | `Contacto`, `Ayuda`, `Terminos`, `Privacidad` | Públicas |
+| `/Restaurant` | `Restaurant.tsx` | Pública |
+| `/Datos_personales` | `PersonalData.tsx` | Pública (placeholder) |
+| `/Pasarela_pagos` | `PaymentGateway.tsx` | Pública (guard interno) |
+| `/pago-exitoso` | `PagoExitoso.tsx` | Pública |
+| `/duenodashboard` | `Dashboard.tsx` | `ProtectedRoute` rol dueño |
+| `/admindashboard` | `AdminDashboard.tsx` | `ProtectedRoute` administrador |
+| `/EmpleadoDashboard` | `employee-dashboard.tsx` | `ProtectedRoute` empleado |
+| `/ver-correo/:uid` | `ViewEmailPage.tsx` | Dueño / admin / empleado |
+| `*` | `NotFound.tsx` | Pública |
+
+**App global:** `App.tsx` — `ToastProvider`, `CookieConsentModal`, `RoleEnforcer`, rutas públicas y protegidas con `PageWrapper` (animación).
+
+### 2. Modales, diálogos y overlays (inventario por archivo)
+
+| Componente / ubicación | Función principal |
+|-------------------------|-------------------|
+| `ProfileModal.tsx` | Perfil cliente, reservas, cancelación con motivo; usado en `Home.tsx`, `AuthPageShell`, flujos con cabecera. |
+| `CookieConsentModal.tsx` | Consentimiento de cookies. |
+| `AddRestaurantModal.tsx` | Alta de restaurante (mapa/dirección, categoría, imágenes, NIT). **Solo montado en `Dashboard.tsx` (dueño).** |
+| `RestaurantConfigModal.tsx` | Configuración avanzada del restaurante (mesas, empleados, admin, imágenes, borrado, etc.); múltiples `Dialog` anidados (asignar empleado, crear usuario, credenciales, eliminar restaurante). **`Dashboard.tsx` y `AdminDashboard.tsx`.** |
+| `RestaurantReservationsModal.tsx` | Reservas del restaurante en contexto dueño. **`Dashboard.tsx`.** |
+| `AllReservationsModal.tsx` | Vista amplia de reservas. **`Dashboard.tsx` y `AdminDashboard.tsx`.** |
+| `InvoiceDetailModal.tsx` | Detalle de factura. **`Dashboard.tsx` y `AdminDashboard.tsx`.** |
+| `AddressMapPicker.tsx` | Selector de dirección con mapa (`Dialog`). Usado desde modales de restaurante. |
+| `Restaurant.tsx` | `Dialog` inline: detalle rápido de mesa/slot y flujo **Confirmar pago de reserva** antes de pasarela. |
+| `EmailConfigSection.tsx` | Diálogo de **consentimiento/advertencia** al guardar SMTP/IMAP. **`Dashboard`, `AdminDashboard`, `employee-dashboard`** (sección correo). |
+| `employee-dashboard.tsx` | `Dialog` para **motivo de cancelación** de reserva. |
+| `Login.tsx` | No usa `Dialog` de shadcn para recovery; UI propia por pasos (email / código / reset). |
+| `components/ui/dialog.tsx` | Primitiva Radix/shadcn; base del resto. |
+
+**No hay** `ClientDashboard` ni ruta dedicada cliente: cubierto en **NFF-VIG-CLIENT**.
+
+### 3. Paneles de gestión (tabs y módulos reales)
+
+- **Dueño (`Dashboard.tsx`):** sidebar `app-sidebar.tsx`, pestañas típicas: resumen, restaurantes, reservas, clientes, facturación, correos, configuración; métricas `OwnerMetricsService`, `OwnerMonthlyFlowService`, tablas reservas/facturas, export CSV, PDF cliente (`OwnerInvoicesService`). Modales: **AddRestaurant**, **RestaurantConfig**, **RestaurantReservations**, **AllReservations**, **InvoiceDetail**.
+- **Administrador (`AdminDashboard.tsx`):** mismo patrón visual con **un restaurante**; **no** incluye `AddRestaurantModal` ni `RestaurantReservationsModal` (solo gestión sobre el local asignado: config, reservas globales modal, facturas, correos).
+- **Empleado (`employee-dashboard.tsx`):** `Sidebar_2`, `Overview_2`, mesas, reservas del día, correos, configuración; balance `EmployeeBalanceService`; cancelación con modal de motivo.
+
+### 4. Cobertura del bloque **NFF-VIG-*** frente al código
+
+| Bloque documentado | Estado frente al repo |
+|--------------------|------------------------|
+| NFF-VIG-HOME | Coherente con `Home.tsx` + lazy sections + `HeroSection`/`SearchBar` (chips incompletos — ya marcado). |
+| NFF-VIG-SEARCH | Coherente con `Search.tsx` + `/top/paginado`. |
+| NFF-VIG-LOGIN / REG | Coherente; OAuth explícitamente no implementado. |
+| NFF-VIG-REST | Coherente; modales de confirmación en `Restaurant.tsx` no estaban desglosados en un NFF-VIG aparte — **detalle en §2**. |
+| NFF-VIG-PAY | Coherente; `checkout-page.tsx` legacy ya citado. |
+| NFF-VIG-CLIENT / APP | Coherente con `ProfileModal`, `paths.ts`, `CookieConsentModal`, `RoleEnforcer`. |
+| **Dashboards dueño/admin/empleado** | **No** tienen sub-bloque NFF-VIG-DASH propio; la funcionalidad aparece dispersa en **NFF legacy dueño (NFF-5xx–6xx)** con texto genérico “AdminDashboard, Dashboard, employee-dashboard”. El **anexo §2–3** es la referencia fina. |
+| **ViewEmailPage** | Ruta protegida; **no** hay ítem NFF-VIG dedicado; flujo de correo está en tabs dashboard + página `/ver-correo/:uid`. |
+| **Contacto / Ayuda** | Páginas existentes; muchos NFF legacy describen marketing/legal con plantilla repetida (“Google Sans…”). |
+
+### 5. Requisitos legacy (NFF-001 … NFF-883)
+
+- Son sobre todo **especificaciones visuales** (colores hex, tamaños, modos claro/oscuro por pantalla).
+- El documento ya marca **Cubierto en la medida del diseño actual** o **Parcial** y repite la línea de **tokens** (`index.css`, Tailwind).
+- **No** se pretende igualdad pixel-perfect con el Excel; la comparación útil es **rol + pantalla + flujo**, no cada RGB.
+
+### 6. Brechas o riesgos detectados (producto)
+
+1. **`PersonalData.tsx`:** ruta pública registrada; UI casi vacía — alineado con **NFF-VIG-CLIENT-03 Parcial**.
+2. **Chips de búsqueda rápida en hero:** aún incompletos (**NFF-VIG-HOME-03**).
+3. **OAuth:** explícitamente fuera de alcance (**NFF-VIG-LOGIN-05 / REG-05**).
+4. **Dos piezas de checkout:** `CheckoutPage.tsx` vs `checkout-page.tsx` — ya documentado en NFF-VIG-PAY-02.
+5. **Admin sin alta de restaurante:** coherente con rol; no es bug si el negocio lo define así.
+
+### 7. Mantenimiento recomendado del documento
+
+- Tratar el **bloque NFF-VIG-*** + este **anexo** como **fuente de verdad** para SENA/evidencias de implementación.
+- Usar los **NFF-xxx** legacy solo como **histórico** o exportar a `REQ. funcionales Frontend.legacy.md` si se quiere acortar el archivo principal.
+
+*Generado por contraste directo con el código en `frontend/src` (abril 2026).*

@@ -1,8 +1,9 @@
 ### Requerimientos (REQ. funcionales db)
 
-> Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. funcionales db**
+> Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. funcionales db**  
+> Alineación al esquema: `db/creacion_tablas.sql`; triggers y tablas de auditoría: `db/auditoria.sql`.
 
-- **DB-001 – Auditoría de tablas del sistema**
+- **DB-001 – Auditoría de tablas del sistema (incluye sesión JWT, correo, reset de contraseña y tablas núcleo)**
   - **Estado:** Hecho.
 - **DB-002 – Tabla de credenciales**
   - **Estado:** Hecho.
@@ -18,11 +19,15 @@
   - **Estado:** Hecho.
 - **DB-008 – Tabla de encabezado de factura**
   - **Estado:** Hecho.
+- **DB-008A – Tabla de detalle de factura (líneas por encabezado)**
+  - **Estado:** Hecho.
+- **DB-008B – Tabla Administrador_restaurante (relación administrador ↔ restaurante)**
+  - **Estado:** Hecho.
 - **DB-009 – Tabla de reservas**
   - **Estado:** Hecho.
 - **DB-010 – Tabla de cálculos mensuales**
   - **Estado:** Hecho.
-- **DB-011 – Tabla de comentarios**
+- **DB-011 – Tabla de comentarios (reseñas por restaurante y cliente)**
   - **Estado:** Hecho.
 - **DB-012 – Integridad referencial y borrado en cascada**
   - **Estado:** Hecho.
@@ -34,14 +39,14 @@
   - **Estado:** Hecho.
 - **DB-016 – Límite de imágenes de referencia por restaurante**
   - **Estado:** Hecho.
-- **DB-017 – Índices especializados para consulta eficiente de correos archivados**
+- **DB-017 – Índices para correos archivados (credencial+uid, por fecha recibida y por creación)**
   - **Estado:** Hecho.
 - **DB-018 – Configuración de correo con consentimiento explícito y trazabilidad**
   - **Estado:** Hecho.
 - **DB-001A – Auditoría con almacenamiento del registro completo en JSONB**
   - **Estado:** Hecho.
-- **DB-004A – Validación de teléfono con formato de 10 dígitos o valor ‘sin dato’**
-  - **Estado:** Parcial (el esquema exige 10 dígitos; el default legacy `sin dato` requiere ajuste documental o de CHECK).
+- **DB-004A – Validación de teléfono con formato de 10 dígitos**
+  - **Estado:** Parcial (CHECK `^[0-9]{10}$`; el `DEFAULT 'sin dato'` no cumple el patrón; el alta de usuarios debe enviar 10 dígitos o ajustarse en aplicación/funciones).
 - **DB-006A – Antelación mínima configurable por restaurante**
   - **Estado:** Hecho.
 - **DB-009A – Prohibición de reservas en fechas pasadas**
@@ -245,4 +250,8 @@
 - **DB-113 – Auditoría por usuario final en tabla Auditoria_Usuario**
   - **Estado:** Hecho.
 - **DB-114 – Tabla Auditoria_Usuario (auditoría por usuario final de la aplicación)**
+  - **Estado:** Hecho.
+- **DB-115 – Columna Mesas.restaurante_uid (FK además de nit)**
+  - **Estado:** Hecho.
+- **DB-116 – Triggers de auditoría en Roles, Categorias, Imagen_referencia_restaurante, jwt_tokens, Password_Reset_Codes, SMTP_config, IMAP_config y Mails**
   - **Estado:** Hecho.
