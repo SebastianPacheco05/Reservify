@@ -38,6 +38,12 @@ export interface RestauranteUpdateBody {
   min_anticipacion_horas: number;
 }
 
+/** Imagen principal y/o galería; el backend aplica solo los campos enviados (no undefined). */
+export interface RestauranteImagenesBody {
+  url_image?: string;
+  imagenes_referencia?: string[];
+}
+
 export interface MesaConfig {
   id_mesa: number;
   estado_de_disponibilidad: boolean;
@@ -130,6 +136,25 @@ export const OwnerRestaurantConfigService = {
       },
     );
     if (!res.ok) await throwOnError(res, "Error al guardar restaurante");
+  },
+
+  async putRestauranteImagenes(
+    restauranteUid: string,
+    body: RestauranteImagenesBody,
+  ): Promise<void> {
+    const payload: Record<string, unknown> = {};
+    if (body.url_image !== undefined) payload.url_image = body.url_image;
+    if (body.imagenes_referencia !== undefined)
+      payload.imagenes_referencia = body.imagenes_referencia;
+    const res = await authFetch(
+      getApiEndpoint(`/data-owner/restaurantes/${restauranteUid}/imagenes`),
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+    );
+    if (!res.ok) await throwOnError(res, "Error al guardar imágenes");
   },
 
   async getMesas(restauranteUid: string): Promise<MesaConfig[]> {

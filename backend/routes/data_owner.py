@@ -16,6 +16,7 @@ from functions.data_owner.data_owner import (
     obtener_documento_dueno,
     es_dueño_de_restaurante,
     obtener_restaurante_completo_dueno,
+    actualizar_imagenes_restaurante_dueno,
     obtener_mesas_restaurante_dueno,
     obtener_mesas_restaurante_gestor,
     obtener_flujo_diario_gestor,
@@ -58,6 +59,7 @@ from models import (
     ResponderCorreoSchema,
     EnviarCorreoPropietarioSchema,
     RestauranteUpdate,
+    RestauranteImagenesUpdate,
     MesaBase,
     MesaUpdate,
     MesaDelete,
@@ -308,6 +310,7 @@ def put_restaurante_config(
             raise HTTPException(status_code=403, detail="No eres dueño de este restaurante.")
         crud_restaurante.editar_restaurante(
             db,
+            restaurante_uid,
             body.nit,
             body.direccion,
             body.nombre_restaurante,
@@ -329,6 +332,43 @@ def put_restaurante_config(
             },
         )
         db.commit()
+        return {"ok": True}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/restaurantes/{restaurante_uid}/imagenes")
+def put_restaurante_imagenes(
+    restaurante_uid: str,
+    body: RestauranteImagenesUpdate,
+    usuario_actual: dict = Depends(verificar_token),
+    db: Session = Depends(get_db),
+):
+    """
+    Imagen principal (url_image) y/o galería de referencia. Reemplaza la lista de referencia completa.
+    Solo dueño.
+    """
+    try:
+        _solo_dueno(usuario_actual["id"], db)
+        if body.url_image is None and body.imagenes_referencia is None:
+            raise HTTPException(
+                status_code=400,
+                detail="Indica url_image y/o imagenes_referencia.",
+            )
+        if body.imagenes_referencia is not None and len(body.imagenes_referencia) > 15:
+            raise HTTPException(
+                status_code=400,
+                detail="Máximo 15 imágenes de referencia.",
+            )
+        actualizar_imagenes_restaurante_dueno(
+            usuario_actual["id"],
+            restaurante_uid,
+            db,
+            url_image=body.url_image,
+            imagenes_referencia=body.imagenes_referencia,
+        )
         return {"ok": True}
     except HTTPException:
         raise

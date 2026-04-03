@@ -680,6 +680,65 @@ def obtener_restaurante_completo_dueno(id_credencial: int, nit: int, db: Session
     }
 
 
+def actualizar_imagenes_restaurante_dueno(
+    id_credencial: int,
+    restaurante_uid: str,
+    db: Session,
+    *,
+    url_image: str | None = None,
+    imagenes_referencia: list[str] | None = None,
+) -> None:
+    """Actualiza url_image y/o reemplaza la galería de referencia (solo dueño del restaurante)."""
+    row = db.execute(
+        text('SELECT nit FROM "Restaurante" WHERE restaurante_uid = CAST(:uid AS uuid)'),
+        {"uid": restaurante_uid},
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Restaurante no encontrado.")
+    nit = int(row[0])
+    if not es_dueño_de_restaurante(id_credencial, nit, db):
+        raise HTTPException(status_code=403, detail="No eres dueño de este restaurante.")
+    if url_image is None and imagenes_referencia is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Indica url_image y/o imagenes_referencia.",
+        )
+    try:
+        if url_image is not None:
+            db.execute(
+                text(
+                    'UPDATE "Restaurante" SET url_image = :u '
+                    "WHERE restaurante_uid = CAST(:uid AS uuid)"
+                ),
+                {"u": url_image.strip(), "uid": restaurante_uid},
+            )
+        if imagenes_referencia is not None:
+            urls = [str(u).strip() for u in imagenes_referencia if u and str(u).strip()][:15]
+            db.execute(
+                text(
+                    'DELETE FROM "Imagen_referencia_restaurante" '
+                    "WHERE restaurante_uid = CAST(:uid AS uuid)"
+                ),
+                {"uid": restaurante_uid},
+            )
+            for orden, url in enumerate(urls):
+                db.execute(
+                    text(
+                        "SELECT insertar_imagen_referencia_restaurante("
+                        "CAST(:restaurante_uid AS uuid), :url_imagen, :orden)"
+                    ),
+                    {
+                        "restaurante_uid": restaurante_uid,
+                        "url_imagen": url,
+                        "orden": orden,
+                    },
+                )
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise
+
+
 def obtener_mesas_restaurante_dueno(id_credencial: int, nit: int, db: Session) -> list:
     """Mesas del restaurante (solo dueño, solo sus restaurantes)."""
     if not es_dueño_de_restaurante(id_credencial, nit, db):

@@ -25,6 +25,7 @@ import { useToast } from "../hooks/useToast";
 import { getApiEndpoint } from "../config/api";
 import { authFetch } from "../services/authService";
 import { AddressMapPicker } from "./AddressMapPicker";
+import { uploadRestaurantImage } from "../lib/uploadRestaurantImage";
 
 export interface Categoria {
   id_categoria: number;
@@ -117,92 +118,6 @@ export function AddRestaurantModal({
     }
   };
 
-  const uploadImage = async (file: File): Promise<string> => {
-    const makeRequest = async (token: string | null): Promise<Response> => {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      // Para FormData, NO establecer Content-Type manualmente - el navegador lo hace automáticamente
-      const headers: HeadersInit = {};
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
-
-      return fetch(getApiEndpoint("/restaurante/upload-imagen"), {
-        method: "POST",
-        headers: headers, // Solo Authorization, sin Content-Type para FormData
-        body: formData,
-      });
-    };
-
-    const token = localStorage.getItem("access_token");
-    let res = await makeRequest(token);
-
-    // Si es 401, intentar refrescar el token y reintentar
-    if (res.status === 401) {
-      const refreshToken = localStorage.getItem("refresh_token");
-      if (refreshToken) {
-        try {
-          const refreshRes = await fetch(getApiEndpoint("/credenciales/refresh"), {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ refresh_token: refreshToken }),
-          });
-
-          if (refreshRes.ok) {
-            const refreshData = await refreshRes.json();
-            const newToken = refreshData.access_token;
-            if (newToken) {
-              localStorage.setItem("access_token", newToken);
-              // Reintentar con el nuevo token (crear nuevo FormData)
-              res = await makeRequest(newToken);
-            } else {
-              throw new Error("No se recibió nuevo token");
-            }
-          } else {
-            // Si el refresh falla, redirigir a login
-            localStorage.clear();
-            window.location.href = "/Login";
-            throw new Error("Sesión expirada. Por favor, inicia sesión nuevamente.");
-          }
-        } catch (refreshError) {
-          // Si el refresh falla, redirigir a login
-          localStorage.clear();
-          window.location.href = "/Login";
-          throw new Error("Sesión expirada. Por favor, inicia sesión nuevamente.");
-        }
-      } else {
-        localStorage.clear();
-        window.location.href = "/Login";
-        throw new Error("Sesión expirada. Por favor, inicia sesión nuevamente.");
-      }
-    }
-
-    if (!res.ok) {
-      let errorMessage = "Error al subir imagen";
-      try {
-        const err = await res.json();
-        errorMessage = err?.detail || err?.message || `Error ${res.status}: ${res.statusText}`;
-      } catch {
-        errorMessage = `Error ${res.status}: ${res.statusText}`;
-      }
-      console.error("Error al subir imagen:", {
-        status: res.status,
-        statusText: res.statusText,
-        errorMessage,
-      });
-      throw new Error(errorMessage);
-    }
-
-    const data = await res.json();
-    const url = data?.url;
-    if (!url || typeof url !== "string") {
-      console.error("Respuesta del servidor sin URL:", data);
-      throw new Error("El servidor no devolvió la URL de la imagen");
-    }
-    return url;
-  };
-
   const handleMainImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
@@ -223,7 +138,7 @@ export function AddRestaurantModal({
     }
     setUploadingMain(true);
     try {
-      const url = await uploadImage(file);
+      const url = await uploadRestaurantImage(file);
       update("url_imagen", url);
       toast({ title: "Imagen principal", description: "Subida correctamente." });
     } catch (err) {
@@ -264,7 +179,7 @@ export function AddRestaurantModal({
     }
     setUploadingRef(form.imagenes_referencia.length);
     try {
-      const url = await uploadImage(file);
+      const url = await uploadRestaurantImage(file);
       setForm((prev) => ({
         ...prev,
         imagenes_referencia: [...prev.imagenes_referencia, url],

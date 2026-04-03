@@ -86,6 +86,13 @@ class RestauranteDelete(BaseModel):
     restaurante_uid: str
 
 
+class RestauranteImagenesUpdate(BaseModel):
+    """Actualización parcial de imagen principal y/o galería de referencia (dueño)."""
+
+    url_image: Optional[str] = None
+    imagenes_referencia: Optional[List[str]] = None
+
+
 # Mesas
 class MesaBase(BaseModel):
     estado_de_disponibilidad: bool

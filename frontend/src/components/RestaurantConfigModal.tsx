@@ -18,12 +18,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Loader2, MapPin, Plus, Pencil, Trash2, UtensilsCrossed, UserCog, Building2, UserMinus } from "lucide-react";
+import {
+  Loader2,
+  MapPin,
+  Plus,
+  Pencil,
+  Trash2,
+  UtensilsCrossed,
+  UserCog,
+  Building2,
+  UserMinus,
+  ImagePlus,
+} from "lucide-react";
 import { useToast } from "../hooks/useToast";
 import { showErrorToast } from "../lib/toastHelpers";
 import { AddressMapPicker } from "./AddressMapPicker";
 import { getApiEndpoint } from "../config/api";
 import { authFetch } from "../services/authService";
+import { uploadRestaurantImage } from "../lib/uploadRestaurantImage";
 import {
   OwnerRestaurantConfigService,
   type RestauranteConfig,
@@ -96,6 +108,12 @@ export function RestaurantConfigModal({
     min_anticipacion_horas: 0,
   });
   const [isMapPickerOpen, setIsMapPickerOpen] = useState(false);
+
+  const [urlImage, setUrlImage] = useState("");
+  const [imagenesRef, setImagenesRef] = useState<string[]>([]);
+  const [savingImagenes, setSavingImagenes] = useState(false);
+  const [uploadingMainImg, setUploadingMainImg] = useState(false);
+  const [uploadingRefIdx, setUploadingRefIdx] = useState<number | null>(null);
 
   // Nueva mesa (precioInput como string para permitir vacío y decimales al escribir)
   const [newMesa, setNewMesa] = useState({
@@ -172,6 +190,10 @@ export function RestaurantConfigModal({
           documento: configRes.documento ?? 0,
           min_anticipacion_horas: configRes.min_anticipacion_horas ?? 0,
         });
+        setUrlImage(configRes.url_image ?? "");
+        setImagenesRef(
+          Array.isArray(configRes.imagenes_referencia) ? [...configRes.imagenes_referencia] : [],
+        );
       } else {
         setForm({
           nombre_restaurante: restaurant?.name ?? "",
@@ -183,6 +205,8 @@ export function RestaurantConfigModal({
           documento: 0,
           min_anticipacion_horas: 0,
         });
+        setUrlImage("");
+        setImagenesRef([]);
       }
       if (adminRes) setSelectedAdminId(String(adminRes.id_credencial));
       else setSelectedAdminId("");
@@ -267,6 +291,98 @@ export function RestaurantConfigModal({
     } finally {
       setSaving(false);
     }
+  };
+
+  const persistImagenes = useCallback(
+    async (main: string, refs: string[]) => {
+      if (!restauranteUid) return;
+      setSavingImagenes(true);
+      try {
+        await OwnerRestaurantConfigService.putRestauranteImagenes(restauranteUid, {
+          url_image: main,
+          imagenes_referencia: refs,
+        });
+        toast({
+          title: "Imágenes actualizadas",
+          description: "Los cambios ya están guardados en el servidor.",
+        });
+        await loadAll();
+        onSuccess();
+      } catch (e) {
+        showErrorToast(toast, e, "Error al guardar imágenes.");
+      } finally {
+        setSavingImagenes(false);
+      }
+    },
+    [restauranteUid, toast, loadAll, onSuccess],
+  );
+
+  const handleMainImageConfig = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "Archivo no válido",
+        description: "Debe ser una imagen.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setUploadingMainImg(true);
+    try {
+      const url = await uploadRestaurantImage(file);
+      setUrlImage(url);
+      await persistImagenes(url, imagenesRef);
+    } catch (err) {
+      showErrorToast(toast, err, "Error al subir imagen.");
+    } finally {
+      setUploadingMainImg(false);
+    }
+  };
+
+  const handleRefImageConfig = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "Archivo no válido",
+        description: "Debe ser una imagen.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (imagenesRef.length >= 15) {
+      toast({
+        title: "Límite",
+        description: "Máximo 15 imágenes de referencia.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setUploadingRefIdx(imagenesRef.length);
+    try {
+      const url = await uploadRestaurantImage(file);
+      const next = [...imagenesRef, url];
+      setImagenesRef(next);
+      await persistImagenes(urlImage, next);
+    } catch (err) {
+      showErrorToast(toast, err, "Error al subir imagen.");
+    } finally {
+      setUploadingRefIdx(null);
+    }
+  };
+
+  const removeRefImage = (index: number) => {
+    const next = imagenesRef.filter((_, i) => i !== index);
+    setImagenesRef(next);
+    void persistImagenes(urlImage, next);
+  };
+
+  const clearMainImage = () => {
+    setUrlImage("");
+    void persistImagenes("", imagenesRef);
   };
 
   const handleAddMesa = async () => {
@@ -593,6 +709,137 @@ export function RestaurantConfigModal({
                       </SelectContent>
                     </Select>
                   </div>
+
+                  <div className="rounded-lg border bg-muted/30 p-4 space-y-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <Label className="text-base font-medium">Imágenes del restaurante</Label>
+                      {savingImagenes ? (
+                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          Guardando…
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-sm text-muted-foreground">Imagen principal (portada)</Label>
+                      <div className="flex flex-wrap items-start gap-3">
+                        <div className="h-24 w-24 rounded-md border bg-background overflow-hidden flex items-center justify-center shrink-0">
+                          {urlImage ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={urlImage}
+                              alt="Principal"
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <span className="text-xs text-muted-foreground px-1 text-center">Sin imagen</span>
+                          )}
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            id="cfg-restaurante-main-img"
+                            onChange={handleMainImageConfig}
+                            disabled={uploadingMainImg || savingImagenes}
+                          />
+                          <div className="flex flex-wrap gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="gap-1"
+                              disabled={uploadingMainImg || savingImagenes}
+                              onClick={() =>
+                                document.getElementById("cfg-restaurante-main-img")?.click()
+                              }
+                            >
+                              {uploadingMainImg ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <ImagePlus className="h-4 w-4" />
+                              )}
+                              Subir principal
+                            </Button>
+                            {urlImage ? (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                disabled={savingImagenes}
+                                onClick={clearMainImage}
+                              >
+                                Quitar
+                              </Button>
+                            ) : null}
+                          </div>
+                          <p className="text-xs text-muted-foreground max-w-sm">
+                            Se muestra en listados y ficha pública. Los cambios se guardan al instante.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 border-t pt-4">
+                      <Label className="text-sm text-muted-foreground">
+                        Galería de referencia ({imagenesRef.length}/15)
+                      </Label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        id="cfg-restaurante-ref-img"
+                        onChange={handleRefImageConfig}
+                        disabled={uploadingRefIdx !== null || savingImagenes || imagenesRef.length >= 15}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="gap-1"
+                        disabled={
+                          uploadingRefIdx !== null || savingImagenes || imagenesRef.length >= 15
+                        }
+                        onClick={() =>
+                          document.getElementById("cfg-restaurante-ref-img")?.click()
+                        }
+                      >
+                        {uploadingRefIdx !== null ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <ImagePlus className="h-4 w-4" />
+                        )}
+                        Añadir imagen
+                      </Button>
+                      {imagenesRef.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">No hay imágenes de galería.</p>
+                      ) : (
+                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 pt-2">
+                          {imagenesRef.map((u, idx) => (
+                            <div
+                              key={`${u}-${idx}`}
+                              className="relative group rounded-md border overflow-hidden aspect-square bg-muted"
+                            >
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={u} alt="" className="h-full w-full object-cover" />
+                              <button
+                                type="button"
+                                className="absolute top-1 right-1 p-1 rounded bg-background/90 opacity-0 group-hover:opacity-100 transition-opacity border"
+                                title="Eliminar"
+                                disabled={savingImagenes}
+                                onClick={() => removeRefImage(idx)}
+                              >
+                                <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   <Button onClick={handleSaveRestaurante} disabled={saving}>
                     {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                     Guardar datos
