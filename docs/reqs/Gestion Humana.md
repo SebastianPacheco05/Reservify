@@ -13,13 +13,13 @@
   - **Estado:** Hecho.
 - **GU-006 – Auditoría de cambios en usuarios y credenciales**
   - **Estado:** Hecho.
-- **GU-007 – Paneles diferenciados según rol (cliente, dueño, administrador, empleado)**
+- **GU-007 – Paneles diferenciados según rol (dueño, administrador, empleado); cliente sin dashboard dedicado**
   - **Estado:** Hecho.
-- **GU-008 – Edición de datos personales desde el dashboard de cliente**
+- **GU-008 – Edición de datos personales del cliente desde ProfileModal**
   - **Estado:** Hecho.
 - **GU-009 – Gestión interactiva de empleados y administradores por parte del dueño**
   - **Estado:** Hecho.
-- **GU-001A – Almacenamiento encriptado de contraseñas de acceso**
+- **GU-001A – Almacenamiento de contraseñas con hash seguro (bcrypt), no en texto plano**
   - **Estado:** Hecho.
 - **GU-002A – Asociación estricta de cada usuario a un rol único**
   - **Estado:** Hecho.
@@ -32,13 +32,13 @@
 - **GU-011 – Campo perfil: apellido editable**
   - **Estado:** Hecho.
 - **GU-012 – Campo perfil: tipo_documento editable**
-  - **Estado:** Hecho.
+  - **Estado:** Parcial (API disponible; no expuesto en ProfileModal).
 - **GU-013 – Campo perfil: documento editable**
-  - **Estado:** Hecho.
+  - **Estado:** Parcial (API disponible; no expuesto en ProfileModal).
 - **GU-014 – Campo perfil: nacionalidad editable**
-  - **Estado:** Hecho.
+  - **Estado:** Parcial (API disponible; no expuesto en ProfileModal).
 - **GU-015 – Campo perfil: telefono editable**
-  - **Estado:** Hecho.
+  - **Estado:** Parcial (API disponible; no expuesto en ProfileModal).
 - **GU-016 – Rol cliente: capacidad de ver mis reservas**
   - **Estado:** Hecho.
 - **GU-017 – Rol cliente: capacidad de cancelar reserva con motivo**
@@ -59,11 +59,11 @@
   - **Estado:** Hecho.
 - **GU-025 – Endpoint GET /data-owner/restaurantes/{restaurante_uid}/administrador**
   - **Estado:** Hecho.
-- **GU-026 – Componente PersonalData para ver y editar datos personales**
+- **GU-026 – Página PersonalData en /Datos_personales para datos personales**
+  - **Estado:** Parcial.
+- **GU-027 – Componente ProfileModal para editar perfil, email y credenciales**
   - **Estado:** Hecho.
-- **GU-027 – Componente EditProfileModal o ProfileModal para editar perfil**
-  - **Estado:** Hecho.
-- **GU-028 – Dashboard por rol: ClientDashboard para cliente**
+- **GU-028 – Rol cliente: perfil y reservas desde ProfileModal en Home**
   - **Estado:** Hecho.
 - **GU-029 – Dashboard por rol: Dashboard (dueño) en /duenodashboard**
   - **Estado:** Hecho.
@@ -75,7 +75,25 @@
   - **Estado:** Hecho.
 - **GU-033 – Tabla Roles con nombre_rol (cliente, dueño, administrador, empleado)**
   - **Estado:** Hecho.
-- **GU-034 – Endpoint /credenciales/me/role protegido por verificar_token**
+- **GU-034 – Endpoint GET /credenciales/me/role protegido por verificar_token**
   - **Estado:** Hecho.
 - **GU-035 – Validación de formato de email en registro**
+  - **Estado:** Hecho.
+- **GU-036 – Endpoints POST /credenciales/login y POST /credenciales/refresh (sesión y cookie de refresh)**
+  - **Estado:** Hecho.
+- **GU-037 – Endpoint POST /register/register para registro de usuarios**
+  - **Estado:** Hecho.
+- **GU-038 – Recuperación de contraseña (POST /password-reset/request, verify, reset)**
+  - **Estado:** Hecho.
+- **GU-039 – Endpoint GET /cliente/mis-reservas**
+  - **Estado:** Hecho.
+- **GU-040 – Endpoint PUT /data-owner/restaurantes/{restaurante_uid}/administrador**
+  - **Estado:** Hecho.
+- **GU-041 – Endpoint PATCH /cliente/mis-reservas/{id_reserva}/cancelar**
+  - **Estado:** Hecho.
+- **GU-042 – Endpoint PUT /cliente/editarcliente para actualizar datos del cliente**
+  - **Estado:** Hecho.
+- **GU-043 – Componente ProtectedRoute y RoleEnforcer para rutas por rol**
+  - **Estado:** Hecho.
+- **GU-044 – Endpoint GET /data-owner/empleados (listado de empleados para el dueño)**
   - **Estado:** Hecho.

@@ -10,7 +10,6 @@ export const ROUTES = {
   OWNER_DASHBOARD: "/duenodashboard",
   ADMIN_DASHBOARD: "/admindashboard",
   EMPLOYEE_DASHBOARD: "/EmpleadoDashboard",
-  CLIENT_DASHBOARD: "/ClienteDashboard",
   VIEW_EMAIL: "/ver-correo/:uid",
   RESTAURANT: "/Restaurant",
   PERSONAL_DATA: "/Datos_personales",
@@ -38,7 +37,7 @@ export function getRoleRedirectPath(role: string | null | undefined): string {
     case "empleado":
       return ROUTES.EMPLOYEE_DASHBOARD;
     case "cliente":
-      return ROUTES.CLIENT_DASHBOARD;
+      return ROUTES.HOME;
     default:
       return ROUTES.HOME;
   }

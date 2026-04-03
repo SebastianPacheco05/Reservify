@@ -5,7 +5,6 @@ import Registrar from "../pages/registrar";
 import Dashboard from "../pages/Dashboard";
 import AdminDashboard from "../pages/AdminDashboard";
 import EmployeeDashboard from "../pages/employee-dashboard";
-import ClientDashboard from "../pages/ClientDashboard";
 import ViewEmailPage from "../pages/ViewEmailPage";
 import Restaurant from "../pages/Restaurant";
 import NotFound from "../pages/NotFound";
@@ -42,14 +41,6 @@ export const getProtectedRoutes = (PageWrapper: React.FC<{ children: React.React
     element: (
       <ProtectedRoute requiredRole="empleado">
         <PageWrapper><EmployeeDashboard /></PageWrapper>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: ROUTES.CLIENT_DASHBOARD,
-    element: (
-      <ProtectedRoute requiredRole="cliente">
-        <PageWrapper><ClientDashboard /></PageWrapper>
       </ProtectedRoute>
     ),
   },

@@ -18,7 +18,7 @@
   - **Estado:** Hecho.
 - **BE-007 – Gestión de responsables y personal administrativo**
   - **Estado:** Hecho.
-- **BE-008 – Comentarios y notas asociadas a reservas**
+- **BE-008 – Comentarios y calificaciones asociadas al restaurante (reseñas de clientes)**
   - **Estado:** Hecho.
 - **BE-009 – Integración con pasarela de pagos externa**
   - **Estado:** Hecho.
@@ -297,4 +297,44 @@
 - **BE-087 – Esquema OAuth2PasswordBearer para extracción del token**
   - **Estado:** Hecho.
 - **BE-088 – CORS con allow_credentials True**
+  - **Estado:** Hecho.
+- **BE-089 – Recuperación de contraseña (POST /password-reset/request, /verify, /reset)**
+  - **Estado:** Hecho.
+- **BE-090 – GET /top/paginado (búsqueda paginada de restaurantes)**
+  - **Estado:** Hecho.
+- **BE-091 – GET /categorias/top (categorías más usadas)**
+  - **Estado:** Hecho.
+- **BE-092 – GET /data-owner/mi-restaurante-info**
+  - **Estado:** Hecho.
+- **BE-093 – GET /data-owner/reservas/todas**
+  - **Estado:** Hecho.
+- **BE-094 – POST /data-owner/buscar-email**
+  - **Estado:** Hecho.
+- **BE-095 – PUT /data-owner/restaurantes/{restaurante_uid}/imagenes**
+  - **Estado:** Hecho.
+- **BE-096 – PUT /data-owner/config/smtp**
+  - **Estado:** Hecho.
+- **BE-097 – PUT /data-owner/config/imap**
+  - **Estado:** Hecho.
+- **BE-098 – POST /data-owner/enviar-correo-propietario**
+  - **Estado:** Hecho.
+- **BE-099 – POST /restaurante/upload-imagen (subida a Cloudinary)**
+  - **Estado:** Hecho.
+- **BE-100 – PUT /cliente/editarcliente**
+  - **Estado:** Hecho.
+- **BE-101 – DELETE /cliente/borrarcliente**
+  - **Estado:** Hecho.
+- **BE-102 – GET /cliente/listar_cliente**
+  - **Estado:** Hecho.
+- **BE-103 – DELETE /detalle_factura/borrardetallefactura**
+  - **Estado:** Hecho.
+- **BE-104 – GET /admin/listar_rol**
+  - **Estado:** Hecho.
+- **BE-105 – PUT /admin/editaroles y DELETE /admin/borraroles**
+  - **Estado:** Hecho.
+- **BE-106 – DELETE /comentarios/borrarcomentario**
+  - **Estado:** Hecho.
+- **BE-107 – GET /comentarios/verificar/{restaurante_uid}**
+  - **Estado:** Hecho.
+- **BE-108 – DELETE /calculos_mensuales/borrar_calculo_mensual y GET /calculos_mensuales/listar_calculo_mensual**
   - **Estado:** Hecho.

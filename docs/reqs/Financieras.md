@@ -22,7 +22,7 @@
 - **FI-010 – Confirmación financiera de la reserva condicionada a pago aprobado**
   - **Estado:** Hecho.
 - **FI-011 – Persistencia de datos de pasarela de pago para conciliación**
-  - **Estado:** Hecho.
+  - **Estado:** Parcial.
 - **FI-012 – Exportación de facturación a CSV y detalle descargable en PDF**
   - **Estado:** Hecho.
 - **FI-001A – Registro obligatorio de forma de pago en cada factura**
@@ -93,3 +93,12 @@
   - **Estado:** Hecho.
 - **FI-041 – Creación de empleado invitado con hash de contraseña**
   - **Estado:** Hecho.
+- **FI-042 – Endpoint GET /wompi/public-key**
+  - **Estado:** Hecho.
+- **FI-043 – Endpoint GET /data-owner/metricas**
+  - **Estado:** Hecho.
+- **FI-044 – Endpoint GET /data-owner/mi-balance**
+  - **Estado:** Hecho.
+- **FI-045 – Endpoints CRUD /encabezado_factura/**
+  - **Estado:** Hecho.
+

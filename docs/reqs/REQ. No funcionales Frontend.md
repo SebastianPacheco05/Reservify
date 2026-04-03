@@ -213,7 +213,7 @@
   - **Estado:** Hecho.
 - **FR-024I – AdminDashboard métricas y reservas recientes.**
   - **Estado:** Hecho.
-- **FR-024J – ClientDashboard perfil y reservas del cliente.**
+- **FR-024J – ProfileModal (Home / menú usuario): perfil y reservas del cliente.**
   - **Estado:** Hecho.
 - **FR-024K – EmployeeDashboard reservas del día y acciones.**
   - **Estado:** Hecho.
@@ -221,7 +221,7 @@
   - **Estado:** Hecho.
 - **FR-025B – ROUTES.VIEW_EMAIL con parámetro :uid.**
   - **Estado:** Hecho.
-- **FR-025C – getRoleRedirectPath mapea dueno, administrador, empleado y cliente.**
+- **FR-025C – getRoleRedirectPath mapea dueno, administrador, empleado y cliente (cliente → Home).**
   - **Estado:** Hecho.
 - **FR-026A – CuisineCarousel soporta categorías ampliadas (ej. Asiática, China, India, Francesa, Española) según datos del backend.**
   - **Estado:** Parcial (depende de datos de categorías del backend).

@@ -321,13 +321,11 @@ frontend/
 │   ├── components/         # Piezas reutilizables de interfaz
 │   │   ├── ui/             # Componentes base (shadcn)
 │   │   ├── theme-toggle.tsx
-│   │   ├── edit_profile_modal.tsx
 │   │   └── ...
 │   ├── pages/              # Pantallas completas
 │   │   ├── Home.tsx
 │   │   ├── Login.tsx
 │   │   ├── Dashboard.tsx
-│   │   ├── Dashboard_cliente.tsx
 │   │   ├── employee-dashboard.tsx
 │   │   └── Restaurant.tsx
 │   │   └── ...
