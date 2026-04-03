@@ -95,10 +95,6 @@ button {
 /* button:hover {
   border-color: #646cff;
 } */
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
 
 @media (prefers-color-scheme: light) {
   :root {
@@ -186,7 +182,7 @@ button:focus-visible {
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
