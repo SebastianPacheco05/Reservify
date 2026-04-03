@@ -1,5 +1,5 @@
 ### Requerimientos — Financieras
-> Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **Financieras**
+> Fuente: `docs/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **Financieras**
 
 - **FI-001 – Facturación básica por reserva**
   - **Estado:** Hecho.

@@ -1,6 +1,6 @@
 ### Requerimientos no funcionales (Backend)
 
-> Complementan el inventario **NF-xxx** del Excel (hoja *REQ. No funcionales*; ver sección al final). **Este archivo** cubre el servicio API en `backend/` y los ítems NF asignados a backend. Otros NF: [REQ. No funcionales db.md](REQ.%20No%20funcionales%20db.md), [REQ. No funcionales Frontend.md](REQ.%20No%20funcionales%20Frontend.md).
+> Complementan el inventario **NF-xxx** del Excel (hoja _REQ. No funcionales_; ver sección al final). **Este archivo** cubre el servicio API en `backend/` y los ítems NF asignados a backend. Otros NF: [REQ. No funcionales db.md](REQ.%20No%20funcionales%20db.md), [REQ. No funcionales Frontend.md](REQ.%20No%20funcionales%20Frontend.md).
 
 > **Nota:** Cada ítem describe el comportamiento **implementado o ausente** en el código actual (abril 2026).
 
@@ -148,7 +148,7 @@
 
 #### Índice Excel — hoja «REQ. No funcionales» (NF asignados a backend / API)
 
-> Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. No funcionales**. Cada **NF** aparece **una sola vez** en el conjunto de tres archivos (`backend`, `db`, `Frontend`).
+> Fuente: `docs/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. No funcionales**. Cada **NF** aparece **una sola vez** en el conjunto de tres archivos (`backend`, `db`, `Frontend`).
 
 - **NF-001 – Seguridad de datos y control de acceso**
   - **Estado:** En observación (SI y NO marcados).

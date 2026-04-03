@@ -1,6 +1,6 @@
 ### Requerimientos (REQ. funcionales backend)
 
-> Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. funcionales backend**
+> Fuente: `docs/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. funcionales backend**
 >
 > Nota de alineación: las rutas de recurso de restaurante usan `restaurante_uid` como identificador principal en la API actual; `nit` se conserva como identificador de negocio en datos y consultas puntuales.
 

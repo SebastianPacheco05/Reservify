@@ -72,7 +72,7 @@
 
 #### Índice Excel — hoja «REQ. No funcionales» (NF asignados a base de datos)
 
-> Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. No funcionales**. Cada **NF** aparece **una sola vez** en el conjunto de tres archivos (`backend`, `db`, `Frontend`).
+> Fuente: `docs/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. No funcionales**. Cada **NF** aparece **una sola vez** en el conjunto de tres archivos (`backend`, `db`, `Frontend`).
 
 - **NF-005 – Soporte multiusuario**
   - **Estado:** Hecho.

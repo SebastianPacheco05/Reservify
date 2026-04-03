@@ -1,5 +1,5 @@
 ### Conceptos técnicos (desde Excel)
-> Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **Conceptos técnicos y REQ.**
+> Fuente: `docs/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **Conceptos técnicos y REQ.**
 
 - **Python**
   - **Concepto técnico:** Lenguaje de programación principal del backend. Es interpretado, de tipado dinámico (con soporte de tipado estático opcional) y tiene una gran cantidad de librerías para web, bases de datos, seguridad y ciencia de datos. Permite desarrollar rápido y mantener el código de forma legible.

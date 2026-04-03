@@ -1,6 +1,6 @@
 ### Requerimientos (REQ. funcionales db)
 
-> Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. funcionales db**  
+> Fuente: `docs/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **REQ. funcionales db**  
 > Alineación al esquema: `db/creacion_tablas.sql`; triggers y tablas de auditoría: `db/auditoria.sql`.
 
 - **DB-001 – Auditoría de tablas del sistema (incluye sesión JWT, correo, reset de contraseña y tablas núcleo)**

@@ -4,7 +4,7 @@
 
 > **Revisión:** Cada ítem conserva el ID histórico **NFF-xxx** y se añade **Implementación actual** según el código en `frontend/src` (abril 2026).
 
-> Fuente original: Excel *REQ. no funcionales Frontend* (libro `reservifyreq.v.1.3.xls.xlsx`; en el repo puede estar bajo `md/docs/files/` u otra carpeta de documentación).
+> Fuente original: Excel *REQ. no funcionales Frontend* (libro `docs/docs/files/reservifyreq.v.1.3.xls.xlsx`).
 
 - **NFF-000 – COLOR DE FONDO DE LA PAGINA WEB**
   - **Concepto:** Mediante el uso de CSS, se aplica la propiedad ‘background’ con valores específicos para crear un efecto de degradado. Se inicia con un color azul oscuro (rgb 3, 64, 138) en la parte superior. Luego, se utiliza rgba 189,206, 234, 0.817 para suavizar la tonalidad azul oscuro y obtener un tono más claro, creando así un degradado entre estas dos tonalidades. Finalmente, se añade rgba 255, 255, 255, 0.946 para obtener una tonalidad blanca, logrando así una transición armoniosa entre los tres colores.

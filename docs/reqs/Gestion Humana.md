@@ -1,5 +1,5 @@
 ### Requerimientos — Gestion Humana
-> Fuente: `md/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **Gestion Humana**
+> Fuente: `docs/docs/files/reservifyreq.v.1.3.xls.xlsx` → hoja **Gestion Humana**
 
 - **GU-001 – Registro y autenticación de usuarios**
   - **Estado:** Hecho.
