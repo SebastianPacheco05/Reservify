@@ -295,9 +295,15 @@ export function AddRestaurantModal({
     else if (!/^\d{1,9}$/.test(nitNum)) next.nit = "El NIT debe ser numérico (máx. 9 dígitos).";
     if (!nitDv) next.nit_dv = "El dígito de verificación es obligatorio.";
     else if (!/^[0-9]$/.test(nitDv)) next.nit_dv = "El dígito de verificación debe ser un número del 0 al 9.";
-    if (!form.nombre_restaurante.trim()) next.nombre_restaurante = "El nombre es obligatorio.";
-    if (!form.descripcion_restaurante.trim()) next.descripcion_restaurante = "La descripción es obligatoria.";
-    if (!form.direccion.trim()) next.direccion = "La dirección es obligatoria.";
+    const nombre = form.nombre_restaurante.trim();
+    const descripcion = form.descripcion_restaurante.trim();
+    const direccion = form.direccion.trim();
+    if (!nombre) next.nombre_restaurante = "El nombre es obligatorio.";
+    else if (nombre.length > 50) next.nombre_restaurante = "El nombre no puede superar 50 caracteres.";
+    if (!descripcion) next.descripcion_restaurante = "La descripción es obligatoria.";
+    else if (descripcion.length > 100) next.descripcion_restaurante = "La descripción no puede superar 100 caracteres.";
+    if (!direccion) next.direccion = "La dirección es obligatoria.";
+    else if (direccion.length > 255) next.direccion = "La dirección no puede superar 255 caracteres.";
     if (!form.horario_apertura) next.horario_apertura = "La hora de apertura es obligatoria.";
     if (!form.horario_cierre) next.horario_cierre = "La hora de cierre es obligatoria.";
     if (form.horario_apertura && form.horario_cierre && form.horario_apertura >= form.horario_cierre) {
@@ -439,6 +445,7 @@ export function AddRestaurantModal({
                 placeholder="Ej: La Bella Vista"
                 value={form.nombre_restaurante}
                 onChange={(e) => update("nombre_restaurante", e.target.value)}
+                maxLength={50}
                 aria-invalid={!!errors.nombre_restaurante}
               />
               {errors.nombre_restaurante && (
@@ -453,6 +460,7 @@ export function AddRestaurantModal({
                 placeholder="Breve descripción del restaurante"
                 value={form.descripcion_restaurante}
                 onChange={(e) => update("descripcion_restaurante", e.target.value)}
+                maxLength={100}
                 rows={2}
                 className="resize-none"
                 aria-invalid={!!errors.descripcion_restaurante}
@@ -470,6 +478,7 @@ export function AddRestaurantModal({
                   placeholder="Elige en el mapa o escribe"
                   value={form.direccion}
                   onChange={(e) => update("direccion", e.target.value)}
+                  maxLength={255}
                   aria-invalid={!!errors.direccion}
                   className="flex-1"
                 />

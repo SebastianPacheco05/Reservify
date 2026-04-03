@@ -195,7 +195,7 @@ export function AddressMapPicker({ isOpen, onClose, onSelect }: AddressMapPicker
             type="button"
             variant="secondary"
             size="sm"
-            className="absolute bottom-3 left-3 z-[500] bg-background/95 hover:bg-background shadow-md border"
+            className="absolute bottom-3 left-3 z-[500] bg-background/95 hover:bg-background text-foreground shadow-md border"
             onClick={handleSetMyLocation}
             disabled={settingMyLocation || locationLoading}
           >

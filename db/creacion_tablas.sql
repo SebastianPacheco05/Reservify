@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS "Calculos_mensuales";
 DROP TABLE IF EXISTS "Imagen_referencia_restaurante";
 DROP TABLE IF EXISTS "Mesas";
 DROP TABLE IF EXISTS "Administrador_restaurante";
+DROP TABLE IF EXISTS "Detalle_Factura";
 DROP TABLE IF EXISTS "Encabezado_Factura";
 DROP TABLE IF EXISTS "Restaurante";
 DROP TABLE IF EXISTS "Mails";
@@ -47,7 +48,7 @@ CREATE TABLE "Roles" (
 
 -- Roles iniciales del sistema
 INSERT INTO "Roles" (id_rol, nombre_rol, descripcion) VALUES
-    (1, 'dueÃ±o', 'Propietario de uno o mÃ¡s restaurantes'),
+    (1, 'dueno', 'Propietario de uno o mas restaurantes'),
     (2, 'cliente', 'Usuario que realiza reservas en restaurantes'),
     (3, 'empleado', 'Trabajador vinculado a un restaurante'),
     (4, 'administrador', 'Administrador general de varios restaurantes')
@@ -76,6 +77,90 @@ CREATE TABLE "Categorias" (
     id_categoria SERIAL PRIMARY KEY NOT NULL,  -- Identificador Ãºnico autoincremental
     nombre_categoria varchar NOT NULL  -- Nombre de la categorÃ­a
 );
+INSERT INTO "Categorias" (nombre_categoria) VALUES
+('Comida Italiana'),
+('Comida Mexicana'),
+('Comida Japonesa'),
+('Comida China'),
+('Comida Francesa'),
+('Comida Española'),
+('Comida India'),
+('Comida Árabe'),
+('Comida Tailandesa'),
+('Comida Peruana'),
+('Comida Coreana'),
+('Comida Argentina'),
+('Comida Mediterránea'),
+('Comida Colombiana'),
+('Comida Griega'),
+('Comida Americana'),
+('Comida Brasileña'),
+('Comida Libanesa'),
+('Comida Turca'),
+('Comida Vietnamita'),
+('Comida Caribeña'),
+('Comida Alemana'),
+('Comida Británica'),
+('Comida Belga'),
+('Comida Portuguesa'),
+('Comida Rusa'),
+('Comida Filipina'),
+('Comida Indonesia'),
+('Comida Cubana'),
+('Comida Venezolana'),
+('Comida Chilena'),
+('Comida Marroquí'),
+('Comida Etíope'),
+('Comida Suiza (Fondue)'),
+('Comida Cajún'),
+('Comida Hawaiana (Poke)'),
+('Asador / Parrilla'),
+('Marisquería'),
+('Pizzería'),
+('Hamburguesería'),
+('Arrocería'),
+('Sushi Bar'),
+('Taquería'),
+('Sandwichería'),
+('Pollo a la Brasa'),
+('Pastas y Lasañas'),
+('Ensaladas y Bowls'),
+('Ramen y Fideos'),
+('Tapas y Raciones'),
+('Alta Cocina'),
+('Comida Rápida'),
+('Buffet Libre'),
+('Cafetería'),
+('Panadería Artesanal'),
+('Pastelería y Repostería'),
+('Heladería'),
+('Brunch y Desayunos'),
+('Bistro / Taberna'),
+('Gastropub'),
+('Food Truck'),
+('Cervecería'),
+('Vinoteca'),
+('Comida Vegetariana'),
+('Comida Vegana'),
+('Comida Saludable'),
+('Comida Sin Gluten'),
+('Comida Orgánica'),
+('Comida Kosher'),
+('Comida Halal'),
+('Cocina Fusión'),
+('Cocina de Autor'),
+('Cocina Nikkei'),
+('Cocina Tex-Mex'),
+('Cocina Chifa'),
+('Cocina de Mercado'),
+('Cocina de Km 0'),
+('Taberna Irlandesa'),
+('Restaurante Temático'),
+('Cena con Espectáculo'),
+('Alta Pastelería'),
+('Té y Meriendas'),
+('Bar de Cócteles'),
+('Bar de Tapas');
 
 -- Tabla Restaurante: Almacena informaciÃ³n de los restaurantes
 CREATE TABLE "Restaurante" (
@@ -173,6 +258,20 @@ CREATE TABLE "Encabezado_Factura" (
     FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE,
     FOREIGN KEY (documento) REFERENCES "Usuario" (documento) ON DELETE CASCADE
 );
+
+-- Tabla Detalle_Factura: lineas de detalle por factura (encabezado)
+CREATE TABLE "Detalle_Factura" (
+    id_det_fact SERIAL PRIMARY KEY NOT NULL,
+    descripcion VARCHAR(255) NOT NULL,
+    unidades INT NOT NULL CHECK (unidades > 0),
+    precio_unitario DECIMAL(10, 2) NOT NULL,
+    precio_total DECIMAL(10, 2) NOT NULL,
+    forma_pago VARCHAR(50) NOT NULL CHECK (forma_pago IN ('Efectivo', 'Tarjeta', 'Transferencia', 'Otro', 'Pendiente')),
+    id_encab_fact INT NOT NULL,
+    FOREIGN KEY (id_encab_fact) REFERENCES "Encabezado_Factura" (id_encab_fact) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_detalle_factura_id_encab ON "Detalle_Factura" (id_encab_fact);
 
 -- Tabla Reserva: Almacena las reservas de mesas
 CREATE TABLE "Reserva" (

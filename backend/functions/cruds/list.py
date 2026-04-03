@@ -302,7 +302,7 @@ def obtener_mesas(db: Session):
 def obtener_encabezado_factura(db: Session, id_encab_fact: int):
     result = db.execute(
         text(
-            'SELECT nit, nombre_restaurante, direccion, ciudad, fecha FROM "Encabezado_factura" WHERE id_encab_fact = :id_encab_fact'
+            'SELECT nit, nombre_restaurante, direccion, ciudad, fecha FROM "Encabezado_Factura" WHERE id_encab_fact = :id_encab_fact'
         ),
         {"id_encab_fact": id_encab_fact},
     )
@@ -321,7 +321,7 @@ def obtener_encabezado_factura(db: Session, id_encab_fact: int):
 def obtener_encabezados_factura(db: Session):
     result = db.execute(
         text(
-            'SELECT id_encab_fact, nit, nombre_restaurante, direccion, ciudad, fecha FROM "Encabezado_factura"'
+            'SELECT id_encab_fact, nit, nombre_restaurante, direccion, ciudad, fecha FROM "Encabezado_Factura"'
         )
     )
     rows = result.fetchall()

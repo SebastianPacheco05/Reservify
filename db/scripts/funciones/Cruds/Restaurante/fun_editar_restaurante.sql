@@ -1,8 +1,8 @@
 CREATE OR REPLACE FUNCTION editar_restaurante(
     p_restaurante_uid UUID,
     p_nit INT,
-    p_direccion VARCHAR(50),
-    p_nombre_restaurante VARCHAR(20),
+    p_direccion VARCHAR(255),
+    p_nombre_restaurante VARCHAR(50),
     p_descripcion_restaurante VARCHAR(100),
     p_horario_apertura TIME,
     p_horario_cierre TIME,

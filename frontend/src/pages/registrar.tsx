@@ -107,7 +107,7 @@ export default function Registrar() {
       nombre,
       apellido,
       nacionalidad,
-      id_rol: 2,
+      id_rol: 4,
     };
 
     try {
@@ -125,12 +125,12 @@ export default function Registrar() {
             ? sanitizeApiErrorDetail(data.detail)
             : Array.isArray(data.detail)
               ? data.detail
-                  .map((x: { msg?: string }) => {
-                    const m = x?.msg ?? "";
-                    return m ? sanitizeApiErrorDetail(m) : "";
-                  })
-                  .filter(Boolean)
-                  .join(" ") || "Error en el registro"
+                .map((x: { msg?: string }) => {
+                  const m = x?.msg ?? "";
+                  return m ? sanitizeApiErrorDetail(m) : "";
+                })
+                .filter(Boolean)
+                .join(" ") || "Error en el registro"
               : "Error en el registro";
         throw new Error(msg);
       }

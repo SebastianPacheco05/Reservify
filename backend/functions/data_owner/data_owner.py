@@ -179,7 +179,7 @@ def obtener_facturas_gestor(id_credencial: int, db: Session, limit: int = 100) -
             SELECT ef.id_encab_fact, ef.nit, ef.nombre_restaurante,
                    COALESCE(ef.precio_total, 0)::float as precio_total,
                    ef.fecha::text, COALESCE(ef.forma_pago, 'Pendiente') as forma_pago, ef.documento
-            FROM "Encabezado_factura" ef
+            FROM "Encabezado_Factura" ef
             INNER JOIN "Restaurante" r ON ef.nit = r.nit
             WHERE r.documento = :documento_dueno
             ORDER BY ef.fecha DESC, ef.id_encab_fact DESC
@@ -194,7 +194,7 @@ def obtener_facturas_gestor(id_credencial: int, db: Session, limit: int = 100) -
             SELECT ef.id_encab_fact, ef.nit, ef.nombre_restaurante,
                    COALESCE(ef.precio_total, 0)::float as precio_total,
                    ef.fecha::text, COALESCE(ef.forma_pago, 'Pendiente') as forma_pago, ef.documento
-            FROM "Encabezado_factura" ef
+            FROM "Encabezado_Factura" ef
             WHERE ef.nit = ANY(:nits)
             ORDER BY ef.fecha DESC, ef.id_encab_fact DESC
             LIMIT :limit_val
@@ -218,7 +218,7 @@ def _gestor_tiene_acceso_factura(id_credencial: int, id_encab_fact: int, db: Ses
     """Verifica si el gestor tiene acceso a la factura (por nit del encabezado)."""
     ctx = obtener_contexto_gestor(id_credencial, db)
     row = db.execute(
-        text('SELECT nit FROM "Encabezado_factura" WHERE id_encab_fact = :id'),
+        text('SELECT nit FROM "Encabezado_Factura" WHERE id_encab_fact = :id'),
         {"id": id_encab_fact},
     ).fetchone()
     if not row:
@@ -240,7 +240,7 @@ def obtener_factura_detalle_gestor(
             SELECT id_encab_fact, nit, nombre_restaurante, direccion, ciudad, fecha,
                    documento, COALESCE(forma_pago, 'Pendiente') as forma_pago,
                    COALESCE(precio_total, 0)::float as precio_total
-            FROM "Encabezado_factura" WHERE id_encab_fact = :id
+            FROM "Encabezado_Factura" WHERE id_encab_fact = :id
         """),
         {"id": id_encab_fact},
     ).fetchone()
@@ -249,7 +249,7 @@ def obtener_factura_detalle_gestor(
     detalles = db.execute(
         text("""
             SELECT id_det_fact, descripcion, unidades, precio_unitario, precio_total, forma_pago
-            FROM "Detalle_factura" WHERE id_encab_fact = :id
+            FROM "Detalle_Factura" WHERE id_encab_fact = :id
         """),
         {"id": id_encab_fact},
     ).fetchall()
@@ -300,7 +300,7 @@ def enviar_factura_por_email(
     enc_row = db.execute(
         text("""
             SELECT nit, nombre_restaurante, direccion, ciudad, fecha, documento, forma_pago, precio_total
-            FROM "Encabezado_factura" WHERE id_encab_fact = :id
+            FROM "Encabezado_Factura" WHERE id_encab_fact = :id
         """),
         {"id": id_encab_fact},
     ).fetchone()
@@ -328,7 +328,7 @@ def enviar_factura_por_email(
     det_rows = db.execute(
         text("""
             SELECT descripcion, unidades, precio_unitario, precio_total
-            FROM "Detalle_factura" WHERE id_encab_fact = :id
+            FROM "Detalle_Factura" WHERE id_encab_fact = :id
         """),
         {"id": id_encab_fact},
     ).fetchall()
