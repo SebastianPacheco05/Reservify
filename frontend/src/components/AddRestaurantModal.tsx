@@ -44,6 +44,10 @@ export interface AddRestaurantForm {
   imagenes_referencia: string[];
 }
 
+/** NIT completo (NIT + DV) en rango válido para asignar empleados (alineado con backend y BD). */
+const NIT_RESTAURANTE_MIN = 9000000000;
+const NIT_RESTAURANTE_MAX = 99999999999;
+
 const initialForm: AddRestaurantForm = {
   nit: "",
   nit_dv: "",
@@ -295,6 +299,15 @@ export function AddRestaurantModal({
     else if (!/^\d{1,9}$/.test(nitNum)) next.nit = "El NIT debe ser numérico (máx. 9 dígitos).";
     if (!nitDv) next.nit_dv = "El dígito de verificación es obligatorio.";
     else if (!/^[0-9]$/.test(nitDv)) next.nit_dv = "El dígito de verificación debe ser un número del 0 al 9.";
+    if (!next.nit && !next.nit_dv && nitNum && nitDv && /^\d{1,9}$/.test(nitNum) && /^[0-9]$/.test(nitDv)) {
+      const nitCompleto = parseInt(nitNum + nitDv, 10);
+      if (
+        !Number.isNaN(nitCompleto) &&
+        (nitCompleto < NIT_RESTAURANTE_MIN || nitCompleto > NIT_RESTAURANTE_MAX)
+      ) {
+        next.nit = `El NIT completo (con dígito de verificación) debe estar entre ${NIT_RESTAURANTE_MIN} y ${NIT_RESTAURANTE_MAX}.`;
+      }
+    }
     const nombre = form.nombre_restaurante.trim();
     const descripcion = form.descripcion_restaurante.trim();
     const direccion = form.direccion.trim();
@@ -434,7 +447,8 @@ export function AddRestaurantModal({
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">
-                Formato Colombia: 800.000.000 – 9 (NIT + dígito de verificación de la DIAN)
+                NIT + dígito de verificación (DIAN). El número completo debe quedar entre{" "}
+                {NIT_RESTAURANTE_MIN} y {NIT_RESTAURANTE_MAX} para poder asignar empleados.
               </p>
             </div>
 

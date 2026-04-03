@@ -6,8 +6,23 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from fastapi import HTTPException
 from functions.register.register import hash_password, validar_formato_email
 
-_NIT_MIN_EMPLEADO = 8999999990
+# Misma banda que Usuario.nit (empleado): CHECK (nit > 8999999999 AND nit <= 99999999999)
+_NIT_MIN_EMPLEADO = 9000000000
 _NIT_MAX_EMPLEADO = 99999999999
+
+
+def validar_nit_restaurante_para_empleados(nit: int) -> None:
+    """NIT completo (base + DV) en rango permitido para asignar empleados (coherente con Usuario.nit)."""
+    if nit < _NIT_MIN_EMPLEADO or nit > _NIT_MAX_EMPLEADO:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "El NIT del restaurante está fuera del rango permitido "
+                f"({_NIT_MIN_EMPLEADO}-{_NIT_MAX_EMPLEADO}). "
+                "Usa el NIT completo con dígito de verificación (DIAN)."
+            ),
+        )
+
 
 # Tipo: "dueno" | "administrador" | "empleado".
 # Dueño tiene documento; empleado mantiene nit único; administrador gestiona nits/restaurantes por tabla puente.
@@ -1119,15 +1134,7 @@ def asignar_empleado_existente(id_credencial_gestor: int, id_credencial: int, ni
     """Asigna un usuario existente como empleado del restaurante (dueño o admin con acceso)."""
     if not puede_acceder_restaurante(id_credencial_gestor, nit, db):
         raise HTTPException(status_code=403, detail="No tienes acceso a este restaurante.")
-    if nit <= _NIT_MIN_EMPLEADO - 1 or nit > _NIT_MAX_EMPLEADO:
-        raise HTTPException(
-            status_code=400,
-            detail=(
-                "El NIT del restaurante está fuera del rango permitido para asignar empleados "
-                f"({_NIT_MIN_EMPLEADO}-{_NIT_MAX_EMPLEADO}). "
-                "Corrige el NIT del restaurante e inténtalo de nuevo."
-            ),
-        )
+    validar_nit_restaurante_para_empleados(nit)
     try:
         db.execute(
             text("SELECT fn_do_asignar_empleado_existente(:id_credencial, :nit)"),
@@ -1166,15 +1173,7 @@ def crear_empleado_invitado(
     try:
         if not puede_acceder_restaurante(id_credencial_gestor, nit, db):
             raise HTTPException(status_code=403, detail="No tienes acceso a este restaurante.")
-        if nit <= _NIT_MIN_EMPLEADO - 1 or nit > _NIT_MAX_EMPLEADO:
-            raise HTTPException(
-                status_code=400,
-                detail=(
-                    "El NIT del restaurante está fuera del rango permitido para empleados "
-                    f"({_NIT_MIN_EMPLEADO}-{_NIT_MAX_EMPLEADO}). "
-                    "Corrige el NIT del restaurante e inténtalo de nuevo."
-                ),
-            )
+        validar_nit_restaurante_para_empleados(nit)
         if not validar_formato_email(email):
             raise HTTPException(status_code=400, detail="El formato del email no es válido.")
         email = email.strip().lower()

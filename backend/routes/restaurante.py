@@ -5,7 +5,11 @@ from config import get_db
 from functions.cruds import restaurante, list as restaurante_queries
 from functions.auth.dependencies import verificar_token
 from functions.cloudinary_upload import upload_image
-from functions.data_owner.data_owner import puede_acceder_restaurante, es_dueño_de_restaurante
+from functions.data_owner.data_owner import (
+    puede_acceder_restaurante,
+    es_dueño_de_restaurante,
+    validar_nit_restaurante_para_empleados,
+)
 from models import RestauranteBase, RestauranteUpdate, RestauranteDelete, ListarRestaurantes
 
 router = APIRouter(
@@ -146,6 +150,7 @@ async def insertar(
     imagenes_ref = data.imagenes_referencia if data.imagenes_referencia is not None else None
     if imagenes_ref and len(imagenes_ref) > 15:
         imagenes_ref = imagenes_ref[:15]
+    validar_nit_restaurante_para_empleados(int(data.nit))
     restaurante.insertar_restaurante(
         db,
         data.nit,
@@ -180,6 +185,7 @@ async def editar(
     Edita un restaurante existente. Solo el dueño del restaurante puede editarlo.
     """
     _requerir_dueno_restaurante(usuario_actual, data.restaurante_uid, db)
+    validar_nit_restaurante_para_empleados(int(data.nit))
 
     restaurante.editar_restaurante(
         db,

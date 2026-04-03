@@ -165,7 +165,7 @@ INSERT INTO "Categorias" (nombre_categoria) VALUES
 -- Tabla Restaurante: Almacena informaciÃ³n de los restaurantes
 CREATE TABLE "Restaurante" (
     restaurante_uid UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),  -- identificador aleatorio real del restaurante
-    nit BIGINT UNIQUE NOT NULL,  -- identificador de negocio (NIT), ya no es PK
+    nit BIGINT UNIQUE NOT NULL CHECK (nit >= 9000000000 AND nit <= 99999999999),  -- NIT completo (base+DV); rango empleados
     direccion VARCHAR(255) NOT NULL,  -- DirecciÃ³n del restaurante
     nombre_restaurante VARCHAR(50) NOT NULL,  -- Nombre del restaurante
     descripcion_restaurante VARCHAR(100) NOT NULL,  -- DescripciÃ³n del restaurante
