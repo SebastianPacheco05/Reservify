@@ -1,6 +1,6 @@
 import path from "path";
 import { defineConfig, loadEnv } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
@@ -103,13 +103,32 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks: (id) => {
-            if (id.includes("node_modules/framer-motion"))
-              return "framer-motion";
+            if (!id.includes("node_modules")) return;
+            if (id.includes("node_modules/react-router")) return "router";
+            if (
+              id.includes("node_modules/react/") ||
+              id.includes("node_modules/react-dom/") ||
+              id.includes("node_modules/scheduler/")
+            ) {
+              return "react-vendor";
+            }
+            if (id.includes("node_modules/@radix-ui/")) return "radix-ui";
+            if (
+              id.includes("node_modules/framer-motion") ||
+              id.includes("node_modules/motion")
+            ) {
+              return "motion";
+            }
             if (
               id.includes("node_modules/react-leaflet") ||
               id.includes("node_modules/leaflet")
-            )
-              return "leaflet";
+            ) {
+              return "maps";
+            }
+            if (id.includes("node_modules/jspdf")) return "pdf";
+            if (id.includes("node_modules/lucide-react")) return "icons";
+            if (id.includes("node_modules/@tanstack/")) return "query";
+            return "vendor";
           },
         },
       },

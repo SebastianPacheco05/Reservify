@@ -5,15 +5,15 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import HeroSection from "../components/HeroSection";
+import RestaurantMap from "../components/RestaurantMap";
+import Footer from "../components/Footer";
 import { ProfileModal } from "../components/ProfileModal";
 import { ROUTES } from "../routes/paths";
 
 const CuisineCarousel = lazy(() => import("../components/CuisineCarousel"));
 const RestaurantGrid = lazy(() => import("../components/RestaurantGrid"));
-const RestaurantMap = lazy(() => import("../components/RestaurantMap"));
 const AboutSection = lazy(() => import("../components/AboutSection"));
 const FeaturesSection = lazy(() => import("../components/FeaturesSection"));
-const Footer = lazy(() => import("../components/Footer"));
 
 // Estilos CSS personalizados para la animación de color y brillos
 
@@ -119,7 +119,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-muted/60 via-background to-accent/10 dark:from-background dark:via-background dark:to-muted/60 transition-colors duration-300">
+    <main className="min-h-screen bg-linear-to-br from-muted/60 via-background to-accent/10 dark:from-background dark:via-background dark:to-muted/60 transition-colors duration-300">
       <Header
         isMenuOpen={isMenuOpen}
         setIsMenuOpen={setIsMenuOpen}
@@ -155,9 +155,7 @@ export default function Home() {
             <h2 className="text-2xl font-bold text-center mb-6 text-foreground">
               Restaurantes cerca de ti
             </h2>
-            <Suspense fallback={<div className="min-h-[300px] flex items-center justify-center text-muted-foreground">Cargando mapa…</div>}>
-              <RestaurantMap />
-            </Suspense>
+            <RestaurantMap />
           </div>
         </section>
       )}
@@ -178,9 +176,7 @@ export default function Home() {
         <FeaturesSection />
       </Suspense>
 
-      <Suspense fallback={<footer className="min-h-[200px] bg-muted" aria-hidden="true" />}>
-        <Footer />
-      </Suspense>
+      <Footer />
     </main>
   );
 }
