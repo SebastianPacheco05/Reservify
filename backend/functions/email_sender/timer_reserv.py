@@ -46,6 +46,29 @@ def _fetch_reservas_confirmadas() -> list[tuple]:
     """
     db: Session = SessionLocal()
     try:
+        required_tables = {"Reserva", "Usuario", "Credenciales", "Mesas", "Restaurante"}
+        tables_query = text(
+            """
+            SELECT tablename
+            FROM pg_tables
+            WHERE schemaname = 'public'
+              AND tablename = ANY(:tables)
+            """
+        )
+        existing_tables = {
+            row[0]
+            for row in db.execute(
+                tables_query, {"tables": list(required_tables)}
+            ).fetchall()
+        }
+        missing_tables = required_tables - existing_tables
+        if missing_tables:
+            print(
+                "tarea_programada omitida: faltan tablas requeridas ->",
+                ", ".join(sorted(missing_tables)),
+            )
+            return []
+
         # Reservas confirmadas, considerando como próximas las fechas de hoy y mañana.
         # (La lógica de 2h/1h se valida luego en Python.)
         query = text(
