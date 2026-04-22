@@ -107,7 +107,7 @@ export default function Registrar() {
       nombre,
       apellido,
       nacionalidad,
-      id_rol: 4,
+      id_rol: 2,
     };
 
     try {
