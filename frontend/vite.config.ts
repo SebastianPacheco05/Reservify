@@ -139,5 +139,10 @@ export default defineConfig(({ mode }) => {
       port: parseInt(finalEnv.VITE_FRONTEND_PORT || "5173"),
       allowedHosts: ["e68e-179-1-217-6.ngrok-free.app"], // 🔥 permite todos los subdominios de ngrok
     },
+    preview: {
+      host: finalEnv.VITE_FRONTEND_HOST || "localhost",
+      port: parseInt(finalEnv.VITE_FRONTEND_PORT || "5123"),
+      strictPort: true,
+    },
   };
 });
