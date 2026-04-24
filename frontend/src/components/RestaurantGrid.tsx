@@ -189,8 +189,9 @@ export default function RestaurantGrid({ searchQuery }: RestaurantGridProps) {
 
             <ScrollVelocityContainer>
               <ScrollVelocityRow
-                baseVelocity={5}
+                baseVelocity={0.6}
                 direction={1}
+                scrollReactivity={false}
                 draggable
                 className="py-2 cursor-grab active:cursor-grabbing"
               >

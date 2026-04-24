@@ -99,9 +99,9 @@ function AnimatedInputOTPGroup({
         shouldReduceMotion
           ? { duration: 0 }
           : {
-              duration: ANIMATION_DURATION_LONG,
-              ease: EASE_OUT_QUINT,
-            }
+            duration: ANIMATION_DURATION_LONG,
+            ease: EASE_OUT_QUINT,
+          }
       }
     >
       {children}
@@ -134,10 +134,10 @@ function AnimatedInputOTPSlot({ index, className }: AnimatedInputOTPSlotProps) {
         shouldReduceMotion
           ? { opacity: 1 }
           : {
-              opacity: 1,
-              y: 0,
-              scale: isFilled ? SCALE_FILLED : 1,
-            }
+            opacity: 1,
+            y: 0,
+            scale: isFilled ? SCALE_FILLED : 1,
+          }
       }
       className={cn(
         "relative flex h-9 w-9 items-center justify-center rounded-md border border-zinc-300 bg-background text-sm shadow-sm outline-none transition-all aria-invalid:border-destructive data-[active=true]:z-10 data-[active=true]:border-ring data-[active=true]:ring-[3px] data-[active=true]:ring-ring/50 data-[active=true]:aria-invalid:border-destructive data-[active=true]:aria-invalid:ring-destructive/20 dark:border-zinc-700 dark:bg-input/30 dark:data-[active=true]:aria-invalid:ring-destructive/40",
@@ -154,36 +154,36 @@ function AnimatedInputOTPSlot({ index, className }: AnimatedInputOTPSlotProps) {
         shouldReduceMotion
           ? { duration: 0 }
           : {
-              duration: ANIMATION_DURATION_STANDARD,
-              delay: index * STAGGER_DELAY,
+            duration: ANIMATION_DURATION_STANDARD,
+            delay: index * STAGGER_DELAY,
+            ease: EASE_OUT_QUINT,
+            scale: {
+              duration: ANIMATION_DURATION_MEDIUM,
               ease: EASE_OUT_QUINT,
-              scale: {
-                duration: ANIMATION_DURATION_MEDIUM,
-                ease: EASE_OUT_QUINT,
-              },
-            }
+            },
+          }
       }
       whileHover={
         shouldReduceMotion
           ? {}
           : {
-              scale: SCALE_HOVER,
-              transition: {
-                duration: ANIMATION_DURATION_MEDIUM,
-                ease: EASE_OUT_QUINT,
-              },
-            }
+            scale: SCALE_HOVER,
+            transition: {
+              duration: ANIMATION_DURATION_MEDIUM,
+              ease: EASE_OUT_QUINT,
+            },
+          }
       }
       whileTap={
         shouldReduceMotion
           ? {}
           : {
-              scale: SCALE_TAP,
-              transition: {
-                duration: ANIMATION_DURATION_SHORT,
-                ease: EASE_OUT_QUINT,
-              },
-            }
+            scale: SCALE_TAP,
+            transition: {
+              duration: ANIMATION_DURATION_SHORT,
+              ease: EASE_OUT_QUINT,
+            },
+          }
       }
     >
       <AnimatePresence mode="wait">
@@ -210,9 +210,9 @@ function AnimatedInputOTPSlot({ index, className }: AnimatedInputOTPSlotProps) {
               shouldReduceMotion
                 ? { duration: 0 }
                 : {
-                    duration: ANIMATION_DURATION_STANDARD,
-                    ease: EASE_OUT_QUINT,
-                  }
+                  duration: ANIMATION_DURATION_STANDARD,
+                  ease: EASE_OUT_QUINT,
+                }
             }
           >
             {char}
@@ -258,10 +258,10 @@ function AnimatedInputOTPSeparator() {
         shouldReduceMotion
           ? { duration: 0 }
           : {
-              duration: ANIMATION_DURATION_LONG,
-              delay: SEPARATOR_DELAY,
-              ease: EASE_OUT_QUINT,
-            }
+            duration: ANIMATION_DURATION_LONG,
+            delay: SEPARATOR_DELAY,
+            ease: EASE_OUT_QUINT,
+          }
       }
     >
       <MinusIcon className="h-4 w-4 text-muted-foreground" />
