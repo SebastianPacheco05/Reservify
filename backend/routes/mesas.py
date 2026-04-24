@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from uuid import UUID
 from config import get_db
 from functions.cruds import mesas, list as mesas_queries
 from functions.auth.dependencies import verificar_token
@@ -21,7 +22,7 @@ def _requerir_gestor_restaurante(usuario_actual: dict, restaurante_uid: str, db:
         )
 
 @router.get("/restaurante/{restaurante_uid}")
-async def obtener_mesas_por_restaurante(restaurante_uid: str, db: Session = Depends(get_db)):
+async def obtener_mesas_por_restaurante(restaurante_uid: UUID, db: Session = Depends(get_db)):
     """Endpoint público para obtener las mesas de un restaurante por UID"""
     try:
         query = text('''
@@ -35,7 +36,7 @@ async def obtener_mesas_por_restaurante(restaurante_uid: str, db: Session = Depe
             FROM "Mesas"
             WHERE "restaurante_uid" = :restaurante_uid
         ''')
-        result = db.execute(query, {"restaurante_uid": restaurante_uid})
+        result = db.execute(query, {"restaurante_uid": str(restaurante_uid)})
         rows = result.fetchall()
 
         return [

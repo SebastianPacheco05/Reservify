@@ -11,14 +11,14 @@ RETURNS TABLE (
 BEGIN
     RETURN QUERY
     SELECT
-        nit::NUMERIC,
-        direccion::VARCHAR,
-        nombre_restaurante::VARCHAR,
-        descripcion_restaurante::VARCHAR,
-        horario_apertura::TIME,
-        horario_cierre::TIME,
-        documento::NUMERIC
-    FROM "Restaurante";
+        r.nit::NUMERIC,
+        r.direccion::VARCHAR,
+        r.nombre_restaurante::VARCHAR,
+        r.descripcion_restaurante::VARCHAR,
+        r.horario_apertura::TIME,
+        r.horario_cierre::TIME,
+        r.documento::NUMERIC
+    FROM "Restaurante" r;
 EXCEPTION
     WHEN SQLSTATE '42P01' THEN
         RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
@@ -44,15 +44,15 @@ RETURNS TABLE (
 BEGIN
     RETURN QUERY
     SELECT
-        nit::NUMERIC,
-        direccion::VARCHAR,
-        nombre_restaurante::VARCHAR,
-        descripcion_restaurante::VARCHAR,
-        horario_apertura::TIME,
-        horario_cierre::TIME,
-        documento::NUMERIC
-    FROM "Restaurante"
-    WHERE nit = p_nit;
+        r.nit::NUMERIC,
+        r.direccion::VARCHAR,
+        r.nombre_restaurante::VARCHAR,
+        r.descripcion_restaurante::VARCHAR,
+        r.horario_apertura::TIME,
+        r.horario_cierre::TIME,
+        r.documento::NUMERIC
+    FROM "Restaurante" r
+    WHERE r.nit = p_nit;
 EXCEPTION
     WHEN SQLSTATE '42P01' THEN
         RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';

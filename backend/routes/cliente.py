@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from config import get_db
@@ -6,7 +6,7 @@ from functions.auth.dependencies import verificar_token
 from functions.cruds import usuario as usuario_crud, list as list_queries
 from functions.cruds.reservation_status import actualizar_estado_reserva
 from functions.data_owner.data_owner import actualizar_motivo_cancelacion
-from models import ClienteUpdate, ClienteDelete, ListarClientes, CancelarReservaClienteSchema
+from models import ClienteUpdate, ClienteDelete, CancelarReservaClienteSchema
 
 router = APIRouter(
     prefix="/cliente",
@@ -112,19 +112,34 @@ async def cancelar_mi_reserva(
 
 @router.get("/listar_cliente")
 async def listar_cliente(
-    data: ListarClientes,
+    documento: int = Query(..., description="Documento del cliente"),
     db: Session = Depends(get_db),
 ):
-    respuesta = list_queries.obtener_usuario(db, str(data.documento))
+    respuesta = list_queries.obtener_usuario(db, str(documento))
+    if not respuesta:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+
+    rol = list_queries.obtener_rol(db, int(respuesta.get("id_rol")))
+    nombre_rol = (rol or {}).get("nombre_rol", "").strip().lower()
+    if nombre_rol != "cliente":
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+
     return {"respuesta": respuesta}
 
 @router.get("/listar_clientes")
 async def listar_clientes(db: Session = Depends(get_db)):
-    respuesta = list_queries.obtener_usuarios(db)
+    respuesta = list_queries.obtener_usuarios_por_rol(db, "cliente")
     return {"respuesta": respuesta}
 
 @router.put("/editarcliente")
 async def editar(data: ClienteUpdate, db: Session = Depends(get_db)):
+    existente = list_queries.obtener_usuario(db, str(data.documento))
+    if not existente:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+    rol = list_queries.obtener_rol(db, int(existente.get("id_rol")))
+    if ((rol or {}).get("nombre_rol", "").strip().lower()) != "cliente":
+        raise HTTPException(status_code=400, detail="El documento no pertenece a un cliente")
+
     nit = getattr(data, "nit", None)
     usuario_crud.editar_usuario(
         db,
@@ -141,4 +156,11 @@ async def editar(data: ClienteUpdate, db: Session = Depends(get_db)):
 
 @router.delete("/borrarcliente")
 async def borrar(data: ClienteDelete, db: Session = Depends(get_db)):
+    existente = list_queries.obtener_usuario(db, str(data.documento))
+    if not existente:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+    rol = list_queries.obtener_rol(db, int(existente.get("id_rol")))
+    if ((rol or {}).get("nombre_rol", "").strip().lower()) != "cliente":
+        raise HTTPException(status_code=400, detail="El documento no pertenece a un cliente")
+
     usuario_crud.borrar_usuario(db, data.documento)

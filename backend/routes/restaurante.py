@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from uuid import UUID
 from config import get_db
 from functions.cruds import restaurante, list as restaurante_queries
 from functions.auth.dependencies import verificar_token
@@ -46,74 +47,6 @@ def _requerir_gestor_restaurante(usuario_actual: dict, restaurante_uid: str, db:
             status_code=403,
             detail="No tienes permisos para gestionar este restaurante.",
         )
-
-@router.get("/{restaurante_uid}")
-async def obtener_restaurante_publico(restaurante_uid: str, db: Session = Depends(get_db)):
-    """Endpoint público para obtener información detallada de un restaurante por UID"""
-    try:
-        query = text('''
-            SELECT 
-                r.restaurante_uid,
-                r.nit,
-                r.direccion,
-                r.nombre_restaurante,
-                r.descripcion_restaurante,
-                r.rating,
-                r.reviews,
-                r.availabletoday,
-                r.horario_apertura,
-                r.horario_cierre,
-                r.url_image,
-                c.nombre_categoria,
-                r.lat,
-                r.lng
-            FROM "Restaurante" r
-            LEFT JOIN "Categorias" c ON r.id_categoria = c.id_categoria
-            WHERE r.restaurante_uid = :restaurante_uid
-        ''')
-        result = db.execute(query, {"restaurante_uid": restaurante_uid})
-        row = result.fetchone()
-
-        if not row:
-            raise HTTPException(status_code=404, detail="Restaurante no encontrado")
-
-        uid_str = str(row[0])
-        imagenes_referencia = []
-        try:
-            imagenes_ref_query = text('''
-                SELECT url_imagen
-                FROM "Imagen_referencia_restaurante"
-                WHERE restaurante_uid = CAST(:restaurante_uid AS uuid)
-                ORDER BY orden ASC
-            ''')
-            imagenes_ref_result = db.execute(imagenes_ref_query, {"restaurante_uid": uid_str})
-            imagenes_referencia = [r[0] for r in imagenes_ref_result.fetchall()]
-        except Exception:
-            imagenes_referencia = []
-
-        lat_val = float(row[12]) if row[12] is not None else None
-        lng_val = float(row[13]) if row[13] is not None else None
-        return {
-            "restaurante_uid": str(row[0]),
-            "nit": row[1],
-            "direccion": row[2],
-            "nombre_restaurante": row[3],
-            "descripcion_restaurante": row[4],
-            "rating": float(row[5]) if row[5] else 0.0,
-            "reviews": row[6],
-            "availabletoday": row[7],
-            "horario_apertura": str(row[8]),
-            "horario_cierre": str(row[9]),
-            "url_image": row[10],
-            "nombre_categoria": row[11],
-            "imagenes_referencia": imagenes_referencia,
-            "lat": lat_val,
-            "lng": lng_val,
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al obtener restaurante: {str(e)}")
 
 @router.post("/upload-imagen")
 async def subir_imagen(
@@ -211,3 +144,72 @@ async def borrar(
     """
     _requerir_dueno_restaurante(usuario_actual, data.restaurante_uid, db)
     restaurante.borrar_restaurante(db, data.restaurante_uid)
+
+
+@router.get("/{restaurante_uid}")
+async def obtener_restaurante_publico(restaurante_uid: UUID, db: Session = Depends(get_db)):
+    """Endpoint público para obtener información detallada de un restaurante por UID"""
+    try:
+        query = text('''
+            SELECT 
+                r.restaurante_uid,
+                r.nit,
+                r.direccion,
+                r.nombre_restaurante,
+                r.descripcion_restaurante,
+                r.rating,
+                r.reviews,
+                r.availabletoday,
+                r.horario_apertura,
+                r.horario_cierre,
+                r.url_image,
+                c.nombre_categoria,
+                r.lat,
+                r.lng
+            FROM "Restaurante" r
+            LEFT JOIN "Categorias" c ON r.id_categoria = c.id_categoria
+            WHERE r.restaurante_uid = :restaurante_uid
+        ''')
+        result = db.execute(query, {"restaurante_uid": str(restaurante_uid)})
+        row = result.fetchone()
+
+        if not row:
+            raise HTTPException(status_code=404, detail="Restaurante no encontrado")
+
+        uid_str = str(row[0])
+        imagenes_referencia = []
+        try:
+            imagenes_ref_query = text('''
+                SELECT url_imagen
+                FROM "Imagen_referencia_restaurante"
+                WHERE restaurante_uid = CAST(:restaurante_uid AS uuid)
+                ORDER BY orden ASC
+            ''')
+            imagenes_ref_result = db.execute(imagenes_ref_query, {"restaurante_uid": uid_str})
+            imagenes_referencia = [r[0] for r in imagenes_ref_result.fetchall()]
+        except Exception:
+            imagenes_referencia = []
+
+        lat_val = float(row[12]) if row[12] is not None else None
+        lng_val = float(row[13]) if row[13] is not None else None
+        return {
+            "restaurante_uid": str(row[0]),
+            "nit": row[1],
+            "direccion": row[2],
+            "nombre_restaurante": row[3],
+            "descripcion_restaurante": row[4],
+            "rating": float(row[5]) if row[5] else 0.0,
+            "reviews": row[6],
+            "availabletoday": row[7],
+            "horario_apertura": str(row[8]),
+            "horario_cierre": str(row[9]),
+            "url_image": row[10],
+            "nombre_categoria": row[11],
+            "imagenes_referencia": imagenes_referencia,
+            "lat": lat_val,
+            "lng": lng_val,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener restaurante: {str(e)}")

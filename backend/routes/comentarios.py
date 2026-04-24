@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from uuid import UUID
 from config import get_db
 from functions.cruds import comentarios, list as comentarios_queries
 from functions.cruds.cliente_utils import obtener_documento_por_email
@@ -15,7 +16,7 @@ router = APIRouter(
 
 # Obtener comentarios por restaurante (público)
 @router.get("/restaurante/{restaurante_uid}")
-async def obtener_comentarios_por_restaurante(restaurante_uid: str, db: Session = Depends(get_db)):
+async def obtener_comentarios_por_restaurante(restaurante_uid: UUID, db: Session = Depends(get_db)):
     try:
         query = text('''
             SELECT 
@@ -30,7 +31,7 @@ async def obtener_comentarios_por_restaurante(restaurante_uid: str, db: Session 
             WHERE c.restaurante_uid = CAST(:restaurante_uid AS uuid)
             ORDER BY c.fecha DESC
         ''')
-        result = db.execute(query, {"restaurante_uid": restaurante_uid})
+        result = db.execute(query, {"restaurante_uid": str(restaurante_uid)})
         rows = result.fetchall()
         
         return [

@@ -6,9 +6,9 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT comentario
-    FROM "Comentarios"
-    WHERE id_comentario = p_id_comentario;
+    SELECT c.comentario
+    FROM "Comentarios" c
+    WHERE c.id_comentario = p_id_comentario;
 EXCEPTION
     WHEN SQLSTATE '42P01' THEN
         RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
@@ -30,8 +30,8 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT id_comentario, comentario
-    FROM "Comentarios";
+    SELECT c.id_comentario, c.comentario
+    FROM "Comentarios" c;
 EXCEPTION
     WHEN SQLSTATE '42P01' THEN
         RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';

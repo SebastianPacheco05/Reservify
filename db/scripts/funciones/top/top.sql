@@ -6,7 +6,7 @@ CREATE OR REPLACE FUNCTION fn_top_obtener_top_restaurantes(
 )
 RETURNS TABLE (
     restaurante_uid UUID,
-    nit DECIMAL(10,0),
+    nit NUMERIC(20,0),
     direccion VARCHAR,
     nombre_restaurante VARCHAR,
     rating DECIMAL,
@@ -14,7 +14,7 @@ RETURNS TABLE (
     availabletoday BOOLEAN,
     horario_apertura TIME,
     horario_cierre TIME,
-    documento DECIMAL(10,0),
+    documento NUMERIC(20,0),
     url_image VARCHAR,
     nombre_categoria VARCHAR
 )
@@ -56,7 +56,7 @@ BEGIN
     v_sql := format(
         'SELECT
             NULL::UUID AS restaurante_uid,
-            r.nit::DECIMAL(10,0),
+            r.nit::NUMERIC(20,0),
             r.direccion::VARCHAR,
             r.nombre_restaurante::VARCHAR,
             r.rating::DECIMAL,
@@ -64,7 +64,7 @@ BEGIN
             (%s)::BOOLEAN AS availabletoday,
             r.horario_apertura::TIME,
             r.horario_cierre::TIME,
-            r.documento::DECIMAL(10,0),
+            r.documento::NUMERIC(20,0),
             (%s)::VARCHAR AS url_image,
             c.nombre_categoria::VARCHAR
         FROM "Restaurante" r
@@ -130,7 +130,7 @@ CREATE OR REPLACE FUNCTION fn_top_obtener_restaurantes_paginados(
 )
 RETURNS TABLE (
     restaurante_uid UUID,
-    nit DECIMAL(10,0),
+    nit NUMERIC(20,0),
     direccion VARCHAR,
     nombre_restaurante VARCHAR,
     rating DECIMAL,
@@ -138,7 +138,7 @@ RETURNS TABLE (
     availabletoday BOOLEAN,
     horario_apertura TIME,
     horario_cierre TIME,
-    documento DECIMAL(10,0),
+    documento NUMERIC(20,0),
     url_image VARCHAR,
     descripcion_restaurante TEXT,
     nombre_categoria VARCHAR
@@ -188,7 +188,7 @@ BEGIN
     v_sql := format(
         'SELECT
             NULL::UUID AS restaurante_uid,
-            r.nit::DECIMAL(10,0),
+            r.nit::NUMERIC(20,0),
             r.direccion::VARCHAR,
             r.nombre_restaurante::VARCHAR,
             r.rating::DECIMAL,
@@ -196,7 +196,7 @@ BEGIN
             (%s)::BOOLEAN AS availabletoday,
             r.horario_apertura::TIME,
             r.horario_cierre::TIME,
-            r.documento::DECIMAL(10,0),
+            r.documento::NUMERIC(20,0),
             (%s)::VARCHAR AS url_image,
             (%s)::TEXT AS descripcion_restaurante,
             c.nombre_categoria::VARCHAR

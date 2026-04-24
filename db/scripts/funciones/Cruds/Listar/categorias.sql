@@ -6,9 +6,9 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT nombre_categoria::VARCHAR
-    FROM "Categorias"
-    WHERE id_categoria = p_id_categoria;
+    SELECT c.nombre_categoria::VARCHAR
+    FROM "Categorias" c
+    WHERE c.id_categoria = p_id_categoria;
 EXCEPTION
     WHEN SQLSTATE '42P01' THEN -- undefined_table
         RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
@@ -30,8 +30,8 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT id_categoria::INTEGER, nombre_categoria::VARCHAR
-    FROM "Categorias";
+    SELECT c.id_categoria::INTEGER, c.nombre_categoria::VARCHAR
+    FROM "Categorias" c;
 EXCEPTION
     WHEN SQLSTATE '42P01' THEN -- undefined_table
         RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';

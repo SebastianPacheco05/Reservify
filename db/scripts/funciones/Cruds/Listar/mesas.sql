@@ -8,8 +8,13 @@ RETURNS TABLE (
 ) LANGUAGE plpgsql AS $$
 BEGIN
     RETURN QUERY
-    SELECT id_mesa, estado_de_disponibilidad, cant_personas, nit, precio
-    FROM "Mesas";
+    SELECT
+        m.id_mesa,
+        m.estado_de_disponibilidad::VARCHAR,
+        m.cant_personas,
+        m.nit::NUMERIC,
+        m.precio::NUMERIC
+    FROM "Mesas" m;
 EXCEPTION
     WHEN SQLSTATE '42P01' THEN -- undefined_table
         RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
@@ -31,9 +36,13 @@ RETURNS TABLE (
 ) LANGUAGE plpgsql AS $$
 BEGIN
     RETURN QUERY
-    SELECT estado_de_disponibilidad, cant_personas, nit, precio
-    FROM "Mesas"
-    WHERE id_mesa = p_id_mesa;
+    SELECT
+        m.estado_de_disponibilidad::VARCHAR,
+        m.cant_personas,
+        m.nit::NUMERIC,
+        m.precio::NUMERIC
+    FROM "Mesas" m
+    WHERE m.id_mesa = p_id_mesa;
 EXCEPTION
     WHEN SQLSTATE '42P01' THEN -- undefined_table
         RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
