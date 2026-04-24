@@ -6,7 +6,7 @@ from sqlalchemy.exc import ProgrammingError
 
 def obtener_rol(db: Session, id_rol: int):
     result = db.execute(
-        text('SELECT nombre_rol, descripcion FROM "Roles" WHERE id_rol = :id_rol'),
+        text("SELECT nombre_rol, descripcion FROM get_role_by_id(:id_rol)"),
         {"id_rol": id_rol},
     )
     row = result.fetchone()
@@ -16,7 +16,7 @@ def obtener_rol(db: Session, id_rol: int):
 
 
 def obtener_roles(db: Session):
-    result = db.execute(text('SELECT id_rol, nombre_rol, descripcion FROM "Roles"'))
+    result = db.execute(text("SELECT id_rol, nombre_rol, descripcion FROM list_roles()"))
     rows = result.fetchall()
     return [
         {"id_rol": row[0], "nombre_rol": row[1], "descripcion": row[2]} for row in rows
@@ -27,7 +27,7 @@ def obtener_usuario(db: Session, documento: str):
     """Obtiene un usuario por documento (tabla Usuario; aplica a cualquier rol)."""
     result = db.execute(
         text(
-            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit FROM "Usuario" WHERE documento = :documento'
+            "SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit FROM get_usuario_by_documento(:documento)"
         ),
         {"documento": documento},
     )
@@ -50,13 +50,14 @@ def obtener_usuario(db: Session, documento: str):
 def obtener_usuario_por_id_credencial(db: Session, id_credencial: int):
     """Obtiene usuario + email por id_credencial (para mi-perfil)."""
     result = db.execute(
-        text("""
-            SELECT u.id_credencial, u.nombre, u.apellido, u.tipo_documento, u.documento,
-                   u.nacionalidad, u.telefono, u.id_rol, u.nit, c.email
-            FROM "Usuario" u
-            JOIN "Credenciales" c ON u.id_credencial = c.id_credencial
-            WHERE u.id_credencial = :id_credencial
-        """),
+        text(
+            """
+            SELECT
+                id_credencial, nombre, apellido, tipo_documento, documento,
+                nacionalidad, telefono, id_rol, nit, email
+            FROM get_usuario_by_id_credencial(:id_credencial)
+            """
+        ),
         {"id_credencial": id_credencial},
     )
     row = result.fetchone()
@@ -79,16 +80,14 @@ def obtener_usuario_por_id_credencial(db: Session, id_credencial: int):
 def obtener_reservas_por_documento(db: Session, documento: int, limit: int = 100):
     """Reservas del cliente por documento. Incluye nombre restaurante y motivo_cancelacion."""
     result = db.execute(
-        text("""
-            SELECT r.id_reserva, r.horario::text, r.fecha::text, r.estado_reserva,
-                   r.num_comensales, r.motivo_cancelacion, rest.nombre_restaurante, rest.nit
-            FROM "Reserva" r
-            JOIN "Mesas" m ON r.id_mesa = m.id_mesa
-            JOIN "Restaurante" rest ON m.nit = rest.nit
-            WHERE r.documento = :documento
-            ORDER BY r.fecha DESC, r.horario DESC
-            LIMIT :limit_val
-        """),
+        text(
+            """
+            SELECT
+                id_reserva, horario, fecha, estado_reserva,
+                num_comensales, motivo_cancelacion, nombre_restaurante, nit
+            FROM list_reservas_por_documento(:documento, :limit_val)
+            """
+        ),
         {"documento": documento, "limit_val": limit},
     )
     rows = result.fetchall()
@@ -111,7 +110,7 @@ def obtener_usuarios(db: Session):
     """Lista todos los usuarios (tabla Usuario)."""
     result = db.execute(
         text(
-            'SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit FROM "Usuario"'
+            "SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit FROM list_usuarios()"
         )
     )
     rows = result.mappings().all()
@@ -135,9 +134,9 @@ def obtener_usuarios_por_rol(db: Session, nombre_rol: str):
     """Lista usuarios filtrados por nombre de rol (dueño, empleado, cliente)."""
     result = db.execute(
         text(
-            'SELECT u.id_credencial, u.nombre, u.apellido, u.tipo_documento, u.documento, u.nacionalidad, u.telefono, u.id_rol, u.nit FROM "Usuario" u JOIN "Roles" r ON u.id_rol = r.id_rol WHERE LOWER(TRIM(r.nombre_rol)) = LOWER(TRIM(:nombre_rol))'
+            "SELECT id_credencial, nombre, apellido, tipo_documento, documento, nacionalidad, telefono, id_rol, nit FROM list_usuarios_por_rol(:nombre_rol)"
         ),
-        {"nombre_rol": nombre_rol.replace("dueño", "dueno")},
+        {"nombre_rol": nombre_rol},
     )
     rows = result.fetchall()
     return [
@@ -159,7 +158,7 @@ def obtener_usuarios_por_rol(db: Session, nombre_rol: str):
 def obtener_restaurante(db: Session, nit: int):
     result = db.execute(
         text(
-            'SELECT nit, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, documento FROM "Restaurante" WHERE nit = :nit'
+            "SELECT nit, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, documento FROM get_restaurante_by_nit(:nit)"
         ),
         {"nit": nit},
     )
@@ -180,20 +179,19 @@ def obtener_restaurante(db: Session, nit: int):
 def obtener_restaurantes(db: Session):
     result = db.execute(
         text(
-            'SELECT nit, nit, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, documento FROM "Restaurante"'
+            "SELECT nit, direccion, nombre_restaurante, descripcion_restaurante, horario_apertura, horario_cierre, documento FROM list_restaurantes()"
         )
     )
     rows = result.fetchall()
     return [
         {
             "nit": row[0],
-            "nit": row[1],
-            "direccion": row[2],
-            "nombre_restaurante": row[3],
-            "descripcion_restaurante": row[4],
-            "horario_apertura": row[5],
-            "horario_cierre": row[6],
-            "documento": row[7],
+            "direccion": row[1],
+            "nombre_restaurante": row[2],
+            "descripcion_restaurante": row[3],
+            "horario_apertura": row[4],
+            "horario_cierre": row[5],
+            "documento": row[6],
         }
         for row in rows
     ]
@@ -206,31 +204,17 @@ def obtener_restaurantes_para_mapa(db: Session, lat_usuario: float = 4.6097, lng
     """
     try:
         result = db.execute(
-            text("""
-                SELECT r.nit, r.nombre_restaurante, r.direccion, r.lat, r.lng
-                FROM "Restaurante" r
-                ORDER BY r.nit
-            """)
+            text(
+                """
+                SELECT nit, nombre_restaurante, direccion, lat, lng
+                FROM list_restaurantes_para_mapa()
+                """
+            )
         )
         rows = result.fetchall()
     except ProgrammingError:
-        rows = None
-    if rows is None:
-        raw = obtener_restaurantes(db)
-        out = []
-        for i, r in enumerate(raw):
-            offset_km = 0.02 * (i + 1)
-            angle = (i * 0.7) % (2 * math.pi)
-            lat = lat_usuario + (offset_km / 111) * math.cos(angle)
-            lng = lng_usuario + (offset_km / (111 * math.cos(math.radians(lat_usuario)))) * math.sin(angle)
-            out.append({
-                "nit": r["nit"],
-                "nombre_restaurante": r.get("nombre_restaurante", ""),
-                "direccion": r.get("direccion"),
-                "lat": lat,
-                "lng": lng,
-            })
-        return out
+        rows = []
+
     out = []
     for i, row in enumerate(rows):
         nit, nombre_restaurante, direccion, lat_bd, lng_bd = row
@@ -265,7 +249,7 @@ def actualizar_coordenadas_restaurante(db: Session, nit: int, lat: float, lng: f
 def obtener_mesa(db: Session, id_mesa: int):
     result = db.execute(
         text(
-            'SELECT estado_de_disponibilidad, cant_personas, nit, precio FROM "Mesas" WHERE id_mesa = :id_mesa'
+            "SELECT estado_de_disponibilidad, cant_personas, nit, precio FROM get_mesa_by_id(:id_mesa)"
         ),
         {"id_mesa": id_mesa},
     )
@@ -283,7 +267,7 @@ def obtener_mesa(db: Session, id_mesa: int):
 def obtener_mesas(db: Session):
     result = db.execute(
         text(
-            'SELECT id_mesa, estado_de_disponibilidad, cant_personas, nit, precio FROM "Mesas"'
+            "SELECT id_mesa, estado_de_disponibilidad, cant_personas, nit, precio FROM list_mesas()"
         )
     )
     rows = result.fetchall()
@@ -302,7 +286,7 @@ def obtener_mesas(db: Session):
 def obtener_encabezado_factura(db: Session, id_encab_fact: int):
     result = db.execute(
         text(
-            'SELECT nit, nombre_restaurante, direccion, ciudad, fecha FROM "Encabezado_Factura" WHERE id_encab_fact = :id_encab_fact'
+            "SELECT nit, nombre_restaurante, direccion, ciudad, fecha FROM get_encabezado_factura_by_id(:id_encab_fact)"
         ),
         {"id_encab_fact": id_encab_fact},
     )
@@ -321,7 +305,7 @@ def obtener_encabezado_factura(db: Session, id_encab_fact: int):
 def obtener_encabezados_factura(db: Session):
     result = db.execute(
         text(
-            'SELECT id_encab_fact, nit, nombre_restaurante, direccion, ciudad, fecha FROM "Encabezado_Factura"'
+            "SELECT id_encab_fact, nit, nombre_restaurante, direccion, ciudad, fecha FROM list_encabezado_factura()"
         )
     )
     rows = result.fetchall()
@@ -341,7 +325,7 @@ def obtener_encabezados_factura(db: Session):
 def obtener_detalle_factura(db: Session, id_det_fact: int):
     result = db.execute(
         text(
-            'SELECT descripcion, unidades, precio_unitario, precio_total, forma_pago, id_encab_fact FROM "Detalle_Factura" WHERE id_det_fact = :id_det_fact'
+            "SELECT descripcion, unidades, precio_unitario, precio_total, forma_pago, id_encab_fact FROM get_detalle_factura_by_id(:id_det_fact)"
         ),
         {"id_det_fact": id_det_fact},
     )
@@ -361,7 +345,7 @@ def obtener_detalle_factura(db: Session, id_det_fact: int):
 def obtener_detalles_factura(db: Session):
     result = db.execute(
         text(
-            'SELECT id_det_fact, descripcion, unidades, precio_unitario, precio_total, forma_pago, id_encab_fact FROM "Detalle_Factura"'
+            "SELECT id_det_fact, descripcion, unidades, precio_unitario, precio_total, forma_pago, id_encab_fact FROM list_detalles_factura()"
         )
     )
     rows = result.fetchall()
@@ -382,7 +366,7 @@ def obtener_detalles_factura(db: Session):
 def obtener_reserva(db: Session, id_reserva: int):
     result = db.execute(
         text(
-            'SELECT id_mesa, id_encab_fact, horario, fecha FROM "Reserva" WHERE id_reserva = :id_reserva'
+            "SELECT id_mesa, id_encab_fact, horario, fecha FROM get_reserva_by_id(:id_reserva)"
         ),
         {"id_reserva": id_reserva},
     )
@@ -400,7 +384,7 @@ def obtener_reserva(db: Session, id_reserva: int):
 def obtener_reservas(db: Session):
     result = db.execute(
         text(
-            'SELECT id_reserva, id_mesa, id_encab_fact, horario, fecha FROM "Reserva"'
+            "SELECT id_reserva, id_mesa, id_encab_fact, horario, fecha FROM list_reservas()"
         )
     )
     rows = result.fetchall()
@@ -419,7 +403,7 @@ def obtener_reservas(db: Session):
 def obtener_categoria(db: Session, id_categoria: int):
     result = db.execute(
         text(
-            'SELECT nombre_categoria FROM "Categorias" WHERE id_categoria = :id_categoria'
+            "SELECT nombre_categoria FROM get_categoria_by_id(:id_categoria)"
         ),
         {"id_categoria": id_categoria},
     )
@@ -430,7 +414,7 @@ def obtener_categoria(db: Session, id_categoria: int):
 
 
 def obtener_categorias(db: Session):
-    result = db.execute(text('SELECT id_categoria, nombre_categoria FROM "Categorias"'))
+    result = db.execute(text("SELECT id_categoria, nombre_categoria FROM list_categorias()"))
     rows = result.fetchall()
     return [{"id_categoria": row[0], "nombre_categoria": row[1]} for row in rows]
 
@@ -442,17 +426,10 @@ def obtener_categorias_mas_usadas(db: Session, limit: int = 20):
     """
     result = db.execute(
         text(
-            '''
-            SELECT
-                c.id_categoria,
-                c.nombre_categoria,
-                COUNT(r.nit) AS usos
-            FROM "Categorias" c
-            LEFT JOIN "Restaurante" r ON r.id_categoria = c.id_categoria
-            GROUP BY c.id_categoria, c.nombre_categoria
-            ORDER BY usos DESC, c.nombre_categoria
-            LIMIT :limit_val
-            '''
+            """
+            SELECT id_categoria, nombre_categoria, usos
+            FROM list_categorias_mas_usadas(:limit_val)
+            """
         ),
         {"limit_val": limit},
     )
@@ -463,7 +440,7 @@ def obtener_categorias_mas_usadas(db: Session, limit: int = 20):
 def obtener_calculo_mensual(db: Session, id_calculo: int):
     result = db.execute(
         text(
-            'SELECT nit, mes, anio, total_reservas, revenue, total_clientes FROM "Calculos_mensuales" WHERE id_calculo = :id_calculo'
+            "SELECT nit, mes, anio, total_reservas, revenue, total_clientes FROM get_calculo_mensual_by_id(:id_calculo)"
         ),
         {"id_calculo": id_calculo},
     )
@@ -483,7 +460,7 @@ def obtener_calculo_mensual(db: Session, id_calculo: int):
 def obtener_calculos_mensuales(db: Session):
     result = db.execute(
         text(
-            'SELECT id_calculo, nit, mes, anio, total_reservas, revenue, total_clientes FROM "Calculos_mensuales"'
+            "SELECT id_calculo, nit, mes, anio, total_reservas, revenue, total_clientes FROM list_calculos_mensuales()"
         )
     )
     rows = result.fetchall()
@@ -502,7 +479,7 @@ def obtener_calculos_mensuales(db: Session):
 
 
 def obtener_comentarios(db: Session):
-    result = db.execute(text('SELECT id_comentario, comentario FROM "Comentarios"'))
+    result = db.execute(text("SELECT id_comentario, comentario FROM list_comentarios()"))
     rows = result.fetchall()
     return [{"id_comentario": row[0], "comentario": row[1]} for row in rows]
 
@@ -510,7 +487,11 @@ def obtener_comentarios(db: Session):
 def obtener_comentario(db: Session, id_comentario: int):
     result = db.execute(
         text(
-            'SELECT comentario FROM "Comentarios" WHERE id_comentario = :id_comentario'
+            "SELECT comentario FROM get_comentario_by_id(:id_comentario)"
         ),
         {"id_comentario": id_comentario},
     )
+    row = result.fetchone()
+    if row:
+        return {"comentario": row[0]}
+    return None

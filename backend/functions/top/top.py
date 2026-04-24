@@ -6,23 +6,19 @@ def obtener_top_restaurantes(db: Session):
         text(
             """
             SELECT
-                -- Identificador público/aleatorio del restaurante.
-                r.restaurante_uid AS restaurante_uid,
-                nit,
-                direccion,
-                nombre_restaurante,
-                rating,
-                reviews,
-                availabletoday,
-                horario_apertura,
-                horario_cierre,
-                documento,
-                url_image,
-                c.nombre_categoria
-            FROM "Restaurante" r
-            LEFT JOIN "Categorias" c ON c.id_categoria = r.id_categoria
-            ORDER BY r.rating DESC, r.reviews DESC
-            LIMIT :limit
+                t.restaurante_uid,
+                t.nit,
+                t.direccion,
+                t.nombre_restaurante,
+                t.rating,
+                t.reviews,
+                t.availabletoday,
+                t.horario_apertura,
+                t.horario_cierre,
+                t.documento,
+                t.url_image,
+                t.nombre_categoria
+            FROM fn_top_obtener_top_restaurantes(:limit) AS t
             """
         ),
         {"limit": 9},
@@ -43,57 +39,39 @@ def obtener_restaurantes_paginados(
     offset = (page - 1) * per_page
     query_norm = query.strip()
 
-    count_sql = text(
-        """
-        SELECT COUNT(*) AS total
-        FROM "Restaurante" r
-        LEFT JOIN "Categorias" c ON c.id_categoria = r.id_categoria
-        WHERE (
-            :query = ''
-            OR LOWER(r.nombre_restaurante) LIKE LOWER(:pattern)
-            OR LOWER(COALESCE(c.nombre_categoria, '')) LIKE LOWER(:pattern)
-            OR LOWER(COALESCE(r.descripcion_restaurante, '')) LIKE LOWER(:pattern)
-        )
-        """
-    )
+    count_sql = text("SELECT fn_top_contar_restaurantes(:query) AS total")
     total = db.execute(
         count_sql,
-        {"query": query_norm, "pattern": f"%{query_norm}%"},
+        {"query": query_norm},
     ).scalar() or 0
 
     data_sql = text(
         """
         SELECT
-            r.restaurante_uid AS restaurante_uid,
-            r.nit,
-            r.direccion,
-            r.nombre_restaurante,
-            r.rating,
-            r.reviews,
-            r.availabletoday,
-            r.horario_apertura,
-            r.horario_cierre,
-            r.documento,
-            r.url_image,
-            r.descripcion_restaurante,
-            c.nombre_categoria
-        FROM "Restaurante" r
-        LEFT JOIN "Categorias" c ON c.id_categoria = r.id_categoria
-        WHERE (
-            :query = ''
-            OR LOWER(r.nombre_restaurante) LIKE LOWER(:pattern)
-            OR LOWER(COALESCE(c.nombre_categoria, '')) LIKE LOWER(:pattern)
-            OR LOWER(COALESCE(r.descripcion_restaurante, '')) LIKE LOWER(:pattern)
-        )
-        ORDER BY r.rating DESC, r.reviews DESC, r.nombre_restaurante ASC
-        LIMIT :limit OFFSET :offset
+            t.restaurante_uid,
+            t.nit,
+            t.direccion,
+            t.nombre_restaurante,
+            t.rating,
+            t.reviews,
+            t.availabletoday,
+            t.horario_apertura,
+            t.horario_cierre,
+            t.documento,
+            t.url_image,
+            t.descripcion_restaurante,
+            t.nombre_categoria
+        FROM fn_top_obtener_restaurantes_paginados(
+            :query,
+            :limit,
+            :offset
+        ) AS t
         """
     )
     rows = db.execute(
         data_sql,
         {
             "query": query_norm,
-            "pattern": f"%{query_norm}%",
             "limit": per_page,
             "offset": offset,
         },

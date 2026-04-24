@@ -33,7 +33,13 @@ else:
 
 CORS_ORIGINS = [o.strip().rstrip("/") for o in CORS_ORIGINS_RAW.split(",") if o.strip()]
 
-engine = create_engine(DATABASE_URL)
+# pool_pre_ping: comprueba la conexión antes de usarla (evita errores tras idle/SSL cerrado).
+# pool_recycle: recicla conexiones antes de timeouts típicos de firewall/proxy/PgBouncer.
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,
+    pool_recycle=1800,
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

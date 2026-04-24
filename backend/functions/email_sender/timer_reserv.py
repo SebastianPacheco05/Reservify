@@ -2,6 +2,7 @@ import asyncio
 from datetime import datetime, timedelta
 
 from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
 from config import SessionLocal
@@ -39,38 +40,69 @@ def _construir_mensaje(
     )
 
 
+def _fetch_reservas_confirmadas_once(db: Session) -> list[tuple]:
+    required_tables = {"Reserva", "Usuario", "Credenciales", "Mesas", "Restaurante"}
+    tables_query = text(
+        """
+        SELECT tablename
+        FROM pg_tables
+        WHERE schemaname = 'public'
+          AND tablename = ANY(:tables)
+        """
+    )
+    existing_tables = {
+        row[0]
+        for row in db.execute(
+            tables_query, {"tables": list(required_tables)}
+        ).fetchall()
+    }
+    missing_tables = required_tables - existing_tables
+    if missing_tables:
+        print(
+            "tarea_programada omitida: faltan tablas requeridas ->",
+            ", ".join(sorted(missing_tables)),
+        )
+        return []
+
+    query = text(
+        """
+        SELECT
+            r.id_reserva,
+            r.fecha,
+            r.horario,
+            u.nombre,
+            u.apellido,
+            c.email,
+            re.nombre_restaurante
+        FROM "Reserva" r
+        JOIN "Usuario" u ON u.documento = r.documento
+        JOIN "Credenciales" c ON c.id_credencial = u.id_credencial
+        JOIN "Mesas" m ON m.id_mesa = r.id_mesa
+        JOIN "Restaurante" re ON re.nit = m.nit
+        WHERE
+            r.estado_reserva = 'confirmada'
+            AND r.fecha BETWEEN CURRENT_DATE AND (CURRENT_DATE + INTERVAL '1 day')::date
+        """
+    )
+    return db.execute(query).fetchall()
+
+
 def _fetch_reservas_confirmadas() -> list[tuple]:
     """
     Obtiene reservas confirmadas con lo necesario para construir el correo:
     nombre/apellido, email del cliente y nombre del restaurante.
+    Reintenta una vez si la conexión se cerró (p. ej. SSL idle).
     """
-    db: Session = SessionLocal()
-    try:
-        # Reservas confirmadas, considerando como próximas las fechas de hoy y mañana.
-        # (La lógica de 2h/1h se valida luego en Python.)
-        query = text(
-            """
-            SELECT
-                r.id_reserva,
-                r.fecha,
-                r.horario,
-                u.nombre,
-                u.apellido,
-                c.email,
-                re.nombre_restaurante
-            FROM "Reserva" r
-            JOIN "Usuario" u ON u.documento = r.documento
-            JOIN "Credenciales" c ON c.id_credencial = u.id_credencial
-            JOIN "Mesas" m ON m.id_mesa = r.id_mesa
-            JOIN "Restaurante" re ON re.nit = m.nit
-            WHERE
-                r.estado_reserva = 'confirmada'
-                AND r.fecha BETWEEN CURRENT_DATE AND (CURRENT_DATE + INTERVAL '1 day')::date
-            """
-        )
-        return db.execute(query).fetchall()
-    finally:
-        db.close()
+    for attempt in range(2):
+        db: Session = SessionLocal()
+        try:
+            return _fetch_reservas_confirmadas_once(db)
+        except OperationalError:
+            if attempt == 0:
+                continue
+            raise
+        finally:
+            db.close()
 
 
 def _segundos_hasta_siguiente_cuarto_de_hora(now: datetime) -> float:

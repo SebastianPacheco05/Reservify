@@ -1,10 +1,30 @@
 /*
- * Script de creaciÃ³n de base de datos para el sistema de reservas de restaurantes
+ * Script de creación de base de datos para el sistema de reservas de restaurantes
  * Este script crea todas las tablas necesarias para el funcionamiento del sistema
- * Incluye la eliminaciÃ³n de tablas existentes y la creaciÃ³n de nuevas con sus respectivas relaciones
+ * Incluye la eliminación de tablas existentes y la creación de nuevas con sus respectivas relaciones
+ *
+ * ---------------------------------------------------------------------------
+ * Clasificación de tablas (modelo lógico)
+ * ---------------------------------------------------------------------------
+ * MAESTRAS — Catálogos y entidades de referencia relativamente estables:
+ *   Roles, Categorias, Usuario, Restaurante, Imagen_referencia_restaurante,
+ *   Mesas, Administrador_restaurante
+ *
+ * TRANSACCIONALES — Hechos de negocio, operación y datos derivados por uso:
+ *   Reserva, Encabezado_Factura, Detalle_Factura, Comentarios,
+ *   Calculos_mensuales, Mails
+ *
+ * SEGURIDAD — Autenticación, sesión, recuperación de acceso y secretos:
+ *   Credenciales, jwt_tokens, Password_Reset_Codes, SMTP_config, IMAP_config
+ *   (las tablas de correo almacenan credenciales cifradas; tratarlas con el mismo
+ *   rigor que el resto de tablas de seguridad)
+ *
+ * Cada CREATE TABLE va precedido de un comentario -- [MAESTRA], [TRANSACCIONAL] o [SEGURIDAD]
+ * para localizar el tipo en el script.
+ * ---------------------------------------------------------------------------
  */
 
--- Primero se eliminan todas las tablas existentes en orden inverso a su creaciÃ³n
+-- Primero se eliminan todas las tablas existentes en orden inverso a su creación
 -- para evitar problemas de dependencias
 DROP TABLE IF EXISTS "Reserva";
 DROP TABLE IF EXISTS "Comentarios";
@@ -28,7 +48,7 @@ DROP TABLE IF EXISTS "Credenciales";
 -- Extensión para generar UUID aleatorio con gen_random_uuid()
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-
+-- [SEGURIDAD] Credenciales de login (email y contraseña)
 -- Tabla Credenciales: Almacena la informaciÃ³n de autenticaciÃ³n de usuarios
 CREATE TABLE "Credenciales" (
     id_credencial SERIAL NOT NULL PRIMARY KEY,  -- Identificador Ãºnico autoincremental
@@ -39,6 +59,7 @@ CREATE TABLE "Credenciales" (
     password VARCHAR(255) NOT NULL  -- ContraseÃ±a encriptada
 );
 
+-- [MAESTRA] Catálogo de roles del sistema
 -- Tabla Roles: Define los diferentes roles en el sistema
 CREATE TABLE "Roles" (
     id_rol SERIAL NOT NULL UNIQUE PRIMARY KEY,  -- Identificador Ãºnico autoincremental
@@ -54,6 +75,7 @@ INSERT INTO "Roles" (id_rol, nombre_rol, descripcion) VALUES
     (4, 'administrador', 'Administrador general de varios restaurantes')
 ON CONFLICT (id_rol) DO NOTHING;
 
+-- [MAESTRA] Personas (cliente, dueño, empleado, administrador); enlace 1:1 a Credenciales
 -- Tabla Usuario: Almacena todos los usuarios del sistema (cliente, dueÃ±o, empleado) segÃºn id_rol
 -- DueÃ±o: vinculado a restaurantes por Restaurante.documento = Usuario.documento
 -- Empleado: vinculado a un restaurante por Usuario.nit (restaurante donde trabaja)
@@ -72,6 +94,7 @@ CREATE TABLE "Usuario" (
     FOREIGN KEY (id_credencial) REFERENCES "Credenciales" (id_credencial) ON DELETE CASCADE
 );
 
+-- [MAESTRA] Catálogo de tipos/categorías de restaurante
 -- Tabla Categorias: Define las categorÃ­as de restaurantes
 CREATE TABLE "Categorias" (
     id_categoria SERIAL PRIMARY KEY NOT NULL,  -- Identificador Ãºnico autoincremental
@@ -162,6 +185,7 @@ INSERT INTO "Categorias" (nombre_categoria) VALUES
 ('Bar de Cócteles'),
 ('Bar de Tapas');
 
+-- [MAESTRA] Establecimiento (datos base del local)
 -- Tabla Restaurante: Almacena informaciÃ³n de los restaurantes
 CREATE TABLE "Restaurante" (
     restaurante_uid UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),  -- identificador aleatorio real del restaurante
@@ -196,6 +220,7 @@ CREATE TABLE "Restaurante" (
     )  -- Permite cruce de medianoche con máximo 8 horas
 );
 
+-- [MAESTRA] Asignación administrador ↔ restaurante (un admin por local)
 -- Tabla Administrador_restaurante: relación administrador <-> restaurante
 -- Un administrador puede gestionar múltiples restaurantes; cada restaurante tiene un único administrador.
 CREATE TABLE "Administrador_restaurante" (
@@ -212,6 +237,7 @@ CREATE INDEX idx_admin_restaurante_uid ON "Administrador_restaurante" (restauran
 
 COMMENT ON TABLE "Administrador_restaurante" IS 'Relación administrador-restaurante (admin multi-local, un admin por restaurante).';
 
+-- [MAESTRA] Galería de imágenes de referencia por restaurante
 -- Tabla Imagen_referencia_restaurante: imÃ¡genes de referencia por restaurante (mÃ¡ximo 15 por restaurante_uid)
 CREATE TABLE "Imagen_referencia_restaurante" (
     restaurante_uid UUID NOT NULL,
@@ -228,6 +254,7 @@ COMMENT ON COLUMN "Imagen_referencia_restaurante".restaurante_uid IS 'FK al rest
 COMMENT ON COLUMN "Imagen_referencia_restaurante".url_imagen IS 'URL de la imagen (Cloudinary)';
 COMMENT ON COLUMN "Imagen_referencia_restaurante".orden IS 'Orden de la imagen (0-14)';
 
+-- [MAESTRA] Inventario de mesas por restaurante (configuración operativa)
 -- Tabla Mesas: Almacena informaciÃ³n de las mesas de cada restaurante
 CREATE TABLE "Mesas" (
     id_mesa SERIAL PRIMARY KEY NOT NULL,  -- Identificador Ãºnico autoincremental
@@ -241,6 +268,7 @@ CREATE TABLE "Mesas" (
     FOREIGN KEY (restaurante_uid) REFERENCES "Restaurante" (restaurante_uid) ON DELETE CASCADE
 );
 
+-- [TRANSACCIONAL] Cabecera de factura (venta / cobro)
 -- Tabla Encabezado_Factura: Almacena la informaciÃ³n principal de las facturas
 CREATE TABLE "Encabezado_Factura" (
     id_encab_fact SERIAL PRIMARY KEY NOT NULL,  -- Identificador Ãºnico autoincremental
@@ -259,6 +287,7 @@ CREATE TABLE "Encabezado_Factura" (
     FOREIGN KEY (documento) REFERENCES "Usuario" (documento) ON DELETE CASCADE
 );
 
+-- [TRANSACCIONAL] Líneas de detalle de factura
 -- Tabla Detalle_Factura: lineas de detalle por factura (encabezado)
 CREATE TABLE "Detalle_Factura" (
     id_det_fact SERIAL PRIMARY KEY NOT NULL,
@@ -273,6 +302,7 @@ CREATE TABLE "Detalle_Factura" (
 
 CREATE INDEX idx_detalle_factura_id_encab ON "Detalle_Factura" (id_encab_fact);
 
+-- [TRANSACCIONAL] Reserva de mesa (hecho operativo principal)
 -- Tabla Reserva: Almacena las reservas de mesas
 CREATE TABLE "Reserva" (
     id_reserva SERIAL PRIMARY KEY NOT NULL,  -- Identificador Ãºnico autoincremental
@@ -297,6 +327,7 @@ CREATE TABLE "Reserva" (
 COMMENT ON COLUMN "Reserva".motivo_cancelacion IS 'Motivo indicado al cancelar (mÃ¡x 250 caracteres); se envÃ­a al cliente por correo';
 COMMENT ON COLUMN "Reserva".ajuste IS 'Observaciones o ajuste solicitado por el cliente en la reserva';
 
+-- [TRANSACCIONAL] Agregados por restaurante y mes (datos de cierre / reporting operativo)
 CREATE TABLE "Calculos_mensuales" (
     id_calculo SERIAL PRIMARY KEY NOT NULL,  -- Identificador Ãºnico autoincremental
     nit BIGINT NOT NULL,  -- Referencia al restaurante
@@ -308,6 +339,7 @@ CREATE TABLE "Calculos_mensuales" (
     FOREIGN KEY (nit) REFERENCES "Restaurante" (nit) ON DELETE CASCADE
 );
 
+-- [TRANSACCIONAL] Reseñas y comentarios de clientes
 CREATE TABLE "Comentarios" (
     id_comentario SERIAL PRIMARY KEY NOT NULL,  -- Identificador Ãºnico autoincremental
     documento DECIMAL(10, 0) NOT NULL,  -- Referencia al cliente
@@ -321,6 +353,7 @@ CREATE TABLE "Comentarios" (
 
 CREATE INDEX idx_comentarios_restaurante_uid ON "Comentarios" (restaurante_uid);
 
+-- [SEGURIDAD] Sesiones OAuth/JWT (access y refresh, revocación)
 -- Tabla JWT_Tokens: Una fila por sesiÃ³n. token = access token, refresh_token = token de refresco.
 -- Permite renovar el access token sin cerrar sesiÃ³n buscando por refresh_token.
 CREATE TABLE "jwt_tokens" (
@@ -340,6 +373,7 @@ CREATE TABLE "jwt_tokens" (
 );
 CREATE UNIQUE INDEX idx_jwt_tokens_refresh_token ON "jwt_tokens" (refresh_token);
 
+-- [SEGURIDAD] Códigos de un solo uso para recuperar contraseña
 -- Tabla Password_Reset_Codes: CÃ³digos temporales para recuperaciÃ³n de contraseÃ±a
 CREATE TABLE "Password_Reset_Codes" (
     id SERIAL PRIMARY KEY NOT NULL,
@@ -351,6 +385,7 @@ CREATE TABLE "Password_Reset_Codes" (
 );
 CREATE INDEX idx_password_reset_codes_credencial ON "Password_Reset_Codes" (id_credencial, used, expires_at);
 
+-- [SEGURIDAD] Configuración SMTP con secretos cifrados
 -- Tabla SMTP_config: ConfiguraciÃ³n por usuario para envÃ­o de correos (cada usuario su correo/contraseÃ±a)
 CREATE TABLE "SMTP_config" (
     id SERIAL PRIMARY KEY NOT NULL,
@@ -367,6 +402,7 @@ CREATE TABLE "SMTP_config" (
 );
 COMMENT ON TABLE "SMTP_config" IS 'ConfiguraciÃ³n SMTP por usuario; cada dueÃ±o/admin/empleado tiene su propio correo y contraseÃ±a';
 
+-- [SEGURIDAD] Configuración IMAP con secretos cifrados
 -- Tabla IMAP_config: ConfiguraciÃ³n por usuario para lectura de correos (cada usuario su correo/contraseÃ±a)
 CREATE TABLE "IMAP_config" (
     id SERIAL PRIMARY KEY NOT NULL,
@@ -382,6 +418,7 @@ CREATE TABLE "IMAP_config" (
 );
 COMMENT ON TABLE "IMAP_config" IS 'ConfiguraciÃ³n IMAP por usuario; cada dueÃ±o/admin/empleado tiene su propio correo y contraseÃ±a';
 
+-- [TRANSACCIONAL] Bandeja archivada (contenido operativo por mensaje; no es catálogo)
 -- Tabla Mails: correos archivados desde IMAP (id_credencial = usuario al que le llega el correo)
 CREATE TABLE "Mails" (
     id SERIAL PRIMARY KEY NOT NULL,
