@@ -249,7 +249,9 @@ def _solo_dueno(id_credencial: int, db: Session) -> None:
 
 def _obtener_nit_por_uid(restaurante_uid: str, db: Session) -> int:
     row = db.execute(
-        sql_text('SELECT nit FROM "Restaurante" WHERE restaurante_uid = :restaurante_uid'),
+        sql_text(
+            "SELECT fn_do_obtener_nit_por_restaurante_uid(CAST(:restaurante_uid AS uuid))"
+        ),
         {"restaurante_uid": restaurante_uid},
     ).fetchone()
     if not row:
@@ -320,11 +322,14 @@ def put_restaurante_config(
             body.documento,
             body.id_categoria,
         )
-        # Actualizar la antelación mínima directamente (no rompemos la función SQL existente).
-        from sqlalchemy import text as sql_text
         db.execute(
             sql_text(
-                'UPDATE "Restaurante" SET min_anticipacion_horas = :min_anticipacion WHERE nit = :nit'
+                """
+                SELECT fn_do_actualizar_min_anticipacion_restaurante(
+                    :nit,
+                    :min_anticipacion
+                )
+                """
             ),
             {
                 "min_anticipacion": max(0, int(getattr(body, "min_anticipacion_horas", 0) or 0)),
@@ -705,10 +710,8 @@ def actualizar_estado_reserva_gestor(
                 detail="El motivo de cancelación no puede superar los 250 caracteres"
             )
 
-        # Obtener estado actual de la reserva
-        from sqlalchemy import text
         row = db.execute(
-            text('SELECT estado_reserva FROM "Reserva" WHERE id_reserva = :id'),
+            sql_text("SELECT fn_do_obtener_estado_reserva(:id)"),
             {"id": id_reserva}
         ).fetchone()
         if not row:
@@ -1015,7 +1018,7 @@ def enviar_correo_propietario(
     try:
         id_credencial = usuario_actual["id"]
         row = db.execute(
-            sql_text('SELECT email FROM "Credenciales" WHERE id_credencial = :id'),
+            sql_text("SELECT fn_do_obtener_email_por_id_credencial(:id)"),
             {"id": id_credencial},
         ).fetchone()
         if not row or not row[0]:

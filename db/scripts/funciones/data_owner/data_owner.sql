@@ -299,3 +299,121 @@ BEGIN
 END;
 $$;
 
+
+CREATE OR REPLACE FUNCTION fn_do_obtener_nit_por_restaurante_uid(
+    p_restaurante_uid UUID
+)
+RETURNS DECIMAL(10,0)
+LANGUAGE plpgsql
+STABLE
+AS $$
+DECLARE
+    v_nit DECIMAL(10,0);
+BEGIN
+    SELECT r.nit
+    INTO v_nit
+    FROM "Restaurante" r
+    WHERE r.restaurante_uid = p_restaurante_uid
+    LIMIT 1;
+
+    RETURN v_nit;
+EXCEPTION
+    WHEN SQLSTATE '42P01' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN SQLSTATE '42703' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION fn_do_actualizar_min_anticipacion_restaurante(
+    p_nit DECIMAL(10,0),
+    p_min_anticipacion_horas INT
+)
+RETURNS VOID
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE "Restaurante"
+    SET min_anticipacion_horas = GREATEST(COALESCE(p_min_anticipacion_horas, 0), 0)
+    WHERE nit = p_nit;
+EXCEPTION
+    WHEN not_null_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Faltan datos obligatorios.';
+    WHEN foreign_key_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Datos inválidos. Verifica e intenta nuevamente.';
+    WHEN unique_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Ya existe un registro con esos datos.';
+    WHEN check_violation THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Datos inválidos. Verifica e intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION fn_do_obtener_estado_reserva(
+    p_id_reserva INT
+)
+RETURNS VARCHAR
+LANGUAGE plpgsql
+STABLE
+AS $$
+DECLARE
+    v_estado VARCHAR;
+BEGIN
+    SELECT r.estado_reserva
+    INTO v_estado
+    FROM "Reserva" r
+    WHERE r.id_reserva = p_id_reserva
+    LIMIT 1;
+
+    RETURN v_estado;
+EXCEPTION
+    WHEN SQLSTATE '42P01' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN SQLSTATE '42703' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION fn_do_obtener_email_por_id_credencial(
+    p_id_credencial INT
+)
+RETURNS VARCHAR
+LANGUAGE plpgsql
+STABLE
+AS $$
+DECLARE
+    v_email VARCHAR;
+BEGIN
+    SELECT c.email
+    INTO v_email
+    FROM "Credenciales" c
+    WHERE c.id_credencial = p_id_credencial
+    LIMIT 1;
+
+    RETURN v_email;
+EXCEPTION
+    WHEN SQLSTATE '42P01' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN SQLSTATE '42703' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
+$$;
+
