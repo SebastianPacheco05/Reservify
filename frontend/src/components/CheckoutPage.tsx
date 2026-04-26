@@ -58,24 +58,29 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
   const [emailCliente, setEmailCliente] = useState("");
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const WOMPI_MIN_AMOUNT_COP = 1500;
 
   const precio = reservationData.mesa?.precio ?? 0;
   const nombreRestaurante = reservationData.restaurant?.nombre_restaurante ?? "Restaurante";
 
+  const formatDateNoTimezoneShift = (dateValue: string): string => {
+    const raw = (dateValue || "").trim();
+    const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!match) return raw;
+
+    const [, year, month, day] = match;
+    const safeDate = new Date(Number(year), Number(month) - 1, Number(day));
+    return safeDate.toLocaleDateString("es-CO", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
   const fechaFormateada = useMemo(() => {
     if (!reservationData.fecha) return "—";
-    try {
-      const d = new Date(reservationData.fecha);
-      if (Number.isNaN(d.getTime())) return reservationData.fecha;
-      return d.toLocaleDateString("es-CO", {
-        weekday: "short",
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      });
-    } catch {
-      return reservationData.fecha;
-    }
+    return formatDateNoTimezoneShift(reservationData.fecha) || reservationData.fecha;
   }, [reservationData.fecha]);
 
   useEffect(() => {
@@ -172,6 +177,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
         setLoading(false);
         setWaitingBank(false);
         sessionStorage.removeItem("pendingReservation");
+        sessionStorage.setItem("openProfileReservasAfterPayment", "1");
         toast({
           title: "Pago confirmado",
           description: "Tu reserva quedó registrada. Te enviaremos los detalles por correo.",
@@ -228,8 +234,23 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
       return;
     }
 
+    if (precio < WOMPI_MIN_AMOUNT_COP) {
+      toast({
+        title: "Monto no permitido",
+        description: `El pago mínimo permitido por Wompi es $${WOMPI_MIN_AMOUNT_COP.toLocaleString("es-CO")} COP.`,
+        variant: "warning",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
+      const paymentReference = `RES-${reservationData.id_encab_fact}-${Date.now()}-${Math.floor(
+        Math.random() * 10000,
+      )
+        .toString()
+        .padStart(4, "0")}`;
+
       const expDigits = expiry.replace(/\D/g, "");
       const expMonthPadded = expDigits.slice(0, 2);
       const expYearShort = expDigits.slice(2, 4);
@@ -248,7 +269,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           monto: reservationData.mesa.precio,
-          referencia: `RES-${reservationData.id_encab_fact}`,
+          referencia: paymentReference,
           correo_cliente: emailCliente,
           payment_method: paymentMethod,
         }),
@@ -268,6 +289,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
 
       if (result.reserva_confirmada === true) {
         sessionStorage.removeItem("pendingReservation");
+        sessionStorage.setItem("openProfileReservasAfterPayment", "1");
         toast({
           title: "Pago confirmado",
           description: "Tu reserva está lista.",
@@ -285,6 +307,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
       if ((httpStatus === 200 || httpStatus === 201) && tieneData) {
         if (transactionStatus === "APPROVED") {
           sessionStorage.removeItem("pendingReservation");
+          sessionStorage.setItem("openProfileReservasAfterPayment", "1");
           toast({
             title: "Pago confirmado",
             description: "Tu reserva está lista.",
@@ -320,14 +343,29 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
         }
 
         if (transactionId) {
+          sessionStorage.removeItem("pendingReservation");
+          sessionStorage.setItem("openProfileReservasAfterPayment", "1");
           toast({
             title: "Procesando pago",
-            description: "Te avisaremos cuando se confirme.",
+            description: "Te llevamos a tus reservas para que puedas verificar el estado.",
             variant: "default",
           });
-          setLoading(false);
+          window.location.href = "/";
           return;
         }
+      }
+
+      if (transactionStatus === "PENDING") {
+        sessionStorage.removeItem("pendingReservation");
+        sessionStorage.setItem("openProfileReservasAfterPayment", "1");
+        setLoading(false);
+        toast({
+          title: "Pago en proceso",
+          description: "Revisa el estado en tu perfil, pestaña Reservas.",
+          variant: "default",
+        });
+        window.location.href = "/";
+        return;
       }
 
       setLoading(false);
@@ -351,6 +389,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
     cardHolder.trim().length >= 3;
 
   const canSubmit = Boolean(emailCliente) && !loading && !waitingBank && cardReady;
+  const canPayAmount = precio >= WOMPI_MIN_AMOUNT_COP;
 
   const goBack = () => {
     if (window.history.length > 1) navigate(-1);
@@ -543,7 +582,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                 type="button"
                 size="lg"
                 className="h-12 w-full rounded-xl text-base font-semibold"
-                disabled={!canSubmit}
+                disabled={!canSubmit || !canPayAmount}
                 onClick={handlePayment}
               >
                 {loading || waitingBank ? (
@@ -562,7 +601,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
           <aside className="lg:col-span-5">
             <div className="lg:sticky lg:top-20">
               <Card className="overflow-hidden border-border/80 shadow-md">
-                <div className="bg-gradient-to-br from-foreground to-foreground/95 px-6 py-8 text-background">
+                <div className="bg-linear-to-br from-foreground to-foreground/95 px-6 py-8 text-background">
                   <p className="text-xs font-medium uppercase tracking-wider opacity-90">Total a pagar</p>
                   <p className="mt-2 text-4xl font-bold tabular-nums tracking-tight sm:text-5xl">
                     ${precio.toLocaleString("es-CO")}
@@ -581,7 +620,7 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                     type="button"
                     size="lg"
                     className="hidden h-12 w-full rounded-xl text-base font-semibold lg:inline-flex"
-                    disabled={!canSubmit}
+                    disabled={!canSubmit || !canPayAmount}
                     onClick={handlePayment}
                   >
                     {loading || waitingBank ? (
@@ -596,6 +635,11 @@ export default function CheckoutPage({ reservationData }: CheckoutPageProps) {
                   <p className="hidden text-center text-[11px] leading-relaxed text-muted-foreground lg:block">
                     Al pagar aceptas los términos del procesador Wompi. Cargo único por esta reserva.
                   </p>
+                  {!canPayAmount && (
+                    <p className="text-center text-xs text-amber-600 dark:text-amber-500">
+                      Monto mínimo para pagar con Wompi: ${WOMPI_MIN_AMOUNT_COP.toLocaleString("es-CO")} COP.
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             </div>

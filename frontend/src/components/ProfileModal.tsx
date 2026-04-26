@@ -44,11 +44,12 @@ interface Reserva {
 interface ProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialTab?: "perfil" | "reservas";
 }
 
-export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
+export function ProfileModal({ isOpen, onClose, initialTab = "perfil" }: ProfileModalProps) {
   const { toast } = useToastContext();
-  const [activeTab, setActiveTab] = useState<"perfil" | "reservas">("perfil");
+  const [activeTab, setActiveTab] = useState<"perfil" | "reservas">(initialTab);
   const [perfil, setPerfil] = useState<PerfilData | null>(null);
   const [reservas, setReservas] = useState<Reserva[]>([]);
   const [isLoadingPerfil, setIsLoadingPerfil] = useState(false);
@@ -65,6 +66,12 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   const [apellido, setApellido] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab(initialTab);
+    }
+  }, [isOpen, initialTab]);
 
   useEffect(() => {
     if (isOpen && activeTab === "perfil") {
@@ -255,33 +262,35 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   };
 
   const formatearFecha = (fecha: string) => {
-    return new Date(fecha).toLocaleDateString("es-ES", {
-      day: "2-digit",
+    const raw = (fecha || "").trim();
+    const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!match) return raw;
+    const [, year, month, day] = match;
+    return `${day} ${new Date(Number(year), Number(month) - 1, Number(day)).toLocaleDateString("es-ES", {
       month: "short",
-      year: "numeric",
-    });
+    }).replace(".", "")} ${year}`;
   };
 
   return (
     <>
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="w-[95vw] sm:max-w-[900px] lg:max-w-[1000px] max-h-[90vh] overflow-hidden flex flex-col p-0 bg-gradient-to-br from-muted via-background to-accent/20 dark:from-background dark:via-muted dark:to-secondary/20 border-2 border-primary/30 dark:border-primary/50 shadow-2xl">
-          <div className="bg-gradient-to-r from-primary via-secondary to-accent p-6 text-primary-foreground">
+        <DialogContent className="w-[94vw] sm:max-w-[900px] lg:max-w-[1000px] max-h-[90vh] overflow-hidden flex flex-col p-0 bg-linear-to-br from-muted via-background to-accent/20 dark:from-background dark:via-muted dark:to-secondary/20 border-2 border-primary/30 dark:border-primary/50 shadow-2xl">
+          <div className="bg-linear-to-r from-primary via-secondary to-accent px-4 py-4 sm:p-6 text-primary-foreground">
             <DialogHeader className="space-y-2">
-              <DialogTitle className="text-3xl font-bold">Mi Perfil</DialogTitle>
-              <DialogDescription className="opacity-90 text-base">
+              <DialogTitle className="text-2xl sm:text-3xl font-bold">Mi Perfil</DialogTitle>
+              <DialogDescription className="opacity-90 text-sm sm:text-base">
                 Gestiona tu información personal y tus reservas
               </DialogDescription>
             </DialogHeader>
           </div>
 
-          <div className="px-6 pt-4">
-            <div className="flex border-b-2 border-border gap-2 mb-6">
+          <div className="px-4 sm:px-6 pt-3 sm:pt-4">
+            <div className="flex border-b-2 border-border gap-2 mb-4 sm:mb-6">
               <Button
                 variant={activeTab === "perfil" ? "default" : "ghost"}
-                size="lg"
+                size="sm"
                 onClick={() => setActiveTab("perfil")}
-                className={`px-6 py-3 font-semibold transition-all duration-200 ${
+                className={`px-4 sm:px-6 py-2 sm:py-3 font-semibold text-sm sm:text-base transition-all duration-200 ${
                   activeTab === "perfil"
                     ? "bg-primary text-primary-foreground shadow-lg hover:opacity-90"
                     : "hover:bg-muted text-muted-foreground"
@@ -291,9 +300,9 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
               </Button>
               <Button
                 variant={activeTab === "reservas" ? "default" : "ghost"}
-                size="lg"
+                size="sm"
                 onClick={() => setActiveTab("reservas")}
-                className={`px-6 py-3 font-semibold transition-all duration-200 ${
+                className={`px-4 sm:px-6 py-2 sm:py-3 font-semibold text-sm sm:text-base transition-all duration-200 ${
                   activeTab === "reservas"
                     ? "bg-primary text-primary-foreground shadow-lg hover:opacity-90"
                     : "hover:bg-muted text-muted-foreground"
@@ -390,14 +399,14 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
 
           {activeTab === "reservas" && (
             <div className="flex-1 overflow-hidden flex flex-col px-4 sm:px-6 pb-4 sm:pb-6">
-              <div className="flex gap-3 mb-6 flex-wrap bg-card/80 backdrop-blur-sm p-4 rounded-xl border border-border shadow-md">
+              <div className="flex gap-2 mb-4 sm:mb-6 flex-wrap bg-card/80 backdrop-blur-sm p-3 sm:p-4 rounded-xl border border-border shadow-md">
                 {["todos", "pendiente", "confirmada", "cancelada"].map((estado) => (
                   <Button
                     key={estado}
                     variant={estadoFilter === estado ? "default" : "outline"}
-                    size="lg"
+                    size="sm"
                     onClick={() => setEstadoFilter(estado)}
-                    className={`px-5 py-2.5 font-semibold transition-all duration-200 ${
+                    className={`px-4 py-2 text-sm sm:text-base font-semibold transition-all duration-200 ${
                       estadoFilter === estado
                         ? "bg-primary text-primary-foreground shadow-lg hover:opacity-90"
                         : "border-2 hover:bg-muted hover:border-primary"
@@ -415,7 +424,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                   </div>
                 </div>
               ) : (
-                <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+                <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-4 pr-2">
                   {filteredReservas.length === 0 ? (
                     <div className="text-center py-16 bg-card/80 backdrop-blur-sm rounded-xl border border-border shadow-md">
                       <p className="text-lg text-muted-foreground font-medium">
@@ -426,7 +435,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                     filteredReservas.map((reserva) => (
                       <div
                         key={reserva.id_reserva}
-                        className={`p-6 border-2 rounded-xl bg-card/80 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 ${
+                        className={`p-4 sm:p-6 border-2 rounded-xl bg-card/80 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 ${
                           reserva.estado_reserva.toLowerCase() === "cancelada"
                             ? "cursor-pointer hover:scale-[1.02] border-destructive/50 hover:border-destructive"
                             : "border-border hover:border-primary"
@@ -434,27 +443,27 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                       >
                         <div className="flex justify-between items-start gap-4">
                           <div className="space-y-3 flex-1">
-                            <p className="font-bold text-xl text-foreground">
+                            <p className="font-bold text-lg sm:text-xl text-foreground">
                               {reserva.nombre_restaurante}
                             </p>
-                            <div className="flex flex-wrap gap-4 text-base">
+                            <div className="flex flex-wrap gap-3 sm:gap-4 text-sm sm:text-base">
                               <span className="flex items-center gap-2 text-muted-foreground font-medium">
-                                <Calendar className="h-5 w-5 text-primary" />
+                                <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                                 {formatearFecha(reserva.fecha)}
                               </span>
                               <span className="flex items-center gap-2 text-muted-foreground font-medium">
-                                <Clock className="h-5 w-5 text-secondary" />
+                                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
                                 {reserva.horario}
                               </span>
                               <span className="flex items-center gap-2 text-muted-foreground font-medium">
-                                <Users className="h-5 w-5 text-accent" />
+                                <Users className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
                                 {reserva.num_comensales} {reserva.num_comensales === 1 ? "persona" : "personas"}
                               </span>
                             </div>
                           </div>
                           <Badge
                             variant="outline"
-                            className={`${getEstadoBadge(reserva.estado_reserva)} px-4 py-2 text-sm font-bold border-2 shadow-md`}
+                            className={`${getEstadoBadge(reserva.estado_reserva)} px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold border-2 shadow-md`}
                           >
                             {reserva.estado_reserva}
                           </Badge>
@@ -490,8 +499,8 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
 
       {/* Modal de motivo de cancelación (ver detalle) */}
       <Dialog open={!!cancelModalReserva} onOpenChange={(open) => !open && setCancelModalReserva(null)}>
-        <DialogContent className="w-[95vw] sm:max-w-lg bg-gradient-to-br from-muted via-background to-destructive/10 dark:from-background dark:via-muted dark:to-destructive/20 border-2 border-destructive/50 shadow-2xl">
-          <div className="bg-gradient-to-r from-destructive via-secondary to-destructive p-6 text-background rounded-t-lg -m-6 mb-4">
+        <DialogContent className="w-[95vw] sm:max-w-lg bg-linear-to-br from-muted via-background to-destructive/10 dark:from-background dark:via-muted dark:to-destructive/20 border-2 border-destructive/50 shadow-2xl">
+          <div className="bg-linear-to-r from-destructive via-secondary to-destructive p-6 text-background rounded-t-lg -m-6 mb-4">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold">Reserva Cancelada</DialogTitle>
             </DialogHeader>

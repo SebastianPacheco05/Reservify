@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Sidebar } from "../components/ui/sidebar";
 import { MetricCards } from "../components/ui/metric-cards";
@@ -28,7 +28,11 @@ import { showErrorToast } from "../lib/toastHelpers";
 import { AnimatedThemeToggler } from "../components/ui/animated-theme-toggler";
 
 function todayISO(): string {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 async function exportInvoicesCSV(): Promise<void> {
@@ -109,6 +113,28 @@ export default function AdminDashboard() {
   const [isInvoiceDetailOpen, setIsInvoiceDetailOpen] = useState(false);
   const [configModalRestaurant, setConfigModalRestaurant] = useState<Restaurant | null>(null);
 
+  const loadRestaurantes = useCallback(async () => {
+    setIsLoadingRestaurante(true);
+    try {
+      const res = await authFetch(getApiEndpoint("/data-owner/restaurantes"), {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+      const list = Array.isArray(data.restaurantes) ? data.restaurantes : [];
+      setRestaurantes(list);
+      if (list.length > 0) {
+        setSelectedRestauranteUid((prev) => prev || list[0].restaurante_uid);
+      } else {
+        setSelectedRestauranteUid("");
+      }
+    } catch (error) {
+      console.error("Error al cargar restaurante:", error);
+    } finally {
+      setIsLoadingRestaurante(false);
+    }
+  }, []);
+
   useEffect(() => {
     const loadMetrics = async () => {
       setIsLoadingMetrics(true);
@@ -125,27 +151,8 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    const loadRestaurante = async () => {
-      setIsLoadingRestaurante(true);
-      try {
-        const res = await authFetch(getApiEndpoint("/data-owner/restaurantes"), {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-        const data = await res.json();
-        const list = Array.isArray(data.restaurantes) ? data.restaurantes : [];
-        setRestaurantes(list);
-        if (list.length > 0) {
-          setSelectedRestauranteUid((prev) => prev || list[0].restaurante_uid);
-        }
-      } catch (error) {
-        console.error("Error al cargar restaurante:", error);
-      } finally {
-        setIsLoadingRestaurante(false);
-      }
-    };
-    loadRestaurante();
-  }, []);
+    loadRestaurantes();
+  }, [loadRestaurantes]);
 
   const restauranteSeleccionado =
     restaurantes.find((r) => r.restaurante_uid === selectedRestauranteUid) ??
@@ -535,10 +542,7 @@ export default function AdminDashboard() {
       <RestaurantConfigModal
         isOpen={configModalRestaurant !== null}
         onClose={() => setConfigModalRestaurant(null)}
-        onSuccess={() => {
-          // Volver a cargar el restaurante por si se cambia algún dato relevante
-          // (se mantiene simple porque el admin solo tiene un restaurante)
-        }}
+        onSuccess={loadRestaurantes}
         restaurant={configModalRestaurant}
       />
     </div>

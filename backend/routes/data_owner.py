@@ -276,14 +276,15 @@ def get_restaurante_config(
     db: Session = Depends(get_db),
 ):
     """
-    Detalle completo del restaurante para editar (solo dueño, solo sus restaurantes).
+    Detalle completo del restaurante para editar (dueño/admin con acceso).
     """
     try:
-        _solo_dueno(usuario_actual["id"], db)
         nit = _obtener_nit_por_uid(restaurante_uid, db)
+        if not _puede_gestionar_restaurante(usuario_actual["id"], nit, db):
+            raise HTTPException(status_code=403, detail="No tienes permisos para este restaurante.")
         data = obtener_restaurante_completo_dueno(usuario_actual["id"], nit, db)
         if not data:
-            raise HTTPException(status_code=404, detail="Restaurante no encontrado o no es tuyo.")
+            raise HTTPException(status_code=404, detail="Restaurante no encontrado o sin acceso.")
         return data
     except HTTPException:
         raise
@@ -299,15 +300,14 @@ def put_restaurante_config(
     db: Session = Depends(get_db),
 ):
     """
-    Editar restaurante (solo dueño, solo sus restaurantes). No incluye url_imagen.
+    Editar restaurante (dueño/admin con acceso). No incluye url_imagen.
     """
     try:
-        _solo_dueno(usuario_actual["id"], db)
         nit = _obtener_nit_por_uid(restaurante_uid, db)
         if body.nit != nit:
             raise HTTPException(status_code=400, detail="NIT no coincide.")
-        if not es_dueño_de_restaurante(usuario_actual["id"], nit, db):
-            raise HTTPException(status_code=403, detail="No eres dueño de este restaurante.")
+        if not _puede_gestionar_restaurante(usuario_actual["id"], nit, db):
+            raise HTTPException(status_code=403, detail="No tienes permisos para este restaurante.")
         crud_restaurante.editar_restaurante(
             db,
             restaurante_uid,
@@ -348,10 +348,12 @@ def put_restaurante_imagenes(
 ):
     """
     Imagen principal (url_image) y/o galería de referencia. Reemplaza la lista de referencia completa.
-    Solo dueño.
+    Dueño o administrador con acceso.
     """
     try:
-        _solo_dueno(usuario_actual["id"], db)
+        nit = _obtener_nit_por_uid(restaurante_uid, db)
+        if not _puede_gestionar_restaurante(usuario_actual["id"], nit, db):
+            raise HTTPException(status_code=403, detail="No tienes permisos para este restaurante.")
         if body.url_image is None and body.imagenes_referencia is None:
             raise HTTPException(
                 status_code=400,
@@ -523,9 +525,8 @@ def get_empleados_dueno(
     usuario_actual: dict = Depends(verificar_token),
     db: Session = Depends(get_db),
 ):
-    """Lista usuarios que el dueño puede asignar como administrador (empleados/admins de sus restaurantes). Solo dueño."""
+    """Lista empleados/admins del ámbito del gestor (dueño o administrador)."""
     try:
-        _solo_dueno(usuario_actual["id"], db)
         lista = obtener_usuarios_asignables_dueno(usuario_actual["id"], db)
         return {"empleados": lista}
     except HTTPException:

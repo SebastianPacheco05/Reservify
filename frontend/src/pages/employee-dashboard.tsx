@@ -28,7 +28,11 @@ import type { Table, Reservation } from "../types/employee";
 import { AnimatedThemeToggler } from "../components/ui/animated-theme-toggler";
 
 function todayISO(): string {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 function getGreeting(): string {
@@ -100,10 +104,16 @@ export default function EmployeeDashboard() {
   const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [restInfo, balance] = await Promise.all([
+      const [restInfoResult, balanceResult] = await Promise.allSettled([
         EmployeeRestaurantService.getMiRestauranteInfo(),
         EmployeeBalanceService.getMiBalance(),
       ]);
+      const restInfo = restInfoResult.status === "fulfilled" ? restInfoResult.value : null;
+      const balance =
+        balanceResult.status === "fulfilled"
+          ? balanceResult.value
+          : { total: 0, facturas: [] };
+
       setRestaurant(restInfo ?? null);
       setMiBalance(balance);
       if (restInfo?.restaurante_uid) {

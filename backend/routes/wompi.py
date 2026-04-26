@@ -196,6 +196,28 @@ async def crear_pago(data: PagoRequest, request: Request, db: Session = Depends(
             ip_address=ip_address
         )
         
+        # Si Wompi respondió con error HTTP, propagarlo al frontend.
+        wompi_status = int(respuesta.get("http_status_code") or 0)
+        if wompi_status >= 400 or respuesta.get("error"):
+            error_obj = respuesta.get("error") or {}
+            mensajes = error_obj.get("messages") or {}
+            detail_msg = "No se pudo iniciar el pago en Wompi."
+            if isinstance(mensajes, dict) and mensajes:
+                # Tomamos el primer mensaje disponible para mostrarlo al usuario.
+                first_key = next(iter(mensajes))
+                first_val = mensajes.get(first_key)
+                if isinstance(first_val, list) and first_val:
+                    detail_msg = str(first_val[0])
+                elif first_val:
+                    detail_msg = str(first_val)
+            elif error_obj.get("type"):
+                detail_msg = f"Error Wompi: {error_obj.get('type')}"
+
+            raise HTTPException(
+                status_code=wompi_status if wompi_status >= 400 else 400,
+                detail=detail_msg,
+            )
+
         # Verificar el estado de la transacción antes de confirmar
         transaction_status = None
         transaction_id = None
