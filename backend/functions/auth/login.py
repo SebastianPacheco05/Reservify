@@ -176,7 +176,7 @@ def renovar_token(db: Session, refresh_token: str, request: Request):
         row = db.execute(
             text(
                 """
-                SELECT id_credencial, revoked, refresh_expires_at
+                SELECT id_credencial, revoked, refresh_expires_at, user_agent, ip_address
                 FROM fn_auth_get_session_by_refresh_token(:refresh_token)
                 """
             ),
@@ -191,6 +191,29 @@ def renovar_token(db: Session, refresh_token: str, request: Request):
         
         if row[2] < datetime.utcnow():  # refresh_expires_at
             raise HTTPException(status_code=401, detail="Refresh token expirado")
+
+        current_user_agent = request.headers.get("user-agent") or "sin dato"
+        current_ip = request.client.host if request.client else "sin dato"
+        session_user_agent = row[3] or "sin dato"
+        session_ip = row[4] or "sin dato"
+
+        # Vincular refresh token al mismo dispositivo de login.
+        if session_user_agent != current_user_agent or session_ip != current_ip:
+            db.execute(
+                text(
+                    """
+                    UPDATE "jwt_tokens"
+                    SET revoked = TRUE, updated_at = NOW()
+                    WHERE refresh_token = :refresh_token
+                    """
+                ),
+                {"refresh_token": refresh_token},
+            )
+            db.commit()
+            raise HTTPException(
+                status_code=401,
+                detail="Sesión inválida para este dispositivo",
+            )
         
         # Generar nuevo access token
         token_data = {"sub": email, "id": id_credencial}
@@ -224,6 +247,8 @@ def renovar_token(db: Session, refresh_token: str, request: Request):
             "token_type": "bearer",
         }
         
+    except HTTPException:
+        raise
     except JWTError:
         raise HTTPException(
             status_code=401,

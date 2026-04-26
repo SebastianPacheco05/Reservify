@@ -210,6 +210,38 @@ END;
 $$;
 
 
+-- Obtener contexto de sesiÃ³n por access token (validaciÃ³n de dispositivo)
+CREATE OR REPLACE FUNCTION fn_auth_get_jwt_token_context(
+    p_token TEXT
+)
+RETURNS TABLE (
+    revoked BOOLEAN,
+    expires_at TIMESTAMP,
+    user_agent TEXT,
+    ip_address TEXT
+)
+LANGUAGE plpgsql
+STABLE
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT jt.revoked, jt.expires_at, jt.user_agent, jt.ip_address
+    FROM "jwt_tokens" jt
+    WHERE jt.token = p_token
+    LIMIT 1;
+EXCEPTION
+    WHEN SQLSTATE '42P01' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN SQLSTATE '42703' THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+    WHEN data_exception THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Formato de datos inválido.';
+    WHEN OTHERS THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'Error interno. Intenta nuevamente.';
+END;
+$$;
+
+
 -- Obtener sesiÃ³n por refresh_token (renovaciÃ³n de token)
 CREATE OR REPLACE FUNCTION fn_auth_get_session_by_refresh_token(
     p_refresh_token TEXT
