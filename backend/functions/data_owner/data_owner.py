@@ -409,6 +409,69 @@ _SQL_RESERVAS_BASE = """
 """
 _SQL_RESERVAS_EXTRA_COLS = ", r.motivo_cancelacion, r.ajuste"
 _SQL_RESERVAS_ORDER = 'ORDER BY r.fecha DESC, r.horario DESC'
+_MOTIVO_AUTOCANCEL = "Cancelada automáticamente por inasistencia: la hora de la reserva ya pasó y no fue activada."
+
+
+def _autocancel_pending_reservas_expiradas_por_nit(nit: int, db: Session) -> None:
+    """
+    Marca como canceladas las reservas pendientes vencidas del restaurante.
+    Regla: estado 'pendiente' y (fecha pasada o fecha de hoy con horario ya pasado).
+    """
+    result = db.execute(
+        text(
+            """
+            UPDATE "Reserva" r
+            SET
+                estado_reserva = 'cancelada',
+                motivo_cancelacion = CASE
+                    WHEN COALESCE(NULLIF(TRIM(r.motivo_cancelacion), ''), 'sin dato') = 'sin dato'
+                    THEN :motivo
+                    ELSE r.motivo_cancelacion
+                END
+            FROM "Mesas" m
+            WHERE r.id_mesa = m.id_mesa
+              AND m.nit = :nit
+              AND LOWER(TRIM(r.estado_reserva)) = 'pendiente'
+              AND (
+                  r.fecha < CURRENT_DATE
+                  OR (r.fecha = CURRENT_DATE AND r.horario <= CURRENT_TIME)
+              )
+            """
+        ),
+        {"nit": nit, "motivo": _MOTIVO_AUTOCANCEL},
+    )
+    if (result.rowcount or 0) > 0:
+        db.commit()
+
+
+def _autocancel_pending_reservas_expiradas_por_documento(documento_dueno: int, db: Session) -> None:
+    """Auto-cancela reservas pendientes vencidas en restaurantes del dueño."""
+    result = db.execute(
+        text(
+            """
+            UPDATE "Reserva" r
+            SET
+                estado_reserva = 'cancelada',
+                motivo_cancelacion = CASE
+                    WHEN COALESCE(NULLIF(TRIM(r.motivo_cancelacion), ''), 'sin dato') = 'sin dato'
+                    THEN :motivo
+                    ELSE r.motivo_cancelacion
+                END
+            FROM "Mesas" m
+            INNER JOIN "Restaurante" rest ON m.nit = rest.nit
+            WHERE r.id_mesa = m.id_mesa
+              AND rest.documento = :documento_dueno
+              AND LOWER(TRIM(r.estado_reserva)) = 'pendiente'
+              AND (
+                  r.fecha < CURRENT_DATE
+                  OR (r.fecha = CURRENT_DATE AND r.horario <= CURRENT_TIME)
+              )
+            """
+        ),
+        {"documento_dueno": documento_dueno, "motivo": _MOTIVO_AUTOCANCEL},
+    )
+    if (result.rowcount or 0) > 0:
+        db.commit()
 
 
 def _ejecutar_reservas_sql(db: Session, sql: str, params: dict) -> list:
@@ -422,6 +485,7 @@ def obtener_reservas_por_nit(
 ) -> list:
     """Reservas de un solo restaurante (incluye motivo_cancelacion y ajuste si existen en BD).
     Si fecha se proporciona (YYYY-MM-DD), filtra por ese día."""
+    _autocancel_pending_reservas_expiradas_por_nit(nit, db)
     limit_clause = f" LIMIT {min(int(limit), 500)}" if limit else ""
     where_extra = " AND r.fecha = :fecha" if fecha else ""
     params: dict = {"nit": nit}
@@ -455,6 +519,7 @@ def _row_a_reserva(row) -> dict:
     return d
 
 def _reservas_por_documento(db: Session, documento_dueno: int, limit: int = 50) -> list:
+    _autocancel_pending_reservas_expiradas_por_documento(documento_dueno, db)
     limit_clause = f"LIMIT {limit}" if limit else ""
     sql_con_extra = text(f"""
         SELECT 
@@ -543,6 +608,8 @@ def obtener_reservas_gestor(id_credencial: int, db: Session, limit: int = 50) ->
         return []
     if len(nits) == 1:
         return obtener_reservas_por_nit(nits[0], db, limit)
+    for nit in nits:
+        _autocancel_pending_reservas_expiradas_por_nit(int(nit), db)
     limit_clause = f" LIMIT {min(int(limit), 500)}" if limit else ""
     sql = f"""
         {_SQL_RESERVAS_BASE.replace(
@@ -595,9 +662,18 @@ def obtener_restaurantes_gestor(id_credencial: int, db: Session) -> list:
     ctx = obtener_contexto_gestor(id_credencial, db)
     if ctx["tipo"] == "dueno":
         sql = text("""
-            SELECT restaurante_uid, nit, nombre_restaurante, COALESCE(url_image, '') as url_image,
-                   COALESCE(rating, 0) as rating
-            FROM "Restaurante" WHERE documento = :documento
+            SELECT
+                r.restaurante_uid,
+                r.nit,
+                r.nombre_restaurante,
+                COALESCE(r.url_image, '') as url_image,
+                COALESCE(r.rating, 0) as rating,
+                COALESCE(r.direccion, '') as direccion,
+                COUNT(m.id_mesa)::int as total_mesas
+            FROM "Restaurante" r
+            LEFT JOIN "Mesas" m ON m.restaurante_uid = r.restaurante_uid
+            WHERE r.documento = :documento
+            GROUP BY r.restaurante_uid, r.nit, r.nombre_restaurante, r.url_image, r.rating, r.direccion
         """)
         rows = db.execute(sql, {"documento": ctx["documento"]}).fetchall()
     else:
@@ -605,9 +681,18 @@ def obtener_restaurantes_gestor(id_credencial: int, db: Session) -> list:
         if not nits:
             return []
         sql = text("""
-            SELECT restaurante_uid, nit, nombre_restaurante, COALESCE(url_image, '') as url_image,
-                   COALESCE(rating, 0) as rating
-            FROM "Restaurante" WHERE nit = ANY(:nits)
+            SELECT
+                r.restaurante_uid,
+                r.nit,
+                r.nombre_restaurante,
+                COALESCE(r.url_image, '') as url_image,
+                COALESCE(r.rating, 0) as rating,
+                COALESCE(r.direccion, '') as direccion,
+                COUNT(m.id_mesa)::int as total_mesas
+            FROM "Restaurante" r
+            LEFT JOIN "Mesas" m ON m.restaurante_uid = r.restaurante_uid
+            WHERE r.nit = ANY(:nits)
+            GROUP BY r.restaurante_uid, r.nit, r.nombre_restaurante, r.url_image, r.rating, r.direccion
         """)
         rows = db.execute(sql, {"nits": nits}).fetchall()
     return [
@@ -617,6 +702,8 @@ def obtener_restaurantes_gestor(id_credencial: int, db: Session) -> list:
             "nombre_restaurante": r[2],
             "url_image": r[3] or "",
             "rating": float(r[4]) if r[4] is not None else 0,
+            "direccion": r[5] or "",
+            "total_mesas": int(r[6]) if r[6] is not None else 0,
         }
         for r in rows
     ]
@@ -636,8 +723,8 @@ def es_dueño_de_restaurante(id_credencial: int, nit: int, db: Session) -> bool:
 
 
 def obtener_restaurante_completo_dueno(id_credencial: int, nit: int, db: Session) -> dict | None:
-    """Detalle completo del restaurante para edición (solo dueño, solo sus restaurantes). Incluye id_categoria, url_image, imagenes_referencia."""
-    if not es_dueño_de_restaurante(id_credencial, nit, db):
+    """Detalle completo del restaurante para edición (dueño/admin con acceso). Incluye id_categoria, url_image, imagenes_referencia."""
+    if not puede_acceder_restaurante(id_credencial, nit, db):
         return None
     row = db.execute(
         text("""
@@ -888,7 +975,25 @@ def obtener_metricas_mensuales_gestor(id_credencial: int, db: Session) -> list:
 
 
 def obtener_mi_balance_empleado(id_credencial: int, db: Session) -> dict:
-    """Facturas del empleado (id_credencial_empleado). Solo empleado."""
+    """
+    Balance del empleado.
+    Si la columna id_credencial_empleado no existe en esta instalación, retorna balance vacío.
+    """
+    tiene_columna_empleado = db.execute(
+        text(
+            """
+            SELECT EXISTS (
+                SELECT 1
+                FROM information_schema.columns
+                WHERE table_name = 'Encabezado_Factura'
+                  AND column_name = 'id_credencial_empleado'
+            )
+            """
+        )
+    ).scalar()
+    if not tiene_columna_empleado:
+        return {"total": 0.0, "facturas": []}
+
     rows = db.execute(
         text("""
             SELECT ef.id_encab_fact, ef.nit, ef.nombre_restaurante,
@@ -966,7 +1071,7 @@ def obtener_mi_restaurante_info(id_credencial: int, db: Session) -> dict | None:
     row = db.execute(
         text("""
             SELECT restaurante_uid, nit, nombre_restaurante, COALESCE(direccion, ''),
-                   COALESCE(horario_apertura, ''), COALESCE(horario_cierre, ''),
+                   COALESCE(horario_apertura::text, ''), COALESCE(horario_cierre::text, ''),
                    COALESCE(url_image, '')
             FROM "Restaurante" WHERE nit = ANY(:nits)
             ORDER BY nit
@@ -1026,23 +1131,50 @@ def asignar_administrador_restaurante(id_credencial_dueno: int, nit: int, id_cre
 
 
 def obtener_usuarios_asignables_dueno(id_credencial: int, db: Session) -> list:
-    """Usuarios que el dueño puede asignar como administrador en sus restaurantes."""
-    doc = obtener_documento_dueno(id_credencial, db)
-    rows = db.execute(
-        text("""
-            SELECT DISTINCT u.id_credencial, u.nombre, u.apellido, u.documento, cred.email, r.nombre_rol, rest.nit
-            FROM "Usuario" u
-            JOIN "Credenciales" cred ON cred.id_credencial = u.id_credencial
-            JOIN "Roles" r ON r.id_rol = u.id_rol
-            LEFT JOIN "Administrador_restaurante" ar ON ar.id_credencial = u.id_credencial
-            LEFT JOIN "Restaurante" rest
-              ON rest.nit = u.nit
-              OR rest.restaurante_uid = ar.restaurante_uid
-            WHERE rest.documento = :doc
-            ORDER BY u.nombre, u.apellido
-        """),
-        {"doc": doc},
-    ).fetchall()
+    """
+    Usuarios del ámbito del gestor para la pestaña de empleados:
+    - dueño: empleados/administradores de cualquiera de sus restaurantes
+    - administrador: empleados/administradores de los restaurantes que administra
+    """
+    ctx = obtener_contexto_gestor(id_credencial, db)
+    if ctx["tipo"] == "dueno":
+        rows = db.execute(
+            text("""
+                SELECT DISTINCT u.id_credencial, u.nombre, u.apellido, u.documento, cred.email, r.nombre_rol, rest.nit
+                FROM "Usuario" u
+                JOIN "Credenciales" cred ON cred.id_credencial = u.id_credencial
+                JOIN "Roles" r ON r.id_rol = u.id_rol
+                LEFT JOIN "Administrador_restaurante" ar ON ar.id_credencial = u.id_credencial
+                LEFT JOIN "Restaurante" rest
+                  ON rest.nit = u.nit
+                  OR rest.restaurante_uid = ar.restaurante_uid
+                WHERE rest.documento = :doc
+                ORDER BY u.nombre, u.apellido
+            """),
+            {"doc": ctx["documento"]},
+        ).fetchall()
+    elif ctx["tipo"] == "administrador":
+        nits = _nits_gestor(ctx)
+        if not nits:
+            return []
+        rows = db.execute(
+            text("""
+                SELECT DISTINCT u.id_credencial, u.nombre, u.apellido, u.documento, cred.email, r.nombre_rol, rest.nit
+                FROM "Usuario" u
+                JOIN "Credenciales" cred ON cred.id_credencial = u.id_credencial
+                JOIN "Roles" r ON r.id_rol = u.id_rol
+                LEFT JOIN "Administrador_restaurante" ar ON ar.id_credencial = u.id_credencial
+                LEFT JOIN "Restaurante" rest
+                  ON rest.nit = u.nit
+                  OR rest.restaurante_uid = ar.restaurante_uid
+                WHERE rest.nit = ANY(:nits)
+                  AND LOWER(TRIM(r.nombre_rol)) IN ('empleado', 'administrador')
+                ORDER BY u.nombre, u.apellido
+            """),
+            {"nits": nits},
+        ).fetchall()
+    else:
+        return []
     return [
         {
             "id_credencial": r[0],

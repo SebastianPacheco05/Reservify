@@ -571,20 +571,22 @@ export function RestaurantConfigModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex gap-1 border-b pb-2">
-          {tabs.map((t) => (
-            <Button
-              key={t.id}
-              type="button"
-              variant={tab === t.id ? "secondary" : "ghost"}
-              size="sm"
-              onClick={() => setTab(t.id)}
-              className="gap-1"
-            >
-              {t.icon}
-              {t.label}
-            </Button>
-          ))}
+        <div className="border-b pb-2">
+          <div className="flex gap-1 overflow-x-auto whitespace-nowrap">
+            {tabs.map((t) => (
+              <Button
+                key={t.id}
+                type="button"
+                variant={tab === t.id ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setTab(t.id)}
+                className="gap-1 shrink-0"
+              >
+                {t.icon}
+                <span>{t.label}</span>
+              </Button>
+            ))}
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto min-h-0 py-4">
@@ -1018,7 +1020,7 @@ export function RestaurantConfigModal({
               )}
 
               {tab === "admin" && (
-                <div className="space-y-4">
+                <div className="space-y-4 overflow-x-hidden">
                   {canAssignAdmin && (
                     <>
                       <p className="text-sm text-muted-foreground">
@@ -1037,13 +1039,35 @@ export function RestaurantConfigModal({
                       <div className="grid gap-2">
                         <Label>Asignar administrador</Label>
                         <Select value={selectedAdminId} onValueChange={setSelectedAdminId}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecciona un empleado" />
+                          <SelectTrigger className="w-full">
+                            <span className="truncate text-left">
+                              {selectedAdminId
+                                ? (() => {
+                                  const selected = empleados.find(
+                                    (emp) => String(emp.id_credencial) === selectedAdminId,
+                                  );
+                                  return selected
+                                    ? `${selected.nombre} ${selected.apellido} (${selected.nombre_rol})`
+                                    : "Selecciona un empleado";
+                                })()
+                                : "Selecciona un empleado"}
+                            </span>
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="max-w-[520px]">
                             {empleados.map((emp) => (
-                              <SelectItem key={emp.id_credencial} value={String(emp.id_credencial)}>
-                                {emp.nombre} {emp.apellido} — {emp.email} ({emp.nombre_rol})
+                              <SelectItem
+                                key={emp.id_credencial}
+                                value={String(emp.id_credencial)}
+                                className="whitespace-normal break-all py-2"
+                              >
+                                <div className="min-w-0">
+                                  <p className="font-medium">
+                                    {emp.nombre} {emp.apellido}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground break-all">
+                                    {emp.email} ({emp.nombre_rol})
+                                  </p>
+                                </div>
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -1075,16 +1099,18 @@ export function RestaurantConfigModal({
                         {empleados.map((emp) => (
                           <div
                             key={emp.id_credencial}
-                            className="flex items-center justify-between gap-2 p-2 border rounded-md bg-card"
+                            className="flex items-center justify-between gap-2 p-2 border rounded-md bg-card min-w-0"
                           >
-                            <span className="text-sm">
-                              {emp.nombre} {emp.apellido} — {emp.email}
+                            <span className="text-sm min-w-0">
+                              <span className="font-medium">{emp.nombre} {emp.apellido}</span>
+                              {" — "}
+                              <span className="text-muted-foreground break-all">{emp.email}</span>
                               <span className="text-muted-foreground ml-1">({emp.nombre_rol})</span>
                             </span>
                             <Button
                               size="sm"
                               variant="outline"
-                              className="text-destructive hover:text-destructive"
+                              className="text-destructive border-destructive/30 hover:text-destructive hover:bg-destructive/10 hover:border-destructive/50 shrink-0"
                               onClick={() => handleCambiarRolCliente(emp.id_credencial)}
                               disabled={cambiandoRolId === emp.id_credencial}
                               aria-label="Cambiar a cliente"

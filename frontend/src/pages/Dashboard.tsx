@@ -36,7 +36,11 @@ function getGreeting(): string {
 }
 
 function todayISO(): string {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 async function exportInvoicesCSV(): Promise<void> {
@@ -148,14 +152,16 @@ export default function Dashboard() {
             nombre_restaurante: string;
             url_image?: string;
             rating?: number;
+            direccion?: string;
+            total_mesas?: number;
           }) => ({
             id: r.restaurante_uid,
             nit: r.nit,
             name: r.nombre_restaurante,
-            location: "",
+            location: r.direccion ?? "",
             cuisine: "",
             rating: r.rating ?? 0,
-            totalTables: 0,
+            totalTables: r.total_mesas ?? 0,
             status: "active" as const,
             image: r.url_image?.trim() || "/vite.svg",
           })

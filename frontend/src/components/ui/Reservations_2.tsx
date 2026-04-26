@@ -40,14 +40,14 @@ export function Reservations({
     switch (reservation.status) {
       case "pending":
         return (
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2 flex-nowrap">
             <Button size="sm" variant="default" onClick={() => onConfirm?.(reservation.id)}>Pasar a activa</Button>
             <Button size="sm" variant="outline" onClick={() => onCancel?.(reservation.id)}>Cancelar</Button>
           </div>
         )
       case "confirmed":
         return (
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2 flex-nowrap">
             <Button size="sm" variant="outline" onClick={() => onCancel?.(reservation.id)}>Cancelar</Button>
           </div>
         )
@@ -126,47 +126,51 @@ export function Reservations({
         sortedReservations.map((reservation) => (
           <Card key={reservation.id} className="border-border/80 bg-card shadow-sm">
             <CardContent className="p-6">
-              <div className="flex flex-col lg:flex-row gap-4">
-                <div className="flex-1 space-y-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <h3 className="text-lg font-semibold text-foreground">{reservation.customerName}</h3>
-                    {getStatusBadge(reservation.status)}
-                  </div>
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
+                <div className="min-w-0 lg:w-[16%] lg:shrink-0">
+                  <h3 className="text-lg font-semibold text-foreground truncate lg:whitespace-nowrap">{reservation.customerName}</h3>
+                </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 shrink-0" />
-                      <span>{reservation.time}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 shrink-0" />
-                      <span>{reservation.guests} personas</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 shrink-0" />
-                      <span>{reservation.customerPhone}</span>
-                    </div>
-                    {reservation.tableId && (
-                      <div className="flex items-center gap-2">
-                        <span>Mesa:</span>
-                        <span className="font-medium text-foreground">{tables.find((t) => t.id === reservation.tableId)?.number}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {reservation.specialRequests && (
-                    <div className="flex items-start gap-2 p-3 bg-primary/5 rounded-lg border border-border">
-                      <MessageSquare className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                      <p className="text-sm text-foreground">{reservation.specialRequests}</p>
-                    </div>
-                  )}
-
-                  {reservation.arrivalTime && (
-                    <div className="text-sm text-muted-foreground">Cliente llegó a las {reservation.arrivalTime}</div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground lg:w-[10%] lg:shrink-0">
+                  <Clock className="h-4 w-4 shrink-0" />
+                  <span>{reservation.time}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground lg:w-[11%] lg:shrink-0">
+                  <Users className="h-4 w-4 shrink-0" />
+                  <span>{reservation.guests} personas</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground lg:w-[13%] lg:shrink-0">
+                  <Phone className="h-4 w-4 shrink-0" />
+                  <span>{reservation.customerPhone}</span>
+                </div>
+                <div className="text-sm text-muted-foreground lg:w-[7%] lg:shrink-0">
+                  {reservation.tableId ? (
+                    <>
+                      <span>Mesa: </span>
+                      <span className="font-medium text-foreground">{tables.find((t) => t.id === reservation.tableId)?.number}</span>
+                    </>
+                  ) : (
+                    <span>Mesa: —</span>
                   )}
                 </div>
 
-                <div className="flex flex-col justify-center gap-2">{getStatusActions(reservation)}</div>
+                <div className="flex items-center gap-2 lg:ml-auto lg:flex-1 lg:min-w-0 lg:justify-end lg:flex-nowrap">
+                  {getStatusBadge(reservation.status)}
+                  {getStatusActions(reservation)}
+                </div>
+
+                {reservation.specialRequests && (
+                  <div className="flex items-start gap-2 p-3 bg-primary/5 rounded-lg border border-border lg:basis-full">
+                    <MessageSquare className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <p className="text-sm text-foreground">{reservation.specialRequests}</p>
+                  </div>
+                )}
+
+                {reservation.arrivalTime && (
+                  <div className="text-sm text-muted-foreground lg:basis-full">
+                    Cliente llegó a las {reservation.arrivalTime}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

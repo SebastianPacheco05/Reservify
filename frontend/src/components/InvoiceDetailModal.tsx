@@ -66,30 +66,29 @@ export function InvoiceDetailModal({ invoiceId, isOpen, onClose }: InvoiceDetail
           </div>
         ) : enc ? (
           <div className="space-y-6">
-            <div className="rounded-lg border bg-muted/30 p-4 space-y-2 text-sm">
-              <div className="flex justify-between">
+            <div className="rounded-lg border bg-muted/30 p-4 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-[140px_minmax(0,1fr)] gap-x-6 gap-y-2">
                 <span className="text-muted-foreground">Restaurante</span>
-                <span className="font-medium">{enc.nombre_restaurante}</span>
-              </div>
-              <div className="flex justify-between">
+                <span className="font-medium sm:text-right wrap-break-word">{enc.nombre_restaurante}</span>
+
                 <span className="text-muted-foreground">NIT</span>
-                <span>{enc.nit}</span>
-              </div>
-              <div className="flex justify-between">
+                <span className="sm:text-right wrap-break-word">{enc.nit}</span>
+
                 <span className="text-muted-foreground">Dirección</span>
-                <span>{enc.direccion}, {enc.ciudad}</span>
-              </div>
-              <div className="flex justify-between">
+                <span className="sm:text-right wrap-break-word leading-relaxed">
+                  {enc.direccion}, {enc.ciudad}
+                </span>
+
                 <span className="text-muted-foreground">Fecha</span>
-                <span>{enc.fecha}</span>
-              </div>
-              <div className="flex justify-between">
+                <span className="sm:text-right wrap-break-word">{enc.fecha}</span>
+
                 <span className="text-muted-foreground">Forma de pago</span>
-                <span>{enc.forma_pago}</span>
+                <span className="sm:text-right wrap-break-word">{enc.forma_pago}</span>
               </div>
-              <div className="flex justify-between pt-2 border-t font-semibold">
+
+              <div className="mt-3 pt-2 border-t grid grid-cols-1 sm:grid-cols-[140px_minmax(0,1fr)] gap-x-6 font-semibold">
                 <span>Total</span>
-                <span>${enc.precio_total.toLocaleString()}</span>
+                <span className="sm:text-right">${enc.precio_total.toLocaleString()}</span>
               </div>
             </div>
 

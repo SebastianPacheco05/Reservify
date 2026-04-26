@@ -55,7 +55,7 @@ BEGIN
 
     v_sql := format(
         'SELECT
-            NULL::UUID AS restaurante_uid,
+            r.restaurante_uid::UUID AS restaurante_uid,
             r.nit::NUMERIC(20,0),
             r.direccion::VARCHAR,
             r.nombre_restaurante::VARCHAR,
@@ -187,7 +187,7 @@ BEGIN
 
     v_sql := format(
         'SELECT
-            NULL::UUID AS restaurante_uid,
+            r.restaurante_uid::UUID AS restaurante_uid,
             r.nit::NUMERIC(20,0),
             r.direccion::VARCHAR,
             r.nombre_restaurante::VARCHAR,

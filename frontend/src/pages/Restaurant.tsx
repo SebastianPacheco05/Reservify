@@ -96,6 +96,33 @@ export default function RestaurantPage() {
     guests: "",
     mesaId: "",
   });
+  const getTodayISO = (): string => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
+  const isReservationTimeAllowed = (date: string, time: string): boolean => {
+    const rawDate = (date || "").trim();
+    const rawTime = (time || "").trim();
+    if (!rawDate || !rawTime) return false;
+
+    const today = getTodayISO();
+    if (rawDate < today) return false;
+    if (rawDate > today) return true;
+
+    const [hhStr, mmStr] = rawTime.split(":");
+    const hh = Number.parseInt(hhStr ?? "", 10);
+    const mm = Number.parseInt(mmStr ?? "", 10);
+    if (!Number.isFinite(hh) || !Number.isFinite(mm)) return false;
+
+    const now = new Date();
+    const selectedMinutes = hh * 60 + mm;
+    const thresholdMinutes = now.getHours() * 60 + now.getMinutes() + 120; // 2 horas mínimas de anticipación
+    return selectedMinutes >= thresholdMinutes;
+  };
   const [detailTab, setDetailTab] = useState<"resumen" | "fotos" | "mapa" | "reseñas">("resumen");
   const [descExpanded, setDescExpanded] = useState(false);
   /** Índice de imagen abierta en el visor a pantalla completa; null = cerrado */
@@ -197,6 +224,16 @@ export default function RestaurantPage() {
         toast({
           title: "Campos incompletos",
           description: "Por favor completa todos los campos de la reserva",
+          variant: "warning",
+        });
+        return;
+      }
+
+      if (!isReservationTimeAllowed(reservationData.date, reservationData.time)) {
+        toast({
+          title: "Hora no válida",
+          description:
+            "Para reservas del día de hoy debes elegir una hora con al menos 2 horas de anticipación.",
           variant: "warning",
         });
         return;
@@ -309,10 +346,22 @@ export default function RestaurantPage() {
     ));
   };
 
+  const formatReservationDate = (dateValue: string): string => {
+    const raw = (dateValue || "").trim();
+    if (!raw) return "No seleccionada";
+
+    // Evita el desfase por zona horaria de new Date("YYYY-MM-DD")
+    // y muestra exactamente la fecha elegida por el usuario.
+    const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!match) return raw;
+    const [, year, month, day] = match;
+    return `${day}/${month}/${year}`;
+  };
+
   if (loading.info) {
     return (
       <div className="min-h-screen bg-background transition-colors duration-300">
-        <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
           <div className="max-w-7xl mx-auto flex h-14 items-center justify-between px-4">
             <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft className="h-5 w-5" /> Volver
@@ -340,7 +389,7 @@ export default function RestaurantPage() {
   if (!loading.info && !restaurantInfo) {
     return (
       <div className="min-h-screen bg-background transition-colors duration-300">
-        <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
           <div className="max-w-7xl mx-auto flex h-14 items-center justify-between px-4">
             <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft className="h-5 w-5" /> Volver
@@ -374,7 +423,7 @@ export default function RestaurantPage() {
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       {/* Barra superior: navegación + cambio de tema */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-sm">
+      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80 shadow-sm">
         <div className="max-w-7xl mx-auto flex h-14 sm:h-16 items-center justify-between px-4 sm:px-6">
           <button
             type="button"
@@ -438,14 +487,14 @@ export default function RestaurantPage() {
                 }}
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-muted to-muted/80 flex items-center justify-center">
+              <div className="w-full h-full bg-linear-to-br from-muted to-muted/80 flex items-center justify-center">
                 <div className="text-center text-muted-foreground">
                   <MapPin className="h-16 w-16 mx-auto mb-4 opacity-50" />
                   <p className="text-lg font-medium">Sin imagen principal</p>
                 </div>
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-5 text-white">
               <h1 className="text-2xl sm:text-3xl font-bold drop-shadow-lg leading-tight">
                 {restaurantInfo.nombre_restaurante}
@@ -477,7 +526,7 @@ export default function RestaurantPage() {
                 <div
                   role="tablist"
                   aria-label="Secciones del restaurante"
-                  className="sticky top-[4.5rem] z-20 -mx-1 px-1 py-2 bg-background/95 backdrop-blur-md border-b border-border/80 xl:static xl:bg-transparent xl:backdrop-blur-none xl:border-0 xl:px-0"
+                  className="sticky top-18 z-20 -mx-1 px-1 py-2 bg-background/95 backdrop-blur-md border-b border-border/80 xl:static xl:bg-transparent xl:backdrop-blur-none xl:border-0 xl:px-0"
                 >
                   <div className="flex gap-1 overflow-x-auto pb-1">
                     {(
@@ -613,7 +662,7 @@ export default function RestaurantPage() {
                               key={`${url}-${index}`}
                               type="button"
                               onClick={() => setPhotoLightboxIndex(index)}
-                              className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-border bg-muted text-left shadow-sm transition-all hover:border-primary/40 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                              className="group relative aspect-4/3 overflow-hidden rounded-xl border border-border bg-muted text-left shadow-sm transition-all hover:border-primary/40 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                             >
                               <img
                                 src={url}
@@ -803,6 +852,7 @@ export default function RestaurantPage() {
                       type="date"
                       value={reservationData.date}
                       onChange={(e) => handleDateChange(e.target.value)}
+                      min={getTodayISO()}
                       required
                     />
                   </div>
@@ -835,8 +885,8 @@ export default function RestaurantPage() {
                     </Select>
                     {reservationData.date && availableSlots.length === 0 && (
                       <p className="text-xs text-amber-600 dark:text-amber-500">
-                        No hay franjas generadas para este día. Comprueba que el horario de
-                        apertura/cierre del restaurante esté bien configurado.
+                        No hay franjas disponibles para este día. Si reservas para hoy, recuerda
+                        que debes elegir un horario con mínimo 2 horas de anticipación.
                       </p>
                     )}
                     {!reservationData.date && (
@@ -935,11 +985,7 @@ export default function RestaurantPage() {
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Fecha:</span>
                             <span className="font-medium text-foreground">
-                              {reservationData.date
-                                ? new Date(
-                                  reservationData.date,
-                                ).toLocaleDateString("es-ES")
-                                : "No seleccionada"}
+                              {formatReservationDate(reservationData.date)}
                             </span>
                           </div>
                           <div className="flex justify-between">

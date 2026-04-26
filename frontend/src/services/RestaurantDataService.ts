@@ -9,6 +9,15 @@ import { isCompleteISODate } from "../lib/dateValidators";
 export class RestaurantDataService {
   private static instance: RestaurantDataService;
   private restauranteUid: string;
+  private static readonly MIN_LEAD_HOURS = 2;
+
+  private getLocalTodayISO(): string {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
 
   private parseTimeToMinutes(timeStr: string): number | null {
     // Acepta "HH:MM" o "HH:MM:SS"
@@ -51,6 +60,28 @@ export class RestaurantDataService {
       slots.push(this.formatMinutesToTime(t));
     }
     return slots;
+  }
+
+  private filterSlotsByLeadTime(date: string, slots: string[]): string[] {
+    const selectedDate = (date || "").trim();
+    if (!selectedDate) return [];
+
+    const today = this.getLocalTodayISO();
+
+    // Para fechas pasadas no se deben ofrecer horarios.
+    if (selectedDate < today) return [];
+    // Para fechas futuras no aplicamos filtro por hora actual.
+    if (selectedDate > today) return slots;
+
+    // Si es hoy: mínimo 2 horas después de la hora actual.
+    const now = new Date();
+    const thresholdMinutes =
+      now.getHours() * 60 + now.getMinutes() + RestaurantDataService.MIN_LEAD_HOURS * 60;
+
+    return slots.filter((slot) => {
+      const mins = this.parseTimeToMinutes(slot);
+      return mins != null && mins >= thresholdMinutes;
+    });
   }
 
   constructor(restauranteUid = "") {
@@ -121,7 +152,9 @@ export class RestaurantDataService {
       if (response.ok) {
         const data = await response.json();
         // Si el backend devuelve slots válidos, priorizamos esa respuesta.
-        if (Array.isArray(data) && data.length > 0) return data;
+        if (Array.isArray(data) && data.length > 0) {
+          return this.filterSlotsByLeadTime(date, data);
+        }
       }
     } catch (error) {
       console.error("Error:", error);
@@ -134,7 +167,7 @@ export class RestaurantDataService {
         info?.horario_apertura ?? "",
         info?.horario_cierre ?? ""
       );
-      return slots;
+      return this.filterSlotsByLeadTime(date, slots);
     } catch {
       return [];
     }

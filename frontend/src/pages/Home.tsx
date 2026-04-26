@@ -22,6 +22,7 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [profileInitialTab, setProfileInitialTab] = useState<"perfil" | "reservas">("perfil");
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredCuisines, setFilteredCuisines] = useState<string[]>([]);
@@ -29,7 +30,16 @@ export default function Home() {
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    setIsLoggedIn(!!token);
+    const logged = !!token;
+    setIsLoggedIn(logged);
+
+    if (!logged) return;
+    const shouldOpenReservations = sessionStorage.getItem("openProfileReservasAfterPayment");
+    if (shouldOpenReservations === "1") {
+      sessionStorage.removeItem("openProfileReservasAfterPayment");
+      setProfileInitialTab("reservas");
+      setIsProfileModalOpen(true);
+    }
   }, []);
 
 
@@ -125,12 +135,16 @@ export default function Home() {
         setIsMenuOpen={setIsMenuOpen}
         isLoggedIn={isLoggedIn}
         onLogout={handleLogout}
-        onOpenProfile={() => setIsProfileModalOpen(true)}
+        onOpenProfile={() => {
+          setProfileInitialTab("perfil");
+          setIsProfileModalOpen(true);
+        }}
       />
 
       {isLoggedIn && (
         <ProfileModal
           isOpen={isProfileModalOpen}
+          initialTab={profileInitialTab}
           onClose={() => setIsProfileModalOpen(false)}
         />
       )}
