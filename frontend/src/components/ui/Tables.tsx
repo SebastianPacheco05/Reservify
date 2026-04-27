@@ -47,6 +47,23 @@ export function Tables({ tables = [], isLoading = false, readOnly = false }: Tab
     }
   }
 
+  const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case "available":
+        return "border-primary/45 bg-primary/15 text-primary"
+      case "occupied":
+        return "border-secondary/45 bg-secondary/15 text-secondary"
+      case "reserved":
+        return "border-[color:var(--color-chart-3)]/45 bg-[color:var(--color-chart-3)]/15 text-[color:var(--color-chart-3)]"
+      case "cleaning":
+        return "border-muted-foreground/45 bg-muted/70 text-muted-foreground"
+      case "out_of_service":
+        return "border-border bg-muted text-muted-foreground"
+      default:
+        return "border-border/60 bg-muted/30 text-foreground"
+    }
+  }
+
   const getStatusActions = (table: Table) => {
     if (readOnly) return null
     switch (table.status) {
@@ -98,10 +115,10 @@ export function Tables({ tables = [], isLoading = false, readOnly = false }: Tab
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Badge variant="secondary" className="bg-primary/10 text-primary border-0">Disponible</Badge>
-          <Badge variant="secondary" className="bg-destructive/10 text-destructive border-0">Ocupada</Badge>
-          <Badge variant="secondary" className="bg-secondary/10 text-secondary border-0">Reservada</Badge>
-          <Badge variant="secondary" className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-0">Limpieza</Badge>
+          <Badge variant="outline" className={cn("border", getStatusBadgeClass("available"))}>Disponible</Badge>
+          <Badge variant="outline" className={cn("border", getStatusBadgeClass("occupied"))}>Ocupada</Badge>
+          <Badge variant="outline" className={cn("border", getStatusBadgeClass("reserved"))}>Reservada</Badge>
+          <Badge variant="outline" className={cn("border", getStatusBadgeClass("cleaning"))}>Limpieza</Badge>
         </div>
       </div>
 
@@ -130,7 +147,7 @@ export function Tables({ tables = [], isLoading = false, readOnly = false }: Tab
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
                     <CardTitle className="text-lg">Mesa {table.number}</CardTitle>
-                    <Badge variant="outline" className="bg-white">
+                    <Badge variant="outline" className={cn("font-semibold", getStatusBadgeClass(table.status))}>
                       {getStatusLabel(table.status)}
                     </Badge>
                   </div>
