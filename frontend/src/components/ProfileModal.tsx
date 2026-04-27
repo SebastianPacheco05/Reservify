@@ -204,9 +204,36 @@ export function ProfileModal({ isOpen, onClose, initialTab = "perfil" }: Profile
     }
   };
 
+  const parseReservaDateTime = (reserva: Reserva): Date | null => {
+    const fecha = (reserva.fecha || "").trim();
+    const horario = (reserva.horario || "").trim();
+    const matchFecha = fecha.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    const matchHora = horario.match(/^(\d{2}):(\d{2})(?::(\d{2}))?$/);
+    if (!matchFecha || !matchHora) return null;
+    const [, y, m, d] = matchFecha;
+    const [, hh, mm, ss = "0"] = matchHora;
+    return new Date(
+      Number(y),
+      Number(m) - 1,
+      Number(d),
+      Number(hh),
+      Number(mm),
+      Number(ss),
+      0
+    );
+  };
+
+  const reservaYaExpirada = (reserva: Reserva) => {
+    const dt = parseReservaDateTime(reserva);
+    if (!dt) return false;
+    return dt.getTime() <= Date.now();
+  };
+
   const puedeCancelar = (reserva: Reserva) => {
     const e = reserva.estado_reserva.toLowerCase();
-    return e === "pendiente" || e === "confirmada" || e === "en curso";
+    if (!(e === "pendiente" || e === "confirmada" || e === "en curso")) return false;
+    if (reservaYaExpirada(reserva)) return false;
+    return true;
   };
 
   const handleCancelarClick = (reserva: Reserva) => {

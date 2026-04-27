@@ -14,6 +14,33 @@ router = APIRouter(
     dependencies=[Depends(verificar_token)]
 )
 
+_MOTIVO_AUTOCANCEL_CLIENTE = "Cancelación automática por inasistencia (hora vencida)."
+
+
+def _autocancel_pendientes_expiradas_cliente(db: Session, documento: int) -> None:
+    """
+    Autocancela reservas pendientes vencidas del cliente:
+    - fecha < CURRENT_DATE, o
+    - fecha = CURRENT_DATE y horario <= CURRENT_TIME
+    """
+    db.execute(
+        text(
+            """
+            UPDATE "Reserva"
+            SET estado_reserva = 'cancelada',
+                motivo_cancelacion = COALESCE(NULLIF(motivo_cancelacion, ''), :motivo)
+            WHERE documento = :documento
+              AND LOWER(TRIM(estado_reserva)) = 'pendiente'
+              AND (
+                fecha < CURRENT_DATE
+                OR (fecha = CURRENT_DATE AND horario <= CURRENT_TIME)
+              )
+            """
+        ),
+        {"documento": documento, "motivo": _MOTIVO_AUTOCANCEL_CLIENTE},
+    )
+    db.commit()
+
 
 @router.get("/mi-perfil")
 async def mi_perfil(
@@ -43,6 +70,7 @@ async def mis_reservas(
     if not perfil:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     documento = perfil["documento"]
+    _autocancel_pendientes_expiradas_cliente(db, int(documento))
     reservas = list_queries.obtener_reservas_por_documento(db, int(documento))
     return {"reservas": reservas}
 
