@@ -315,7 +315,12 @@ CREATE TABLE "Reserva" (
     ),-- Estado de la reserva con validaciÃ³n
     num_comensales INT NOT NULL DEFAULT 1,  -- numero de personas
     horario TIME NOT NULL,  -- Horario de la reserva
-    fecha DATE NOT NULL CHECK (fecha >= CURRENT_DATE),  -- Fecha de la reserva
+    fecha DATE NOT NULL,  -- Fecha de la reserva
+    CONSTRAINT "Reserva_fecha_check"
+        CHECK (
+            fecha >= CURRENT_DATE
+            OR estado_reserva IN ('cancelada', 'finalizada', 'no presentada')
+        ),
     motivo_cancelacion VARCHAR(250) NOT NULL DEFAULT 'sin dato',  -- Motivo indicado al cancelar (mÃ¡x 250 caracteres); se envÃ­a al cliente por correo
     ajuste TEXT NOT NULL DEFAULT 'sin dato',  -- Observaciones o ajuste solicitado por el cliente en la reserva
     UNIQUE (id_mesa, fecha, horario),  -- RestricciÃ³n de unicidad para evitar reservas duplicadas

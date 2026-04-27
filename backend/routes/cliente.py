@@ -84,6 +84,14 @@ async def cancelar_mi_reserva(
         raise HTTPException(status_code=403, detail="No tienes permiso para cancelar esta reserva")
 
     estado_actual = (estado_actual_raw or "").strip().lower()
+    if estado_actual == "cancelada":
+        return {
+            "ok": True,
+            "id_reserva": id_reserva,
+            "nuevo_estado": "cancelada",
+            "mensaje": "La reserva ya estaba cancelada",
+        }
+
     # Cliente puede cancelar si la reserva aún no ha finalizado
     if estado_actual not in ("pendiente", "confirmada", "en curso"):
         raise HTTPException(
